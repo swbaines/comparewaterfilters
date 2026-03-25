@@ -1,0 +1,52 @@
+import { Card, CardContent } from "@/components/ui/card";
+import SectionHeading from "@/components/SectionHeading";
+import { ShieldCheck, BarChart3, MapPin, BookOpen } from "lucide-react";
+
+const points = [
+  { icon: BarChart3, title: "Based on your inputs", desc: "Recommendations are generated from your household profile, water source, main concerns, coverage needs, budget, and preferences." },
+  { icon: ShieldCheck, title: "System categories, not brands", desc: "We recommend the right type of system first. This keeps recommendations independent and focused on what suits you." },
+  { icon: MapPin, title: "Location-aware guidance", desc: "Your state and postcode help us consider regional water quality factors. Provider availability may vary by area." },
+  { icon: BookOpen, title: "Educational, not prescriptive", desc: "Our recommendations are guidance to help you understand your options. They are not a substitute for professional water testing or trade advice." },
+];
+
+export default function HowItWorksPage() {
+  return (
+    <div className="py-12 sm:py-16">
+      <div className="container max-w-3xl">
+        <SectionHeading
+          badge="How it works"
+          title="How our recommendations work"
+          subtitle="Transparent, clear, and designed to help — not sell."
+        />
+
+        <div className="mt-12 space-y-6">
+          {points.map((p) => (
+            <Card key={p.title} className="border-0 bg-muted/50 shadow-none">
+              <CardContent className="flex gap-4 p-6">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent">
+                  <p.icon className="h-5 w-5 text-primary" />
+                </span>
+                <div>
+                  <h3 className="font-semibold">{p.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{p.desc}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="mt-10">
+          <CardContent className="p-6">
+            <h3 className="font-semibold">Important disclaimers</h3>
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+              <li>• Pricing ranges are indicative guides only and may vary by location, provider, and installation requirements.</li>
+              <li>• Provider availability may vary by area.</li>
+              <li>• Recommendations are educational and not a substitute for formal water testing, plumbing assessment, or licensed trade advice.</li>
+              <li>• Final system suitability depends on your specific water quality and home setup.</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
