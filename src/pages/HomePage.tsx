@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import SectionHeading from "@/components/SectionHeading";
 import {
   Droplets, ShieldCheck, Sparkles, DollarSign, ArrowRight, CheckCircle2,
-  Waves, Zap, Home, FlaskConical, Shower, HardDrive
+  Waves, Zap, Home, FlaskConical, ShowerHead, HardDrive
 } from "lucide-react";
 
 const trustPoints = [
