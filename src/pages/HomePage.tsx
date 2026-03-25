@@ -27,7 +27,7 @@ const concerns = [
   { icon: ShieldCheck, label: "Fluoride removal", slug: "fluoride" },
   { icon: Zap, label: "Heavy metals", slug: "heavy-metals" },
   { icon: Home, label: "Whole house filtration", slug: "whole-house" },
-  { icon: Shower, label: "Skin & shower concerns", slug: "skin-shower" },
+  { icon: ShowerHead, label: "Skin & shower concerns", slug: "skin-shower" },
   { icon: HardDrive, label: "Appliance protection", slug: "appliances" },
 ];
 
