@@ -87,6 +87,19 @@ export default function Header() {
                 {l.label}
               </Link>
             ))}
+            <span className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resources</span>
+            {resourceLinks.map((r) => (
+              <Link
+                key={r.to}
+                to={r.to}
+                onClick={() => setOpen(false)}
+                className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent ${
+                  location.pathname === r.to ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {r.label}
+              </Link>
+            ))}
             <Link to="/quiz" onClick={() => setOpen(false)}>
               <Button className="mt-2 w-full">Start Your Water Match</Button>
             </Link>
