@@ -174,14 +174,19 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
           <span className="font-medium text-foreground">Brands:</span> {provider.brands.join(", ")}
         </p>
 
-        {/* CTA */}
-        {provider.phone && (
-          <a href={`tel:${provider.phone.replace(/\s/g, "")}`}>
-            <Button className="mt-2 w-full gap-2" variant={rank === 0 ? "default" : "outline"}>
-              <Phone className="h-4 w-4" /> Call {provider.phone}
-            </Button>
-          </a>
-        )}
+        {/* CTAs */}
+        <div className="mt-2 flex flex-col gap-2">
+          <Button className="w-full gap-2" onClick={() => onRequestQuote(provider)}>
+            <Send className="h-4 w-4" /> Request a quote
+          </Button>
+          {provider.phone && (
+            <a href={`tel:${provider.phone.replace(/\s/g, "")}`}>
+              <Button className="w-full gap-2" variant="outline">
+                <Phone className="h-4 w-4" /> Call {provider.phone}
+              </Button>
+            </a>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
