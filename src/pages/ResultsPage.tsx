@@ -9,6 +9,7 @@ import { generateRecommendations, type QuizAnswers, type RecommendationResult } 
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
 import type { Provider } from "@/data/providers";
+import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 
 function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
@@ -199,7 +200,7 @@ export default function ResultsPage() {
   const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
   const [sortBy, setSortBy] = useState<string>("match");
   const [filterPrice, setFilterPrice] = useState<string>("all");
-  
+  const { data: dbProviders = [] } = useProviders();
 
   useEffect(() => {
     const stored = sessionStorage.getItem("quizAnswers");
@@ -208,8 +209,10 @@ export default function ResultsPage() {
     setAnswers(parsed);
     const rec = generateRecommendations(parsed);
     setResult(rec);
-    setProviderMatches(matchProviders(parsed, rec));
-  }, [navigate]);
+    if (dbProviders.length > 0) {
+      setProviderMatches(matchProviders(parsed, rec, dbProviders));
+    }
+  }, [navigate, dbProviders]);
 
   const filteredAndSorted = useMemo(() => {
     let list = [...providerMatches];
