@@ -339,6 +339,17 @@ export default function ResultsPage() {
           </Link>
         </div>
       </div>
+
+      {/* Quote dialog */}
+      {quoteProvider && answers && result && (
+        <RequestQuoteDialog
+          open={!!quoteProvider}
+          onOpenChange={(open) => { if (!open) setQuoteProvider(null); }}
+          provider={quoteProvider}
+          answers={answers}
+          recommendedSystems={[result.primary.title, result.secondary.title, result.premium.title]}
+        />
+      )}
     </div>
   );
 }
