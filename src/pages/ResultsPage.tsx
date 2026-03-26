@@ -7,6 +7,8 @@ import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Sta
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
+import type { Provider } from "@/data/providers";
+import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 
 function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
   const colors = {
