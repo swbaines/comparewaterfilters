@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send } from "lucide-react";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
+import type { Provider } from "@/data/providers";
+import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 
 function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
   const colors = {
@@ -87,7 +89,7 @@ function MatchScoreBadge({ score }: { score: number }) {
   return <Badge className={`${color} text-xs`}>{score}% match</Badge>;
 }
 
-function ProviderCard({ match, rank }: { match: ProviderMatch; rank: number }) {
+function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; rank: number; onRequestQuote: (provider: Provider) => void }) {
   const { provider, matchScore, matchReasons, systemsTheyInstall } = match;
   const rankLabels = ["Top match", "Strong match", "Good match"];
   const rankColors = [
@@ -172,14 +174,19 @@ function ProviderCard({ match, rank }: { match: ProviderMatch; rank: number }) {
           <span className="font-medium text-foreground">Brands:</span> {provider.brands.join(", ")}
         </p>
 
-        {/* CTA */}
-        {provider.phone && (
-          <a href={`tel:${provider.phone.replace(/\s/g, "")}`}>
-            <Button className="mt-2 w-full gap-2" variant={rank === 0 ? "default" : "outline"}>
-              <Phone className="h-4 w-4" /> Call {provider.phone}
-            </Button>
-          </a>
-        )}
+        {/* CTAs */}
+        <div className="mt-2 flex flex-col gap-2">
+          <Button className="w-full gap-2" onClick={() => onRequestQuote(provider)}>
+            <Send className="h-4 w-4" /> Request a quote
+          </Button>
+          {provider.phone && (
+            <a href={`tel:${provider.phone.replace(/\s/g, "")}`}>
+              <Button className="w-full gap-2" variant="outline">
+                <Phone className="h-4 w-4" /> Call {provider.phone}
+              </Button>
+            </a>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
@@ -190,6 +197,7 @@ export default function ResultsPage() {
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
+  const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("quizAnswers");
@@ -249,7 +257,7 @@ export default function ResultsPage() {
 
             <div className="grid gap-6 md:grid-cols-3">
               {providerMatches.map((match, i) => (
-                <ProviderCard key={match.provider.id} match={match} rank={i} />
+                <ProviderCard key={match.provider.id} match={match} rank={i} onRequestQuote={setQuoteProvider} />
               ))}
             </div>
 
@@ -331,6 +339,17 @@ export default function ResultsPage() {
           </Link>
         </div>
       </div>
+
+      {/* Quote dialog */}
+      {quoteProvider && answers && result && (
+        <RequestQuoteDialog
+          open={!!quoteProvider}
+          onOpenChange={(open) => { if (!open) setQuoteProvider(null); }}
+          provider={quoteProvider}
+          answers={answers}
+          recommendedSystems={[result.primary.title, result.secondary.title, result.premium.title]}
+        />
+      )}
     </div>
   );
 }
