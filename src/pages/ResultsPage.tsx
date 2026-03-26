@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal } from "lucide-react";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
@@ -91,21 +92,19 @@ function MatchScoreBadge({ score }: { score: number }) {
 
 function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; rank: number; onRequestQuote: (provider: Provider) => void }) {
   const { provider, matchScore, matchReasons, systemsTheyInstall } = match;
-  const rankLabels = ["Top match", "Strong match", "Good match"];
-  const rankColors = [
-    "border-primary shadow-lg",
-    "border-primary/40",
-    "",
-  ];
+  const rankLabels: Record<number, string> = { 0: "Top match", 1: "Strong match", 2: "Good match" };
+  const rankColors: Record<number, string> = { 0: "border-primary shadow-lg", 1: "border-primary/40" };
 
   return (
     <Card className={`overflow-hidden border-2 ${rankColors[rank] || ""}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div>
-            <Badge className={rank === 0 ? "mb-2 bg-primary text-primary-foreground" : "mb-2 bg-accent text-accent-foreground"}>
-              {rankLabels[rank] || "Match"}
-            </Badge>
+            {rankLabels[rank] && (
+              <Badge className={rank === 0 ? "mb-2 bg-primary text-primary-foreground" : "mb-2 bg-accent text-accent-foreground"}>
+                {rankLabels[rank]}
+              </Badge>
+            )}
             <CardTitle className="text-lg">{provider.name}</CardTitle>
           </div>
           <MatchScoreBadge score={matchScore} />
@@ -198,6 +197,9 @@ export default function ResultsPage() {
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
   const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
+  const [sortBy, setSortBy] = useState<string>("match");
+  const [filterPrice, setFilterPrice] = useState<string>("all");
+  const [filterResponse, setFilterResponse] = useState<string>("all");
 
   useEffect(() => {
     const stored = sessionStorage.getItem("quizAnswers");
@@ -208,6 +210,34 @@ export default function ResultsPage() {
     setResult(rec);
     setProviderMatches(matchProviders(parsed, rec));
   }, [navigate]);
+
+  const filteredAndSorted = useMemo(() => {
+    let list = [...providerMatches];
+    if (filterPrice !== "all") {
+      list = list.filter((m) => m.provider.priceRange === filterPrice);
+    }
+    if (filterResponse !== "all") {
+      list = list.filter((m) =>
+        filterResponse === "24h"
+          ? m.provider.responseTime.includes("24")
+          : !m.provider.responseTime.includes("24")
+      );
+    }
+    switch (sortBy) {
+      case "rating":
+        list.sort((a, b) => b.provider.rating - a.provider.rating);
+        break;
+      case "experience":
+        list.sort((a, b) => b.provider.yearsInBusiness - a.provider.yearsInBusiness);
+        break;
+      case "reviews":
+        list.sort((a, b) => b.provider.reviewCount - a.provider.reviewCount);
+        break;
+      default:
+        list.sort((a, b) => b.matchScore - a.matchScore);
+    }
+    return list;
+  }, [providerMatches, sortBy, filterPrice, filterResponse]);
 
   if (!result || !answers) return null;
 
@@ -242,7 +272,6 @@ export default function ResultsPage() {
           <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
         </div>
 
-        {/* Provider matches */}
         {providerMatches.length > 0 && (
           <div className="mt-14">
             <div className="mb-6 text-center">
@@ -255,21 +284,61 @@ export default function ResultsPage() {
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              {providerMatches.map((match, i) => (
-                <ProviderCard key={match.provider.id} match={match} rank={i} onRequestQuote={setQuoteProvider} />
-              ))}
+            {/* Sort & filter controls */}
+            <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border bg-background p-3">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="match">Best match</SelectItem>
+                  <SelectItem value="rating">Highest rated</SelectItem>
+                  <SelectItem value="reviews">Most reviews</SelectItem>
+                  <SelectItem value="experience">Most experience</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterPrice} onValueChange={setFilterPrice}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Price range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All price ranges</SelectItem>
+                  <SelectItem value="budget">Budget</SelectItem>
+                  <SelectItem value="mid">Mid-range</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterResponse} onValueChange={setFilterResponse}>
+                <SelectTrigger className="w-[170px]">
+                  <SelectValue placeholder="Response time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any response time</SelectItem>
+                  <SelectItem value="24h">Within 24 hours</SelectItem>
+                  <SelectItem value="48h">48+ hours</SelectItem>
+                </SelectContent>
+              </Select>
+              {(filterPrice !== "all" || filterResponse !== "all" || sortBy !== "match") && (
+                <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); setFilterResponse("all"); }}>
+                  Reset
+                </Button>
+              )}
             </div>
 
-            {providerMatches.length === 0 && (
+            {filteredAndSorted.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-3">
+                {filteredAndSorted.map((match, i) => (
+                  <ProviderCard key={match.provider.id} match={match} rank={sortBy === "match" ? i : -1} onRequestQuote={setQuoteProvider} />
+                ))}
+              </div>
+            ) : (
               <Card className="border-0 bg-muted/50 shadow-none">
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">
-                    We don't have matched providers in your area yet. Contact us and we'll find one for you.
-                  </p>
-                  <Link to="/contact">
-                    <Button className="mt-4">Contact us</Button>
-                  </Link>
+                  <p className="text-muted-foreground">No providers match your current filters.</p>
+                  <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); setFilterResponse("all"); }}>
+                    Clear filters
+                  </Button>
                 </CardContent>
               </Card>
             )}
