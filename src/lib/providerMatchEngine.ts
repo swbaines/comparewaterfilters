@@ -1,4 +1,4 @@
-import { providers, type Provider } from "@/data/providers";
+import type { Provider } from "@/data/providers";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import type { RecommendationResult } from "@/lib/recommendationEngine";
 
@@ -12,6 +12,7 @@ export interface ProviderMatch {
 export function matchProviders(
   answers: QuizAnswers,
   result: RecommendationResult,
+  providersList: Provider[],
   limit = 3
 ): ProviderMatch[] {
   const recommendedIds = [
@@ -29,7 +30,7 @@ export function matchProviders(
   };
   const acceptablePriceRanges = budgetMap[answers.budget] || ["budget", "mid", "premium"];
 
-  const scored: ProviderMatch[] = providers
+  const scored: ProviderMatch[] = providersList
     .filter((p) => p.availableForQuote)
     .map((provider) => {
       let score = 0;

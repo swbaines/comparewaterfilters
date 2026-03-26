@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Send, User, Mail, Phone, MapPin, Home, Droplets, DollarSign } from "lucide-react";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import type { Provider } from "@/data/providers";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface RequestQuoteDialogProps {
@@ -57,11 +58,32 @@ export default function RequestQuoteDialog({
       return;
     }
     setSending(true);
-    // Simulate sending — replace with real API when backend is ready
-    await new Promise((r) => setTimeout(r, 1200));
-    setSending(false);
-    setSubmitted(true);
-    toast.success(`Quote request sent to ${provider.name}!`);
+    try {
+      const { error } = await supabase.from("quote_requests").insert({
+        provider_id: provider.id,
+        provider_name: provider.name,
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_mobile: formData.mobile || null,
+        customer_suburb: answers.suburb,
+        customer_state: answers.state,
+        customer_postcode: answers.postcode,
+        property_type: answers.propertyType,
+        household_size: answers.householdSize,
+        water_source: answers.waterSource,
+        concerns: answers.concerns,
+        budget: answers.budget,
+        recommended_systems: recommendedSystems,
+        message: formData.message || null,
+      });
+      if (error) throw error;
+      setSubmitted(true);
+      toast.success(`Quote request sent to ${provider.name}!`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send quote request");
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleClose = () => {
