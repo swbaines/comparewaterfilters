@@ -16,6 +16,8 @@ import HowItWorksPage from "@/pages/HowItWorksPage";
 import ContactPage from "@/pages/ContactPage";
 import ProviderMatchPage from "@/pages/ProviderMatchPage";
 import AdminProvidersPage from "@/pages/AdminProvidersPage";
+import AdminLoginPage from "@/pages/AdminLoginPage";
+import AdminRoute from "@/components/AdminRoute";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,7 +41,8 @@ const App = () => (
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/provider-match" element={<ProviderMatchPage />} />
-            <Route path="/admin/providers" element={<AdminProvidersPage />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/providers" element={<AdminRoute><AdminProvidersPage /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
