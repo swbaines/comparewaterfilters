@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Droplets } from "lucide-react";
+import { Menu, X, Droplets, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/how-it-works", label: "How It Works" },
   { to: "/contact", label: "Contact" },
+];
+
+const resourceLinks = [
+  { to: "/system-types", label: "System Types" },
+  { to: "/pricing-guide", label: "Pricing Guide" },
+  { to: "/learn", label: "Learn" },
 ];
 
 export default function Header() {
