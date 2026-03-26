@@ -199,6 +199,9 @@ export default function ResultsPage() {
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
   const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
+  const [sortBy, setSortBy] = useState<string>("match");
+  const [filterPrice, setFilterPrice] = useState<string>("all");
+  const [filterResponse, setFilterResponse] = useState<string>("all");
 
   useEffect(() => {
     const stored = sessionStorage.getItem("quizAnswers");
