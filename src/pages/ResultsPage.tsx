@@ -199,7 +199,7 @@ export default function ResultsPage() {
   const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
   const [sortBy, setSortBy] = useState<string>("match");
   const [filterPrice, setFilterPrice] = useState<string>("all");
-  const [filterResponse, setFilterResponse] = useState<string>("all");
+  
 
   useEffect(() => {
     const stored = sessionStorage.getItem("quizAnswers");
@@ -216,13 +216,6 @@ export default function ResultsPage() {
     if (filterPrice !== "all") {
       list = list.filter((m) => m.provider.priceRange === filterPrice);
     }
-    if (filterResponse !== "all") {
-      list = list.filter((m) =>
-        filterResponse === "24h"
-          ? m.provider.responseTime.includes("24")
-          : !m.provider.responseTime.includes("24")
-      );
-    }
     switch (sortBy) {
       case "rating":
         list.sort((a, b) => b.provider.rating - a.provider.rating);
@@ -237,7 +230,7 @@ export default function ResultsPage() {
         list.sort((a, b) => b.matchScore - a.matchScore);
     }
     return list;
-  }, [providerMatches, sortBy, filterPrice, filterResponse]);
+  }, [providerMatches, sortBy, filterPrice]);
 
   if (!result || !answers) return null;
 
@@ -309,18 +302,8 @@ export default function ResultsPage() {
                   <SelectItem value="premium">Premium</SelectItem>
                 </SelectContent>
               </Select>
-              <Select value={filterResponse} onValueChange={setFilterResponse}>
-                <SelectTrigger className="w-[170px]">
-                  <SelectValue placeholder="Response time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any response time</SelectItem>
-                  <SelectItem value="24h">Within 24 hours</SelectItem>
-                  <SelectItem value="48h">48+ hours</SelectItem>
-                </SelectContent>
-              </Select>
-              {(filterPrice !== "all" || filterResponse !== "all" || sortBy !== "match") && (
-                <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); setFilterResponse("all"); }}>
+              {(filterPrice !== "all" || sortBy !== "match") && (
+                <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); }}>
                   Reset
                 </Button>
               )}
@@ -336,7 +319,7 @@ export default function ResultsPage() {
               <Card className="border-0 bg-muted/50 shadow-none">
                 <CardContent className="p-6 text-center">
                   <p className="text-muted-foreground">No providers match your current filters.</p>
-                  <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); setFilterResponse("all"); }}>
+                  <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); }}>
                     Clear filters
                   </Button>
                 </CardContent>
