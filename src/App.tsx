@@ -16,6 +16,8 @@ import HowItWorksPage from "@/pages/HowItWorksPage";
 import ContactPage from "@/pages/ContactPage";
 import ProviderMatchPage from "@/pages/ProviderMatchPage";
 import AdminProvidersPage from "@/pages/AdminProvidersPage";
+import AdminLoginPage from "@/pages/AdminLoginPage";
+import AdminRoute from "@/components/AdminRoute";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
