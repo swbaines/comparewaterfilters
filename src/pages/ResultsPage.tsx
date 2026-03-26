@@ -92,12 +92,8 @@ function MatchScoreBadge({ score }: { score: number }) {
 
 function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; rank: number; onRequestQuote: (provider: Provider) => void }) {
   const { provider, matchScore, matchReasons, systemsTheyInstall } = match;
-  const rankLabels = ["Top match", "Strong match", "Good match"];
-  const rankColors = [
-    "border-primary shadow-lg",
-    "border-primary/40",
-    "",
-  ];
+  const rankLabels: Record<number, string> = { 0: "Top match", 1: "Strong match", 2: "Good match" };
+  const rankColors: Record<number, string> = { 0: "border-primary shadow-lg", 1: "border-primary/40" };
 
   return (
     <Card className={`overflow-hidden border-2 ${rankColors[rank] || ""}`}>
