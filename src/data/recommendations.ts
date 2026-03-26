@@ -76,9 +76,9 @@ export const recommendations: Recommendation[] = [
       "Households wanting minimal maintenance",
     ],
     priceMin: 800,
-    priceMax: 3000,
+    priceMax: 1600,
     annualMaintenanceMin: 150,
-    annualMaintenanceMax: 350,
+    annualMaintenanceMax: 250,
     benefits: [
       "Removes up to 99% of contaminants",
       "Effective fluoride and heavy metal removal",
@@ -154,7 +154,7 @@ export const recommendations: Recommendation[] = [
     ],
     priceMin: 3000,
     priceMax: 8000,
-    annualMaintenanceMin: 350,
+    annualMaintenanceMin: 300,
     annualMaintenanceMax: 700,
     benefits: [
       "Complete coverage from every tap to drinking water",
