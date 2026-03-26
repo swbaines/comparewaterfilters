@@ -274,7 +274,6 @@ export default function ResultsPage() {
           <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
         </div>
 
-        {/* Provider matches */}
         {providerMatches.length > 0 && (
           <div className="mt-14">
             <div className="mb-6 text-center">
@@ -287,21 +286,61 @@ export default function ResultsPage() {
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              {providerMatches.map((match, i) => (
-                <ProviderCard key={match.provider.id} match={match} rank={i} onRequestQuote={setQuoteProvider} />
-              ))}
+            {/* Sort & filter controls */}
+            <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border bg-background p-3">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="match">Best match</SelectItem>
+                  <SelectItem value="rating">Highest rated</SelectItem>
+                  <SelectItem value="reviews">Most reviews</SelectItem>
+                  <SelectItem value="experience">Most experience</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterPrice} onValueChange={setFilterPrice}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Price range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All price ranges</SelectItem>
+                  <SelectItem value="budget">Budget</SelectItem>
+                  <SelectItem value="mid">Mid-range</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterResponse} onValueChange={setFilterResponse}>
+                <SelectTrigger className="w-[170px]">
+                  <SelectValue placeholder="Response time" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any response time</SelectItem>
+                  <SelectItem value="24h">Within 24 hours</SelectItem>
+                  <SelectItem value="48h">48+ hours</SelectItem>
+                </SelectContent>
+              </Select>
+              {(filterPrice !== "all" || filterResponse !== "all" || sortBy !== "match") && (
+                <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); setFilterResponse("all"); }}>
+                  Reset
+                </Button>
+              )}
             </div>
 
-            {providerMatches.length === 0 && (
+            {filteredAndSorted.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-3">
+                {filteredAndSorted.map((match, i) => (
+                  <ProviderCard key={match.provider.id} match={match} rank={sortBy === "match" ? i : -1} onRequestQuote={setQuoteProvider} />
+                ))}
+              </div>
+            ) : (
               <Card className="border-0 bg-muted/50 shadow-none">
                 <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">
-                    We don't have matched providers in your area yet. Contact us and we'll find one for you.
-                  </p>
-                  <Link to="/contact">
-                    <Button className="mt-4">Contact us</Button>
-                  </Link>
+                  <p className="text-muted-foreground">No providers match your current filters.</p>
+                  <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); setFilterResponse("all"); }}>
+                    Clear filters
+                  </Button>
                 </CardContent>
               </Card>
             )}
