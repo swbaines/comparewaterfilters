@@ -14,7 +14,152 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      providers: {
+        Row: {
+          available_for_quote: boolean
+          brands: string[]
+          certifications: string[]
+          created_at: string
+          description: string
+          highlights: string[]
+          id: string
+          logo: string | null
+          name: string
+          phone: string | null
+          postcode_ranges: string[] | null
+          price_range: Database["public"]["Enums"]["price_range"]
+          rating: number
+          response_time: string
+          review_count: number
+          slug: string
+          states: string[]
+          system_types: string[]
+          updated_at: string
+          warranty: string
+          website: string | null
+          years_in_business: number
+        }
+        Insert: {
+          available_for_quote?: boolean
+          brands?: string[]
+          certifications?: string[]
+          created_at?: string
+          description?: string
+          highlights?: string[]
+          id?: string
+          logo?: string | null
+          name: string
+          phone?: string | null
+          postcode_ranges?: string[] | null
+          price_range?: Database["public"]["Enums"]["price_range"]
+          rating?: number
+          response_time?: string
+          review_count?: number
+          slug: string
+          states?: string[]
+          system_types?: string[]
+          updated_at?: string
+          warranty?: string
+          website?: string | null
+          years_in_business?: number
+        }
+        Update: {
+          available_for_quote?: boolean
+          brands?: string[]
+          certifications?: string[]
+          created_at?: string
+          description?: string
+          highlights?: string[]
+          id?: string
+          logo?: string | null
+          name?: string
+          phone?: string | null
+          postcode_ranges?: string[] | null
+          price_range?: Database["public"]["Enums"]["price_range"]
+          rating?: number
+          response_time?: string
+          review_count?: number
+          slug?: string
+          states?: string[]
+          system_types?: string[]
+          updated_at?: string
+          warranty?: string
+          website?: string | null
+          years_in_business?: number
+        }
+        Relationships: []
+      }
+      quote_requests: {
+        Row: {
+          budget: string | null
+          concerns: string[] | null
+          created_at: string
+          customer_email: string
+          customer_mobile: string | null
+          customer_name: string
+          customer_postcode: string | null
+          customer_state: string | null
+          customer_suburb: string | null
+          household_size: string | null
+          id: string
+          message: string | null
+          property_type: string | null
+          provider_id: string | null
+          provider_name: string
+          recommended_systems: string[] | null
+          status: string
+          water_source: string | null
+        }
+        Insert: {
+          budget?: string | null
+          concerns?: string[] | null
+          created_at?: string
+          customer_email: string
+          customer_mobile?: string | null
+          customer_name: string
+          customer_postcode?: string | null
+          customer_state?: string | null
+          customer_suburb?: string | null
+          household_size?: string | null
+          id?: string
+          message?: string | null
+          property_type?: string | null
+          provider_id?: string | null
+          provider_name: string
+          recommended_systems?: string[] | null
+          status?: string
+          water_source?: string | null
+        }
+        Update: {
+          budget?: string | null
+          concerns?: string[] | null
+          created_at?: string
+          customer_email?: string
+          customer_mobile?: string | null
+          customer_name?: string
+          customer_postcode?: string | null
+          customer_state?: string | null
+          customer_suburb?: string | null
+          household_size?: string | null
+          id?: string
+          message?: string | null
+          property_type?: string | null
+          provider_id?: string | null
+          provider_name?: string
+          recommended_systems?: string[] | null
+          status?: string
+          water_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +168,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      price_range: "budget" | "mid" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +295,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      price_range: ["budget", "mid", "premium"],
+    },
   },
 } as const
