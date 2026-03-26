@@ -5,10 +5,6 @@ import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { to: "/", label: "Home" },
-  { to: "/quiz", label: "Find My System" },
-  { to: "/system-types", label: "System Types" },
-  { to: "/pricing-guide", label: "Pricing Guide" },
-  { to: "/learn", label: "Learn" },
   { to: "/how-it-works", label: "How It Works" },
   { to: "/contact", label: "Contact" },
 ];
