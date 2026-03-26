@@ -46,6 +46,20 @@ export default function Header() {
               {l.label}
             </Link>
           ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+              resourceLinks.some((r) => location.pathname === r.to) ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+            }`}>
+              Resources <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {resourceLinks.map((r) => (
+                <DropdownMenuItem key={r.to} asChild>
+                  <Link to={r.to} className="w-full cursor-pointer">{r.label}</Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link to="/quiz">
             <Button size="sm" className="ml-2">Start Your Water Match</Button>
           </Link>
