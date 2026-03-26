@@ -100,9 +100,11 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div>
-            <Badge className={rank === 0 ? "mb-2 bg-primary text-primary-foreground" : "mb-2 bg-accent text-accent-foreground"}>
-              {rankLabels[rank] || "Match"}
-            </Badge>
+            {rankLabels[rank] && (
+              <Badge className={rank === 0 ? "mb-2 bg-primary text-primary-foreground" : "mb-2 bg-accent text-accent-foreground"}>
+                {rankLabels[rank]}
+              </Badge>
+            )}
             <CardTitle className="text-lg">{provider.name}</CardTitle>
           </div>
           <MatchScoreBadge score={matchScore} />
