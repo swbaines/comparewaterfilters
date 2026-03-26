@@ -89,7 +89,7 @@ function MatchScoreBadge({ score }: { score: number }) {
   return <Badge className={`${color} text-xs`}>{score}% match</Badge>;
 }
 
-function ProviderCard({ match, rank }: { match: ProviderMatch; rank: number }) {
+function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; rank: number; onRequestQuote: (provider: Provider) => void }) {
   const { provider, matchScore, matchReasons, systemsTheyInstall } = match;
   const rankLabels = ["Top match", "Strong match", "Good match"];
   const rankColors = [
