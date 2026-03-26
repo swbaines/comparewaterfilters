@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Droplets } from "lucide-react";
+import { Menu, X, Droplets, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/how-it-works", label: "How It Works" },
   { to: "/contact", label: "Contact" },
+];
+
+const resourceLinks = [
+  { to: "/system-types", label: "System Types" },
+  { to: "/pricing-guide", label: "Pricing Guide" },
+  { to: "/learn", label: "Learn" },
 ];
 
 export default function Header() {
@@ -34,6 +46,20 @@ export default function Header() {
               {l.label}
             </Link>
           ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className={`flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+              resourceLinks.some((r) => location.pathname === r.to) ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+            }`}>
+              Resources <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {resourceLinks.map((r) => (
+                <DropdownMenuItem key={r.to} asChild>
+                  <Link to={r.to} className="w-full cursor-pointer">{r.label}</Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Link to="/quiz">
             <Button size="sm" className="ml-2">Start Your Water Match</Button>
           </Link>
@@ -59,6 +85,19 @@ export default function Header() {
                 }`}
               >
                 {l.label}
+              </Link>
+            ))}
+            <span className="px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Resources</span>
+            {resourceLinks.map((r) => (
+              <Link
+                key={r.to}
+                to={r.to}
+                onClick={() => setOpen(false)}
+                className={`rounded-md px-3 py-2.5 text-sm font-medium transition-colors hover:bg-accent ${
+                  location.pathname === r.to ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {r.label}
               </Link>
             ))}
             <Link to="/quiz" onClick={() => setOpen(false)}>
