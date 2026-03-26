@@ -1,0 +1,42 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Provider } from "@/data/providers";
+
+export function useProviders() {
+  return useQuery({
+    queryKey: ["providers"],
+    queryFn: async (): Promise<Provider[]> => {
+      const { data, error } = await supabase
+        .from("providers")
+        .select("*")
+        .eq("available_for_quote", true);
+
+      if (error) throw error;
+
+      return (data || []).map((row) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        description: row.description,
+        logo: row.logo ?? undefined,
+        location: {
+          states: row.states,
+          postcodeRanges: row.postcode_ranges ?? undefined,
+        },
+        systemTypes: row.system_types,
+        brands: row.brands,
+        priceRange: row.price_range as "budget" | "mid" | "premium",
+        rating: Number(row.rating),
+        reviewCount: row.review_count,
+        yearsInBusiness: row.years_in_business,
+        certifications: row.certifications,
+        highlights: row.highlights,
+        availableForQuote: row.available_for_quote,
+        responseTime: row.response_time,
+        warranty: row.warranty,
+        website: row.website ?? undefined,
+        phone: row.phone ?? undefined,
+      }));
+    },
+  });
+}
