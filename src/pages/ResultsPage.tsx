@@ -197,6 +197,7 @@ export default function ResultsPage() {
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
+  const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("quizAnswers");
