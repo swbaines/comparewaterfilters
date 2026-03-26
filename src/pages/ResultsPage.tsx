@@ -257,7 +257,7 @@ export default function ResultsPage() {
 
             <div className="grid gap-6 md:grid-cols-3">
               {providerMatches.map((match, i) => (
-                <ProviderCard key={match.provider.id} match={match} rank={i} />
+                <ProviderCard key={match.provider.id} match={match} rank={i} onRequestQuote={setQuoteProvider} />
               ))}
             </div>
 
