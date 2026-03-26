@@ -213,6 +213,34 @@ export default function ResultsPage() {
     setProviderMatches(matchProviders(parsed, rec));
   }, [navigate]);
 
+  const filteredAndSorted = useMemo(() => {
+    let list = [...providerMatches];
+    if (filterPrice !== "all") {
+      list = list.filter((m) => m.provider.priceRange === filterPrice);
+    }
+    if (filterResponse !== "all") {
+      list = list.filter((m) =>
+        filterResponse === "24h"
+          ? m.provider.responseTime.includes("24")
+          : !m.provider.responseTime.includes("24")
+      );
+    }
+    switch (sortBy) {
+      case "rating":
+        list.sort((a, b) => b.provider.rating - a.provider.rating);
+        break;
+      case "experience":
+        list.sort((a, b) => b.provider.yearsInBusiness - a.provider.yearsInBusiness);
+        break;
+      case "reviews":
+        list.sort((a, b) => b.provider.reviewCount - a.provider.reviewCount);
+        break;
+      default:
+        list.sort((a, b) => b.matchScore - a.matchScore);
+    }
+    return list;
+  }, [providerMatches, sortBy, filterPrice, filterResponse]);
+
   if (!result || !answers) return null;
 
   return (
