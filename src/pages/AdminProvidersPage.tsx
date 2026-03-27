@@ -192,9 +192,14 @@ export default function AdminProvidersPage() {
             <h1 className="text-2xl font-bold">Provider Management</h1>
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
-          <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
-            <Plus className="h-4 w-4" /> Add Provider
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
+              <Plus className="h-4 w-4" /> Add Provider
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-2">
+              <LogOut className="h-4 w-4" /> Sign Out
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
