@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink } from "lucide-react";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
@@ -59,6 +59,7 @@ export default function AdminProvidersPage() {
   const [form, setForm] = useState(emptyForm);
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
+  const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
 
   const handleSignOut = async () => {
     await signOut();
@@ -204,7 +205,7 @@ export default function AdminProvidersPage() {
 
         {/* Pending Applications */}
         {(() => {
-          const pending = providers.filter(p => (p as any).approval_status === "pending");
+          const pending = providers.filter(p => p.approval_status === "pending");
           if (pending.length === 0) return null;
           return (
             <Card className="mb-6 border-amber-200 bg-amber-50/50">
@@ -221,7 +222,8 @@ export default function AdminProvidersPage() {
                       <TableHead>Business</TableHead>
                       <TableHead>States</TableHead>
                       <TableHead>Systems</TableHead>
-                      <TableHead>Years</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Submitted</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -243,25 +245,33 @@ export default function AdminProvidersPage() {
                             {p.system_types.length > 2 && <Badge variant="secondary" className="text-xs">+{p.system_types.length - 2}</Badge>}
                           </div>
                         </TableCell>
-                        <TableCell>{p.years_in_business}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
-                            Review
-                          </Button>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
-                            const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
-                            if (error) toast.error(error.message);
-                            else { toast.success(`${p.name} approved!`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
-                          }}>
-                            Approve
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={async () => {
-                            const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", p.id);
-                            if (error) toast.error(error.message);
-                            else { toast.success(`${p.name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
-                          }}>
-                            Reject
-                          </Button>
+                        <TableCell>
+                          <div className="text-xs">{p.phone || "—"}</div>
+                          {p.website && <a href={p.website} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1"><ExternalLink className="h-3 w-3" />Website</a>}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {new Date(p.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="sm" variant="outline" onClick={() => setReviewProvider(p)} className="gap-1">
+                              <Eye className="h-3 w-3" /> Review
+                            </Button>
+                            <Button size="sm" className="gap-1 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
+                              const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
+                              if (error) toast.error(error.message);
+                              else { toast.success(`${p.name} approved!`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                            }}>
+                              <CheckCircle2 className="h-3 w-3" /> Approve
+                            </Button>
+                            <Button size="sm" variant="destructive" className="gap-1" onClick={async () => {
+                              const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", p.id);
+                              if (error) toast.error(error.message);
+                              else { toast.success(`${p.name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                            }}>
+                              <XCircle className="h-3 w-3" /> Reject
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -289,7 +299,7 @@ export default function AdminProvidersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {providers.filter(p => (p as any).approval_status !== "pending").map((p) => (
+                {providers.filter(p => p.approval_status !== "pending").map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell>
@@ -300,8 +310,8 @@ export default function AdminProvidersPage() {
                     <TableCell><Badge variant="secondary" className="text-xs capitalize">{p.price_range}</Badge></TableCell>
                     <TableCell className="flex items-center gap-1"><Star className="h-3 w-3 text-primary" /> {p.rating}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`text-xs capitalize ${(p as any).approval_status === "approved" ? "border-green-300 text-green-700" : "border-red-300 text-red-700"}`}>
-                        {(p as any).approval_status || "approved"}
+                      <Badge variant="outline" className={`text-xs capitalize ${p.approval_status === "approved" ? "border-green-300 text-green-700" : "border-red-300 text-red-700"}`}>
+                        {p.approval_status}
                       </Badge>
                     </TableCell>
                     <TableCell>{p.available_for_quote ? "✅" : "❌"}</TableCell>
@@ -464,6 +474,124 @@ export default function AdminProvidersPage() {
                 {editId ? "Update Provider" : "Save Provider"}
               </Button>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Review Application Dialog */}
+        <Dialog open={!!reviewProvider} onOpenChange={(open) => { if (!open) setReviewProvider(null); }}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" /> Review Application: {reviewProvider?.name}
+              </DialogTitle>
+            </DialogHeader>
+            {reviewProvider && (
+              <div className="space-y-5">
+                {/* Business Details */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Building2 className="h-4 w-4 text-primary" /> Business Details</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div><span className="text-muted-foreground">Name:</span> <span className="font-medium">{reviewProvider.name}</span></div>
+                    <div><span className="text-muted-foreground">Years:</span> <span className="font-medium">{reviewProvider.years_in_business}</span></div>
+                    <div><span className="text-muted-foreground">Price Range:</span> <span className="font-medium capitalize">{reviewProvider.price_range}</span></div>
+                    <div><span className="text-muted-foreground">Response Time:</span> <span className="font-medium">{reviewProvider.response_time}</span></div>
+                    {reviewProvider.phone && <div><span className="text-muted-foreground">Phone:</span> <span className="font-medium">{reviewProvider.phone}</span></div>}
+                    {reviewProvider.website && <div><span className="text-muted-foreground">Website:</span> <a href={reviewProvider.website} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">{reviewProvider.website}</a></div>}
+                  </div>
+                  {reviewProvider.description && (
+                    <div className="mt-2">
+                      <span className="text-sm text-muted-foreground">Description:</span>
+                      <p className="text-sm mt-1 bg-muted/50 rounded p-2">{reviewProvider.description}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Service Area */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><MapPin className="h-4 w-4 text-primary" /> Service Area</h3>
+                  <div className="flex flex-wrap gap-1 mb-1">
+                    {reviewProvider.states.map((s) => <Badge key={s} variant="outline">{s}</Badge>)}
+                  </div>
+                  {reviewProvider.postcode_ranges && reviewProvider.postcode_ranges.length > 0 && (
+                    <div className="text-sm text-muted-foreground">Postcodes: {reviewProvider.postcode_ranges.join(", ")}</div>
+                  )}
+                </div>
+
+                {/* Systems & Expertise */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Wrench className="h-4 w-4 text-primary" /> Systems & Expertise</h3>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm text-muted-foreground">System Types:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.system_types.map((s) => <Badge key={s} variant="secondary">{s}</Badge>)}
+                        {reviewProvider.system_types.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-muted-foreground">Brands:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.brands.map((b) => <Badge key={b} variant="outline">{b}</Badge>)}
+                        {reviewProvider.brands.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-muted-foreground">Certifications:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.certifications.map((c) => <Badge key={c} variant="outline" className="border-green-300 text-green-700">{c}</Badge>)}
+                        {reviewProvider.certifications.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Details */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Shield className="h-4 w-4 text-primary" /> Additional Details</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div><span className="text-muted-foreground">Warranty:</span> <span className="font-medium">{reviewProvider.warranty || "—"}</span></div>
+                  </div>
+                  {reviewProvider.highlights.length > 0 && (
+                    <div className="mt-2">
+                      <span className="text-sm text-muted-foreground">Highlights:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.highlights.map((h) => <Badge key={h} variant="secondary">{h}</Badge>)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-xs text-muted-foreground">
+                  Submitted: {new Date(reviewProvider.created_at).toLocaleString()}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-2">
+                  <Button className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
+                    const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", reviewProvider.id);
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success(`${reviewProvider.name} approved!`);
+                      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                      setReviewProvider(null);
+                    }
+                  }}>
+                    <CheckCircle2 className="h-4 w-4" /> Approve
+                  </Button>
+                  <Button variant="destructive" className="flex-1 gap-2" onClick={async () => {
+                    const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", reviewProvider.id);
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success(`${reviewProvider.name} rejected`);
+                      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                      setReviewProvider(null);
+                    }
+                  }}>
+                    <XCircle className="h-4 w-4" /> Reject
+                  </Button>
+                </div>
+              </div>
+            )}
           </DialogContent>
         </Dialog>
       </div>
