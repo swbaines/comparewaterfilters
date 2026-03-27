@@ -39,6 +39,21 @@ export default function VendorDashboardPage() {
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const queryClient = useQueryClient();
+
+  const updateLeadStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase
+        .from("quote_requests")
+        .update({ lead_status: status, status_updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, { id, status }) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
+      setSelectedLead((prev: any) => prev ? { ...prev, lead_status: status } : null);
+    },
+  });
 
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
