@@ -64,7 +64,6 @@ export default function AdminProvidersPage() {
     await signOut();
     navigate("/admin/login");
   };
-  const [scraping, setScraping] = useState(false);
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
