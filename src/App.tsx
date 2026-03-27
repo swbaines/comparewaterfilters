@@ -55,6 +55,7 @@ const App = () => (
             <Route path="/vendor/register" element={<VendorRegisterPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
+            <Route path="/vendor/profile" element={<VendorRoute><VendorProfilePage /></VendorRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
