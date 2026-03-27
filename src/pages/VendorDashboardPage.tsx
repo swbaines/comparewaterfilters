@@ -38,6 +38,7 @@ export default function VendorDashboardPage() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
@@ -207,7 +208,11 @@ export default function VendorDashboardPage() {
               {invoices.length === 0 ? (
                 <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No invoices yet</TableCell></TableRow>
               ) : invoices.map((inv) => (
-                <TableRow key={inv.id}>
+                <TableRow
+                  key={inv.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => setSelectedInvoice(inv)}
+                >
                   <TableCell className="font-mono text-sm">{inv.invoice_number}</TableCell>
                   <TableCell className="text-sm">{inv.period_start} — {inv.period_end}</TableCell>
                   <TableCell>{inv.lead_count}</TableCell>
