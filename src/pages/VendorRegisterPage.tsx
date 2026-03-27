@@ -363,6 +363,45 @@ export default function VendorRegisterPage() {
                       ))}
                     </PopoverContent>
                   </Popover>
+                  {profile.certifications.length > 0 && (
+                    <div className="mt-3 space-y-3">
+                      <Label className="text-sm text-muted-foreground">Upload proof of certification</Label>
+                      {profile.certifications.map((certValue) => {
+                        const certLabel = CERTIFICATIONS.find(c => c.value === certValue)?.label || certValue;
+                        const file = certFiles[certValue];
+                        return (
+                          <div key={certValue} className="flex items-center gap-3 rounded-md border border-input p-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium">{certLabel}</p>
+                              {file ? (
+                                <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                                  <FileCheck className="h-3 w-3 text-green-600" />
+                                  {file.name}
+                                </p>
+                              ) : (
+                                <p className="text-xs text-muted-foreground">No file selected</p>
+                              )}
+                            </div>
+                            <label className="cursor-pointer">
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0] || null;
+                                  setCertFiles(prev => ({ ...prev, [certValue]: f }));
+                                }}
+                              />
+                              <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                                <Upload className="h-3 w-3" />
+                                {file ? "Replace" : "Upload"}
+                              </span>
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
