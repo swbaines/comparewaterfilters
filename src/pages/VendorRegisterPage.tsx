@@ -1,0 +1,322 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield } from "lucide-react";
+
+type Step = "signup" | "profile" | "success";
+
+export default function VendorRegisterPage() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState<Step>("signup");
+  const [loading, setLoading] = useState(false);
+
+  // Signup fields
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Profile fields
+  const [profile, setProfile] = useState({
+    name: "",
+    description: "",
+    states: "",
+    postcodeRanges: "",
+    systemTypes: "",
+    brands: "",
+    priceRange: "mid" as "budget" | "mid" | "premium",
+    yearsInBusiness: 0,
+    certifications: "",
+    highlights: "",
+    responseTime: "Within 48 hours",
+    warranty: "",
+    website: "",
+    phone: "",
+  });
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Account created! Now set up your provider profile.");
+      setStep("profile");
+    }
+  };
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile.name.trim()) {
+      toast.error("Business name is required");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const slug = profile.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const toArray = (s: string) => s.split(",").map(v => v.trim()).filter(Boolean);
+
+      const { data: provider, error: providerError } = await supabase
+        .from("providers")
+        .insert({
+          name: profile.name,
+          slug,
+          description: profile.description,
+          states: toArray(profile.states),
+          postcode_ranges: toArray(profile.postcodeRanges),
+          system_types: toArray(profile.systemTypes),
+          brands: toArray(profile.brands),
+          price_range: profile.priceRange,
+          years_in_business: profile.yearsInBusiness,
+          certifications: toArray(profile.certifications),
+          highlights: toArray(profile.highlights),
+          response_time: profile.responseTime,
+          warranty: profile.warranty,
+          website: profile.website || null,
+          phone: profile.phone || null,
+          available_for_quote: false,
+          approval_status: "pending" as any,
+          submitted_by: user.id,
+        })
+        .select("id")
+        .single();
+
+      if (providerError) throw providerError;
+
+      // Create vendor account link
+      const { error: vaError } = await supabase
+        .from("vendor_accounts")
+        .insert({ user_id: user.id, provider_id: provider.id });
+
+      if (vaError) throw vaError;
+
+      setStep("success");
+      toast.success("Application submitted for review!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateProfile = <K extends keyof typeof profile>(key: K, value: (typeof profile)[K]) => {
+    setProfile(prev => ({ ...prev, [key]: value }));
+  };
+
+  if (step === "success") {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
+        <Card className="w-full max-w-md text-center">
+          <CardContent className="pt-8 pb-8 space-y-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent">
+              <CheckCircle2 className="h-8 w-8 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Application Submitted!</h2>
+            <p className="text-muted-foreground">
+              Your provider profile has been submitted for review. We'll notify you once your account is approved and you'll be able to start receiving leads.
+            </p>
+            <Button onClick={() => navigate("/vendor/login")} className="mt-4">
+              Go to Vendor Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (step === "profile") {
+    return (
+      <div className="min-h-[calc(100vh-8rem)] py-8 px-4">
+        <div className="mx-auto max-w-2xl">
+          <div className="mb-6 text-center">
+            <h1 className="text-2xl font-bold">Set Up Your Provider Profile</h1>
+            <p className="text-muted-foreground">Tell us about your business so we can match you with the right customers</p>
+          </div>
+
+          <form onSubmit={handleProfileSubmit} className="space-y-6">
+            {/* Business Info */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Building2 className="h-5 w-5 text-primary" /> Business Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>Business Name *</Label>
+                  <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="e.g. Sam's Water Filtration" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Description</Label>
+                  <Textarea value={profile.description} onChange={e => updateProfile("description", e.target.value)} rows={3} placeholder="Tell customers about your business, experience, and what sets you apart…" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Years in Business</Label>
+                    <Input type="number" min={0} value={profile.yearsInBusiness} onChange={e => updateProfile("yearsInBusiness", parseInt(e.target.value) || 0)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Price Range</Label>
+                    <Select value={profile.priceRange} onValueChange={v => updateProfile("priceRange", v as any)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="budget">Budget</SelectItem>
+                        <SelectItem value="mid">Mid-range</SelectItem>
+                        <SelectItem value="premium">Premium</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Website</Label>
+                    <Input value={profile.website} onChange={e => updateProfile("website", e.target.value)} placeholder="https://..." />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Phone</Label>
+                    <Input value={profile.phone} onChange={e => updateProfile("phone", e.target.value)} placeholder="04XX XXX XXX" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Service Area */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-primary" /> Service Area
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>States Serviced (comma-separated)</Label>
+                  <Input value={profile.states} onChange={e => updateProfile("states", e.target.value)} placeholder="NSW, VIC, QLD" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Postcode Ranges (optional)</Label>
+                  <Input value={profile.postcodeRanges} onChange={e => updateProfile("postcodeRanges", e.target.value)} placeholder="2000-2999, 3000-3999" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Systems & Expertise */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Wrench className="h-5 w-5 text-primary" /> Systems & Expertise
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>System Types (comma-separated)</Label>
+                  <Input value={profile.systemTypes} onChange={e => updateProfile("systemTypes", e.target.value)} placeholder="under-sink-carbon, reverse-osmosis, whole-house-carbon" />
+                  <p className="text-xs text-muted-foreground">Options: under-sink-carbon, reverse-osmosis, whole-house-carbon, whole-house-combo, water-softener, uv-system</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Brands Carried</Label>
+                  <Input value={profile.brands} onChange={e => updateProfile("brands", e.target.value)} placeholder="Puretec, 3M, Aquasana" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Certifications</Label>
+                  <Input value={profile.certifications} onChange={e => updateProfile("certifications", e.target.value)} placeholder="WaterMark certified, NSF/ANSI" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Additional */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" /> Additional Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>Key Highlights (comma-separated)</Label>
+                  <Input value={profile.highlights} onChange={e => updateProfile("highlights", e.target.value)} placeholder="Free installation, Same-day service, 24/7 support" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Response Time</Label>
+                    <Input value={profile.responseTime} onChange={e => updateProfile("responseTime", e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Warranty</Label>
+                    <Input value={profile.warranty} onChange={e => updateProfile("warranty", e.target.value)} placeholder="5 years parts & labour" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Submit for Approval
+            </Button>
+
+            <p className="text-xs text-muted-foreground text-center">
+              Your profile will be reviewed by our team. Once approved, you'll start receiving leads.
+            </p>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Step: signup
+  return (
+    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Become a Provider</CardTitle>
+          <CardDescription>Create your vendor account to start receiving qualified leads</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="reg-email">Email</Label>
+              <Input id="reg-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@business.com" />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="reg-password">Password</Label>
+              <Input id="reg-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="reg-confirm">Confirm Password</Label>
+              <Input id="reg-confirm" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={6} />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
+            </Button>
+            <p className="text-sm text-center text-muted-foreground">
+              Already have an account?{" "}
+              <Link to="/vendor/login" className="text-primary hover:underline font-medium">Sign in</Link>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
