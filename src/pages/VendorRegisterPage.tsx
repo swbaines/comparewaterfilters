@@ -39,7 +39,7 @@ export default function VendorRegisterPage() {
   const [profile, setProfile] = useState({
     name: "",
     description: "",
-    states: "",
+    states: [] as string[],
     postcodeRanges: "",
     systemTypes: "",
     brands: "",
