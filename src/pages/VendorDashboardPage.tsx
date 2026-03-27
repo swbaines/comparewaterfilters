@@ -440,6 +440,30 @@ export default function VendorDashboardPage() {
                   </div>
                 </div>
 
+                {/* Vendor Notes */}
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <StickyNote className="h-4 w-4" /> Vendor Notes
+                  </h3>
+                  <Textarea
+                    placeholder="Add follow-up notes, call outcomes, next steps..."
+                    value={vendorNotes}
+                    onChange={(e) => setVendorNotes(e.target.value)}
+                    rows={3}
+                    className="mb-2"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={saveVendorNotes.isPending || vendorNotes === (selectedLead.vendor_notes || "")}
+                    onClick={() => saveVendorNotes.mutate({ id: selectedLead.id, notes: vendorNotes })}
+                  >
+                    <Save className="h-4 w-4 mr-1.5" />
+                    Save Notes
+                    {saveVendorNotes.isPending && <Loader2 className="h-3 w-3 ml-1 animate-spin" />}
+                  </Button>
+                </div>
+
                 {/* Contact actions */}
                 <Separator />
                 <div className="flex gap-3">
