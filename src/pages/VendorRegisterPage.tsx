@@ -23,6 +23,15 @@ const AU_STATES = [
   { value: "NT", label: "NT" },
 ];
 
+const SYSTEM_TYPES = [
+  { value: "under-sink-carbon", label: "Under-sink Carbon Filter" },
+  { value: "reverse-osmosis", label: "Reverse Osmosis" },
+  { value: "whole-house-filtration", label: "Whole Home Filtration" },
+  { value: "uv-system", label: "UV System" },
+  { value: "water-softener", label: "Water Softener" },
+  { value: "single-tap-filter", label: "Single Tap Filter" },
+];
+
 type Step = "signup" | "profile" | "success";
 
 export default function VendorRegisterPage() {
@@ -41,7 +50,7 @@ export default function VendorRegisterPage() {
     description: "",
     states: [] as string[],
     postcodeRanges: "",
-    systemTypes: "",
+    systemTypes: [] as string[],
     brands: "",
     priceRange: "mid" as "budget" | "mid" | "premium",
     yearsInBusiness: 0,
@@ -100,7 +109,7 @@ export default function VendorRegisterPage() {
           description: profile.description,
           states: profile.states,
           postcode_ranges: toArray(profile.postcodeRanges),
-          system_types: toArray(profile.systemTypes),
+          system_types: profile.systemTypes,
           brands: toArray(profile.brands),
           price_range: profile.priceRange,
           years_in_business: profile.yearsInBusiness,
@@ -269,9 +278,35 @@ export default function VendorRegisterPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>System Types (comma-separated)</Label>
-                  <Input value={profile.systemTypes} onChange={e => updateProfile("systemTypes", e.target.value)} placeholder="under-sink-carbon, reverse-osmosis, whole-house-carbon" />
-                  <p className="text-xs text-muted-foreground">Options: under-sink-carbon, reverse-osmosis, whole-house-carbon, whole-house-combo, water-softener, uv-system</p>
+                  <Label>System Types *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between font-normal">
+                        {profile.systemTypes.length > 0
+                          ? SYSTEM_TYPES.filter(st => profile.systemTypes.includes(st.value)).map(st => st.label).join(", ")
+                          : "Select system types…"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[280px] p-2">
+                      {SYSTEM_TYPES.map((st) => (
+                        <label key={st.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer text-sm">
+                          <Checkbox
+                            checked={profile.systemTypes.includes(st.value)}
+                            onCheckedChange={(checked) => {
+                              updateProfile(
+                                "systemTypes",
+                                checked
+                                  ? [...profile.systemTypes, st.value]
+                                  : profile.systemTypes.filter((s) => s !== st.value)
+                              );
+                            }}
+                          />
+                          {st.label}
+                        </label>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Brands Carried</Label>
