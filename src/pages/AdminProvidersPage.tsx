@@ -12,9 +12,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut } from "lucide-react";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 type ProviderRow = Tables<"providers">;
 
@@ -49,12 +51,19 @@ function stringToArray(s: string): string[] {
 }
 
 export default function AdminProvidersPage() {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/admin/login");
+  };
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
@@ -183,9 +192,14 @@ export default function AdminProvidersPage() {
             <h1 className="text-2xl font-bold">Provider Management</h1>
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
-          <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
-            <Plus className="h-4 w-4" /> Add Provider
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
+              <Plus className="h-4 w-4" /> Add Provider
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-2">
+              <LogOut className="h-4 w-4" /> Sign Out
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
