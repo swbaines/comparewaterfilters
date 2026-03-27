@@ -19,6 +19,7 @@ import AdminProvidersPage from "@/pages/AdminProvidersPage";
 import AdminLeadsPage from "@/pages/AdminLeadsPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
+import VendorRegisterPage from "@/pages/VendorRegisterPage";
 import VendorDashboardPage from "@/pages/VendorDashboardPage";
 import VendorSettingsPage from "@/pages/VendorSettingsPage";
 import AdminRoute from "@/components/AdminRoute";
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/admin/providers" element={<AdminRoute><AdminProvidersPage /></AdminRoute>} />
             <Route path="/admin/leads" element={<AdminRoute><AdminLeadsPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
+            <Route path="/vendor/register" element={<VendorRegisterPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
             <Route path="*" element={<NotFound />} />

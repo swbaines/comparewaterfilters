@@ -93,6 +93,7 @@ export type Database = {
       }
       providers: {
         Row: {
+          approval_status: Database["public"]["Enums"]["approval_status"]
           available_for_quote: boolean
           brands: string[]
           certifications: string[]
@@ -110,6 +111,7 @@ export type Database = {
           review_count: number
           slug: string
           states: string[]
+          submitted_by: string | null
           system_types: string[]
           updated_at: string
           warranty: string
@@ -117,6 +119,7 @@ export type Database = {
           years_in_business: number
         }
         Insert: {
+          approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
           certifications?: string[]
@@ -134,6 +137,7 @@ export type Database = {
           review_count?: number
           slug: string
           states?: string[]
+          submitted_by?: string | null
           system_types?: string[]
           updated_at?: string
           warranty?: string
@@ -141,6 +145,7 @@ export type Database = {
           years_in_business?: number
         }
         Update: {
+          approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
           certifications?: string[]
@@ -158,6 +163,7 @@ export type Database = {
           review_count?: number
           slug?: string
           states?: string[]
+          submitted_by?: string | null
           system_types?: string[]
           updated_at?: string
           warranty?: string
@@ -392,6 +398,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      approval_status: "pending" | "approved" | "rejected"
       invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
       price_range: "budget" | "mid" | "premium"
     }
@@ -522,6 +529,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      approval_status: ["pending", "approved", "rejected"],
       invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
       price_range: ["budget", "mid", "premium"],
     },

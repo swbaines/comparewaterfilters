@@ -202,6 +202,76 @@ export default function AdminProvidersPage() {
           </div>
         </div>
 
+        {/* Pending Applications */}
+        {(() => {
+          const pending = providers.filter(p => (p as any).approval_status === "pending");
+          if (pending.length === 0) return null;
+          return (
+            <Card className="mb-6 border-amber-200 bg-amber-50/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-200 text-amber-800 text-xs font-bold">{pending.length}</span>
+                  Pending Applications
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Business</TableHead>
+                      <TableHead>States</TableHead>
+                      <TableHead>Systems</TableHead>
+                      <TableHead>Years</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pending.map((p) => (
+                      <TableRow key={p.id}>
+                        <TableCell>
+                          <div className="font-medium">{p.name}</div>
+                          <div className="text-xs text-muted-foreground truncate max-w-[200px]">{p.description}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {p.states.map((s) => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>)}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {p.system_types.slice(0, 2).map((s) => <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>)}
+                            {p.system_types.length > 2 && <Badge variant="secondary" className="text-xs">+{p.system_types.length - 2}</Badge>}
+                          </div>
+                        </TableCell>
+                        <TableCell>{p.years_in_business}</TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
+                            Review
+                          </Button>
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
+                            const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
+                            if (error) toast.error(error.message);
+                            else { toast.success(`${p.name} approved!`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                          }}>
+                            Approve
+                          </Button>
+                          <Button size="sm" variant="destructive" onClick={async () => {
+                            const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", p.id);
+                            if (error) toast.error(error.message);
+                            else { toast.success(`${p.name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                          }}>
+                            Reject
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          );
+        })()}
+
         {isLoading ? (
           <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
         ) : (
@@ -213,12 +283,13 @@ export default function AdminProvidersPage() {
                   <TableHead>States</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Rating</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Active</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {providers.map((p) => (
+                {providers.filter(p => (p as any).approval_status !== "pending").map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell>
@@ -228,6 +299,11 @@ export default function AdminProvidersPage() {
                     </TableCell>
                     <TableCell><Badge variant="secondary" className="text-xs capitalize">{p.price_range}</Badge></TableCell>
                     <TableCell className="flex items-center gap-1"><Star className="h-3 w-3 text-primary" /> {p.rating}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={`text-xs capitalize ${(p as any).approval_status === "approved" ? "border-green-300 text-green-700" : "border-red-300 text-red-700"}`}>
+                        {(p as any).approval_status || "approved"}
+                      </Badge>
+                    </TableCell>
                     <TableCell>{p.available_for_quote ? "✅" : "❌"}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
@@ -239,8 +315,8 @@ export default function AdminProvidersPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {providers.length === 0 && (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No providers yet</TableCell></TableRow>
+                {providers.filter(p => (p as any).approval_status !== "pending").length === 0 && (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No providers yet</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
