@@ -47,6 +47,9 @@ const App = () => (
             <Route path="/provider-match" element={<ProviderMatchPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/providers" element={<AdminRoute><AdminProvidersPage /></AdminRoute>} />
+            <Route path="/admin/leads" element={<AdminRoute><AdminLeadsPage /></AdminRoute>} />
+            <Route path="/vendor/login" element={<VendorLoginPage />} />
+            <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
