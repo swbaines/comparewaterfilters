@@ -394,7 +394,36 @@ export default function VendorDashboardPage() {
                   </>
                 )}
 
-                {/* Action buttons */}
+                {/* Update Status */}
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Update Status</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: "new", label: "New", icon: ClipboardList, variant: "outline" as const },
+                      { value: "contacted", label: "Contacted", icon: PhoneCall, variant: "outline" as const },
+                      { value: "won", label: "Won", icon: CheckCircle2, variant: "outline" as const },
+                      { value: "lost", label: "Lost", icon: XCircle, variant: "outline" as const },
+                    ].map(({ value, label, icon: Icon, variant }) => (
+                      <Button
+                        key={value}
+                        size="sm"
+                        variant={selectedLead.lead_status === value ? "default" : variant}
+                        className={selectedLead.lead_status === value ? "" : ""}
+                        disabled={updateLeadStatus.isPending || selectedLead.lead_status === value}
+                        onClick={() => updateLeadStatus.mutate({ id: selectedLead.id, status: value })}
+                      >
+                        <Icon className="h-4 w-4 mr-1.5" />
+                        {label}
+                        {updateLeadStatus.isPending && updateLeadStatus.variables?.status === value && (
+                          <Loader2 className="h-3 w-3 ml-1 animate-spin" />
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Contact actions */}
                 <Separator />
                 <div className="flex gap-3">
                   {selectedLead.customer_mobile && (
