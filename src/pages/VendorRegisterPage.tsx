@@ -7,8 +7,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown } from "lucide-react";
+
+const AU_STATES = [
+  { value: "NSW", label: "NSW" },
+  { value: "VIC", label: "VIC" },
+  { value: "QLD", label: "QLD" },
+  { value: "WA", label: "WA" },
+  { value: "SA", label: "SA" },
+  { value: "TAS", label: "TAS" },
+  { value: "ACT", label: "ACT" },
+  { value: "NT", label: "NT" },
+];
 
 type Step = "signup" | "profile" | "success";
 
@@ -26,7 +39,7 @@ export default function VendorRegisterPage() {
   const [profile, setProfile] = useState({
     name: "",
     description: "",
-    states: "",
+    states: [] as string[],
     postcodeRanges: "",
     systemTypes: "",
     brands: "",
@@ -85,7 +98,7 @@ export default function VendorRegisterPage() {
           name: profile.name,
           slug,
           description: profile.description,
-          states: toArray(profile.states),
+          states: profile.states,
           postcode_ranges: toArray(profile.postcodeRanges),
           system_types: toArray(profile.systemTypes),
           brands: toArray(profile.brands),
@@ -212,8 +225,33 @@ export default function VendorRegisterPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>States Serviced (comma-separated)</Label>
-                  <Input value={profile.states} onChange={e => updateProfile("states", e.target.value)} placeholder="NSW, VIC, QLD" />
+                  <Label>States Serviced *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between font-normal">
+                        {profile.states.length > 0 ? profile.states.join(", ") : "Select states…"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-2">
+                      {AU_STATES.map((state) => (
+                        <label key={state.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer text-sm">
+                          <Checkbox
+                            checked={profile.states.includes(state.value)}
+                            onCheckedChange={(checked) => {
+                              updateProfile(
+                                "states",
+                                checked
+                                  ? [...profile.states, state.value]
+                                  : profile.states.filter((s) => s !== state.value)
+                              );
+                            }}
+                          />
+                          {state.label}
+                        </label>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Postcode Ranges (optional)</Label>
