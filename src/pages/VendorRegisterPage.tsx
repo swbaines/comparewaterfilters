@@ -269,9 +269,35 @@ export default function VendorRegisterPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>System Types (comma-separated)</Label>
-                  <Input value={profile.systemTypes} onChange={e => updateProfile("systemTypes", e.target.value)} placeholder="under-sink-carbon, reverse-osmosis, whole-house-carbon" />
-                  <p className="text-xs text-muted-foreground">Options: under-sink-carbon, reverse-osmosis, whole-house-carbon, whole-house-combo, water-softener, uv-system</p>
+                  <Label>System Types *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between font-normal">
+                        {profile.systemTypes.length > 0
+                          ? SYSTEM_TYPES.filter(st => profile.systemTypes.includes(st.value)).map(st => st.label).join(", ")
+                          : "Select system types…"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[280px] p-2">
+                      {SYSTEM_TYPES.map((st) => (
+                        <label key={st.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer text-sm">
+                          <Checkbox
+                            checked={profile.systemTypes.includes(st.value)}
+                            onCheckedChange={(checked) => {
+                              updateProfile(
+                                "systemTypes",
+                                checked
+                                  ? [...profile.systemTypes, st.value]
+                                  : profile.systemTypes.filter((s) => s !== st.value)
+                              );
+                            }}
+                          />
+                          {st.label}
+                        </label>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Brands Carried</Label>
