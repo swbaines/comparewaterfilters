@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck } from "lucide-react";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -67,6 +67,8 @@ export default function VendorRegisterPage() {
     phone: "",
   });
 
+  const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -106,6 +108,19 @@ export default function VendorRegisterPage() {
       const slug = profile.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
       const toArray = (s: string) => s.split(",").map(v => v.trim()).filter(Boolean);
 
+      // Upload certification files
+      const certFilePaths: Record<string, string> = {};
+      for (const [certValue, file] of Object.entries(certFiles)) {
+        if (file) {
+          const filePath = `${user.id}/${certValue}-${Date.now()}-${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from("certification-files")
+            .upload(filePath, file);
+          if (uploadError) throw uploadError;
+          certFilePaths[certValue] = filePath;
+        }
+      }
+
       const { data: provider, error: providerError } = await supabase
         .from("providers")
         .insert({
@@ -127,6 +142,7 @@ export default function VendorRegisterPage() {
           available_for_quote: false,
           approval_status: "pending" as any,
           submitted_by: user.id,
+          certification_files: certFilePaths,
         })
         .select("id")
         .single();
@@ -347,6 +363,45 @@ export default function VendorRegisterPage() {
                       ))}
                     </PopoverContent>
                   </Popover>
+                  {profile.certifications.length > 0 && (
+                    <div className="mt-3 space-y-3">
+                      <Label className="text-sm text-muted-foreground">Upload proof of certification</Label>
+                      {profile.certifications.map((certValue) => {
+                        const certLabel = CERTIFICATIONS.find(c => c.value === certValue)?.label || certValue;
+                        const file = certFiles[certValue];
+                        return (
+                          <div key={certValue} className="flex items-center gap-3 rounded-md border border-input p-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium">{certLabel}</p>
+                              {file ? (
+                                <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                                  <FileCheck className="h-3 w-3 text-primary" />
+                                  {file.name}
+                                </p>
+                              ) : (
+                                <p className="text-xs text-muted-foreground">No file selected</p>
+                              )}
+                            </div>
+                            <label className="cursor-pointer">
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0] || null;
+                                  setCertFiles(prev => ({ ...prev, [certValue]: f }));
+                                }}
+                              />
+                              <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                                <Upload className="h-3 w-3" />
+                                {file ? "Replace" : "Upload"}
+                              </span>
+                            </label>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
