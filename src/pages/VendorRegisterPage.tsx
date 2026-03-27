@@ -98,7 +98,7 @@ export default function VendorRegisterPage() {
           name: profile.name,
           slug,
           description: profile.description,
-          states: toArray(profile.states),
+          states: profile.states,
           postcode_ranges: toArray(profile.postcodeRanges),
           system_types: toArray(profile.systemTypes),
           brands: toArray(profile.brands),
