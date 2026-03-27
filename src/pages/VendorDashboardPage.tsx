@@ -137,6 +137,37 @@ export default function VendorDashboardPage() {
   }
 
   const provider = vendorAccount.providers as any;
+
+  // Show pending approval state
+  if (provider?.approval_status === "pending") {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center gap-3 text-center px-4">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-amber-100">
+          <ClipboardList className="h-8 w-8 text-amber-600" />
+        </div>
+        <h1 className="text-2xl font-bold">Application Under Review</h1>
+        <p className="text-muted-foreground max-w-md">
+          Your provider profile for <span className="font-semibold text-foreground">{provider.name}</span> is currently being reviewed by our team. You'll be able to access your dashboard once approved.
+        </p>
+        <Button variant="outline" onClick={async () => { await signOut(); navigate("/vendor/login"); }}>Sign Out</Button>
+      </div>
+    );
+  }
+
+  if (provider?.approval_status === "rejected") {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] flex-col items-center justify-center gap-3 text-center px-4">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+          <XCircle className="h-8 w-8 text-red-600" />
+        </div>
+        <h1 className="text-2xl font-bold">Application Not Approved</h1>
+        <p className="text-muted-foreground max-w-md">
+          Unfortunately, your provider profile was not approved at this time. Please contact us for more details.
+        </p>
+        <Button variant="outline" onClick={async () => { await signOut(); navigate("/vendor/login"); }}>Sign Out</Button>
+      </div>
+    );
+  }
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
