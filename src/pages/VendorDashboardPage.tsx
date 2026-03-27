@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -152,9 +152,15 @@ export default function VendorDashboardPage() {
             <h1 className="text-2xl font-bold">{provider?.name || "Vendor"} Dashboard</h1>
             <p className="text-muted-foreground">View your leads, track sales, and manage invoices</p>
           </div>
-          <Button variant="outline" size="sm" onClick={async () => { await signOut(); navigate("/vendor/login"); }}>
-            Sign Out
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/vendor/settings")}>
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </Button>
+            <Button variant="outline" size="sm" onClick={async () => { await signOut(); navigate("/vendor/login"); }}>
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}

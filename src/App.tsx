@@ -20,6 +20,7 @@ import AdminLeadsPage from "@/pages/AdminLeadsPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
 import VendorDashboardPage from "@/pages/VendorDashboardPage";
+import VendorSettingsPage from "@/pages/VendorSettingsPage";
 import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
 import NotFound from "@/pages/NotFound";
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/admin/leads" element={<AdminRoute><AdminLeadsPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
+            <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
