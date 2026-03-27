@@ -476,6 +476,124 @@ export default function AdminProvidersPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Review Application Dialog */}
+        <Dialog open={!!reviewProvider} onOpenChange={(open) => { if (!open) setReviewProvider(null); }}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" /> Review Application: {reviewProvider?.name}
+              </DialogTitle>
+            </DialogHeader>
+            {reviewProvider && (
+              <div className="space-y-5">
+                {/* Business Details */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Building2 className="h-4 w-4 text-primary" /> Business Details</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div><span className="text-muted-foreground">Name:</span> <span className="font-medium">{reviewProvider.name}</span></div>
+                    <div><span className="text-muted-foreground">Years:</span> <span className="font-medium">{reviewProvider.years_in_business}</span></div>
+                    <div><span className="text-muted-foreground">Price Range:</span> <span className="font-medium capitalize">{reviewProvider.price_range}</span></div>
+                    <div><span className="text-muted-foreground">Response Time:</span> <span className="font-medium">{reviewProvider.response_time}</span></div>
+                    {reviewProvider.phone && <div><span className="text-muted-foreground">Phone:</span> <span className="font-medium">{reviewProvider.phone}</span></div>}
+                    {reviewProvider.website && <div><span className="text-muted-foreground">Website:</span> <a href={reviewProvider.website} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">{reviewProvider.website}</a></div>}
+                  </div>
+                  {reviewProvider.description && (
+                    <div className="mt-2">
+                      <span className="text-sm text-muted-foreground">Description:</span>
+                      <p className="text-sm mt-1 bg-muted/50 rounded p-2">{reviewProvider.description}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Service Area */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><MapPin className="h-4 w-4 text-primary" /> Service Area</h3>
+                  <div className="flex flex-wrap gap-1 mb-1">
+                    {reviewProvider.states.map((s) => <Badge key={s} variant="outline">{s}</Badge>)}
+                  </div>
+                  {reviewProvider.postcode_ranges && reviewProvider.postcode_ranges.length > 0 && (
+                    <div className="text-sm text-muted-foreground">Postcodes: {reviewProvider.postcode_ranges.join(", ")}</div>
+                  )}
+                </div>
+
+                {/* Systems & Expertise */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Wrench className="h-4 w-4 text-primary" /> Systems & Expertise</h3>
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-sm text-muted-foreground">System Types:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.system_types.map((s) => <Badge key={s} variant="secondary">{s}</Badge>)}
+                        {reviewProvider.system_types.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-muted-foreground">Brands:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.brands.map((b) => <Badge key={b} variant="outline">{b}</Badge>)}
+                        {reviewProvider.brands.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-sm text-muted-foreground">Certifications:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.certifications.map((c) => <Badge key={c} variant="outline" className="border-green-300 text-green-700">{c}</Badge>)}
+                        {reviewProvider.certifications.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Details */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Shield className="h-4 w-4 text-primary" /> Additional Details</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div><span className="text-muted-foreground">Warranty:</span> <span className="font-medium">{reviewProvider.warranty || "—"}</span></div>
+                  </div>
+                  {reviewProvider.highlights.length > 0 && (
+                    <div className="mt-2">
+                      <span className="text-sm text-muted-foreground">Highlights:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {reviewProvider.highlights.map((h) => <Badge key={h} variant="secondary">{h}</Badge>)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-xs text-muted-foreground">
+                  Submitted: {new Date(reviewProvider.created_at).toLocaleString()}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-2">
+                  <Button className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
+                    const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", reviewProvider.id);
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success(`${reviewProvider.name} approved!`);
+                      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                      setReviewProvider(null);
+                    }
+                  }}>
+                    <CheckCircle2 className="h-4 w-4" /> Approve
+                  </Button>
+                  <Button variant="destructive" className="flex-1 gap-2" onClick={async () => {
+                    const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", reviewProvider.id);
+                    if (error) toast.error(error.message);
+                    else {
+                      toast.success(`${reviewProvider.name} rejected`);
+                      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                      setReviewProvider(null);
+                    }
+                  }}>
+                    <XCircle className="h-4 w-4" /> Reject
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
