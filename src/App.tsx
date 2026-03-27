@@ -16,8 +16,12 @@ import HowItWorksPage from "@/pages/HowItWorksPage";
 import ContactPage from "@/pages/ContactPage";
 import ProviderMatchPage from "@/pages/ProviderMatchPage";
 import AdminProvidersPage from "@/pages/AdminProvidersPage";
+import AdminLeadsPage from "@/pages/AdminLeadsPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
+import VendorLoginPage from "@/pages/VendorLoginPage";
+import VendorDashboardPage from "@/pages/VendorDashboardPage";
 import AdminRoute from "@/components/AdminRoute";
+import VendorRoute from "@/components/VendorRoute";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +47,9 @@ const App = () => (
             <Route path="/provider-match" element={<ProviderMatchPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/providers" element={<AdminRoute><AdminProvidersPage /></AdminRoute>} />
+            <Route path="/admin/leads" element={<AdminRoute><AdminLeadsPage /></AdminRoute>} />
+            <Route path="/vendor/login" element={<VendorLoginPage />} />
+            <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
