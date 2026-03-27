@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -5,7 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Loader2, Users, DollarSign, TrendingUp, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -17,9 +20,24 @@ const statusColors: Record<string, string> = {
   lost: "bg-red-100 text-red-800",
 };
 
+const systemTypeLabels: Record<string, string> = {
+  "under-sink-carbon": "Under-Sink Carbon Filter",
+  "reverse-osmosis": "Reverse Osmosis",
+  "whole-house-carbon": "Whole House Carbon",
+  "whole-house-combo": "Whole House Combo",
+  "water-softener": "Water Softener",
+  "uv-system": "UV Disinfection System",
+  "reverse-osmosis-whole-home-filtration": "Reverse Osmosis (Whole Home)",
+};
+
+function formatSystemType(type: string) {
+  return systemTypeLabels[type] || type.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function VendorDashboardPage() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [selectedLead, setSelectedLead] = useState<any>(null);
 
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
@@ -143,12 +161,15 @@ export default function VendorDashboardPage() {
               {leads.length === 0 ? (
                 <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
               ) : leads.map((lead) => (
-                <TableRow key={lead.id}>
+                <TableRow
+                  key={lead.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => setSelectedLead(lead)}
+                >
                   <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
                   <TableCell>
                     <div className="text-sm font-medium">{lead.customer_name}</div>
                     <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
-                    {lead.customer_mobile && <div className="text-xs text-muted-foreground">{lead.customer_mobile}</div>}
                   </TableCell>
                   <TableCell className="text-sm">
                     {[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}
@@ -156,7 +177,7 @@ export default function VendorDashboardPage() {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {(lead.recommended_systems || []).map((s: string) => (
-                        <Badge key={s} variant="outline" className="text-xs">{s}</Badge>
+                        <Badge key={s} variant="outline" className="text-xs">{formatSystemType(s)}</Badge>
                       ))}
                     </div>
                   </TableCell>
@@ -198,6 +219,182 @@ export default function VendorDashboardPage() {
           </Table>
         </Card>
       </div>
+
+      {/* Lead Detail Dialog */}
+      <Dialog open={!!selectedLead} onOpenChange={(open) => !open && setSelectedLead(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {selectedLead && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center justify-between">
+                  <span>Lead Details — {selectedLead.customer_name}</span>
+                  <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-2`}>
+                    {selectedLead.lead_status}
+                  </Badge>
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-5 pt-2">
+                {/* Contact Information */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Contact Information</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Email</p>
+                        <a href={`mailto:${selectedLead.customer_email}`} className="text-sm font-medium text-primary hover:underline">
+                          {selectedLead.customer_email}
+                        </a>
+                      </div>
+                    </div>
+                    {selectedLead.customer_mobile && (
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Mobile</p>
+                          <a href={`tel:${selectedLead.customer_mobile}`} className="text-sm font-medium text-primary hover:underline">
+                            {selectedLead.customer_mobile}
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Location</p>
+                        <p className="text-sm font-medium">
+                          {[selectedLead.customer_suburb, selectedLead.customer_state, selectedLead.customer_postcode].filter(Boolean).join(", ") || "Not provided"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ClipboardList className="h-4 w-4 text-muted-foreground shrink-0" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Submitted</p>
+                        <p className="text-sm font-medium">{format(new Date(selectedLead.created_at), "dd MMM yyyy 'at' h:mm a")}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Property & Water Details */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Property & Water Details</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {selectedLead.property_type && (
+                      <div className="flex items-center gap-2">
+                        <Home className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Property Type</p>
+                          <p className="text-sm font-medium capitalize">{selectedLead.property_type}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.household_size && (
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Household Size</p>
+                          <p className="text-sm font-medium">{selectedLead.household_size} people</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.water_source && (
+                      <div className="flex items-center gap-2">
+                        <Droplets className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Water Source</p>
+                          <p className="text-sm font-medium capitalize">{selectedLead.water_source}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.budget && (
+                      <div className="flex items-center gap-2">
+                        <Wallet className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Budget</p>
+                          <p className="text-sm font-medium">{selectedLead.budget}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Water Concerns */}
+                {selectedLead.concerns && selectedLead.concerns.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <ShieldAlert className="h-4 w-4" /> Water Concerns
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedLead.concerns.map((concern: string) => (
+                          <Badge key={concern} variant="secondary" className="capitalize text-sm">
+                            {concern}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Recommended Systems */}
+                {selectedLead.recommended_systems && selectedLead.recommended_systems.length > 0 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Recommended Systems</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedLead.recommended_systems.map((sys: string) => (
+                          <Badge key={sys} className="bg-primary/10 text-primary border border-primary/20 text-sm">
+                            {formatSystemType(sys)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Customer Message */}
+                {selectedLead.message && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <MessageSquare className="h-4 w-4" /> Customer Message
+                      </h3>
+                      <div className="rounded-lg bg-muted/50 p-4 text-sm leading-relaxed">
+                        {selectedLead.message}
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Action buttons */}
+                <Separator />
+                <div className="flex gap-3">
+                  {selectedLead.customer_mobile && (
+                    <Button asChild size="sm">
+                      <a href={`tel:${selectedLead.customer_mobile}`}>
+                        <Phone className="h-4 w-4 mr-1.5" /> Call Customer
+                      </a>
+                    </Button>
+                  )}
+                  <Button asChild variant="outline" size="sm">
+                    <a href={`mailto:${selectedLead.customer_email}`}>
+                      <Mail className="h-4 w-4 mr-1.5" /> Send Email
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
