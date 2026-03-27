@@ -205,7 +205,7 @@ export default function AdminProvidersPage() {
 
         {/* Pending Applications */}
         {(() => {
-          const pending = providers.filter(p => (p as any).approval_status === "pending");
+          const pending = providers.filter(p => p.approval_status === "pending");
           if (pending.length === 0) return null;
           return (
             <Card className="mb-6 border-amber-200 bg-amber-50/50">
@@ -222,7 +222,8 @@ export default function AdminProvidersPage() {
                       <TableHead>Business</TableHead>
                       <TableHead>States</TableHead>
                       <TableHead>Systems</TableHead>
-                      <TableHead>Years</TableHead>
+                      <TableHead>Contact</TableHead>
+                      <TableHead>Submitted</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -244,25 +245,33 @@ export default function AdminProvidersPage() {
                             {p.system_types.length > 2 && <Badge variant="secondary" className="text-xs">+{p.system_types.length - 2}</Badge>}
                           </div>
                         </TableCell>
-                        <TableCell>{p.years_in_business}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
-                            Review
-                          </Button>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
-                            const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
-                            if (error) toast.error(error.message);
-                            else { toast.success(`${p.name} approved!`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
-                          }}>
-                            Approve
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={async () => {
-                            const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", p.id);
-                            if (error) toast.error(error.message);
-                            else { toast.success(`${p.name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
-                          }}>
-                            Reject
-                          </Button>
+                        <TableCell>
+                          <div className="text-xs">{p.phone || "—"}</div>
+                          {p.website && <a href={p.website} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1"><ExternalLink className="h-3 w-3" />Website</a>}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {new Date(p.created_at).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="sm" variant="outline" onClick={() => setReviewProvider(p)} className="gap-1">
+                              <Eye className="h-3 w-3" /> Review
+                            </Button>
+                            <Button size="sm" className="gap-1 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
+                              const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
+                              if (error) toast.error(error.message);
+                              else { toast.success(`${p.name} approved!`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                            }}>
+                              <CheckCircle2 className="h-3 w-3" /> Approve
+                            </Button>
+                            <Button size="sm" variant="destructive" className="gap-1" onClick={async () => {
+                              const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", p.id);
+                              if (error) toast.error(error.message);
+                              else { toast.success(`${p.name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                            }}>
+                              <XCircle className="h-3 w-3" /> Reject
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
