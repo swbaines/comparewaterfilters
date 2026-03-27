@@ -41,6 +41,7 @@ export default function VendorDashboardPage() {
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [vendorNotes, setVendorNotes] = useState("");
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
