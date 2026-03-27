@@ -32,6 +32,11 @@ const SYSTEM_TYPES = [
   { value: "single-tap-filter", label: "Single Tap Filter" },
 ];
 
+const CERTIFICATIONS = [
+  { value: "watermark-certified", label: "WaterMark Certified" },
+  { value: "nsf-ansi", label: "NSF/ANSI" },
+];
+
 type Step = "signup" | "profile" | "success";
 
 export default function VendorRegisterPage() {
@@ -54,7 +59,7 @@ export default function VendorRegisterPage() {
     brands: "",
     priceRange: "mid" as "budget" | "mid" | "premium",
     yearsInBusiness: 0,
-    certifications: "",
+    certifications: [] as string[],
     highlights: "",
     responseTime: "Within 48 hours",
     warranty: "",
@@ -113,7 +118,7 @@ export default function VendorRegisterPage() {
           brands: toArray(profile.brands),
           price_range: profile.priceRange,
           years_in_business: profile.yearsInBusiness,
-          certifications: toArray(profile.certifications),
+          certifications: profile.certifications,
           highlights: toArray(profile.highlights),
           response_time: profile.responseTime,
           warranty: profile.warranty,
@@ -314,7 +319,34 @@ export default function VendorRegisterPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Certifications</Label>
-                  <Input value={profile.certifications} onChange={e => updateProfile("certifications", e.target.value)} placeholder="WaterMark certified, NSF/ANSI" />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between font-normal">
+                        {profile.certifications.length > 0
+                          ? CERTIFICATIONS.filter(c => profile.certifications.includes(c.value)).map(c => c.label).join(", ")
+                          : "Select certifications…"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[240px] p-2">
+                      {CERTIFICATIONS.map((cert) => (
+                        <label key={cert.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer text-sm">
+                          <Checkbox
+                            checked={profile.certifications.includes(cert.value)}
+                            onCheckedChange={(checked) => {
+                              updateProfile(
+                                "certifications",
+                                checked
+                                  ? [...profile.certifications, cert.value]
+                                  : profile.certifications.filter((c) => c !== cert.value)
+                              );
+                            }}
+                          />
+                          {cert.label}
+                        </label>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </CardContent>
             </Card>
