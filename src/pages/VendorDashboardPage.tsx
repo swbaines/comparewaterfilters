@@ -38,6 +38,7 @@ export default function VendorDashboardPage() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
@@ -207,7 +208,11 @@ export default function VendorDashboardPage() {
               {invoices.length === 0 ? (
                 <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No invoices yet</TableCell></TableRow>
               ) : invoices.map((inv) => (
-                <TableRow key={inv.id}>
+                <TableRow
+                  key={inv.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => setSelectedInvoice(inv)}
+                >
                   <TableCell className="font-mono text-sm">{inv.invoice_number}</TableCell>
                   <TableCell className="text-sm">{inv.period_start} — {inv.period_end}</TableCell>
                   <TableCell>{inv.lead_count}</TableCell>
@@ -393,6 +398,122 @@ export default function VendorDashboardPage() {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Invoice Detail Dialog */}
+      <Dialog open={!!selectedInvoice} onOpenChange={(open) => !open && setSelectedInvoice(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          {selectedInvoice && (() => {
+            const invoiceLeads = leads.filter((l) => {
+              const leadDate = new Date(l.created_at);
+              const start = new Date(selectedInvoice.period_start);
+              const end = new Date(selectedInvoice.period_end);
+              end.setDate(end.getDate() + 1);
+              return leadDate >= start && leadDate < end;
+            });
+
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center justify-between">
+                    <span>Invoice {selectedInvoice.invoice_number}</span>
+                    <Badge variant="outline" className="capitalize ml-2">{selectedInvoice.status}</Badge>
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-5 pt-2">
+                  {/* Invoice Summary */}
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Period</p>
+                      <p className="text-sm font-medium">{selectedInvoice.period_start} — {selectedInvoice.period_end}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Total Leads</p>
+                      <p className="text-sm font-medium">{selectedInvoice.lead_count}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Total Amount</p>
+                      <p className="text-lg font-bold text-primary">${Number(selectedInvoice.total_amount).toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Status</p>
+                      <p className="text-sm font-medium capitalize">{selectedInvoice.status}</p>
+                    </div>
+                  </div>
+
+                  {selectedInvoice.notes && (
+                    <>
+                      <Separator />
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Notes</p>
+                        <p className="text-sm rounded-lg bg-muted/50 p-3">{selectedInvoice.notes}</p>
+                      </div>
+                    </>
+                  )}
+
+                  <Separator />
+
+                  {/* Lead Breakdown */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Lead Breakdown</h3>
+                    <div className="rounded-lg border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>System</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Lead Fee</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {invoiceLeads.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center text-muted-foreground py-6">
+                                No leads found for this period
+                              </TableCell>
+                            </TableRow>
+                          ) : invoiceLeads.map((lead) => (
+                            <TableRow key={lead.id}>
+                              <TableCell>
+                                <div className="text-sm font-medium">{lead.customer_name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {[lead.customer_suburb, lead.customer_state].filter(Boolean).join(", ")}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap gap-1">
+                                  {(lead.recommended_systems || []).map((s: string) => (
+                                    <Badge key={s} variant="outline" className="text-xs">{formatSystemType(s)}</Badge>
+                                  ))}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={`${statusColors[lead.lead_status] || ""} text-xs`}>{lead.lead_status}</Badge>
+                              </TableCell>
+                              <TableCell className="text-right font-semibold">
+                                ${Number(lead.lead_price || 0).toFixed(2)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          {invoiceLeads.length > 0 && (
+                            <TableRow className="bg-muted/30 font-semibold">
+                              <TableCell colSpan={3} className="text-right text-sm">Total</TableCell>
+                              <TableCell className="text-right text-primary">
+                                ${invoiceLeads.reduce((sum, l) => sum + Number(l.lead_price || 0), 0).toFixed(2)}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>
