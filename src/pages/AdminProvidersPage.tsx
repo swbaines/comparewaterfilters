@@ -231,8 +231,17 @@ export default function AdminProvidersPage() {
                     {pending.map((p) => (
                       <TableRow key={p.id}>
                         <TableCell>
-                          <div className="font-medium">{p.name}</div>
-                          <div className="text-xs text-muted-foreground truncate max-w-[200px]">{p.description}</div>
+                          <div className="flex items-center gap-2">
+                            <div>
+                              <div className="font-medium">{p.name}</div>
+                              <div className="text-xs text-muted-foreground truncate max-w-[200px]">{p.description}</div>
+                            </div>
+                            {p.certification_files && typeof p.certification_files === "object" && Object.keys(p.certification_files as Record<string, unknown>).length > 0 && (
+                              <Badge variant="outline" className="gap-1 border-green-300 text-green-700 text-xs whitespace-nowrap">
+                                <FileCheck className="h-3 w-3" /> Docs
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
