@@ -227,6 +227,26 @@ export default function VendorProfilePage() {
             <CardDescription>Your public-facing business details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Logo Upload */}
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16 border">
+                {logoUrl ? (
+                  <AvatarImage src={logoUrl} alt="Business logo" />
+                ) : null}
+                <AvatarFallback>
+                  <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <Label>Business Logo</Label>
+                <p className="text-xs text-muted-foreground">JPG, PNG or WebP, max 2MB</p>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                  {logoUrl ? "Change Logo" : "Upload Logo"}
+                </Button>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Business Name</Label>
