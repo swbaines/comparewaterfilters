@@ -108,6 +108,19 @@ export default function VendorRegisterPage() {
       const slug = profile.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
       const toArray = (s: string) => s.split(",").map(v => v.trim()).filter(Boolean);
 
+      // Upload certification files
+      const certFilePaths: Record<string, string> = {};
+      for (const [certValue, file] of Object.entries(certFiles)) {
+        if (file) {
+          const filePath = `${user.id}/${certValue}-${Date.now()}-${file.name}`;
+          const { error: uploadError } = await supabase.storage
+            .from("certification-files")
+            .upload(filePath, file);
+          if (uploadError) throw uploadError;
+          certFilePaths[certValue] = filePath;
+        }
+      }
+
       const { data: provider, error: providerError } = await supabase
         .from("providers")
         .insert({
@@ -129,6 +142,7 @@ export default function VendorRegisterPage() {
           available_for_quote: false,
           approval_status: "pending" as any,
           submitted_by: user.id,
+          certification_files: certFilePaths,
         })
         .select("id")
         .single();
