@@ -44,7 +44,11 @@ export default function Footer() {
         </div>
         <div className="mt-10 border-t pt-6 flex items-center justify-between text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} Water Match Australia. All rights reserved. Recommendations are educational and not a substitute for professional assessment.</span>
-          <Link to="/admin/login" className="hover:text-foreground transition-colors">Admin</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/vendor/login" className="hover:text-foreground transition-colors">Vendor Portal</Link>
+            <span>·</span>
+            <Link to="/admin/login" className="hover:text-foreground transition-colors">Admin</Link>
+          </div>
         </div>
       </div>
     </footer>
