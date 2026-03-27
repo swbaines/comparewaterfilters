@@ -299,7 +299,7 @@ export default function AdminProvidersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {providers.filter(p => (p as any).approval_status !== "pending").map((p) => (
+                {providers.filter(p => p.approval_status !== "pending").map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell>
@@ -310,8 +310,8 @@ export default function AdminProvidersPage() {
                     <TableCell><Badge variant="secondary" className="text-xs capitalize">{p.price_range}</Badge></TableCell>
                     <TableCell className="flex items-center gap-1"><Star className="h-3 w-3 text-primary" /> {p.rating}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`text-xs capitalize ${(p as any).approval_status === "approved" ? "border-green-300 text-green-700" : "border-red-300 text-red-700"}`}>
-                        {(p as any).approval_status || "approved"}
+                      <Badge variant="outline" className={`text-xs capitalize ${p.approval_status === "approved" ? "border-green-300 text-green-700" : "border-red-300 text-red-700"}`}>
+                        {p.approval_status}
                       </Badge>
                     </TableCell>
                     <TableCell>{p.available_for_quote ? "✅" : "❌"}</TableCell>
