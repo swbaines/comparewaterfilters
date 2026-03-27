@@ -60,6 +60,49 @@ export default function VendorProfilePage() {
   });
 
   const provider = vendorAccount?.providers as any;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (provider?.logo) setLogoUrl(provider.logo);
+  }, [provider]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File must be under 2MB");
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${vendorAccount!.provider_id}/logo.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("vendor-logos")
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from("vendor-logos").getPublicUrl(path);
+      const publicUrl = urlData.publicUrl + "?t=" + Date.now();
+      const { error: updateErr } = await supabase
+        .from("providers")
+        .update({ logo: publicUrl })
+        .eq("id", vendorAccount!.provider_id);
+      if (updateErr) throw updateErr;
+      setLogoUrl(publicUrl);
+      queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
+      toast.success("Logo updated");
+    } catch (err: any) {
+      toast.error("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const [form, setForm] = useState({
     name: "",
