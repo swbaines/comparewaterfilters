@@ -9,7 +9,8 @@ export function useProviders() {
       const { data, error } = await supabase
         .from("providers")
         .select("*")
-        .eq("available_for_quote", true);
+        .eq("available_for_quote", true)
+        .eq("approval_status", "approved" as any);
 
       if (error) throw error;
 
