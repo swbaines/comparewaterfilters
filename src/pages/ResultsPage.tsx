@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon } from "lucide-react";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
 import type { Provider } from "@/data/providers";
 import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
   const colors = {
@@ -100,13 +101,23 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
     <Card className={`overflow-hidden border-2 ${rankColors[rank] || ""}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <div>
-            {rankLabels[rank] && (
-              <Badge className={rank === 0 ? "mb-2 bg-primary text-primary-foreground" : "mb-2 bg-accent text-accent-foreground"}>
-                {rankLabels[rank]}
-              </Badge>
-            )}
-            <CardTitle className="text-lg">{provider.name}</CardTitle>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 border">
+              {provider.logo ? (
+                <AvatarImage src={provider.logo} alt={provider.name} />
+              ) : null}
+              <AvatarFallback className="text-xs">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              {rankLabels[rank] && (
+                <Badge className={rank === 0 ? "mb-1 bg-primary text-primary-foreground" : "mb-1 bg-accent text-accent-foreground"}>
+                  {rankLabels[rank]}
+                </Badge>
+              )}
+              <CardTitle className="text-lg">{provider.name}</CardTitle>
+            </div>
           </div>
           <MatchScoreBadge score={matchScore} />
         </div>
