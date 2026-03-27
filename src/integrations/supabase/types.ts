@@ -96,6 +96,7 @@ export type Database = {
           approval_status: Database["public"]["Enums"]["approval_status"]
           available_for_quote: boolean
           brands: string[]
+          certification_files: Json | null
           certifications: string[]
           created_at: string
           description: string
@@ -122,6 +123,7 @@ export type Database = {
           approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
+          certification_files?: Json | null
           certifications?: string[]
           created_at?: string
           description?: string
@@ -148,6 +150,7 @@ export type Database = {
           approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
+          certification_files?: Json | null
           certifications?: string[]
           created_at?: string
           description?: string
