@@ -375,7 +375,7 @@ export default function VendorRegisterPage() {
                               <p className="text-sm font-medium">{certLabel}</p>
                               {file ? (
                                 <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                                  <FileCheck className="h-3 w-3 text-green-600" />
+                                  <FileCheck className="h-3 w-3 text-primary" />
                                   {file.name}
                                 </p>
                               ) : (
