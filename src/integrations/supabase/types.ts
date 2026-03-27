@@ -306,6 +306,77 @@ export type Database = {
           },
         ]
       }
+      vendor_payment_details: {
+        Row: {
+          abn: string
+          account_name: string
+          account_number: string
+          bank_name: string
+          bsb: string
+          business_address: string
+          business_name: string
+          business_postcode: string
+          business_state: string
+          business_suburb: string
+          contact_email: string
+          contact_name: string
+          contact_phone: string
+          created_at: string
+          id: string
+          provider_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          abn?: string
+          account_name?: string
+          account_number?: string
+          bank_name?: string
+          bsb?: string
+          business_address?: string
+          business_name?: string
+          business_postcode?: string
+          business_state?: string
+          business_suburb?: string
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string
+          id?: string
+          provider_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          abn?: string
+          account_name?: string
+          account_number?: string
+          bank_name?: string
+          bsb?: string
+          business_address?: string
+          business_name?: string
+          business_postcode?: string
+          business_state?: string
+          business_suburb?: string
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string
+          id?: string
+          provider_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_payment_details_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: true
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
