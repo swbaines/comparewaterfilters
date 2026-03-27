@@ -67,6 +67,8 @@ export default function VendorRegisterPage() {
     phone: "",
   });
 
+  const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
