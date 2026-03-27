@@ -58,6 +58,20 @@ export default function VendorDashboardPage() {
     },
   });
 
+  const saveVendorNotes = useMutation({
+    mutationFn: async ({ id, notes }: { id: string; notes: string }) => {
+      const { error } = await supabase
+        .from("quote_requests")
+        .update({ vendor_notes: notes })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, { id, notes }) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
+      setSelectedLead((prev: any) => prev ? { ...prev, vendor_notes: notes } : null);
+      toast.success("Notes saved");
+    },
+  });
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
     enabled: !!user,
