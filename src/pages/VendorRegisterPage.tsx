@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck } from "lucide-react";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
