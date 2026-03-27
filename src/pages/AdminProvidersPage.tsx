@@ -541,6 +541,36 @@ export default function AdminProvidersPage() {
                         {reviewProvider.certifications.map((c) => <Badge key={c} variant="outline" className="border-green-300 text-green-700">{c}</Badge>)}
                         {reviewProvider.certifications.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
                       </div>
+                      {/* Certification proof files */}
+                      {(() => {
+                        const certFiles = (reviewProvider as any).certification_files as Record<string, string> | null;
+                        if (!certFiles || Object.keys(certFiles).length === 0) return null;
+                        return (
+                          <div className="mt-2 space-y-1.5">
+                            <span className="text-sm text-muted-foreground">Proof documents:</span>
+                            {Object.entries(certFiles).map(([certKey, filePath]) => (
+                              <div key={certKey} className="flex items-center gap-2 rounded-md border border-input p-2 text-sm">
+                                <FileCheck className="h-4 w-4 text-primary shrink-0" />
+                                <span className="flex-1 truncate capitalize">{certKey.replace(/-/g, " ")}</span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1 h-7 text-xs"
+                                  onClick={async () => {
+                                    const { data, error } = await supabase.storage
+                                      .from("certification-files")
+                                      .createSignedUrl(filePath, 300);
+                                    if (error) { toast.error("Failed to get file"); return; }
+                                    window.open(data.signedUrl, "_blank");
+                                  }}
+                                >
+                                  <FileDown className="h-3 w-3" /> View
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
