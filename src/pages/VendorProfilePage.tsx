@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,7 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -59,6 +60,49 @@ export default function VendorProfilePage() {
   });
 
   const provider = vendorAccount?.providers as any;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (provider?.logo) setLogoUrl(provider.logo);
+  }, [provider]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File must be under 2MB");
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${vendorAccount!.provider_id}/logo.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("vendor-logos")
+        .upload(path, file, { upsert: true });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from("vendor-logos").getPublicUrl(path);
+      const publicUrl = urlData.publicUrl + "?t=" + Date.now();
+      const { error: updateErr } = await supabase
+        .from("providers")
+        .update({ logo: publicUrl })
+        .eq("id", vendorAccount!.provider_id);
+      if (updateErr) throw updateErr;
+      setLogoUrl(publicUrl);
+      queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
+      toast.success("Logo updated");
+    } catch (err: any) {
+      toast.error("Upload failed: " + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const [form, setForm] = useState({
     name: "",
@@ -183,6 +227,26 @@ export default function VendorProfilePage() {
             <CardDescription>Your public-facing business details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Logo Upload */}
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16 border">
+                {logoUrl ? (
+                  <AvatarImage src={logoUrl} alt="Business logo" />
+                ) : null}
+                <AvatarFallback>
+                  <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                </AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <Label>Business Logo</Label>
+                <p className="text-xs text-muted-foreground">JPG, PNG or WebP, max 2MB</p>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+                  {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                  {logoUrl ? "Change Logo" : "Upload Logo"}
+                </Button>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Business Name</Label>
