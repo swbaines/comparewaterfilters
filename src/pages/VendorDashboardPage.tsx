@@ -8,7 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save } from "lucide-react";
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -39,6 +41,7 @@ export default function VendorDashboardPage() {
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [vendorNotes, setVendorNotes] = useState("");
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
@@ -55,6 +58,20 @@ export default function VendorDashboardPage() {
     },
   });
 
+  const saveVendorNotes = useMutation({
+    mutationFn: async ({ id, notes }: { id: string; notes: string }) => {
+      const { error } = await supabase
+        .from("quote_requests")
+        .update({ vendor_notes: notes })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, { id, notes }) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
+      setSelectedLead((prev: any) => prev ? { ...prev, vendor_notes: notes } : null);
+      toast.success("Notes saved");
+    },
+  });
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
     enabled: !!user,
@@ -180,7 +197,7 @@ export default function VendorDashboardPage() {
                 <TableRow
                   key={lead.id}
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => setSelectedLead(lead)}
+                  onClick={() => { setSelectedLead(lead); setVendorNotes(lead.vendor_notes || ""); }}
                 >
                   <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
                   <TableCell>
@@ -421,6 +438,30 @@ export default function VendorDashboardPage() {
                       </Button>
                     ))}
                   </div>
+                </div>
+
+                {/* Vendor Notes */}
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                    <StickyNote className="h-4 w-4" /> Vendor Notes
+                  </h3>
+                  <Textarea
+                    placeholder="Add follow-up notes, call outcomes, next steps..."
+                    value={vendorNotes}
+                    onChange={(e) => setVendorNotes(e.target.value)}
+                    rows={3}
+                    className="mb-2"
+                  />
+                  <Button
+                    size="sm"
+                    disabled={saveVendorNotes.isPending || vendorNotes === (selectedLead.vendor_notes || "")}
+                    onClick={() => saveVendorNotes.mutate({ id: selectedLead.id, notes: vendorNotes })}
+                  >
+                    <Save className="h-4 w-4 mr-1.5" />
+                    Save Notes
+                    {saveVendorNotes.isPending && <Loader2 className="h-3 w-3 ml-1 animate-spin" />}
+                  </Button>
                 </div>
 
                 {/* Contact actions */}
