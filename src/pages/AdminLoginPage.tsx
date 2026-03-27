@@ -7,12 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
@@ -20,24 +18,13 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const { error } = await signIn(email, password);
+    setLoading(false);
 
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({ email, password });
-      setLoading(false);
-      if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success("Account created! You can now sign in.");
-        setIsSignUp(false);
-      }
+    if (error) {
+      toast.error(error.message);
     } else {
-      const { error } = await signIn(email, password);
-      setLoading(false);
-      if (error) {
-        toast.error(error.message);
-      } else {
-        navigate("/admin/providers");
-      }
+      navigate("/admin/providers");
     }
   };
 
@@ -48,8 +35,8 @@ export default function AdminLoginPage() {
           <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
             <Lock className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle>{isSignUp ? "Create Account" : "Admin Login"}</CardTitle>
-          <CardDescription>{isSignUp ? "Create an admin account" : "Sign in to manage providers"}</CardDescription>
+          <CardTitle>Admin Login</CardTitle>
+          <CardDescription>Sign in to manage providers</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,11 +50,8 @@ export default function AdminLoginPage() {
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSignUp ? "Create Account" : "Sign In"}
+              Sign In
             </Button>
-            <button type="button" onClick={() => setIsSignUp(!isSignUp)} className="w-full text-sm text-muted-foreground hover:underline">
-              {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
-            </button>
           </form>
         </CardContent>
       </Card>
