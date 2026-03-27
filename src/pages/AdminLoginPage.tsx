@@ -12,19 +12,31 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await signIn(email, password);
-    setLoading(false);
 
-    if (error) {
-      toast.error(error.message);
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password });
+      setLoading(false);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Account created! You can now sign in.");
+        setIsSignUp(false);
+      }
     } else {
-      navigate("/admin/providers");
+      const { error } = await signIn(email, password);
+      setLoading(false);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        navigate("/admin/providers");
+      }
     }
   };
 
