@@ -197,7 +197,7 @@ export default function VendorDashboardPage() {
                 <TableRow
                   key={lead.id}
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => setSelectedLead(lead)}
+                  onClick={() => { setSelectedLead(lead); setVendorNotes(lead.vendor_notes || ""); }}
                 >
                   <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
                   <TableCell>
