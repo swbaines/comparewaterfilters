@@ -51,11 +51,19 @@ function stringToArray(s: string): string[] {
 }
 
 export default function AdminProvidersPage() {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [scrapeUrl, setScrapeUrl] = useState("");
+  const [scraping, setScraping] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/admin/login");
+  };
   const [scraping, setScraping] = useState(false);
 
   const { data: providers = [], isLoading } = useQuery({
