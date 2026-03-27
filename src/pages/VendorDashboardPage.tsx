@@ -80,9 +80,9 @@ export default function VendorDashboardPage() {
         .from("vendor_accounts")
         .select("*, providers(*)")
         .eq("user_id", user!.id)
-        .maybeSingle();
+        .limit(1);
       if (error) throw error;
-      return data;
+      return data?.[0] ?? null;
     },
   });
 
