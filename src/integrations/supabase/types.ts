@@ -14,6 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
+      invoices: {
+        Row: {
+          created_at: string
+          id: string
+          invoice_number: string
+          lead_count: number
+          notes: string | null
+          paid_at: string | null
+          period_end: string
+          period_start: string
+          provider_id: string
+          status: Database["public"]["Enums"]["invoice_status"]
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invoice_number: string
+          lead_count?: number
+          notes?: string | null
+          paid_at?: string | null
+          period_end: string
+          period_start: string
+          provider_id: string
+          status?: Database["public"]["Enums"]["invoice_status"]
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invoice_number?: string
+          lead_count?: number
+          notes?: string | null
+          paid_at?: string | null
+          period_end?: string
+          period_start?: string
+          provider_id?: string
+          status?: Database["public"]["Enums"]["invoice_status"]
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_prices: {
+        Row: {
+          created_at: string
+          id: string
+          price_per_lead: number
+          system_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price_per_lead?: number
+          system_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price_per_lead?: number
+          system_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       providers: {
         Row: {
           available_for_quote: boolean
@@ -102,12 +179,17 @@ export type Database = {
           customer_suburb: string | null
           household_size: string | null
           id: string
+          invoice_id: string | null
+          lead_price: number | null
+          lead_status: string
           message: string | null
           property_type: string | null
           provider_id: string | null
           provider_name: string
           recommended_systems: string[] | null
           status: string
+          status_updated_at: string | null
+          vendor_notes: string | null
           water_source: string | null
         }
         Insert: {
@@ -122,12 +204,17 @@ export type Database = {
           customer_suburb?: string | null
           household_size?: string | null
           id?: string
+          invoice_id?: string | null
+          lead_price?: number | null
+          lead_status?: string
           message?: string | null
           property_type?: string | null
           provider_id?: string | null
           provider_name: string
           recommended_systems?: string[] | null
           status?: string
+          status_updated_at?: string | null
+          vendor_notes?: string | null
           water_source?: string | null
         }
         Update: {
@@ -142,15 +229,27 @@ export type Database = {
           customer_suburb?: string | null
           household_size?: string | null
           id?: string
+          invoice_id?: string | null
+          lead_price?: number | null
+          lead_status?: string
           message?: string | null
           property_type?: string | null
           provider_id?: string | null
           provider_name?: string
           recommended_systems?: string[] | null
           status?: string
+          status_updated_at?: string | null
+          vendor_notes?: string | null
           water_source?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "quote_requests_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quote_requests_provider_id_fkey"
             columns: ["provider_id"]
@@ -178,6 +277,35 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          provider_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_accounts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -193,6 +321,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
       price_range: "budget" | "mid" | "premium"
     }
     CompositeTypes: {
@@ -322,6 +451,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
       price_range: ["budget", "mid", "premium"],
     },
   },
