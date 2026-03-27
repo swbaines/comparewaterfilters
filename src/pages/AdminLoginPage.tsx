@@ -48,8 +48,8 @@ export default function AdminLoginPage() {
           <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
             <Lock className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle>Admin Login</CardTitle>
-          <CardDescription>Sign in to manage providers</CardDescription>
+          <CardTitle>{isSignUp ? "Create Account" : "Admin Login"}</CardTitle>
+          <CardDescription>{isSignUp ? "Create an admin account" : "Sign in to manage providers"}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,8 +63,11 @@ export default function AdminLoginPage() {
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
+              {isSignUp ? "Create Account" : "Sign In"}
             </Button>
+            <button type="button" onClick={() => setIsSignUp(!isSignUp)} className="w-full text-sm text-muted-foreground hover:underline">
+              {isSignUp ? "Already have an account? Sign in" : "Need an account? Sign up"}
+            </button>
           </form>
         </CardContent>
       </Card>
