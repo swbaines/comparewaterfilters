@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -39,6 +39,21 @@ export default function VendorDashboardPage() {
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const queryClient = useQueryClient();
+
+  const updateLeadStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const { error } = await supabase
+        .from("quote_requests")
+        .update({ lead_status: status, status_updated_at: new Date().toISOString() })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, { id, status }) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
+      setSelectedLead((prev: any) => prev ? { ...prev, lead_status: status } : null);
+    },
+  });
 
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
     queryKey: ["vendor-account", user?.id],
@@ -379,7 +394,36 @@ export default function VendorDashboardPage() {
                   </>
                 )}
 
-                {/* Action buttons */}
+                {/* Update Status */}
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Update Status</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: "new", label: "New", icon: ClipboardList, variant: "outline" as const },
+                      { value: "contacted", label: "Contacted", icon: PhoneCall, variant: "outline" as const },
+                      { value: "won", label: "Won", icon: CheckCircle2, variant: "outline" as const },
+                      { value: "lost", label: "Lost", icon: XCircle, variant: "outline" as const },
+                    ].map(({ value, label, icon: Icon, variant }) => (
+                      <Button
+                        key={value}
+                        size="sm"
+                        variant={selectedLead.lead_status === value ? "default" : variant}
+                        className={selectedLead.lead_status === value ? "" : ""}
+                        disabled={updateLeadStatus.isPending || selectedLead.lead_status === value}
+                        onClick={() => updateLeadStatus.mutate({ id: selectedLead.id, status: value })}
+                      >
+                        <Icon className="h-4 w-4 mr-1.5" />
+                        {label}
+                        {updateLeadStatus.isPending && updateLeadStatus.variables?.status === value && (
+                          <Loader2 className="h-3 w-3 ml-1 animate-spin" />
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Contact actions */}
                 <Separator />
                 <div className="flex gap-3">
                   {selectedLead.customer_mobile && (
