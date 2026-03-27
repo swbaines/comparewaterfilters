@@ -23,6 +23,15 @@ const AU_STATES = [
   { value: "NT", label: "NT" },
 ];
 
+const SYSTEM_TYPES = [
+  { value: "under-sink-carbon", label: "Under-sink Carbon Filter" },
+  { value: "reverse-osmosis", label: "Reverse Osmosis" },
+  { value: "whole-house-filtration", label: "Whole Home Filtration" },
+  { value: "uv-system", label: "UV System" },
+  { value: "water-softener", label: "Water Softener" },
+  { value: "single-tap-filter", label: "Single Tap Filter" },
+];
+
 type Step = "signup" | "profile" | "success";
 
 export default function VendorRegisterPage() {
@@ -41,7 +50,7 @@ export default function VendorRegisterPage() {
     description: "",
     states: [] as string[],
     postcodeRanges: "",
-    systemTypes: "",
+    systemTypes: [] as string[],
     brands: "",
     priceRange: "mid" as "budget" | "mid" | "premium",
     yearsInBusiness: 0,
