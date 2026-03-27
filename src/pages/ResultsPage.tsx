@@ -101,13 +101,23 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
     <Card className={`overflow-hidden border-2 ${rankColors[rank] || ""}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
-          <div>
-            {rankLabels[rank] && (
-              <Badge className={rank === 0 ? "mb-2 bg-primary text-primary-foreground" : "mb-2 bg-accent text-accent-foreground"}>
-                {rankLabels[rank]}
-              </Badge>
-            )}
-            <CardTitle className="text-lg">{provider.name}</CardTitle>
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 border">
+              {provider.logo ? (
+                <AvatarImage src={provider.logo} alt={provider.name} />
+              ) : null}
+              <AvatarFallback className="text-xs">
+                <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              {rankLabels[rank] && (
+                <Badge className={rank === 0 ? "mb-1 bg-primary text-primary-foreground" : "mb-1 bg-accent text-accent-foreground"}>
+                  {rankLabels[rank]}
+                </Badge>
+              )}
+              <CardTitle className="text-lg">{provider.name}</CardTitle>
+            </div>
           </div>
           <MatchScoreBadge score={matchScore} />
         </div>
