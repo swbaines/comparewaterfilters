@@ -184,6 +184,10 @@ export default function VendorDashboardPage() {
             <p className="text-muted-foreground">View your leads, track sales, and manage invoices</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/vendor/profile")}>
+              <Building2 className="h-4 w-4 mr-2" />
+              Edit Profile
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/vendor/settings")}>
               <Settings className="h-4 w-4 mr-2" />
               Settings
