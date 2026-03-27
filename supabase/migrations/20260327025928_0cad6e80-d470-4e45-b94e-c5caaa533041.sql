@@ -1,0 +1,1 @@
+UPDATE invoices SET total_amount = 185, notes = 'March 2026 leads: 1x Whole House Carbon ($50), 1x Reverse Osmosis ($30), 1x Whole House Combo ($50), 1x Under-Sink Carbon ($25), 1x Reverse Osmosis ($30)' WHERE id = 'ff9bb213-a510-4ef1-85bc-07c60946409d';
