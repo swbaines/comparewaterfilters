@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
