@@ -11,6 +11,7 @@ import type { Recommendation } from "@/data/recommendations";
 import type { Provider } from "@/data/providers";
 import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
   const colors = {
