@@ -55,7 +55,7 @@ export default function ContactPage() {
               <p className="mt-2 text-sm text-muted-foreground">We've received your message and will get back to you soon.</p>
               <Link to="/quiz">
                 <Button className="mt-6 gap-2">
-                  Start Your Water Match <ArrowRight className="h-4 w-4" />
+                  Find My System <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
             </CardContent>
