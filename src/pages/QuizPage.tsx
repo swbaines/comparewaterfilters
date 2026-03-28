@@ -132,7 +132,7 @@ export default function QuizPage() {
       case 5: return !!answers.budget;
       case 6: return true; // optional
       case 7: return true; // optional
-      case 8: return !!(answers.firstName && answers.email && answers.consent);
+      case 8: return !!(answers.firstName && answers.email && answers.mobile && answers.consent);
       default: return true;
     }
   };
@@ -336,8 +336,8 @@ export default function QuizPage() {
                   <Input type="email" placeholder="you@email.com" value={answers.email} onChange={(e) => set("email", e.target.value)} />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Mobile</label>
-                  <Input placeholder="04XX XXX XXX" value={answers.mobile} onChange={(e) => set("mobile", e.target.value)} />
+                  <label className="mb-1.5 block text-sm font-medium">Mobile *</label>
+                  <Input placeholder="04XX XXX XXX" value={answers.mobile} onChange={(e) => set("mobile", e.target.value)} required />
                 </div>
                 <div className="flex items-start gap-2">
                   <Checkbox

@@ -53,8 +53,8 @@ export default function RequestQuoteDialog({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.email.trim()) {
-      toast.error("Please fill in your name and email.");
+    if (!formData.name.trim() || !formData.email.trim() || !formData.mobile.trim()) {
+      toast.error("Please fill in your name, email, and mobile number.");
       return;
     }
     setSending(true);
@@ -200,6 +200,7 @@ export default function RequestQuoteDialog({
                 id="quote-mobile"
                 value={formData.mobile}
                 onChange={(e) => setFormData((d) => ({ ...d, mobile: e.target.value }))}
+                required
               />
             </div>
           </div>
