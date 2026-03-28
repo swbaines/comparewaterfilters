@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
               <Droplets className="h-5 w-5 text-primary" />
-              WaterFilter Compare
+              Compare Water Filters
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
             Helping Australian households choose the right water filtration system with clear, independent guidance.
@@ -44,7 +44,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-10 border-t pt-6 flex items-center justify-between text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} WaterFilter Compare. All rights reserved. Recommendations are educational and not a substitute for professional assessment.</span>
+          <span>© {new Date().getFullYear()} Compare Water Filters. All rights reserved. Recommendations are educational and not a substitute for professional assessment.</span>
           <Link to="/admin/login" className="hover:text-foreground transition-colors">Admin</Link>
         </div>
       </div>

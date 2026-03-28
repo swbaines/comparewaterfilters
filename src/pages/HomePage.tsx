@@ -44,7 +44,7 @@ export default function HomePage() {
             Your shortcut to cleaner, healthier water at home
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            WaterFilter Compare helps you cut through the noise — compare filtration systems, understand real pricing, and get matched to the right setup for your home in minutes.
+            Compare Water Filters helps you cut through the noise — compare filtration systems, understand real pricing, and get matched to the right setup for your home in minutes.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">

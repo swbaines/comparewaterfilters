@@ -30,7 +30,7 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold text-foreground">
           <Droplets className="h-6 w-6 text-primary" />
-          <span>WaterFilter Compare</span>
+          <span>Compare Water Filters</span>
         </Link>
 
         {/* Desktop nav */}
