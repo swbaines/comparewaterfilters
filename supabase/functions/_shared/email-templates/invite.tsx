@@ -9,11 +9,14 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Text,
   Hr,
 } from 'npm:@react-email/components@0.0.22'
+
+const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-droplets.svg'
 
 interface InviteEmailProps {
   siteName: string
@@ -31,7 +34,8 @@ export const InviteEmail = ({
     <Preview>You've been invited to join Compare Water Filters</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={brand}>💧 Compare Water Filters</Text>
+        <Img src={LOGO_URL} width="40" height="40" alt="Compare Water Filters" style={{ marginBottom: '8px' }} />
+        <Text style={brand}>Compare Water Filters</Text>
         <Hr style={divider} />
         <Heading style={h1}>You've been invited</Heading>
         <Text style={text}>
