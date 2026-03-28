@@ -40,4 +40,40 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://www.comparewaterfilters.com.au/learn/reverse-osmosis-vs-whole-house</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-11-15</lastmod>
+  </url>
+  <url>
+    <loc>https://www.comparewaterfilters.com.au/learn/does-carbon-remove-fluoride</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-10-28</lastmod>
+  </url>
+  <url>
+    <loc>https://www.comparewaterfilters.com.au/learn/what-does-a-water-softener-do</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-10-10</lastmod>
+  </url>
+  <url>
+    <loc>https://www.comparewaterfilters.com.au/learn/why-water-filters-expensive</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-09-22</lastmod>
+  </url>
+  <url>
+    <loc>https://www.comparewaterfilters.com.au/learn/best-water-filter-melbourne</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-09-05</lastmod>
+  </url>
+  <url>
+    <loc>https://www.comparewaterfilters.com.au/learn/questions-before-buying</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-08-18</lastmod>
+  </url>
 </urlset>
