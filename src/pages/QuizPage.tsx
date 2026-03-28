@@ -140,6 +140,13 @@ export default function QuizPage() {
   const handleSubmit = () => {
     // Store answers in sessionStorage for results page
     sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
+    // Meta Pixel: track quiz completion as CompleteRegistration event
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'CompleteRegistration', {
+        content_name: 'Water Filter Quiz',
+        status: 'complete',
+      });
+    }
     navigate("/results");
   };
 

@@ -78,6 +78,13 @@ export default function RequestQuoteDialog({
       });
       if (error) throw error;
       setSubmitted(true);
+      // Meta Pixel: track quote request as Lead event
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead', {
+          content_name: provider.name,
+          content_category: recommendedSystems.join(', '),
+        });
+      }
       toast.success(`Quote request sent to ${provider.name}!`);
     } catch (err: any) {
       toast.error(err.message || "Failed to send quote request");
