@@ -33,7 +33,7 @@ export default function ContactPage() {
               <Mail className="mt-0.5 h-5 w-5 text-primary" />
               <div>
                 <p className="font-medium">Email</p>
-                <p className="text-sm text-muted-foreground">hello@watermatch.com.au</p>
+                <p className="text-sm text-muted-foreground">hello@comparewaterfilters.com.au</p>
               </div>
             </CardContent>
           </Card>
