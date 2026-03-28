@@ -262,6 +262,72 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_submissions: {
+        Row: {
+          bathrooms: string | null
+          budget: string | null
+          concerns: string[] | null
+          consent: boolean | null
+          coverage: string | null
+          created_at: string
+          email: string
+          first_name: string
+          household_size: string | null
+          id: string
+          mobile: string | null
+          notes: string | null
+          ownership_status: string | null
+          postcode: string | null
+          priorities: string[] | null
+          property_type: string | null
+          state: string | null
+          suburb: string | null
+          water_source: string | null
+        }
+        Insert: {
+          bathrooms?: string | null
+          budget?: string | null
+          concerns?: string[] | null
+          consent?: boolean | null
+          coverage?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          household_size?: string | null
+          id?: string
+          mobile?: string | null
+          notes?: string | null
+          ownership_status?: string | null
+          postcode?: string | null
+          priorities?: string[] | null
+          property_type?: string | null
+          state?: string | null
+          suburb?: string | null
+          water_source?: string | null
+        }
+        Update: {
+          bathrooms?: string | null
+          budget?: string | null
+          concerns?: string[] | null
+          consent?: boolean | null
+          coverage?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          household_size?: string | null
+          id?: string
+          mobile?: string | null
+          notes?: string | null
+          ownership_status?: string | null
+          postcode?: string | null
+          priorities?: string[] | null
+          property_type?: string | null
+          state?: string | null
+          suburb?: string | null
+          water_source?: string | null
+        }
+        Relationships: []
+      }
       quote_requests: {
         Row: {
           budget: string | null
