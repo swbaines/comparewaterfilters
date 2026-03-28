@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import PageMeta from "@/components/PageMeta";
 import { articles } from "@/data/articles";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";

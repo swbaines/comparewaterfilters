@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SectionHeading from "@/components/SectionHeading";
@@ -34,6 +35,11 @@ const concerns = [
 export default function HomePage() {
   return (
     <div>
+      <PageMeta
+        title="Compare Water Filters — Find the Right System for Your Home"
+        description="Compare water filtration systems, understand pricing, and get matched to the best option for your Australian home. Independent, free guidance."
+        path="/"
+      />
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28">
         <div className="container relative z-10 text-center">

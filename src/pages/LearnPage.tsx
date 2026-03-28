@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PageMeta from "@/components/PageMeta";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
@@ -8,6 +9,11 @@ import SectionHeading from "@/components/SectionHeading";
 export default function LearnPage() {
   return (
     <div className="py-12 sm:py-16">
+      <PageMeta
+        title="Learn About Water Filtration"
+        description="Guides and articles on water quality, filtration methods, and choosing the right system for Australian homes."
+        path="/learn"
+      />
       <div className="container max-w-4xl">
         <SectionHeading
           badge="Education hub"

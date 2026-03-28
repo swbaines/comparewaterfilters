@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import PageMeta from "@/components/PageMeta";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -250,6 +251,11 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
+      <PageMeta
+        title="Your Recommendations"
+        description="Your personalised water filter recommendations based on your home profile and water concerns."
+        path="/results"
+      />
       <div className="container max-w-5xl">
         {/* Summary */}
         <div className="mb-10 text-center">

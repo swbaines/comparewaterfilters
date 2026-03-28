@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,6 +156,11 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
+      <PageMeta
+        title="Water Filter Quiz"
+        description="Answer a few quick questions about your home and water concerns to get personalised water filter recommendations."
+        path="/quiz"
+      />
       <div className="container max-w-2xl">
         {/* Progress */}
         <div className="mb-6">
