@@ -125,7 +125,7 @@ export default function QuizPage() {
 
   const canNext = (): boolean => {
     switch (step) {
-      case 1: return !!(answers.state && answers.propertyType && answers.ownershipStatus && answers.householdSize && answers.bathrooms);
+      case 1: return !!(answers.postcode && answers.state && answers.propertyType && answers.ownershipStatus && answers.householdSize && answers.bathrooms);
       case 2: return !!answers.waterSource;
       case 3: return answers.concerns.length > 0;
       case 4: return !!answers.coverage;
