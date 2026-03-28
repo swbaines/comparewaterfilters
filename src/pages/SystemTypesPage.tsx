@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
@@ -14,6 +15,15 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export default function SystemTypesPage() {
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).fbq) {
+      (window as any).fbq('track', 'ViewContent', {
+        content_name: 'Water Filter System Types',
+        content_type: 'product_group',
+      });
+    }
+  }, []);
+
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
