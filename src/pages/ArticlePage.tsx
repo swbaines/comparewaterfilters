@@ -21,7 +21,7 @@ export default function ArticlePage() {
     <div className="py-12 sm:py-16">
       <PageMeta
         title={article.title}
-        description={article.excerpt}
+        description={article.seoDescription || article.summary}
         path={`/learn/${article.slug}`}
       />
       <div className="container max-w-3xl">
