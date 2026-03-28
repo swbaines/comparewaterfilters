@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "comparewaterfilters"
+const SITE_NAME = "Compare Water Filters"
 const SENDER_DOMAIN = "notify.comparewaterfilters.com.au"
 const ROOT_DOMAIN = "comparewaterfilters.com.au"
 const FROM_DOMAIN = "comparewaterfilters.com.au" // Domain shown in From address (may be root or sender subdomain)
