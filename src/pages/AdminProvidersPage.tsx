@@ -478,7 +478,7 @@ export default function AdminProvidersPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Rating (0-5)</Label>
-                  <Input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => updateField("rating", parseFloat(e.target.value) || 0)} />
+                  <Input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => updateField("rating", e.target.value === "" ? 0 : parseFloat(e.target.value))} />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Review count</Label>
