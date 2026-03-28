@@ -30,7 +30,7 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold text-foreground">
           <Droplets className="h-6 w-6 text-primary" />
-          <span>Water Match <span className="font-medium text-muted-foreground">Australia</span></span>
+          <span>FilterGuide</span>
         </Link>
 
         {/* Desktop nav */}
@@ -61,7 +61,7 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           <Link to="/quiz">
-            <Button size="sm" className="ml-2">Start Your Water Match</Button>
+            <Button size="sm" className="ml-2">Find My System</Button>
           </Link>
         </nav>
 
@@ -101,7 +101,7 @@ export default function Header() {
               </Link>
             ))}
             <Link to="/quiz" onClick={() => setOpen(false)}>
-              <Button className="mt-2 w-full">Start Your Water Match</Button>
+              <Button className="mt-2 w-full">Find My System</Button>
             </Link>
           </nav>
         </div>
