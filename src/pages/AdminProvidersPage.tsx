@@ -398,8 +398,30 @@ export default function AdminProvidersPage() {
               {/* Location */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label>States (comma-separated)</Label>
-                  <Input value={arrayFieldToString(form.states)} onChange={(e) => updateField("states", stringToArray(e.target.value))} placeholder="NSW, VIC, QLD" />
+                  <Label>States</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start font-normal">
+                        {form.states && form.states.length > 0 ? form.states.join(", ") : "Select states..."}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56 p-3">
+                      <div className="space-y-2">
+                        {AU_STATES.map((state) => (
+                          <label key={state} className="flex items-center gap-2 text-sm cursor-pointer">
+                            <Checkbox
+                              checked={(form.states || []).includes(state)}
+                              onCheckedChange={(checked) => {
+                                const current = form.states || [];
+                                updateField("states", checked ? [...current, state] : current.filter(s => s !== state));
+                              }}
+                            />
+                            {state}
+                          </label>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Postcode ranges</Label>
@@ -409,8 +431,32 @@ export default function AdminProvidersPage() {
 
               {/* Systems & brands */}
               <div className="space-y-1.5">
-                <Label>System types (comma-separated IDs)</Label>
-                <Input value={arrayFieldToString(form.system_types)} onChange={(e) => updateField("system_types", stringToArray(e.target.value))} placeholder="under-sink-carbon, reverse-osmosis, whole-house-carbon" />
+                <Label>System types</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start font-normal">
+                      {form.system_types && form.system_types.length > 0
+                        ? form.system_types.map(id => systemTypes.find(s => s.id === id)?.name || id).join(", ")
+                        : "Select system types..."}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80 p-3">
+                    <div className="space-y-2">
+                      {systemTypes.map((st) => (
+                        <label key={st.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <Checkbox
+                            checked={(form.system_types || []).includes(st.id)}
+                            onCheckedChange={(checked) => {
+                              const current = form.system_types || [];
+                              updateField("system_types", checked ? [...current, st.id] : current.filter(id => id !== st.id));
+                            }}
+                          />
+                          {st.name}
+                        </label>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="space-y-1.5">
                 <Label>Brands</Label>
