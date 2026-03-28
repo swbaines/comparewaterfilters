@@ -9,7 +9,7 @@ interface PageMetaProps {
 
 const SITE_NAME = "Compare Water Filters";
 const BASE_URL = "https://www.comparewaterfilters.com.au";
-const DEFAULT_OG_IMAGE = `${BASE_URL}/og-default.png`;
+const DEFAULT_OG_IMAGE = `${BASE_URL}/og-default.jpg`;
 
 export default function PageMeta({
   title,
