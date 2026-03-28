@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Droplets } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
+import logoAlt from "@/assets/logo-compare-water-filters-alt.png";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,9 +29,8 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold text-foreground">
-          <Droplets className="h-6 w-6 text-primary" />
-          <span>Compare Water Filters</span>
+        <Link to="/" className="flex items-center">
+          <img src={logoAlt} alt="Compare Water Filters" className="h-10" />
         </Link>
 
         {/* Desktop nav */}
