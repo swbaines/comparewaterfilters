@@ -49,7 +49,7 @@ export default function HomePage() {
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
               <Button size="lg" className="gap-2 text-base">
-                Start Your Water Match <ArrowRight className="h-4 w-4" />
+                Find My System <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/system-types">
@@ -164,7 +164,7 @@ export default function HomePage() {
           </p>
           <Link to="/quiz">
             <Button size="lg" className="mt-8 gap-2">
-              Start Your Water Match <ArrowRight className="h-4 w-4" />
+              Find My System <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>
