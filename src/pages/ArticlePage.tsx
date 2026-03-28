@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import PageMeta from "@/components/PageMeta";
 import { articles } from "@/data/articles";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
@@ -18,6 +19,11 @@ export default function ArticlePage() {
 
   return (
     <div className="py-12 sm:py-16">
+      <PageMeta
+        title={article.title}
+        description={article.seoDescription || article.summary}
+        path={`/learn/${article.slug}`}
+      />
       <div className="container max-w-3xl">
         <Link to="/learn" className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-3 w-3" /> Back to articles

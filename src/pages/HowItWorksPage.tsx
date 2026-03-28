@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
 import { ShieldCheck, BarChart3, MapPin, BookOpen } from "lucide-react";
 
@@ -12,6 +13,11 @@ const points = [
 export default function HowItWorksPage() {
   return (
     <div className="py-12 sm:py-16">
+      <PageMeta
+        title="How It Works"
+        description="Learn how Compare Water Filters helps you find the right water filtration system — from quiz to personalised recommendations."
+        path="/how-it-works"
+      />
       <div className="container max-w-3xl">
         <SectionHeading
           badge="How it works"

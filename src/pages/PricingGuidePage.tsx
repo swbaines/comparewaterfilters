@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
@@ -25,6 +26,11 @@ const factors = [
 export default function PricingGuidePage() {
   return (
     <div className="py-12 sm:py-16">
+      <PageMeta
+        title="Water Filter Pricing Guide"
+        description="Understand Australian water filter costs — installation prices, annual maintenance, and what affects the total cost of ownership."
+        path="/pricing-guide"
+      />
       <div className="container max-w-4xl">
         <SectionHeading
           badge="Pricing guide"

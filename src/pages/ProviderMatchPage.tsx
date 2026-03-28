@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,11 @@ export default function ProviderMatchPage() {
 
   return (
     <div className="py-12 sm:py-16">
+      <PageMeta
+        title="Get Matched With Providers"
+        description="Request quotes from vetted water filter providers in your area. Free, no-obligation matching service."
+        path="/provider-match"
+      />
       <div className="container max-w-2xl">
         <SectionHeading badge="Provider match" title="Request matched providers" subtitle="Tell us a bit more so we can connect you with the right providers in your area." />
 
