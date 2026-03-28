@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
