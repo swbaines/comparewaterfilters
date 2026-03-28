@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -137,7 +138,32 @@ export default function QuizPage() {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Save to database so the lead is never lost
+    try {
+      await supabase.from("quiz_submissions").insert({
+        first_name: answers.firstName,
+        email: answers.email,
+        mobile: answers.mobile || null,
+        postcode: answers.postcode || null,
+        suburb: answers.suburb || null,
+        state: answers.state || null,
+        property_type: answers.propertyType || null,
+        ownership_status: answers.ownershipStatus || null,
+        household_size: answers.householdSize || null,
+        bathrooms: answers.bathrooms || null,
+        water_source: answers.waterSource || null,
+        concerns: answers.concerns,
+        coverage: answers.coverage || null,
+        budget: answers.budget || null,
+        priorities: answers.priorities || [],
+        notes: answers.notes || null,
+        consent: answers.consent,
+      });
+    } catch (err) {
+      console.error("Failed to save quiz submission:", err);
+    }
+
     // Store answers in sessionStorage for results page
     sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
     // Meta Pixel: track quiz completion as CompleteRegistration event
