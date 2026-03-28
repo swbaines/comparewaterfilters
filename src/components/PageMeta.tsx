@@ -19,7 +19,7 @@ export default function PageMeta({
 }: PageMetaProps) {
   useEffect(() => {
     const fullTitle =
-      title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
+      title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
     document.title = fullTitle;
 
     const setMeta = (attr: string, key: string, content: string) => {
