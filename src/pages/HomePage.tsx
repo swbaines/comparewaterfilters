@@ -38,13 +38,13 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28">
         <div className="container relative z-10 text-center">
           <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
-            Independent guidance for Australian homes
+            Australia's independent water filtration guide
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Find the right water filtration system for your home
+            Your shortcut to cleaner, healthier water at home
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            Compare system types, understand pricing, and get matched to the best option for your water concerns, home setup, and budget.
+            FilterGuide helps you cut through the noise — compare filtration systems, understand real pricing, and get matched to the right setup for your home in minutes.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
