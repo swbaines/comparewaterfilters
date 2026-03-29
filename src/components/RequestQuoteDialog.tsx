@@ -28,7 +28,7 @@ const budgetLabels: Record<string, string> = {
 };
 
 const waterSourceLabels: Record<string, string> = {
-  "mains": "Mains water",
+  "town-water": "Town water (mains)",
   "rainwater": "Rainwater / tank",
   "tank-water": "Tank water",
   "bore-water": "Bore water",
