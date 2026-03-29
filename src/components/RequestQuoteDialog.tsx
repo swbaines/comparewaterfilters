@@ -102,19 +102,25 @@ export default function RequestQuoteDialog({
       // Look up vendor contact email from provider record
       const { data: providerData } = await supabase
         .from("providers")
-        .select("website, phone")
+        .select("contact_email")
         .eq("id", provider.id)
         .maybeSingle();
 
-      // Send vendor notification (to admin for now — vendor emails come from vendor_accounts)
-      supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "vendor-lead-notification",
-          recipientEmail: formData.email, // Will be replaced with vendor email once vendor accounts are set up
-          idempotencyKey: `vendor-lead-${quoteId}`,
-          templateData: vendorTemplateData,
-        },
-      }).catch((err) => console.error("Failed to send vendor notification:", err));
+      const vendorEmail = providerData?.contact_email;
+
+      // Send vendor notification if contact email is set
+      if (vendorEmail) {
+        supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "vendor-lead-notification",
+            recipientEmail: vendorEmail,
+            idempotencyKey: `vendor-lead-${quoteId}`,
+            templateData: vendorTemplateData,
+          },
+        }).catch((err) => console.error("Failed to send vendor notification:", err));
+      } else {
+        console.warn(`No contact_email set for provider ${provider.name} — vendor notification skipped.`);
+      }
 
       // Send customer confirmation email
       supabase.functions.invoke("send-transactional-email", {

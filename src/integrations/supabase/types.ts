@@ -185,6 +185,7 @@ export type Database = {
           brands: string[]
           certification_files: Json | null
           certifications: string[]
+          contact_email: string | null
           created_at: string
           description: string
           highlights: string[]
@@ -212,6 +213,7 @@ export type Database = {
           brands?: string[]
           certification_files?: Json | null
           certifications?: string[]
+          contact_email?: string | null
           created_at?: string
           description?: string
           highlights?: string[]
@@ -239,6 +241,7 @@ export type Database = {
           brands?: string[]
           certification_files?: Json | null
           certifications?: string[]
+          contact_email?: string | null
           created_at?: string
           description?: string
           highlights?: string[]
