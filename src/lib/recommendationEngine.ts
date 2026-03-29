@@ -390,8 +390,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   const secondaryId = (second?.id ?? "reverse-osmosis") as SystemId;
   const premiumId = (third?.id ?? "whole-house") as SystemId;
 
+  // Map engine system IDs to recommendation data IDs
+  const idMap: Record<string, string> = {
+    "whole-house": "whole-house-carbon",
+  };
+
   const getRec = (id: string): Recommendation => {
-    const rec = recommendations.find((r) => r.id === id);
+    const mappedId = idMap[id] || id;
+    const rec = recommendations.find((r) => r.id === mappedId);
     if (!rec) throw new Error(`Recommendation not found for id: ${id}`);
     return rec;
   };
