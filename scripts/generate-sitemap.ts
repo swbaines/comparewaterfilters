@@ -6,6 +6,7 @@ const BASE = "https://www.comparewaterfilters.com.au";
 const staticPages = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/quiz", changefreq: "monthly", priority: "0.9" },
+  { path: "/results", changefreq: "monthly", priority: "0.8" },
   { path: "/system-types", changefreq: "monthly", priority: "0.8" },
   { path: "/pricing-guide", changefreq: "monthly", priority: "0.8" },
   { path: "/how-it-works", changefreq: "monthly", priority: "0.7" },
