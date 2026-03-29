@@ -140,10 +140,12 @@ function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
       break;
 
     case "water-softener":
-      if (hasConcern("hard-water")) { score += 50; reasons.push("The most effective solution for hard water and scale"); }
+      if (!hasConcern("hard-water")) {
+        return { id, score: -1, reasons: ["Water softeners are only recommended when scale/hard water is a concern"] };
+      }
+      score += 50; reasons.push("The most effective solution for hard water and scale");
       if (hasConcern("appliance")) { score += 20; reasons.push("Significantly extends the life of appliances"); }
       if (hasConcern("skin-shower")) { score += 15; reasons.push("Soft water is gentler on skin and hair"); }
-      if (!hasConcern("hard-water")) { score -= 20; } // Softener not very useful without hard water concern
       break;
 
     case "uv-system":
