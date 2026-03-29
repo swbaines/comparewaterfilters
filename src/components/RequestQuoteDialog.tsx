@@ -59,7 +59,9 @@ export default function RequestQuoteDialog({
     }
     setSending(true);
     try {
+      const quoteId = crypto.randomUUID();
       const { error } = await supabase.from("quote_requests").insert({
+        id: quoteId,
         provider_id: provider.id,
         provider_name: provider.name,
         customer_name: formData.name,
@@ -77,6 +79,59 @@ export default function RequestQuoteDialog({
         message: formData.message || null,
       });
       if (error) throw error;
+
+      // Send vendor lead notification email
+      const vendorTemplateData = {
+        providerName: provider.name,
+        customerName: formData.name,
+        customerEmail: formData.email,
+        customerMobile: formData.mobile || '',
+        customerSuburb: answers.suburb,
+        customerState: answers.state,
+        customerPostcode: answers.postcode,
+        propertyType: answers.propertyType,
+        householdSize: answers.householdSize,
+        waterSource: answers.waterSource,
+        budget: answers.budget,
+        concerns: answers.concerns,
+        recommendedSystems,
+        message: formData.message || '',
+        createdAt: new Date().toISOString(),
+      };
+
+      // Look up vendor contact email from provider record
+      const { data: providerData } = await supabase
+        .from("providers")
+        .select("website, phone")
+        .eq("id", provider.id)
+        .maybeSingle();
+
+      // Send vendor notification (to admin for now — vendor emails come from vendor_accounts)
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "vendor-lead-notification",
+          recipientEmail: formData.email, // Will be replaced with vendor email once vendor accounts are set up
+          idempotencyKey: `vendor-lead-${quoteId}`,
+          templateData: vendorTemplateData,
+        },
+      }).catch((err) => console.error("Failed to send vendor notification:", err));
+
+      // Send customer confirmation email
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "customer-quote-confirmation",
+          recipientEmail: formData.email,
+          idempotencyKey: `customer-confirm-${quoteId}`,
+          templateData: {
+            customerName: formData.name,
+            providerName: provider.name,
+            customerEmail: formData.email,
+            customerMobile: formData.mobile || '',
+            recommendedSystems,
+          },
+        },
+      }).catch((err) => console.error("Failed to send customer confirmation:", err));
+
       setSubmitted(true);
       // Meta Pixel: track quote request as Lead event
       if (typeof window !== 'undefined' && (window as any).fbq) {
