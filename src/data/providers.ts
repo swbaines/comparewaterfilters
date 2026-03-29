@@ -5,19 +5,19 @@ export interface Provider {
   description: string;
   logo?: string;
   location: {
-    states: string[];        // which states they service
-    postcodeRanges?: string[]; // optional specific postcode ranges
+    states: string[];
+    postcodeRanges?: string[];
   };
-  systemTypes: string[];     // recommendation IDs they install
+  systemTypes: string[]; // must match IDs in recommendationEngine.ts
   brands: string[];
   priceRange: "budget" | "mid" | "premium";
-  rating: number;            // out of 5
+  rating: number;
   reviewCount: number;
   yearsInBusiness: number;
   certifications: string[];
   highlights: string[];
   availableForQuote: boolean;
-  responseTime: string;      // e.g. "Within 24 hours"
+  responseTime: string;
   warranty: string;
   website?: string;
   phone?: string;
@@ -28,9 +28,10 @@ export const providers: Provider[] = [
     id: "pure-flow-nsw",
     name: "PureFlow Water Systems",
     slug: "pureflow-water-systems",
-    description: "Sydney-based water filtration specialists with over 15 years of experience installing residential and commercial systems across NSW.",
+    description:
+      "Sydney-based water filtration specialists with over 15 years of experience installing residential and commercial systems across NSW.",
     location: { states: ["NSW"], postcodeRanges: ["2000-2999"] },
-    systemTypes: ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo"],
+    systemTypes: ["under-sink-carbon", "reverse-osmosis", "whole-house", "alkaline-filter"],
     brands: ["Puretec", "Aquasana", "3M", "Pentek"],
     priceRange: "mid",
     rating: 4.8,
@@ -47,9 +48,17 @@ export const providers: Provider[] = [
     id: "aqua-guard-vic",
     name: "AquaGuard Melbourne",
     slug: "aquaguard-melbourne",
-    description: "Melbourne's trusted water filtration team. Specialising in whole house systems and reverse osmosis installations for families across Victoria.",
+    description:
+      "Melbourne's trusted water filtration team. Specialising in whole house systems and reverse osmosis installations for families across Victoria.",
     location: { states: ["VIC"], postcodeRanges: ["3000-3999"] },
-    systemTypes: ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo", "water-softener"],
+    systemTypes: [
+      "under-sink-carbon",
+      "reverse-osmosis",
+      "whole-house",
+      "water-softener",
+      "alkaline-filter",
+      "shower-filter",
+    ],
     brands: ["Puretec", "WaterCo", "Davey", "Filtersafe"],
     priceRange: "mid",
     rating: 4.7,
@@ -66,9 +75,10 @@ export const providers: Provider[] = [
     id: "clean-water-qld",
     name: "Clean Water Co. QLD",
     slug: "clean-water-co-qld",
-    description: "Queensland's leading residential water treatment company. From under-sink filters to full whole house setups, we've got South East QLD covered.",
+    description:
+      "Queensland's leading residential water treatment company. From under-sink filters to full whole house setups, we've got South East QLD covered.",
     location: { states: ["QLD"], postcodeRanges: ["4000-4999"] },
-    systemTypes: ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo", "uv-system"],
+    systemTypes: ["under-sink-carbon", "reverse-osmosis", "whole-house", "uv-system", "tank-filter"],
     brands: ["Puretec", "Aquasana", "Watts", "UV Guard"],
     priceRange: "mid",
     rating: 4.6,
@@ -85,16 +95,22 @@ export const providers: Provider[] = [
     id: "filter-smart-national",
     name: "FilterSmart Australia",
     slug: "filtersmart-australia",
-    description: "National provider offering premium whole house filtration solutions with a focus on salt-free softening and eco-friendly systems shipped and installed Australia-wide.",
+    description:
+      "National provider offering premium whole house filtration solutions with a focus on salt-free softening and eco-friendly systems installed Australia-wide.",
     location: { states: ["NSW", "VIC", "QLD", "SA", "WA", "TAS"] },
-    systemTypes: ["whole-house-carbon", "whole-house-combo", "water-softener"],
+    systemTypes: ["whole-house", "water-softener", "reverse-osmosis", "alkaline-filter"],
     brands: ["FilterSmart", "Springwell", "Aquasana"],
     priceRange: "premium",
     rating: 4.9,
     reviewCount: 456,
     yearsInBusiness: 20,
     certifications: ["WaterMark Licensed", "NSF Certified", "ISO 9001"],
-    highlights: ["Australia-wide service network", "Premium brands only", "10-year warranty available", "Eco-friendly systems"],
+    highlights: [
+      "Australia-wide service network",
+      "Premium brands only",
+      "10-year warranty available",
+      "Eco-friendly systems",
+    ],
     availableForQuote: true,
     responseTime: "Within 24 hours",
     warranty: "Up to 10 years on select systems",
@@ -104,9 +120,10 @@ export const providers: Provider[] = [
     id: "tap-pure-sa",
     name: "TapPure Adelaide",
     slug: "tappure-adelaide",
-    description: "South Australia's go-to for under-sink and reverse osmosis systems. Affordable, reliable, and locally owned for over 8 years.",
+    description:
+      "South Australia's go-to for under-sink and reverse osmosis systems. Affordable, reliable, and locally owned for over 8 years.",
     location: { states: ["SA"], postcodeRanges: ["5000-5999"] },
-    systemTypes: ["under-sink-carbon", "reverse-osmosis"],
+    systemTypes: ["under-sink-carbon", "reverse-osmosis", "tap-filter", "alkaline-filter"],
     brands: ["Puretec", "3M", "Omnipure"],
     priceRange: "budget",
     rating: 4.5,
@@ -123,9 +140,10 @@ export const providers: Provider[] = [
     id: "hydro-clear-wa",
     name: "HydroClear Perth",
     slug: "hydroclear-perth",
-    description: "Perth's specialist in hard water solutions and whole house filtration. Serving metro and regional WA with expert water quality assessments.",
+    description:
+      "Perth's specialist in hard water solutions and whole house filtration. Serving metro and regional WA with expert water quality assessments.",
     location: { states: ["WA"], postcodeRanges: ["6000-6999"] },
-    systemTypes: ["whole-house-carbon", "whole-house-combo", "water-softener", "reverse-osmosis"],
+    systemTypes: ["whole-house", "water-softener", "reverse-osmosis", "shower-filter"],
     brands: ["WaterCo", "Puretec", "Davey", "Kinetico"],
     priceRange: "mid",
     rating: 4.7,
@@ -142,16 +160,22 @@ export const providers: Provider[] = [
     id: "country-water-rural",
     name: "Country Water Solutions",
     slug: "country-water-solutions",
-    description: "Specialists in rural and regional water treatment. Experts in tank water, bore water, UV systems, and whole property solutions for properties outside metro areas.",
+    description:
+      "Specialists in rural and regional water treatment. Experts in tank water, bore water, UV systems, and whole property solutions outside metro areas.",
     location: { states: ["NSW", "VIC", "QLD", "SA"] },
-    systemTypes: ["uv-system", "whole-house-carbon", "whole-house-combo", "reverse-osmosis"],
+    systemTypes: ["uv-system", "whole-house", "reverse-osmosis", "tank-filter"],
     brands: ["UV Guard", "Puretec", "Davey", "Rainfresh"],
     priceRange: "mid",
     rating: 4.6,
     reviewCount: 167,
     yearsInBusiness: 18,
     certifications: ["WaterMark Licensed", "UV Guard Accredited", "Rural Water Specialist"],
-    highlights: ["Tank & bore water experts", "Regional travel included", "Emergency callouts", "Water testing service"],
+    highlights: [
+      "Tank & bore water experts",
+      "Regional travel included",
+      "Emergency callouts",
+      "Water testing service",
+    ],
     availableForQuote: true,
     responseTime: "Within 48 hours",
     warranty: "12 months labour, manufacturer warranty on products",
@@ -161,16 +185,22 @@ export const providers: Provider[] = [
     id: "elite-water-premium",
     name: "Elite Water Systems",
     slug: "elite-water-systems",
-    description: "Premium water treatment for discerning homeowners. We install only the best brands with white-glove service across Sydney and Melbourne.",
+    description:
+      "Premium water treatment for discerning homeowners. We install only the best brands with white-glove service across Sydney and Melbourne.",
     location: { states: ["NSW", "VIC"] },
-    systemTypes: ["whole-house-combo", "reverse-osmosis", "water-softener", "whole-house-carbon"],
+    systemTypes: ["whole-house", "reverse-osmosis", "water-softener", "alkaline-filter", "shower-filter"],
     brands: ["Kinetico", "Everpure", "3M", "Aquasana"],
     priceRange: "premium",
     rating: 4.9,
     reviewCount: 89,
     yearsInBusiness: 11,
     certifications: ["WaterMark Licensed", "Master Plumber", "Kinetico Premium Dealer", "NSF Certified"],
-    highlights: ["White-glove installation", "Premium brands exclusively", "Concierge maintenance service", "Smart monitoring available"],
+    highlights: [
+      "White-glove installation",
+      "Premium brands exclusively",
+      "Concierge maintenance service",
+      "Smart monitoring available",
+    ],
     availableForQuote: true,
     responseTime: "Within 24 hours",
     warranty: "Up to 10 years on select systems, lifetime support",
