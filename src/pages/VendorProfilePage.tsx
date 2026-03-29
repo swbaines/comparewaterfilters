@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon } from "lucide-react";
+import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -119,6 +119,7 @@ export default function VendorProfilePage() {
     warranty: "",
     website: "",
     phone: "",
+    contact_email: "",
   });
 
   useEffect(() => {
@@ -138,6 +139,7 @@ export default function VendorProfilePage() {
         warranty: provider.warranty || "",
         website: provider.website || "",
         phone: provider.phone || "",
+        contact_email: provider.contact_email || "",
       });
     }
   }, [provider]);
@@ -161,6 +163,7 @@ export default function VendorProfilePage() {
           warranty: form.warranty,
           website: form.website || null,
           phone: form.phone || null,
+          contact_email: form.contact_email || null,
         })
         .eq("id", vendorAccount!.provider_id);
       if (error) throw error;
@@ -270,6 +273,16 @@ export default function VendorProfilePage() {
                 <Label className="flex items-center gap-1"><Phone className="h-4 w-4" /> Phone</Label>
                 <Input value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} placeholder="0412 345 678" />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1"><Mail className="h-4 w-4" /> Lead Notification Email</Label>
+              <Input
+                type="email"
+                value={form.contact_email}
+                onChange={(e) => setForm((p) => ({ ...p, contact_email: e.target.value }))}
+                placeholder="leads@yourbusiness.com.au"
+              />
+              <p className="text-xs text-muted-foreground">Quote requests from customers will be sent to this email address.</p>
             </div>
           </CardContent>
         </Card>
