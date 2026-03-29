@@ -1,0 +1,1 @@
+ALTER TABLE public.providers ADD COLUMN contact_email text DEFAULT NULL;
