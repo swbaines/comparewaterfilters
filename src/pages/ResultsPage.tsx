@@ -206,25 +206,39 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
 
 export default function ResultsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
   const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
   const [sortBy, setSortBy] = useState<string>("match");
   const [filterPrice, setFilterPrice] = useState<string>("all");
+  const [copied, setCopied] = useState(false);
   const { data: dbProviders = [] } = useProviders();
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("quizAnswers");
-    if (!stored) { navigate("/quiz"); return; }
-    const parsed = JSON.parse(stored) as QuizAnswers;
+    // Try URL param first (shared link), then sessionStorage
+    let parsed: QuizAnswers | null = null;
+    const urlData = searchParams.get("d");
+    if (urlData) {
+      try {
+        parsed = JSON.parse(atob(urlData)) as QuizAnswers;
+        // Also store in sessionStorage so navigation within the page works
+        sessionStorage.setItem("quizAnswers", JSON.stringify(parsed));
+      } catch { /* invalid data, fall through */ }
+    }
+    if (!parsed) {
+      const stored = sessionStorage.getItem("quizAnswers");
+      if (!stored) { navigate("/quiz"); return; }
+      parsed = JSON.parse(stored) as QuizAnswers;
+    }
     setAnswers(parsed);
     const rec = generateRecommendations(parsed);
     setResult(rec);
     if (dbProviders.length > 0) {
       setProviderMatches(matchProviders(parsed, rec, dbProviders));
     }
-  }, [navigate, dbProviders]);
+  }, [navigate, dbProviders, searchParams]);
 
   const filteredAndSorted = useMemo(() => {
     let list = [...providerMatches];
