@@ -31,6 +31,7 @@ describe("Water Softener filtering", () => {
   it("should allow water softener when hard-water concern IS selected", () => {
     const answersWithHardWater: QuizAnswers = {
       ...baseAnswers,
+      state: "WA",
       concerns: ["hard-water", "appliance"],
       coverage: "whole-house",
       budget: "3000-6000",
@@ -52,7 +53,7 @@ describe("Skin-hair concern scoring", () => {
     };
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    const hasSkinSystem = allIds.includes("shower-filter") || allIds.includes("whole-house");
+    const hasSkinSystem = allIds.includes("shower-filter") || allIds.includes("whole-house-carbon");
     expect(hasSkinSystem).toBe(true);
   });
 });
