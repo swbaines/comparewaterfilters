@@ -18,6 +18,8 @@ export interface QuizAnswers {
   email: string;
   mobile: string;
   consent: boolean;
+  // Skin & hair concerns (add to QuizPage step 3 concerns list)
+  skinHairConcerns?: boolean;
 }
 
 export interface RecommendationResult {
@@ -28,392 +30,310 @@ export interface RecommendationResult {
   secondaryReason: string;
   premiumReason: string;
   summary: string;
+  warnings: string[];
 }
 
-// ─── Scoring weights ────────────────────────────────────────────────────────
-// Each system gets a score out of 100. Higher = better match.
-// Systems are scored across 5 dimensions:
-//   1. Concerns match
-//   2. Coverage match
-//   3. Water source match
-//   4. Budget match
-//   5. Household / property suitability
+// ─── Helper flags ─────────────────────────────────────────────────────────────
 
-interface SystemScore {
-  id: string;
-  score: number;
-  reasons: string[];
-}
-
-const SYSTEM_IDS = [
-  "under-sink-carbon",
-  "reverse-osmosis",
-  "shower-filter",
-  "whole-house",
-  "water-softener",
-  "uv-system",
-  "tap-filter",
-  "camping-filter",
-  "tank-filter",
-  "alkaline-filter",
-] as const;
-
-type SystemId = (typeof SYSTEM_IDS)[number];
-
-function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
-  const { concerns, coverage, budget, priorities, waterSource, ownershipStatus, householdSize, bathrooms, propertyType, state } = answers;
+function getFlags(answers: QuizAnswers) {
+  const { concerns, coverage, budget, waterSource, ownershipStatus, propertyType, state, skinHairConcerns } = answers;
 
   const hasConcern = (c: string) => concerns.includes(c);
-  const hasPriority = (p: string) => priorities.includes(p);
+
   const isRenter = ownershipStatus === "Rent";
   const isApartment = propertyType === "Apartment";
-  const householdNum = householdSize === "5+" ? 5 : parseInt(householdSize || "1");
-  const bathroomNum = bathrooms === "4+" ? 4 : parseInt(bathrooms || "1");
-  const isRainOrBoreOrTank = ["rainwater", "tank-water", "bore-water"].includes(waterSource);
-  const isTownWater = waterSource === "town-water";
+  const canHaveWholeHome = !isRenter && !isApartment;
 
-  let score = 0;
-  const reasons: string[] = [];
+  // Hard water states — WA, SA, QLD have significantly harder water
+  const isHardWaterState = ["WA", "SA", "QLD"].includes(state);
 
-  // ── DISQUALIFIERS (hard rules) ───────────────────────────────────────────
-  // Renters and apartment dwellers can't install whole house or softener systems
-  if (isRenter || isApartment) {
-    if (["whole-house", "water-softener"].includes(id)) {
-      return { id, score: -1, reasons: ["Not suitable for renters or apartments"] };
-    }
-  }
+  // High chlorine states — VIC and SA are known for strong chlorination
+  const isHighChlorineState = ["VIC", "SA"].includes(state);
 
-  // Camping filter is only relevant if they're not looking for a home solution
-  if (id === "camping-filter") {
-    if (coverage !== "one-tap" || householdNum > 2) {
-      return { id, score: -1, reasons: ["Camping filters are not suitable for permanent home use"] };
-    }
-  }
+  // Non-mains water
+  const isRainOrTankOrBore = ["rainwater", "tank-water", "bore-water"].includes(waterSource);
+  const isTownWater = waterSource === "town-water" || waterSource === "not-sure";
 
-  // Tank filter only relevant for tank/rainwater/bore water sources
-  if (id === "tank-filter") {
-    if (!isRainOrBoreOrTank) {
-      return { id, score: -1, reasons: ["Tank filters are designed for rainwater/bore/tank water sources"] };
-    }
-  }
+  // Budget tiers (based on real installed prices in Australia)
+  // Note: No whole home system available under $1,000 — minimum ~$2,500 installed
+  const budgetUnder1k = budget === "under-1000";
+  const budget1kTo3k = budget === "1000-3000";
+  const budget3kTo6k = budget === "3000-6000";
+  const budgetPremium = budget === "6000-plus";
 
-  // UV system is most relevant for non-town water sources
-  if (id === "uv-system" && isTownWater && !hasConcern("bacteria")) {
-    score -= 20;
-  }
+  // RO-essential concerns — carbon filters reduce but cannot eliminate these
+  const needsRO =
+    hasConcern("fluoride") ||
+    hasConcern("heavy-metals") ||
+    hasConcern("bacteria") ||
+    hasConcern("pfas") ||
+    hasConcern("microplastics");
 
-  // ── CONCERN SCORING ──────────────────────────────────────────────────────
-  switch (id) {
-    case "under-sink-carbon":
-      if (hasConcern("taste")) { score += 20; reasons.push("Excellent at improving taste"); }
-      if (hasConcern("chlorine")) { score += 20; reasons.push("Highly effective at removing chlorine"); }
-      if (hasConcern("drinking-quality")) { score += 15; reasons.push("Great for drinking water quality"); }
-      if (hasConcern("heavy-metals")) { score += 10; reasons.push("Reduces some heavy metals"); }
-      if (hasConcern("pfas")) { score += 10; reasons.push("Some carbon filters reduce PFAS compounds"); }
-      if (hasConcern("microplastics")) { score += 15; reasons.push("Effective at trapping microplastics"); }
-      if (hasConcern("fluoride")) { score -= 10; } // RO is better for fluoride
-      if (hasConcern("bacteria")) { score -= 15; } // UV or tank filter is better
-      break;
+  // Skin & hair — strong signal for whole home chlorine removal
+  const hasSkinHairConcern =
+    skinHairConcerns === true ||
+    hasConcern("skin-shower") ||
+    hasConcern("skin-hair");
 
-    case "reverse-osmosis":
-      if (hasConcern("fluoride")) { score += 30; reasons.push("Most effective household method for fluoride removal"); }
-      if (hasConcern("heavy-metals")) { score += 25; reasons.push("Removes heavy metals including lead and arsenic"); }
-      if (hasConcern("pfas")) { score += 25; reasons.push("One of the most effective methods for removing PFAS / forever chemicals"); }
-      if (hasConcern("microplastics")) { score += 20; reasons.push("Removes microplastics through fine membrane filtration"); }
-      if (hasConcern("drinking-quality")) { score += 20; reasons.push("Produces the highest purity drinking water"); }
-      if (hasConcern("taste")) { score += 15; reasons.push("Dramatically improves taste by removing dissolved solids"); }
-      if (hasConcern("chlorine")) { score += 10; reasons.push("Removes chlorine effectively"); }
-      if (hasConcern("bacteria")) { score += 10; reasons.push("Reduces some bacteria and microorganisms"); }
-      break;
+  // Chlorine-related concerns
+  const hasChlorineConcern =
+    hasConcern("chlorine") ||
+    hasConcern("taste") ||
+    hasSkinHairConcern;
 
-    case "shower-filter":
-      if (hasConcern("skin-hair")) { score += 40; reasons.push("Specifically designed to reduce chlorine in shower water, helping with skin and hair concerns"); }
-      if (hasConcern("chlorine")) { score += 20; reasons.push("Removes chlorine from shower water"); }
-      if (hasConcern("hard-water")) { score += 10; reasons.push("Helps reduce scale in shower"); }
-      if (!hasConcern("skin-hair") && !hasConcern("chlorine")) { score -= 20; }
-      break;
+  // Whole home intent
+  const wantsWholeHome =
+    hasConcern("whole-home") ||
+    hasConcern("appliance") ||
+    coverage === "whole-house" ||
+    coverage === "whole-house-plus";
 
-    case "whole-house":
-      if (hasConcern("whole-home")) { score += 30; reasons.push("Filters every tap, shower, and appliance in your home"); }
-      if (hasConcern("chlorine")) { score += 25; reasons.push("Removes chlorine from all water in your home"); }
-      if (hasConcern("skin-hair")) { score += 20; reasons.push("Improves shower water quality throughout the home, helping with skin and hair concerns"); }
-      if (hasConcern("appliance")) { score += 20; reasons.push("Protects appliances from sediment and scale"); }
-      if (hasConcern("taste")) { score += 15; reasons.push("Improves taste at every tap"); }
-      if (hasConcern("hard-water")) { score += 10; reasons.push("Reduces scale buildup on appliances and fixtures"); }
-      if (hasConcern("bacteria") && isRainOrBoreOrTank) { score += 15; reasons.push("Works well combined with UV for tank/bore water"); }
-      break;
-
-    case "water-softener":
-      if (!hasConcern("hard-water")) {
-        return { id, score: -1, reasons: ["Water softeners are only recommended when scale/hard water is a concern"] };
-      }
-      score += 50; reasons.push("The most effective solution for hard water and scale");
-      if (hasConcern("appliance")) { score += 20; reasons.push("Significantly extends the life of appliances"); }
-      if (hasConcern("skin-hair")) { score += 15; reasons.push("Soft water is gentler on skin and hair"); }
-      break;
-
-    case "uv-system":
-      if (hasConcern("bacteria")) { score += 50; reasons.push("UV is the gold standard for killing bacteria and viruses"); }
-      if (isRainOrBoreOrTank) { score += 20; reasons.push("Essential for rainwater, tank, and bore water sources"); }
-      if (!hasConcern("bacteria") && isTownWater) { score -= 30; }
-      break;
-
-    case "tap-filter":
-      if (hasConcern("taste")) { score += 15; reasons.push("Easy tap-mounted filter for better tasting water"); }
-      if (hasConcern("chlorine")) { score += 15; reasons.push("Reduces chlorine at the tap"); }
-      if (hasConcern("drinking-quality")) { score += 10; reasons.push("Simple solution for cleaner drinking water"); }
-      break;
-
-    case "camping-filter":
-      if (hasConcern("bacteria")) { score += 20; reasons.push("Portable filtration for bacteria removal"); }
-      if (hasConcern("drinking-quality")) { score += 10; reasons.push("Portable option for drinking water quality"); }
-      break;
-
-    case "tank-filter":
-      if (isRainOrBoreOrTank) { score += 40; reasons.push("Specifically designed to filter rainwater and tank water"); }
-      if (hasConcern("bacteria")) { score += 20; reasons.push("Removes sediment and contaminants from tank water"); }
-      if (hasConcern("taste")) { score += 15; reasons.push("Improves taste of rainwater and tank water"); }
-      if (hasConcern("drinking-quality")) { score += 15; reasons.push("Makes tank water safe for drinking"); }
-      break;
-
-    case "alkaline-filter":
-      if (hasConcern("taste")) { score += 15; reasons.push("Improves taste and adds beneficial minerals"); }
-      if (hasConcern("drinking-quality")) { score += 15; reasons.push("Raises pH and adds minerals to drinking water"); }
-      if (hasPriority("premium-appearance")) { score += 10; reasons.push("Premium aesthetic appeal"); }
-      if (hasConcern("fluoride")) { score -= 10; } // RO is much better for fluoride
-      break;
-  }
-
-  // ── COVERAGE SCORING ─────────────────────────────────────────────────────
-  const drinkingOnlyCoverage = ["drinking-water", "kitchen", "one-tap", "under-sink"].includes(coverage);
-  const wholeHouseCoverage = ["whole-house", "whole-house-plus"].includes(coverage);
-
-  switch (id) {
-    case "under-sink-carbon":
-    case "reverse-osmosis":
-    case "alkaline-filter":
-      if (drinkingOnlyCoverage) score += 20;
-      if (wholeHouseCoverage) score -= 10;
-      break;
-    case "tap-filter":
-      if (coverage === "one-tap" || coverage === "drinking-water") score += 20;
-      if (wholeHouseCoverage) score -= 20;
-      break;
-    case "shower-filter":
-      if (coverage === "whole-house" || coverage === "whole-house-plus") score += 10;
-      if (drinkingOnlyCoverage) score -= 10;
-      break;
-    case "whole-house":
-      if (wholeHouseCoverage) score += 25;
-      if (drinkingOnlyCoverage) score -= 15;
-      break;
-    case "water-softener":
-      if (wholeHouseCoverage) score += 15;
-      break;
-    case "uv-system":
-      if (wholeHouseCoverage || coverage === "whole-house-plus") score += 10;
-      break;
-  }
-
-  // ── BUDGET SCORING ───────────────────────────────────────────────────────
-  // Approximate cost tiers: tap-filter/shower < carbon < alkaline < RO < UV < softener < whole-house
-  switch (budget) {
-    case "under-1000":
-      if (["tap-filter", "shower-filter", "camping-filter"].includes(id)) score += 20;
-      if (["under-sink-carbon", "alkaline-filter", "tank-filter"].includes(id)) score += 10;
-      if (["reverse-osmosis", "uv-system"].includes(id)) score -= 5;
-      if (["whole-house", "water-softener"].includes(id)) score -= 20;
-      break;
-    case "1000-3000":
-      if (["under-sink-carbon", "reverse-osmosis", "alkaline-filter", "uv-system"].includes(id)) score += 15;
-      if (["whole-house", "water-softener"].includes(id)) score += 5;
-      if (["tap-filter", "camping-filter"].includes(id)) score -= 5;
-      break;
-    case "3000-6000":
-      if (["whole-house", "water-softener", "reverse-osmosis"].includes(id)) score += 20;
-      if (["tap-filter", "shower-filter", "camping-filter"].includes(id)) score -= 10;
-      break;
-    case "6000-plus":
-      if (["whole-house", "water-softener"].includes(id)) score += 25;
-      if (["tap-filter", "shower-filter", "camping-filter", "tap-filter"].includes(id)) score -= 20;
-      break;
-    case "not-sure":
-      // No budget adjustment — let concerns and coverage drive it
-      break;
-  }
-
-  // ── HOUSEHOLD SIZE SCORING ───────────────────────────────────────────────
-  if (householdNum >= 4) {
-    if (["whole-house", "water-softener"].includes(id)) score += 10;
-    if (["tap-filter", "camping-filter"].includes(id)) score -= 10;
-  }
-  if (householdNum <= 2 && isApartment) {
-    if (["tap-filter", "under-sink-carbon", "alkaline-filter"].includes(id)) score += 10;
-  }
-
-  // ── BATHROOM COUNT SCORING ───────────────────────────────────────────────
-  if (bathroomNum >= 3) {
-    if (["whole-house", "water-softener"].includes(id)) score += 10;
-    if (hasConcern("skin-hair") && id === "shower-filter") score += 10; // multiple showers
-  }
-
-  // ── PRIORITY SCORING ────────────────────────────────────────────────────
-  if (hasPriority("lowest-cost")) {
-    if (["tap-filter", "shower-filter", "under-sink-carbon"].includes(id)) score += 15;
-    if (["whole-house", "water-softener"].includes(id)) score -= 10;
-  }
-  if (hasPriority("lowest-maintenance")) {
-    if (["whole-house", "uv-system"].includes(id)) score += 10;
-    if (["tap-filter", "camping-filter"].includes(id)) score -= 5;
-  }
-  if (hasPriority("strongest-filtration")) {
-    if (["reverse-osmosis", "uv-system", "whole-house"].includes(id)) score += 15;
-    if (["tap-filter", "shower-filter"].includes(id)) score -= 10;
-  }
-  if (hasPriority("premium-appearance")) {
-    if (["reverse-osmosis", "alkaline-filter", "whole-house"].includes(id)) score += 10;
-    if (["tap-filter", "camping-filter"].includes(id)) score -= 10;
-  }
-  if (hasPriority("best-warranty")) {
-    if (["whole-house", "reverse-osmosis", "water-softener"].includes(id)) score += 10;
-  }
-  if (hasPriority("local-support")) {
-    // Neutral — vendor matching handles this
-  }
-  if (hasPriority("easy-install")) {
-    if (["tap-filter", "shower-filter", "camping-filter"].includes(id)) score += 15;
-    if (["whole-house", "water-softener"].includes(id)) score -= 10;
-  }
-
-  // ── STATE / WATER SOURCE CONTEXT ─────────────────────────────────────────
-  // Melbourne and Adelaide have notably chlorinated town water
-  if (["VIC", "SA"].includes(state) && isTownWater) {
-    if (hasConcern("chlorine") || hasConcern("taste")) {
-      if (["under-sink-carbon", "whole-house"].includes(id)) score += 10;
-    }
-  }
-  // QLD bore water often has high iron/bacteria
-  if (state === "QLD" && waterSource === "bore-water") {
-    if (["uv-system", "tank-filter", "whole-house"].includes(id)) score += 10;
-  }
-  // WA has notoriously hard water
-  if (state === "WA" && isTownWater) {
-    if (id === "water-softener") score += 15;
-    if (id === "whole-house") score += 10;
-  }
-
-  return { id, score: Math.max(score, 0), reasons };
+  return {
+    hasConcern,
+    isRenter,
+    isApartment,
+    canHaveWholeHome,
+    isHardWaterState,
+    isHighChlorineState,
+    isRainOrTankOrBore,
+    isTownWater,
+    budgetUnder1k,
+    budget1kTo3k,
+    budget3kTo6k,
+    budgetPremium,
+    needsRO,
+    hasSkinHairConcern,
+    hasChlorineConcern,
+    wantsWholeHome,
+  };
 }
 
-// ── Reason generator ─────────────────────────────────────────────────────────
-function buildReason(id: SystemId, answers: QuizAnswers, rank: "primary" | "secondary" | "premium"): string {
-  const { concerns, coverage, budget, priorities, waterSource, ownershipStatus, state } = answers;
-  const hasConcern = (c: string) => concerns.includes(c);
-  const isRenter = ownershipStatus === "Rent";
+// ─── Main recommendation function ────────────────────────────────────────────
+// Recommendation tiers (based on real sales experience):
+// Good    = Under-sink carbon filter ($300–$800 installed)
+// Better  = Reverse Osmosis ($800–$1,500 installed)
+// Best    = Whole home + RO combo ($4,000–$7,000 installed)
 
-  const coverageLabel: Record<string, string> = {
-    "drinking-water": "your drinking water",
-    "kitchen": "your kitchen",
-    "one-tap": "a single tap",
-    "under-sink": "under your sink",
-    "whole-house": "your whole home",
-    "whole-house-plus": "your whole home and drinking water",
-  };
-  const coverageText = coverageLabel[coverage] || "your home";
-
-  const reasonMap: Record<SystemId, Record<string, string>> = {
-    "under-sink-carbon": {
-      primary: `An under-sink carbon filter is the best match for your needs — it's highly effective at improving taste and removing chlorine from ${coverageText}, and fits within your budget.`,
-      secondary: `If you want a simple, cost-effective upgrade to ${coverageText}, an under-sink carbon filter delivers real improvement without a large investment.`,
-      premium: `For the most complete setup, pair your primary system with an under-sink carbon filter to ensure the highest quality drinking water at the kitchen tap.`,
-    },
-    "reverse-osmosis": {
-      primary: `Reverse osmosis is the strongest match for your concerns — it removes fluoride, heavy metals, and dissolved solids to produce the purest possible drinking water for ${coverageText}.`,
-      secondary: `If you want a step up in purity — particularly for fluoride and heavy metal removal — a reverse osmosis system is the most effective upgrade available.`,
-      premium: `A premium reverse osmosis system with a remineralisation stage gives you ultra-pure water with added beneficial minerals, ideal for a health-conscious household.`,
-    },
-    "shower-filter": {
-      primary: `A shower filter is the most targeted solution for your skin and hair concerns — it removes chlorine directly at the shower head without a major installation.`,
-      secondary: `Adding a shower filter to your setup is a low-cost way to reduce chlorine exposure during showering, which can make a noticeable difference to skin and hair.`,
-      premium: `For multiple bathrooms, a whole house filter provides the same chlorine removal benefit at every shower and tap throughout your home.`,
-    },
-    "whole-house": {
-      primary: `A whole house filtration system is the right solution for your needs — it delivers filtered water to every tap, shower, and appliance in your home, addressing your concerns at the source.`,
-      secondary: `Upgrading to a whole house system means every tap and shower benefits from filtered water, giving you consistent quality throughout ${coverageText}.`,
-      premium: `A premium whole house system with high-capacity filters and a long service life is the most comprehensive investment for your home's water quality.`,
-    },
-    "water-softener": {
-      primary: `A water softener is the most effective solution for hard water — it removes the calcium and magnesium causing scale buildup, protecting your appliances and improving how water feels on your skin.`,
-      secondary: `If scale and hard water are ongoing issues, a water softener is a targeted solution that will noticeably extend the life of your appliances and hot water system.`,
-      premium: `Combining a water softener with a whole house carbon filter gives you soft, clean water from every outlet in your home.`,
-    },
-    "uv-system": {
-      primary: `With your water source${state ? ` in ${state}` : ""}, UV disinfection is essential — it's the most reliable way to eliminate bacteria and viruses from ${waterSource === "bore-water" ? "bore" : "tank/rainwater"} without chemicals.`,
-      secondary: `Adding a UV system to your filtration setup ensures microbiological safety — particularly important for ${waterSource} sources.`,
-      premium: `For complete peace of mind, a UV system combined with a whole house carbon filter and sediment pre-filter provides the safest possible water from your ${waterSource} source.`,
-    },
-    "tap-filter": {
-      primary: `A tap-mounted filter is the simplest and most affordable way to improve your drinking water — easy to install yourself and no plumber required${isRenter ? ", making it ideal for renters" : ""}.`,
-      secondary: `A tap filter is a great low-commitment starting point if you're not ready for an under-sink system — it delivers real improvement at minimal cost.`,
-      premium: `For a more permanent solution with better filtration, upgrading from a tap filter to an under-sink carbon or reverse osmosis system is the natural next step.`,
-    },
-    "camping-filter": {
-      primary: `A portable camping filter suits your setup — it's flexible, requires no installation, and delivers clean drinking water wherever you need it.`,
-      secondary: `As a backup or portable option, a camping filter can complement your main system for travel or outdoor use.`,
-      premium: `For a permanent home solution, upgrading to an under-sink or whole house system provides better filtration and convenience than a portable unit.`,
-    },
-    "tank-filter": {
-      primary: `A tank/rainwater filter is specifically designed for your water source — it removes sediment, organic matter, and contaminants before water enters your home, making it safe for everyday use.`,
-      secondary: `Adding a dedicated tank filter to your setup is the most important step for ensuring your rainwater or bore water is safe and clear throughout your home.`,
-      premium: `For the safest possible rainwater setup, combine a tank filter with a UV disinfection system and an under-sink filter for drinking water — the three-stage approach used by water quality experts.`,
-    },
-    "alkaline-filter": {
-      primary: `An alkaline filter improves taste, raises your water's pH, and adds beneficial minerals — a great option if you want higher quality drinking water with a health focus.`,
-      secondary: `An alkaline filter is a popular upgrade from standard carbon filtration — it produces crisp, mineral-rich drinking water that many people prefer to tap water.`,
-      premium: `For the ultimate drinking water experience, combining a reverse osmosis system with an alkaline remineralisation stage gives you ultra-pure, mineral-balanced water.`,
-    },
-  };
-
-  return reasonMap[id]?.[rank] ?? `This system is well suited to your household's water needs and priorities.`;
-}
-
-// ── Main export ───────────────────────────────────────────────────────────────
 export function generateRecommendations(answers: QuizAnswers): RecommendationResult {
-  // Score every system
-  const scores: SystemScore[] = SYSTEM_IDS.map((id) => scoreSystem(id, answers));
+  const f = getFlags(answers);
+  const warnings: string[] = [];
 
-  // Filter out disqualified systems (score = -1)
-  const eligible = scores.filter((s) => s.score >= 0);
+  let primaryId = "under-sink-carbon";
+  let secondaryId = "reverse-osmosis";
+  let premiumId = "whole-house-carbon";
+  let primaryReason = "";
+  let secondaryReason = "";
+  let premiumReason = "";
 
-  // Sort by score descending
-  eligible.sort((a, b) => b.score - a.score);
+  // ────────────────────────────────────────────────────────────────────────────
+  // PATH A: RENTER OR APARTMENT — whole home not an option
+  // ────────────────────────────────────────────────────────────────────────────
+  if (!f.canHaveWholeHome) {
+    if (f.isRenter) {
+      warnings.push(
+        "As a renter, a whole house system isn't a practical investment — it's expensive, requires landlord approval, and you'd need to pay to have it removed when you move. We've tailored your recommendations to the best options available for renters."
+      );
+    }
+    if (f.isApartment) {
+      warnings.push(
+        "Whole house filtration systems cannot be installed in apartments. We've recommended the best under-sink and point-of-use options for your home."
+      );
+    }
 
-  // Pick top 3 — ensure they are distinct
-  const [first, second, third] = eligible;
+    if (f.needsRO) {
+      primaryId = "reverse-osmosis";
+      primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics from drinking water. It installs neatly under your kitchen sink with a dedicated drinking faucet, costing $800–$1,500 installed.`;
+      secondaryId = "under-sink-carbon";
+      secondaryReason = `If an RO system isn't in your budget right now, a quality under-sink carbon filter is a meaningful step up for your drinking water — though it reduces rather than eliminates fluoride and heavy metals.`;
+      premiumId = "alkaline-filter";
+      premiumReason = `For the ultimate drinking water experience, an RO system with an alkaline remineralisation stage adds beneficial minerals back after filtration — delivering purified, mineral-balanced water from your kitchen tap.`;
+    } else if (f.hasSkinHairConcern) {
+      primaryId = "shower-filter";
+      primaryReason = `For skin and hair concerns in your home, a shower filter is the most accessible option available to you. It reduces chlorine at the shower head — the main point of contact for skin irritation, eczema, and hair damage from chlorinated water.`;
+      secondaryId = "under-sink-carbon";
+      secondaryReason = `Pairing a shower filter with an under-sink carbon filter covers both your shower water and your drinking water — the best combination available without a whole house system.`;
+      premiumId = "reverse-osmosis";
+      premiumReason = `For the highest quality drinking water alongside your shower filter, a reverse osmosis system delivers ultra-pure water free from chlorine, fluoride, and other contaminants.`;
+      warnings.push(
+        "Important: Shower filters are significantly less effective than a whole house system for skin and hair concerns — they only treat water at one shower head. If you move into an owned property in the future, a whole house carbon filter would be the proper long-term solution."
+      );
+    } else if (f.hasChlorineConcern) {
+      primaryId = "under-sink-carbon";
+      primaryReason = `An under-sink carbon filter effectively removes chlorine from your drinking water, improving taste and reducing the chemical smell — the best available option for renters and apartment dwellers.`;
+      secondaryId = "tap-filter";
+      secondaryReason = `A tap-mounted filter is a portable, no-installation alternative — easy to attach to your existing tap and take with you when you move.`;
+      premiumId = "reverse-osmosis";
+      premiumReason = `For the most comprehensive drinking water solution available without a whole house system, a reverse osmosis unit removes chlorine, fluoride, heavy metals, and more — $800–$1,500 installed.`;
+    } else {
+      primaryId = "under-sink-carbon";
+      primaryReason = `An under-sink carbon filter is the ideal starting point — improving taste, removing chlorine, and delivering noticeably better drinking water with a neat under-sink installation.`;
+      secondaryId = "tap-filter";
+      secondaryReason = `A tap-mounted filter is a simple, portable option for renters — no plumber required and easy to take with you when you move.`;
+      premiumId = "reverse-osmosis";
+      premiumReason = `For the highest purity drinking water available in your home, a reverse osmosis system removes virtually all contaminants and is the top-tier under-sink option at $800–$1,500 installed.`;
+    }
+  }
 
-  // Fallback safety — should never happen but protects against empty data
-  const primaryId = (first?.id ?? "under-sink-carbon") as SystemId;
-  const secondaryId = (second?.id ?? "reverse-osmosis") as SystemId;
-  const premiumId = (third?.id ?? "whole-house") as SystemId;
+  // ────────────────────────────────────────────────────────────────────────────
+  // PATH B: OWNER, NON-APARTMENT — full range available
+  // ────────────────────────────────────────────────────────────────────────────
+  else {
 
-  // Map engine system IDs to recommendation data IDs
-  const idMap: Record<string, string> = {
-    "whole-house": "whole-house-carbon",
-  };
+    // ── B1: RAINWATER / TANK / BORE WATER ──────────────────────────────────
+    if (f.isRainOrTankOrBore) {
+      primaryId = "tank-filter";
+      primaryReason = `With your water source, a sediment pre-filter is the essential first step — removing dirt, rust, debris, and particles from your rainwater or tank water before it enters your home.`;
+      secondaryId = "uv-system";
+      secondaryReason = `Adding UV disinfection to your sediment filter is strongly recommended — it kills bacteria, viruses, and other microorganisms in your tank water without chemicals, making it safe for your whole family.`;
+      premiumId = f.needsRO ? "reverse-osmosis" : "whole-house-carbon";
+      premiumReason = f.needsRO
+        ? `For the safest possible drinking water, combining your sediment pre-filter and UV system with a reverse osmosis unit at the kitchen delivers the complete three-stage solution — removing all pathogens and contaminants from your drinking water.`
+        : `For comprehensive whole-home protection, a whole house filtration system with sediment, carbon, and UV stages delivers clean, safe water from every tap and shower throughout your home.`;
+    }
+
+    // ── B2: HARD WATER STATES (WA, SA, QLD) with hard water concern ─────────
+    else if (f.isHardWaterState && (f.hasConcern("hard-water") || f.hasConcern("appliance"))) {
+      if (f.budget3kTo6k || f.budgetPremium) {
+        primaryId = "water-softener";
+        primaryReason = `${answers.state} has some of the hardest water in Australia. A water softener directly targets the calcium and magnesium causing scale buildup in your kettle, on your taps, and in your hot water system — protecting your appliances and leaving skin and hair feeling noticeably softer.`;
+        secondaryId = "whole-house-carbon";
+        secondaryReason = `A whole house carbon filter with a scale-reduction stage is a strong complement to your softener — addressing chlorine, taste, and general water quality throughout your home.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `The complete solution for ${answers.state} homes: a water softener combined with a whole house carbon filter and an RO drinking water system — addressing hard water, chlorine, and delivering ultra-pure drinking water all in one setup.`;
+      } else {
+        primaryId = "whole-house-carbon";
+        primaryReason = `A whole house filtration system with a scale-reduction filter is the most practical solution for your budget — addressing hard water buildup and chlorine throughout your home and protecting your appliances from scale damage.`;
+        secondaryId = "water-softener";
+        secondaryReason = `A dedicated water softener is the most targeted fix for hard water in ${answers.state} — it's particularly valuable where water hardness is among the highest in Australia.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `The premium solution: a water softener combined with a whole house carbon filter and RO drinking water system — comprehensive hard water treatment plus the purest possible drinking water.`;
+        warnings.push(
+          `${answers.state} has significantly harder water than most Australian states. A scale-reduction filter is highly recommended as part of your whole house setup to protect your appliances and hot water system.`
+        );
+      }
+    }
+
+    // ── B3: SKIN & HAIR CONCERNS ────────────────────────────────────────────
+    else if (f.hasSkinHairConcern) {
+      if (f.budgetUnder1k) {
+        primaryId = "shower-filter";
+        primaryReason = `For your budget, a shower filter reduces chlorine at the shower head — the main source of skin irritation, eczema, hair loss, and dandruff from tap water. It's the most accessible starting point for skin and hair concerns.`;
+        secondaryId = "under-sink-carbon";
+        secondaryReason = `Combining a shower filter with an under-sink carbon filter improves both your shower water and your drinking water within your budget.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `When your budget allows, a whole house filtration system is the proper solution — filtering chlorine from every tap and shower in your home. Entry-level systems start from around $2,500 installed.`;
+        warnings.push(
+          "Important: There are no effective whole house filtration options under $1,000 — entry-level systems start from around $2,500 installed. A shower filter is your best option at this budget, but is significantly less effective than a whole house system for skin and hair concerns."
+        );
+      } else if (f.budget1kTo3k) {
+        primaryId = "whole-house-carbon";
+        primaryReason = `A whole house filtration system is the proper solution for skin and hair concerns — filtering chlorine from every tap and shower in your home. This directly addresses skin irritation, eczema, hair loss, and dandruff caused by chlorinated town water. Entry-level systems start from around $2,500 installed.`;
+        secondaryId = "shower-filter";
+        secondaryReason = `If a whole house system is slightly above budget right now, a shower filter is a meaningful stepping stone — reducing chlorine at the shower head while you save for the full system.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `The best of both worlds: a whole house carbon filter combined with a reverse osmosis drinking water unit gives you chlorine-free water throughout your home plus ultra-pure drinking water. Combined systems typically range from $4,000–$7,000 installed.`;
+      } else {
+        primaryId = "whole-house-carbon";
+        primaryReason = `A whole house filtration system is the gold standard for skin and hair concerns — it removes chlorine from every tap, shower, and bath in your home, directly addressing skin irritation, eczema, hair loss, and dandruff. With your budget, you can invest in a quality system built to last.`;
+        secondaryId = "whole-house-carbon";
+        secondaryReason = `For the complete solution, combine your whole house system with a reverse osmosis drinking water unit — you get chlorine-free water throughout your entire home plus the purest possible drinking water at the kitchen tap. Our most popular combination at $4,000–$7,000 installed.`;
+        premiumId = "reverse-osmosis";
+        premiumReason = `The premium setup: a high-capacity whole house carbon filter combined with an RO drinking water unit and a 3-way mixer tap (perfect for stone benchtops, delivering hot, cold, and filtered water from one tap) — the best water quality solution available for Australian homes.`;
+      }
+    }
+
+    // ── B4: RO-ESSENTIAL CONCERNS (fluoride, PFAS, heavy metals, bacteria, microplastics) ──
+    else if (f.needsRO) {
+      if (f.wantsWholeHome || f.budget3kTo6k || f.budgetPremium) {
+        primaryId = "reverse-osmosis";
+        primaryReason = `A reverse osmosis system is the only household technology that effectively eliminates fluoride, PFAS, heavy metals, and microplastics from drinking water — carbon filters can reduce but not eliminate these contaminants. Installed under the kitchen sink with a dedicated faucet, at $800–$1,500 installed.`;
+        secondaryId = "whole-house-carbon";
+        secondaryReason = `Combining your RO drinking water system with a whole house carbon filter is the complete solution — ultra-pure drinking water at the kitchen tap plus chlorine-free water from every shower and tap in your home. Typically $4,000–$7,000 installed.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `The premium setup: a whole house carbon filter plus an RO unit with a 3-way mixer tap (ideal for stone benchtops) — delivering the best possible water quality for both drinking and whole-home use.`;
+      } else {
+        primaryId = "reverse-osmosis";
+        primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Unlike carbon filters which reduce these contaminants, RO eliminates them. Installed under the kitchen sink at $800–$1,500.`;
+        secondaryId = "under-sink-carbon";
+        secondaryReason = `If an RO system isn't quite in budget, a quality under-sink carbon filter significantly improves your drinking water — though it reduces rather than eliminates fluoride and heavy metals.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `For the complete solution, add a whole house carbon filter to your RO system — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen. Typically $4,000–$7,000 installed together.`;
+      }
+    }
+
+    // ── B5: CHLORINE / TASTE / GENERAL — TOWN WATER ─────────────────────────
+    else if (f.hasChlorineConcern && f.isTownWater) {
+      if (f.budgetUnder1k) {
+        primaryId = "under-sink-carbon";
+        primaryReason = `An under-sink carbon filter is the best value option within your budget — effectively removing chlorine and improving the taste and smell of your drinking water. A great first step toward better water quality.`;
+        secondaryId = "tap-filter";
+        secondaryReason = `A tap-mounted filter is the most affordable option — easy to install yourself without a plumber.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `When your budget allows, a whole house filtration system is the proper solution — removing chlorine from every tap and shower in your home. Entry-level systems from around $2,500 installed.`;
+        if (f.isHighChlorineState) {
+          warnings.push(
+            `${answers.state} water is known for higher chlorine levels than most states. You're likely to notice a stronger improvement with whole house filtration when your budget allows.`
+          );
+        }
+      } else if (f.budget1kTo3k) {
+        primaryId = "whole-house-carbon";
+        primaryReason = `A whole house carbon filtration system removes chlorine from every tap, shower, and appliance in your home — improving taste, reducing skin irritation, and protecting your hot water system and appliances from chlorine damage. Entry-level systems from around $2,500 installed.`;
+        secondaryId = "under-sink-carbon";
+        secondaryReason = `If a whole house system is at the top end of your budget, starting with an under-sink carbon filter is a solid step — and you can upgrade to whole house filtration when ready.`;
+        premiumId = "reverse-osmosis";
+        premiumReason = `Adding a reverse osmosis unit to your whole house system gives you the complete solution — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen tap with fluoride and heavy metal removal.`;
+      } else {
+        primaryId = "whole-house-carbon";
+        primaryReason = `A whole house carbon filtration system is the right investment — removing chlorine from every tap, shower, and appliance in your home. With your budget, you can choose a quality system with a long service life and comprehensive filter stages.`;
+        secondaryId = "reverse-osmosis";
+        secondaryReason = `Pairing your whole house system with a reverse osmosis drinking water unit is our most popular combination — you get chlorine-free water throughout your home plus the purest possible drinking water at the kitchen. Typically $4,000–$7,000 installed together.`;
+        premiumId = "whole-house-carbon";
+        premiumReason = `The premium setup: a high-capacity whole house system combined with an RO unit and 3-way mixer tap (perfect for stone benchtops, providing hot, cold, and filtered water from one tap) — the ultimate water quality solution for Australian homes.`;
+      }
+    }
+
+    // ── B6: WHOLE HOME INTENT (appliances, coverage) ────────────────────────
+    else if (f.wantsWholeHome) {
+      primaryId = "whole-house-carbon";
+      primaryReason = `A whole house filtration system is exactly what you need — delivering filtered water to every tap, shower, and appliance in your home, protecting your hot water system, dishwasher, and washing machine while improving overall water quality.`;
+      secondaryId = "reverse-osmosis";
+      secondaryReason = `Adding a reverse osmosis drinking water unit is the popular upgrade — ultra-pure water at the kitchen tap on top of your whole house filtration. Combined systems typically range from $4,000–$7,000 installed.`;
+      premiumId = "whole-house-carbon";
+      premiumReason = `The complete premium solution: a high-capacity whole house system combined with an RO unit and 3-way mixer tap — the best of both worlds for drinking water purity and whole-home protection.`;
+    }
+
+    // ── B7: DEFAULT ──────────────────────────────────────────────────────────
+    else {
+      primaryId = "under-sink-carbon";
+      primaryReason = `Based on your answers, an under-sink carbon filter is the ideal starting point — improving taste, removing chlorine, and delivering noticeably better drinking water at an accessible price.`;
+      secondaryId = "reverse-osmosis";
+      secondaryReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,500 installed.`;
+      premiumId = "whole-house-carbon";
+      premiumReason = `For complete home protection, a whole house carbon filter removes chlorine from every tap and shower — protecting your skin, hair, and appliances. The most comprehensive solution for Australian town water homes.`;
+    }
+  }
+
+  // ── State-based warnings ─────────────────────────────────────────────────
+  if (f.isHardWaterState && !f.hasConcern("hard-water") && f.canHaveWholeHome) {
+    warnings.push(
+      `${answers.state} has naturally harder water than most Australian states. Keep an eye out for white scale in your kettle, on taps, and on shower screens — these are signs a scale-reduction filter may benefit your home.`
+    );
+  }
+
+  if (f.isHighChlorineState && !f.hasChlorineConcern && f.canHaveWholeHome) {
+    warnings.push(
+      `${answers.state} water is known for higher chlorine levels. Even without a strong taste or smell, a carbon filter can make a noticeable difference to your water quality and skin comfort.`
+    );
+  }
 
   const getRec = (id: string): Recommendation => {
-    const mappedId = idMap[id] || id;
-    const rec = recommendations.find((r) => r.id === mappedId);
+    const rec = recommendations.find((r) => r.id === id);
     if (!rec) throw new Error(`Recommendation not found for id: ${id}`);
     return rec;
   };
 
-  const primaryReason = buildReason(primaryId, answers, "primary");
-  const secondaryReason = buildReason(secondaryId, answers, "secondary");
-  const premiumReason = buildReason(premiumId, answers, "premium");
-
   const primary = getRec(primaryId);
-  const summary = `Based on your household profile, water concerns, and priorities, we recommend a **${primary.title}** as your best match. ${primaryReason}`;
+  const summary = `Hi ${answers.firstName}, based on your home, water source, and concerns, we recommend starting with a **${primary.title}**. ${primaryReason}`;
 
   return {
     primary,
@@ -423,5 +343,6 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     secondaryReason,
     premiumReason,
     summary,
+    warnings,
   };
 }
