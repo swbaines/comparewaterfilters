@@ -40,3 +40,61 @@ describe("Water Softener filtering", () => {
     expect(allIds).toContain("water-softener");
   });
 });
+
+describe("Skin-hair concern scoring", () => {
+  it("should recommend shower filter or whole house when skin-hair is selected", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      concerns: ["skin-hair"],
+      coverage: "whole-house",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    const hasSkinSystem = allIds.includes("shower-filter") || allIds.includes("whole-house");
+    expect(hasSkinSystem).toBe(true);
+  });
+});
+
+describe("PFAS concern scoring", () => {
+  it("should recommend reverse osmosis as primary when PFAS is the main concern", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      concerns: ["pfas"],
+      coverage: "drinking-water",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    expect(result.primary.id).toBe("reverse-osmosis");
+  });
+});
+
+describe("Microplastics concern scoring", () => {
+  it("should recommend reverse osmosis or carbon filter when microplastics is selected", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      concerns: ["microplastics"],
+      coverage: "drinking-water",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    const hasRelevantSystem = allIds.includes("reverse-osmosis") || allIds.includes("under-sink-carbon");
+    expect(hasRelevantSystem).toBe(true);
+  });
+
+  it("should rank RO higher than carbon for combined PFAS + microplastics concerns", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      concerns: ["pfas", "microplastics"],
+      coverage: "drinking-water",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    expect(result.primary.id).toBe("reverse-osmosis");
+  });
+});
