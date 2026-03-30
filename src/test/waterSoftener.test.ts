@@ -96,5 +96,70 @@ describe("Microplastics concern scoring", () => {
     };
     const result = generateRecommendations(answers);
     expect(result.primary.id).toBe("reverse-osmosis");
+});
+
+describe("Renter edge cases", () => {
+  it("should recommend shower filter (not whole house) for renters with skin-hair concern", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      ownershipStatus: "Rent",
+      concerns: ["skin-hair"],
+      coverage: "whole-house",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).toContain("shower-filter");
+    expect(allIds).not.toContain("whole-house");
+    expect(allIds).not.toContain("water-softener");
   });
+
+  it("should not recommend whole house or softener for apartment dwellers", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      propertyType: "Apartment",
+      ownershipStatus: "Rent",
+      concerns: ["chlorine", "skin-hair"],
+      coverage: "drinking-water",
+      budget: "under-1000",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).not.toContain("whole-house");
+    expect(allIds).not.toContain("water-softener");
+  });
+
+  it("should recommend under-sink or tap filter for renters wanting drinking water quality", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      ownershipStatus: "Rent",
+      propertyType: "Apartment",
+      concerns: ["drinking-quality", "taste"],
+      coverage: "drinking-water",
+      budget: "under-1000",
+      priorities: ["lowest-cost"],
+    };
+    const result = generateRecommendations(answers);
+    const primaryId = result.primary.id;
+    const validOptions = ["under-sink-carbon", "tap-filter", "alkaline-filter"];
+    expect(validOptions).toContain(primaryId);
+  });
+
+  it("should not recommend water softener for renters even with hard-water concern", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      ownershipStatus: "Rent",
+      concerns: ["hard-water"],
+      coverage: "whole-house",
+      budget: "3000-6000",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).not.toContain("water-softener");
+    expect(allIds).not.toContain("whole-house");
+  });
+});
 });
