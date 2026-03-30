@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import PageMeta from "@/components/PageMeta";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon, Share2, Check, Copy } from "lucide-react";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
@@ -206,25 +206,39 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
 
 export default function ResultsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
   const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
   const [sortBy, setSortBy] = useState<string>("match");
   const [filterPrice, setFilterPrice] = useState<string>("all");
+  const [copied, setCopied] = useState(false);
   const { data: dbProviders = [] } = useProviders();
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("quizAnswers");
-    if (!stored) { navigate("/quiz"); return; }
-    const parsed = JSON.parse(stored) as QuizAnswers;
+    // Try URL param first (shared link), then sessionStorage
+    let parsed: QuizAnswers | null = null;
+    const urlData = searchParams.get("d");
+    if (urlData) {
+      try {
+        parsed = JSON.parse(atob(urlData)) as QuizAnswers;
+        // Also store in sessionStorage so navigation within the page works
+        sessionStorage.setItem("quizAnswers", JSON.stringify(parsed));
+      } catch { /* invalid data, fall through */ }
+    }
+    if (!parsed) {
+      const stored = sessionStorage.getItem("quizAnswers");
+      if (!stored) { navigate("/quiz"); return; }
+      parsed = JSON.parse(stored) as QuizAnswers;
+    }
     setAnswers(parsed);
     const rec = generateRecommendations(parsed);
     setResult(rec);
     if (dbProviders.length > 0) {
       setProviderMatches(matchProviders(parsed, rec, dbProviders));
     }
-  }, [navigate, dbProviders]);
+  }, [navigate, dbProviders, searchParams]);
 
   const filteredAndSorted = useMemo(() => {
     let list = [...providerMatches];
@@ -266,6 +280,22 @@ export default function ResultsPage() {
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
             Based on your household, water source, concerns, and budget, we've matched you with the most suitable system types and local providers.
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4 gap-2"
+            onClick={() => {
+              const encoded = btoa(JSON.stringify(answers));
+              const url = `${window.location.origin}/results?d=${encoded}`;
+              navigator.clipboard.writeText(url).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2500);
+              });
+            }}
+          >
+            {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+            {copied ? "Link copied!" : "Share these results"}
+          </Button>
         </div>
 
         {/* Warnings */}
