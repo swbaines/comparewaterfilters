@@ -268,6 +268,20 @@ export default function ResultsPage() {
           </p>
         </div>
 
+        {/* Warnings */}
+        {result.warnings && result.warnings.length > 0 && (
+          <div className="mb-8 space-y-3">
+            {result.warnings.map((warning, i) => (
+              <Card key={i} className="border-destructive/20 bg-destructive/5">
+                <CardContent className="flex items-start gap-3 p-4">
+                  <Shield className="mt-0.5 h-5 w-5 shrink-0 text-destructive/70" />
+                  <p className="text-sm text-muted-foreground">{warning}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
         {/* Top recommendation */}
         <Card className="mb-8 border-primary/20 bg-accent/50">
           <CardContent className="p-6 sm:p-8">
