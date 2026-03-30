@@ -109,6 +109,8 @@ function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
       if (hasConcern("chlorine")) { score += 20; reasons.push("Highly effective at removing chlorine"); }
       if (hasConcern("drinking-quality")) { score += 15; reasons.push("Great for drinking water quality"); }
       if (hasConcern("heavy-metals")) { score += 10; reasons.push("Reduces some heavy metals"); }
+      if (hasConcern("pfas")) { score += 10; reasons.push("Some carbon filters reduce PFAS compounds"); }
+      if (hasConcern("microplastics")) { score += 15; reasons.push("Effective at trapping microplastics"); }
       if (hasConcern("fluoride")) { score -= 10; } // RO is better for fluoride
       if (hasConcern("bacteria")) { score -= 15; } // UV or tank filter is better
       break;
@@ -116,6 +118,8 @@ function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
     case "reverse-osmosis":
       if (hasConcern("fluoride")) { score += 30; reasons.push("Most effective household method for fluoride removal"); }
       if (hasConcern("heavy-metals")) { score += 25; reasons.push("Removes heavy metals including lead and arsenic"); }
+      if (hasConcern("pfas")) { score += 25; reasons.push("One of the most effective methods for removing PFAS / forever chemicals"); }
+      if (hasConcern("microplastics")) { score += 20; reasons.push("Removes microplastics through fine membrane filtration"); }
       if (hasConcern("drinking-quality")) { score += 20; reasons.push("Produces the highest purity drinking water"); }
       if (hasConcern("taste")) { score += 15; reasons.push("Dramatically improves taste by removing dissolved solids"); }
       if (hasConcern("chlorine")) { score += 10; reasons.push("Removes chlorine effectively"); }
@@ -123,16 +127,16 @@ function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
       break;
 
     case "shower-filter":
-      if (hasConcern("skin-shower")) { score += 40; reasons.push("Specifically designed to reduce chlorine in shower water"); }
+      if (hasConcern("skin-hair")) { score += 40; reasons.push("Specifically designed to reduce chlorine in shower water, helping with skin and hair concerns"); }
       if (hasConcern("chlorine")) { score += 20; reasons.push("Removes chlorine from shower water"); }
       if (hasConcern("hard-water")) { score += 10; reasons.push("Helps reduce scale in shower"); }
-      if (!hasConcern("skin-shower") && !hasConcern("chlorine")) { score -= 20; }
+      if (!hasConcern("skin-hair") && !hasConcern("chlorine")) { score -= 20; }
       break;
 
     case "whole-house":
       if (hasConcern("whole-home")) { score += 30; reasons.push("Filters every tap, shower, and appliance in your home"); }
       if (hasConcern("chlorine")) { score += 25; reasons.push("Removes chlorine from all water in your home"); }
-      if (hasConcern("skin-shower")) { score += 20; reasons.push("Improves shower water quality throughout the home"); }
+      if (hasConcern("skin-hair")) { score += 20; reasons.push("Improves shower water quality throughout the home, helping with skin and hair concerns"); }
       if (hasConcern("appliance")) { score += 20; reasons.push("Protects appliances from sediment and scale"); }
       if (hasConcern("taste")) { score += 15; reasons.push("Improves taste at every tap"); }
       if (hasConcern("hard-water")) { score += 10; reasons.push("Reduces scale buildup on appliances and fixtures"); }
@@ -145,7 +149,7 @@ function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
       }
       score += 50; reasons.push("The most effective solution for hard water and scale");
       if (hasConcern("appliance")) { score += 20; reasons.push("Significantly extends the life of appliances"); }
-      if (hasConcern("skin-shower")) { score += 15; reasons.push("Soft water is gentler on skin and hair"); }
+      if (hasConcern("skin-hair")) { score += 15; reasons.push("Soft water is gentler on skin and hair"); }
       break;
 
     case "uv-system":
@@ -250,7 +254,7 @@ function scoreSystem(id: SystemId, answers: QuizAnswers): SystemScore {
   // ── BATHROOM COUNT SCORING ───────────────────────────────────────────────
   if (bathroomNum >= 3) {
     if (["whole-house", "water-softener"].includes(id)) score += 10;
-    if (hasConcern("skin-shower") && id === "shower-filter") score += 10; // multiple showers
+    if (hasConcern("skin-hair") && id === "shower-filter") score += 10; // multiple showers
   }
 
   // ── PRIORITY SCORING ────────────────────────────────────────────────────
