@@ -28,16 +28,18 @@ const waterSources = [
 ];
 
 const concernOptions = [
-  { value: "taste", label: "Improve taste" },
-  { value: "chlorine", label: "Chlorine smell" },
+  { value: "taste", label: "Taste or smell from tap water" },
+  { value: "chlorine", label: "Chlorine smell or taste" },
+  { value: "skin-hair", label: "Skin irritation, eczema, hair loss or dandruff" },
   { value: "drinking-quality", label: "Drinking water quality" },
-  { value: "fluoride", label: "Fluoride" },
-  { value: "heavy-metals", label: "Heavy metals" },
-  { value: "hard-water", label: "Hard water / scale" },
-  { value: "skin-shower", label: "Skin irritation / shower" },
+  { value: "fluoride", label: "Fluoride removal" },
+  { value: "heavy-metals", label: "Heavy metals (lead, arsenic etc.)" },
+  { value: "pfas", label: "PFAS / forever chemicals" },
+  { value: "microplastics", label: "Microplastics" },
+  { value: "hard-water", label: "Hard water / scale buildup" },
   { value: "whole-home", label: "Whole home protection" },
-  { value: "appliance", label: "Appliance protection" },
-  { value: "bacteria", label: "Bacteria / microbiological" },
+  { value: "appliance", label: "Appliance & hot water system protection" },
+  { value: "bacteria", label: "Bacteria / microbiological safety" },
   { value: "not-sure", label: "Not sure, just want better water" },
 ];
 
