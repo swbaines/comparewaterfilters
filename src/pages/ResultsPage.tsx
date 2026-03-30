@@ -280,6 +280,22 @@ export default function ResultsPage() {
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
             Based on your household, water source, concerns, and budget, we've matched you with the most suitable system types and local providers.
           </p>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-4 gap-2"
+            onClick={() => {
+              const encoded = btoa(JSON.stringify(answers));
+              const url = `${window.location.origin}/results?d=${encoded}`;
+              navigator.clipboard.writeText(url).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2500);
+              });
+            }}
+          >
+            {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+            {copied ? "Link copied!" : "Share these results"}
+          </Button>
         </div>
 
         {/* Warnings */}
