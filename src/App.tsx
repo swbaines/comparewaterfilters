@@ -27,6 +27,7 @@ import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import NotFound from "@/pages/NotFound";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Header />
         <main className="min-h-[calc(100vh-4rem)]">
           <Routes>
