@@ -466,10 +466,10 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       } else if (f.budget1kTo3k) {
         primaryId = "whole-house-carbon";
         primaryReason = `A whole house filtration system is the proper solution for skin and hair concerns — filtering chlorine from every tap and shower in your home. ${chlorineContext} Entry-level systems start from around $2,500 installed.`;
-        secondaryId = "shower-filter";
-        secondaryReason = `If a whole house system is slightly above budget right now, a shower filter is a meaningful stepping stone — reducing chlorine at the shower head while you save for the complete solution.`;
-        premiumId = "whole-house-carbon";
-        premiumReason = `For the best possible outcome, combine a whole house carbon filter with a reverse osmosis drinking water unit — chlorine-free water throughout your home plus ultra-pure drinking water. Typically $4,000–$7,000 installed.`;
+        secondaryId = "under-sink-carbon";
+        secondaryReason = `If a whole house system is at the top of your budget right now, an under-sink carbon filter is a solid starting point for your drinking water — and you can always upgrade to whole house filtration when ready.`;
+        premiumId = "reverse-osmosis";
+        premiumReason = `For the best possible outcome, combine a whole house carbon filter with a reverse osmosis drinking water unit — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen tap. Typically $4,000–$7,000 installed.`;
       } else {
         primaryId = "whole-house-carbon";
         primaryReason = `A whole house filtration system is the gold standard for skin and hair concerns — filtering chlorine from every tap, shower, and bath in your home. ${chlorineContext} With your budget, you can invest in a quality system with a long service life.`;
