@@ -42,7 +42,7 @@ const DialogContent = React.forwardRef<
       {...props}
       onOpenAutoFocus={(e) => {
         props.onOpenAutoFocus?.(e);
-        const el = e.currentTarget;
+        const el = e.currentTarget as HTMLElement | null;
         if (el) requestAnimationFrame(() => { el.scrollTop = 0; });
       }}
     >
