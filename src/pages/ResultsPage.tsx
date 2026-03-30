@@ -284,14 +284,28 @@ export default function ResultsPage() {
             variant="outline"
             size="sm"
             className="mt-4 gap-2"
-            onClick={() => {
+            onClick={async () => {
               const encoded = btoa(JSON.stringify(answers));
               const url = `${window.location.origin}/results?d=${encoded}`;
+
+              // Use native share on mobile if available
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: "My Water Filter Recommendations",
+                    text: `Hi, check out my personalised water filter recommendations from Compare Water Filters!`,
+                    url,
+                  });
+                  return;
+                } catch {
+                  // User cancelled or share failed — fall through to clipboard
+                }
+              }
+
               navigator.clipboard.writeText(url).then(() => {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2500);
               }).catch(() => {
-                // Fallback for browsers that block clipboard API
                 const textarea = document.createElement("textarea");
                 textarea.value = url;
                 textarea.style.position = "fixed";
