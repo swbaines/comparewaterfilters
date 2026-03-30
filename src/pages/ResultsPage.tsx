@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import PageMeta from "@/components/PageMeta";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon, Share2, Check, Copy } from "lucide-react";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import type { Recommendation } from "@/data/recommendations";
