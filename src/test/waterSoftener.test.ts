@@ -163,3 +163,76 @@ describe("Renter edge cases", () => {
   });
 });
 });
+
+describe("Bore water and rainwater source recommendations", () => {
+  it("should recommend UV system for bore water users concerned about bacteria", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      waterSource: "bore-water",
+      concerns: ["bacteria", "drinking-quality"],
+      coverage: "whole-house",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).toContain("uv-system");
+  });
+
+  it("should recommend tank filter for rainwater users", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      waterSource: "rainwater",
+      concerns: ["drinking-quality", "taste"],
+      coverage: "whole-house",
+      budget: "not-sure",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).toContain("tank-filter");
+  });
+
+  it("should recommend both UV and tank filter for tank water with bacteria concerns", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      waterSource: "tank-water",
+      concerns: ["bacteria", "taste", "drinking-quality"],
+      coverage: "whole-house",
+      budget: "3000-6000",
+      priorities: ["strongest-filtration"],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    const hasUvOrTank = allIds.includes("uv-system") || allIds.includes("tank-filter");
+    expect(hasUvOrTank).toBe(true);
+  });
+
+  it("should not recommend tank filter for town water users", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      waterSource: "town-water",
+      concerns: ["taste", "chlorine"],
+      coverage: "drinking-water",
+      budget: "under-1000",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).not.toContain("tank-filter");
+  });
+
+  it("should deprioritise UV system for town water without bacteria concerns", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      waterSource: "town-water",
+      concerns: ["taste", "chlorine"],
+      coverage: "drinking-water",
+      budget: "under-1000",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).not.toContain("uv-system");
+  });
+});
