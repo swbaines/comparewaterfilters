@@ -229,7 +229,7 @@ export default function RequestQuoteDialog({
             <div className="pt-1">
               <span className="text-muted-foreground">Recommended systems: </span>
               <span className="flex flex-wrap gap-1 mt-1">
-                {recommendedSystems.map((s) => (
+                {[...new Set(recommendedSystems)].map((s) => (
                   <Badge key={s} className="bg-accent text-accent-foreground text-xs font-normal">
                     {s}
                   </Badge>
