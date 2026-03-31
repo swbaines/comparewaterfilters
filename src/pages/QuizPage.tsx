@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
@@ -108,6 +108,10 @@ function MultiSelectButton({ selected, onClick, children }: { selected: boolean;
 export default function QuizPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "", suburb: "", state: "", propertyType: "", ownershipStatus: "",
     householdSize: "", bathrooms: "", waterSource: "", concerns: [],
