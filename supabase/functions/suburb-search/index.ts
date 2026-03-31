@@ -25,12 +25,20 @@ serve(async (req) => {
     );
     const data = await res.json();
 
-    // Return only the fields we need, limited to 10 results
-    const slim = (data as any[]).slice(0, 20).map((s: any) => ({
-      name: s.name,
-      postcode: s.postcode,
-      state: s.state?.abbreviation || "",
+    const qLower = q.toLowerCase();
+    const slim = (data as any[]).slice(0, 30).map((s: any) => ({
+      name: s.name as string,
+      postcode: s.postcode as number,
+      state: (s.state?.abbreviation || "") as string,
     }));
+
+    // Sort: exact prefix matches first, then alphabetically by state
+    slim.sort((a, b) => {
+      const aExact = a.name.toLowerCase().startsWith(qLower) ? 0 : 1;
+      const bExact = b.name.toLowerCase().startsWith(qLower) ? 0 : 1;
+      if (aExact !== bExact) return aExact - bExact;
+      return a.state.localeCompare(b.state) || a.name.localeCompare(b.name);
+    });
 
     return new Response(JSON.stringify(slim), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
