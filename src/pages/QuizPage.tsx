@@ -14,7 +14,7 @@ import type { QuizAnswers } from "@/lib/recommendationEngine";
 
 const TOTAL_STEPS = 8;
 
-const stateOptions = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"];
+// State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
 const householdSizes = ["1", "2", "3", "4", "5+"];
