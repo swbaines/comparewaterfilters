@@ -26,7 +26,7 @@ serve(async (req) => {
     const data = await res.json();
 
     // Return only the fields we need, limited to 10 results
-    const slim = (data as any[]).slice(0, 10).map((s: any) => ({
+    const slim = (data as any[]).slice(0, 20).map((s: any) => ({
       name: s.name,
       postcode: s.postcode,
       state: s.state?.abbreviation || "",
