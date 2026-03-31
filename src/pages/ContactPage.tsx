@@ -8,19 +8,42 @@ import SectionHeading from "@/components/SectionHeading";
 import PageMeta from "@/components/PageMeta";
 import { ArrowRight, Mail, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       toast.error("Please fill in all fields.");
       return;
     }
-    setSubmitted(true);
-    toast.success("Message sent! We'll be in touch.");
+    setSending(true);
+    try {
+      const id = crypto.randomUUID();
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-inquiry",
+          recipientEmail: "hello@comparewaterfilters.com.au",
+          idempotencyKey: `contact-inquiry-${id}`,
+          templateData: {
+            name: form.name,
+            email: form.email,
+            message: form.message,
+          },
+        },
+      });
+      setSubmitted(true);
+      toast.success("Message sent! We'll be in touch.");
+    } catch (err) {
+      console.error("Failed to send contact email:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -82,7 +105,9 @@ export default function ContactPage() {
                   <label className="mb-1.5 block text-sm font-medium">Message</label>
                   <Textarea placeholder="How can we help?" rows={5} value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
                 </div>
-                <Button type="submit" className="w-full">Send message</Button>
+                <Button type="submit" className="w-full" disabled={sending}>
+                  {sending ? "Sending..." : "Send message"}
+                </Button>
               </form>
             </CardContent>
           </Card>
