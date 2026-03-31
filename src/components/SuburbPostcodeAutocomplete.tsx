@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
+
 
 interface Suggestion {
   name: string;
