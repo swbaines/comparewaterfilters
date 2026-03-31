@@ -34,17 +34,9 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("suburb-search", {
-        body: null,
-        headers: {},
-      });
-      // Use query params via URL — invoke doesn't support query params natively,
-      // so we'll call the function URL directly
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/suburb-search?q=${encodeURIComponent(q)}`;
       const res = await fetch(url, {
-        headers: {
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
       });
       if (res.ok) {
         const results: Suggestion[] = await res.json();
