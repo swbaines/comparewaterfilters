@@ -288,6 +288,7 @@ export default function VendorRegisterPage() {
                     onChange={e => updateProfile("plumberLicenceNumber", e.target.value)}
                     placeholder="e.g. 12345C"
                   />
+                  <p className="text-xs text-muted-foreground">Required only if your business performs installations directly</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Description</Label>
