@@ -180,6 +180,7 @@ export type Database = {
       }
       providers: {
         Row: {
+          abn: string | null
           approval_status: Database["public"]["Enums"]["approval_status"]
           available_for_quote: boolean
           brands: string[]
@@ -188,11 +189,15 @@ export type Database = {
           contact_email: string | null
           created_at: string
           description: string
+          google_business_url: string | null
+          has_public_liability: boolean | null
           highlights: string[]
           id: string
+          insurer_name: string | null
           logo: string | null
           name: string
           phone: string | null
+          plumber_licence_number: string | null
           postcode_ranges: string[] | null
           price_range: Database["public"]["Enums"]["price_range"]
           rating: number
@@ -208,6 +213,7 @@ export type Database = {
           years_in_business: number
         }
         Insert: {
+          abn?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
@@ -216,11 +222,15 @@ export type Database = {
           contact_email?: string | null
           created_at?: string
           description?: string
+          google_business_url?: string | null
+          has_public_liability?: boolean | null
           highlights?: string[]
           id?: string
+          insurer_name?: string | null
           logo?: string | null
           name: string
           phone?: string | null
+          plumber_licence_number?: string | null
           postcode_ranges?: string[] | null
           price_range?: Database["public"]["Enums"]["price_range"]
           rating?: number
@@ -236,6 +246,7 @@ export type Database = {
           years_in_business?: number
         }
         Update: {
+          abn?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
@@ -244,11 +255,15 @@ export type Database = {
           contact_email?: string | null
           created_at?: string
           description?: string
+          google_business_url?: string | null
+          has_public_liability?: boolean | null
           highlights?: string[]
           id?: string
+          insurer_name?: string | null
           logo?: string | null
           name?: string
           phone?: string | null
+          plumber_licence_number?: string | null
           postcode_ranges?: string[] | null
           price_range?: Database["public"]["Enums"]["price_range"]
           rating?: number

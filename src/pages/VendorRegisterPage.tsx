@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus } from "lucide-react";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -65,9 +66,18 @@ export default function VendorRegisterPage() {
     warranty: "",
     website: "",
     phone: "",
+    abn: "",
+    plumberLicenceNumber: "",
+    hasPublicLiability: false,
+    insurerName: "",
+    googleBusinessUrl: "",
   });
 
   const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [agreeLeadPricing, setAgreeLeadPricing] = useState(false);
+  const [agreeLicensedPlumber, setAgreeLicensedPlumber] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,6 +110,25 @@ export default function VendorRegisterPage() {
       toast.error("Business name is required");
       return;
     }
+    // Validate ABN (11 digits)
+    const abnClean = profile.abn.replace(/\s/g, "");
+    if (!/^\d{11}$/.test(abnClean)) {
+      toast.error("ABN must be exactly 11 digits");
+      return;
+    }
+    if (!profile.plumberLicenceNumber.trim()) {
+      toast.error("Plumber Licence Number is required");
+      return;
+    }
+    if (!agreeLeadPricing) {
+      toast.error("You must agree to the lead pricing terms");
+      return;
+    }
+    if (!agreeLicensedPlumber) {
+      toast.error("You must confirm you are a licensed plumber or authorised representative");
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -107,6 +136,20 @@ export default function VendorRegisterPage() {
 
       const slug = profile.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
       const toArray = (s: string) => s.split(",").map(v => v.trim()).filter(Boolean);
+
+      // Upload logo
+      let logoUrl: string | null = null;
+      if (logoFile) {
+        const logoPath = `${user.id}/${Date.now()}-${logoFile.name}`;
+        const { error: logoError } = await supabase.storage
+          .from("vendor-logos")
+          .upload(logoPath, logoFile);
+        if (logoError) throw logoError;
+        const { data: publicUrl } = supabase.storage
+          .from("vendor-logos")
+          .getPublicUrl(logoPath);
+        logoUrl = publicUrl.publicUrl;
+      }
 
       // Upload certification files
       const certFilePaths: Record<string, string> = {};
@@ -143,7 +186,13 @@ export default function VendorRegisterPage() {
           approval_status: "pending" as any,
           submitted_by: user.id,
           certification_files: certFilePaths,
-        })
+          logo: logoUrl,
+          abn: abnClean,
+          plumber_licence_number: profile.plumberLicenceNumber.trim(),
+          has_public_liability: profile.hasPublicLiability,
+          insurer_name: profile.hasPublicLiability ? profile.insurerName.trim() : "",
+          google_business_url: profile.googleBusinessUrl.trim() || "",
+        } as any)
         .select("id")
         .single();
 
@@ -167,6 +216,18 @@ export default function VendorRegisterPage() {
 
   const updateProfile = <K extends keyof typeof profile>(key: K, value: (typeof profile)[K]) => {
     setProfile(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setLogoFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setLogoPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setLogoPreview(null);
+    }
   };
 
   if (step === "success") {
@@ -213,6 +274,26 @@ export default function VendorRegisterPage() {
                   <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="e.g. Sam's Water Filtration" />
                 </div>
                 <div className="space-y-1.5">
+                  <Label>ABN *</Label>
+                  <Input
+                    value={profile.abn}
+                    onChange={e => updateProfile("abn", e.target.value)}
+                    required
+                    placeholder="12 345 678 901"
+                    maxLength={14}
+                  />
+                  <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Plumber Licence Number *</Label>
+                  <Input
+                    value={profile.plumberLicenceNumber}
+                    onChange={e => updateProfile("plumberLicenceNumber", e.target.value)}
+                    required
+                    placeholder="e.g. 12345C"
+                  />
+                </div>
+                <div className="space-y-1.5">
                   <Label>Description</Label>
                   <Textarea value={profile.description} onChange={e => updateProfile("description", e.target.value)} rows={3} placeholder="Tell customers about your business, experience, and what sets you apart…" />
                 </div>
@@ -241,6 +322,62 @@ export default function VendorRegisterPage() {
                   <div className="space-y-1.5">
                     <Label>Phone</Label>
                     <Input value={profile.phone} onChange={e => updateProfile("phone", e.target.value)} placeholder="04XX XXX XXX" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Google Business Profile URL (optional)</Label>
+                  <Input
+                    value={profile.googleBusinessUrl}
+                    onChange={e => updateProfile("googleBusinessUrl", e.target.value)}
+                    placeholder="https://g.page/your-business"
+                  />
+                </div>
+
+                {/* Public Liability Insurance */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Public Liability Insurance</Label>
+                    <Switch
+                      checked={profile.hasPublicLiability}
+                      onCheckedChange={v => updateProfile("hasPublicLiability", v)}
+                    />
+                  </div>
+                  {profile.hasPublicLiability && (
+                    <div className="space-y-1.5">
+                      <Label>Insurer Name</Label>
+                      <Input
+                        value={profile.insurerName}
+                        onChange={e => updateProfile("insurerName", e.target.value)}
+                        placeholder="e.g. QBE, Allianz"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Logo Upload */}
+                <div className="space-y-1.5">
+                  <Label>Business Logo (optional)</Label>
+                  <div className="flex items-center gap-4">
+                    {logoPreview ? (
+                      <img src={logoPreview} alt="Logo preview" className="h-16 w-16 rounded-md object-contain border border-border" />
+                    ) : (
+                      <div className="flex h-16 w-16 items-center justify-center rounded-md border border-dashed border-border bg-muted">
+                        <ImagePlus className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".jpg,.jpeg,.png,.webp,.svg"
+                        onChange={handleLogoChange}
+                      />
+                      <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                        <Upload className="h-4 w-4" />
+                        {logoFile ? "Replace" : "Upload Logo"}
+                      </span>
+                    </label>
+                    {logoFile && <span className="text-xs text-muted-foreground truncate max-w-[150px]">{logoFile.name}</span>}
                   </div>
                 </div>
               </CardContent>
@@ -424,6 +561,37 @@ export default function VendorRegisterPage() {
                     <Input value={profile.warranty} onChange={e => updateProfile("warranty", e.target.value)} placeholder="5 years parts & labour" />
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Terms Agreement */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" /> Terms & Agreements
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={agreeLeadPricing}
+                    onCheckedChange={(checked) => setAgreeLeadPricing(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-sm">
+                    I agree to the lead pricing terms and understand that I will be charged per qualified lead sent to my business. *
+                  </span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={agreeLicensedPlumber}
+                    onCheckedChange={(checked) => setAgreeLicensedPlumber(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-sm">
+                    I confirm that I am a licensed plumber or an authorised representative of a licensed plumbing business. *
+                  </span>
+                </label>
               </CardContent>
             </Card>
 
