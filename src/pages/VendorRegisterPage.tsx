@@ -330,10 +330,6 @@ export default function VendorRegisterPage() {
                   </Popover>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Brands Carried</Label>
-                  <Input value={profile.brands} onChange={e => updateProfile("brands", e.target.value)} placeholder="Puretec, 3M, Aquasana" />
-                </div>
-                <div className="space-y-1.5">
                   <Label>Certifications</Label>
                   <Popover>
                     <PopoverTrigger asChild>
