@@ -75,7 +75,7 @@ export default function RequestQuoteDialog({
         water_source: answers.waterSource,
         concerns: answers.concerns,
         budget: answers.budget,
-        recommended_systems: recommendedSystems,
+        recommended_systems: [...new Set(recommendedSystems)],
         message: formData.message || null,
       });
       if (error) throw error;
