@@ -116,10 +116,7 @@ export default function VendorRegisterPage() {
       toast.error("ABN must be exactly 11 digits");
       return;
     }
-    if (!profile.plumberLicenceNumber.trim()) {
-      toast.error("Plumber Licence Number is required");
-      return;
-    }
+    // Plumber licence number is optional
     if (!agreeLeadPricing) {
       toast.error("You must agree to the lead pricing terms");
       return;
@@ -285,11 +282,10 @@ export default function VendorRegisterPage() {
                   <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Plumber Licence Number *</Label>
+                  <Label>Plumber Licence Number (optional)</Label>
                   <Input
                     value={profile.plumberLicenceNumber}
                     onChange={e => updateProfile("plumberLicenceNumber", e.target.value)}
-                    required
                     placeholder="e.g. 12345C"
                   />
                 </div>
