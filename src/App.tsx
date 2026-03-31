@@ -23,6 +23,7 @@ import VendorRegisterPage from "@/pages/VendorRegisterPage";
 import VendorDashboardPage from "@/pages/VendorDashboardPage";
 import VendorSettingsPage from "@/pages/VendorSettingsPage";
 import VendorProfilePage from "@/pages/VendorProfilePage";
+import VendorBillingPage from "@/pages/VendorBillingPage";
 import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
 import UnsubscribePage from "@/pages/UnsubscribePage";
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
             <Route path="/vendor/profile" element={<VendorRoute><VendorProfilePage /></VendorRoute>} />
+            <Route path="/vendor/billing" element={<VendorRoute><VendorBillingPage /></VendorRoute>} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

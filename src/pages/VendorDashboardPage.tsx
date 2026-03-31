@@ -188,6 +188,10 @@ export default function VendorDashboardPage() {
               <Building2 className="h-4 w-4 mr-2" />
               Edit Profile
             </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate("/vendor/billing")}>
+              <DollarSign className="h-4 w-4 mr-2" />
+              Billing
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate("/vendor/settings")}>
               <Settings className="h-4 w-4 mr-2" />
               Settings
