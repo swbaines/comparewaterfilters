@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 
+
 interface Suggestion {
   name: string;
   postcode: number;
-  state: { name: string; abbreviation: string };
+  state: string;
 }
 
 interface Props {
@@ -33,10 +34,13 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
     }
     setLoading(true);
     try {
-      const res = await fetch(`https://v0.postcodeapi.com.au/suburbs.json?q=${encodeURIComponent(q)}`);
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/suburb-search?q=${encodeURIComponent(q)}`;
+      const res = await fetch(url, {
+        headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+      });
       if (res.ok) {
-        const data: Suggestion[] = await res.json();
-        setSuggestions(data.slice(0, 10));
+        const results: Suggestion[] = await res.json();
+        setSuggestions(results.slice(0, 10));
         setOpen(true);
       }
     } catch {
@@ -55,7 +59,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const handleSelect = (s: Suggestion) => {
     setQuery(`${s.name}, ${s.postcode}`);
     setOpen(false);
-    onSelect(String(s.postcode), s.name, s.state.abbreviation);
+    onSelect(String(s.postcode), s.name, s.state);
   };
 
   // Close dropdown on outside click
@@ -87,7 +91,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
               onClick={() => handleSelect(s)}
               className="cursor-pointer rounded-sm px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
             >
-              {s.name}, {s.postcode} — {s.state.abbreviation}
+              {s.name}, {s.postcode} — {s.state}
             </li>
           ))}
         </ul>
