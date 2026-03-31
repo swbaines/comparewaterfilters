@@ -14,6 +14,41 @@ interface Props {
   onSelect: (postcode: string, suburb: string, state: string) => void;
 }
 
+// Rough lat/lng → Australian state mapping
+function latLngToState(lat: number, lng: number): string {
+  if (lat < -39.5) return "TAS";
+  if (lng < 129) return "WA";
+  if (lat > -26 && lng < 138) return "NT";
+  if (lng < 141 && lat <= -26) return "SA";
+  if (lat > -29 && lng >= 138) return "QLD";
+  if (lat <= -36 && lng >= 141) return "VIC";
+  // ACT check (rough)
+  if (lat > -36 && lat < -35 && lng > 148.5 && lng < 149.5) return "ACT";
+  return "NSW";
+}
+
+function useDetectedState() {
+  const [detectedState, setDetectedState] = useState<string>(() => {
+    return sessionStorage.getItem("detected_au_state") || "";
+  });
+
+  useEffect(() => {
+    if (detectedState) return;
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const state = latLngToState(pos.coords.latitude, pos.coords.longitude);
+        setDetectedState(state);
+        sessionStorage.setItem("detected_au_state", state);
+      },
+      () => { /* permission denied or error – no-op */ },
+      { timeout: 5000, maximumAge: 600000 }
+    );
+  }, [detectedState]);
+
+  return detectedState;
+}
+
 export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect }: Props) {
   const [query, setQuery] = useState(postcode || suburb ? `${suburb}${suburb && postcode ? ", " : ""}${postcode}` : "");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -21,6 +56,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
+  const detectedState = useDetectedState();
 
   // Sync display when parent resets
   useEffect(() => {
@@ -40,7 +76,8 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
         console.error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY");
         return;
       }
-      const url = `${baseUrl}/functions/v1/suburb-search?q=${encodeURIComponent(q)}`;
+      const stateParam = detectedState ? `&state=${encodeURIComponent(detectedState)}` : "";
+      const url = `${baseUrl}/functions/v1/suburb-search?q=${encodeURIComponent(q)}${stateParam}`;
       const res = await fetch(url, {
         headers: { apikey: apiKey },
       });
@@ -57,7 +94,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [detectedState]);
 
   const handleChange = (value: string) => {
     setQuery(value);

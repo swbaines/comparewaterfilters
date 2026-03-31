@@ -12,6 +12,7 @@ serve(async (req) => {
 
   const url = new URL(req.url);
   const q = url.searchParams.get("q");
+  const priorityState = (url.searchParams.get("state") || "").toUpperCase();
 
   if (!q || q.length < 2) {
     return new Response(JSON.stringify([]), {
@@ -32,8 +33,14 @@ serve(async (req) => {
       state: (s.state?.abbreviation || "") as string,
     }));
 
-    // Sort: exact prefix matches first, then alphabetically by state
+    // Sort: priority state first, then exact prefix matches, then alphabetically
     slim.sort((a, b) => {
+      // Priority state comes first
+      if (priorityState) {
+        const aPri = a.state === priorityState ? 0 : 1;
+        const bPri = b.state === priorityState ? 0 : 1;
+        if (aPri !== bPri) return aPri - bPri;
+      }
       const aExact = a.name.toLowerCase().startsWith(qLower) ? 0 : 1;
       const bExact = b.name.toLowerCase().startsWith(qLower) ? 0 : 1;
       if (aExact !== bExact) return aExact - bExact;
