@@ -116,10 +116,7 @@ export default function VendorRegisterPage() {
       toast.error("ABN must be exactly 11 digits");
       return;
     }
-    if (!profile.plumberLicenceNumber.trim()) {
-      toast.error("Plumber Licence Number is required");
-      return;
-    }
+    // Plumber licence number is optional
     if (!agreeLeadPricing) {
       toast.error("You must agree to the lead pricing terms");
       return;
