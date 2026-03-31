@@ -88,7 +88,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
               onClick={() => handleSelect(s)}
               className="cursor-pointer rounded-sm px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
             >
-              {s.name}, {s.postcode} — {s.state.abbreviation}
+              {s.name}, {s.postcode} — {s.state}
             </li>
           ))}
         </ul>
