@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
+import SuburbPostcodeAutocomplete from "@/components/SuburbPostcodeAutocomplete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,7 +14,7 @@ import type { QuizAnswers } from "@/lib/recommendationEngine";
 
 const TOTAL_STEPS = 8;
 
-const stateOptions = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"];
+// State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
 const householdSizes = ["1", "2", "3", "4", "5+"];
@@ -217,24 +218,13 @@ export default function QuizPage() {
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1.5 block text-sm font-medium">Postcode</label>
-                    <Input placeholder="e.g. 2000" value={answers.postcode} onChange={(e) => set("postcode", e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="mb-1.5 block text-sm font-medium">Suburb</label>
-                    <Input placeholder="e.g. Sydney" value={answers.suburb} onChange={(e) => set("suburb", e.target.value)} />
-                  </div>
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium">State</label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {stateOptions.map((s) => (
-                      <OptionButton key={s} selected={answers.state === s} onClick={() => set("state", s)}>{s}</OptionButton>
-                    ))}
-                  </div>
-                </div>
+                <SuburbPostcodeAutocomplete
+                  postcode={answers.postcode}
+                  suburb={answers.suburb}
+                  onSelect={(postcode, suburb, state) => {
+                    setAnswers((prev) => ({ ...prev, postcode, suburb, state }));
+                  }}
+                />
                 <div>
                   <label className="mb-2 block text-sm font-medium">Property type</label>
                   <div className="grid grid-cols-3 gap-2">
