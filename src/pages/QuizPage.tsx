@@ -108,6 +108,10 @@ function MultiSelectButton({ selected, onClick, children }: { selected: boolean;
 export default function QuizPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "", suburb: "", state: "", propertyType: "", ownershipStatus: "",
     householdSize: "", bathrooms: "", waterSource: "", concerns: [],
