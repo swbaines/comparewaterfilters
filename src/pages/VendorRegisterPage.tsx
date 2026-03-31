@@ -282,11 +282,10 @@ export default function VendorRegisterPage() {
                   <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Plumber Licence Number *</Label>
+                  <Label>Plumber Licence Number (optional)</Label>
                   <Input
                     value={profile.plumberLicenceNumber}
                     onChange={e => updateProfile("plumberLicenceNumber", e.target.value)}
-                    required
                     placeholder="e.g. 12345C"
                   />
                 </div>
