@@ -60,6 +60,7 @@ const App = () => (
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
             <Route path="/vendor/profile" element={<VendorRoute><VendorProfilePage /></VendorRoute>} />
+            <Route path="/vendor/billing" element={<VendorRoute><VendorBillingPage /></VendorRoute>} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
