@@ -34,16 +34,25 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
     }
     setLoading(true);
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/suburb-search?q=${encodeURIComponent(q)}`;
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      if (!baseUrl || !apiKey) {
+        console.error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY");
+        return;
+      }
+      const url = `${baseUrl}/functions/v1/suburb-search?q=${encodeURIComponent(q)}`;
       const res = await fetch(url, {
-        headers: { apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+        headers: { apikey: apiKey },
       });
       if (res.ok) {
         const results: Suggestion[] = await res.json();
         setSuggestions(results.slice(0, 10));
         setOpen(true);
+      } else {
+        console.error("Suburb search failed:", res.status, await res.text());
       }
-    } catch {
+    } catch (err) {
+      console.error("Suburb search error:", err);
       setSuggestions([]);
     } finally {
       setLoading(false);
