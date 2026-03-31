@@ -23,6 +23,7 @@ import VendorRegisterPage from "@/pages/VendorRegisterPage";
 import VendorDashboardPage from "@/pages/VendorDashboardPage";
 import VendorSettingsPage from "@/pages/VendorSettingsPage";
 import VendorProfilePage from "@/pages/VendorProfilePage";
+import VendorBillingPage from "@/pages/VendorBillingPage";
 import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
 import UnsubscribePage from "@/pages/UnsubscribePage";
