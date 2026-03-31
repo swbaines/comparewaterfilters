@@ -56,7 +56,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const handleSelect = (s: Suggestion) => {
     setQuery(`${s.name}, ${s.postcode}`);
     setOpen(false);
-    onSelect(String(s.postcode), s.name, s.state.abbreviation);
+    onSelect(String(s.postcode), s.name, s.state);
   };
 
   // Close dropdown on outside click
