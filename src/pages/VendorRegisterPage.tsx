@@ -589,7 +589,7 @@ export default function VendorRegisterPage() {
                     className="mt-0.5"
                   />
                   <span className="text-sm">
-                    I confirm that I am a licensed plumber or an authorised representative of a licensed plumbing business. *
+                    I confirm that all plumbing work will be carried out by or under the supervision of a licensed plumber, and I accept responsibility for ensuring compliance with all applicable licensing and regulatory requirements. *
                   </span>
                 </label>
               </CardContent>
