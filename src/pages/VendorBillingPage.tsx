@@ -124,6 +124,24 @@ export default function VendorBillingPage() {
   const [provider, setProvider] = useState<any>(null);
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+
+  // Fetch leads for the selected invoice's billing period
+  const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
+    queryKey: ["invoice-leads", selectedInvoice?.id],
+    enabled: !!selectedInvoice && !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("quote_requests")
+        .select("id, customer_name, customer_email, customer_suburb, customer_state, recommended_systems, lead_price, created_at")
+        .eq("provider_id", provider.id)
+        .gte("created_at", new Date(selectedInvoice.period_start).toISOString())
+        .lte("created_at", new Date(selectedInvoice.period_end + "T23:59:59").toISOString())
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   useEffect(() => {
     const fetchProvider = async () => {
