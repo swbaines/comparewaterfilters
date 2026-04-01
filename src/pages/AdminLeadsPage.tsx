@@ -58,14 +58,6 @@ export default function AdminLeadsPage() {
     },
   });
 
-  const { data: leadPrices = [] } = useQuery({
-    queryKey: ["lead-prices"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("lead_prices").select("*");
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["admin-invoices"],
