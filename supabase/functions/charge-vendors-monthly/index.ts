@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     // Get all approved providers
     const { data: providers, error: provError } = await supabaseAdmin
       .from('providers')
-      .select('id, name, contact_email')
+      .select('id, name, contact_email, stripe_customer_id, stripe_payment_method_id')
       .eq('approval_status', 'approved')
 
     if (provError) throw provError
@@ -93,51 +93,41 @@ Deno.serve(async (req) => {
 
         if (invError) throw invError
 
-        // Try to charge via Stripe
-        const customers = await stripe.customers.list({
-          email: provider.contact_email || undefined,
-          limit: 1,
-        })
+        // Use stored Stripe IDs from the providers table
+        const customerId = provider.stripe_customer_id
+        const paymentMethodId = provider.stripe_payment_method_id
 
-        if (customers.data.length > 0) {
-          const customer = customers.data[0]
-          const paymentMethods = await stripe.paymentMethods.list({
-            customer: customer.id,
-            type: 'card',
+        if (!customerId) {
+          results.push({ provider_id: provider.id, status: 'no_stripe_customer', amount: totalAmount })
+        } else if (!paymentMethodId) {
+          results.push({ provider_id: provider.id, status: 'no_payment_method', amount: totalAmount })
+        } else {
+          const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(totalAmount * 100), // cents
+            currency: 'aud',
+            customer: customerId,
+            payment_method: paymentMethodId,
+            off_session: true,
+            confirm: true,
+            metadata: {
+              provider_id: provider.id,
+              invoice_id: invoice.id,
+              invoice_number: invoiceNumber,
+            },
           })
 
-          if (paymentMethods.data.length > 0) {
-            const paymentIntent = await stripe.paymentIntents.create({
-              amount: Math.round(totalAmount * 100), // cents
-              currency: 'aud',
-              customer: customer.id,
-              payment_method: paymentMethods.data[0].id,
-              off_session: true,
-              confirm: true,
-              metadata: {
-                provider_id: provider.id,
-                invoice_id: invoice.id,
-                invoice_number: invoiceNumber,
-              },
-            })
-
-            if (paymentIntent.status === 'succeeded') {
-              await supabaseAdmin
-                .from('invoices')
-                .update({ status: 'paid', paid_at: new Date().toISOString() })
-                .eq('id', invoice.id)
-            }
-
-            results.push({
-              provider_id: provider.id,
-              status: paymentIntent.status,
-              amount: totalAmount,
-            })
-          } else {
-            results.push({ provider_id: provider.id, status: 'no_payment_method', amount: totalAmount })
+          if (paymentIntent.status === 'succeeded') {
+            await supabaseAdmin
+              .from('invoices')
+              .update({ status: 'paid', paid_at: new Date().toISOString() })
+              .eq('id', invoice.id)
           }
-        } else {
-          results.push({ provider_id: provider.id, status: 'no_stripe_customer', amount: totalAmount })
+
+          results.push({
+            provider_id: provider.id,
+            status: paymentIntent.status,
+            amount: totalAmount,
+          })
         }
 
         // Link leads to invoice
