@@ -226,6 +226,38 @@ export default function VendorBillingPage() {
           </p>
         </div>
 
+        {/* Warning banners */}
+        {provider?.stripe_customer_id && !cardSaved && (
+          <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="flex items-center justify-between">
+              <span>
+                <strong>No payment method on file.</strong> Add a card below to enable automatic billing and avoid overdue invoices.
+              </span>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="ml-4 shrink-0"
+                onClick={() => {
+                  setShowCardForm(true);
+                  document.getElementById("payment-method-section")?.scrollIntoView({ behavior: "smooth" });
+                }}
+              >
+                <CreditCard className="h-4 w-4 mr-2" /> Add card now
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {outstanding > 0 && (
+          <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>You have ${outstanding.toFixed(2)} in outstanding invoices.</strong> Please ensure your payment method is up to date to avoid service interruptions.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
