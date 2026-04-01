@@ -111,9 +111,8 @@ export default function AdminLeadsPage() {
 
       let totalAmount = 0;
       for (const lead of providerLeads) {
-        // Owner = $85, Rental = $50 (based on property_type stored in quote)
-        const isRental = lead.property_type === "Apartment" || lead.ownership_status === "Rent";
-        const price = isRental ? 50 : 85;
+        // Use the lead_price set at quote submission (Owner=$85, Rental=$50)
+        const price = Number(lead.lead_price) || 85;
         totalAmount += price;
       }
 
