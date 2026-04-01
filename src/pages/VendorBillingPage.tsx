@@ -93,6 +93,7 @@ function CardSetupForm({
       <div className="rounded-lg border p-4 bg-background">
         <CardElement
           options={{
+            hidePostalCode: true,
             style: {
               base: {
                 fontSize: "16px",
