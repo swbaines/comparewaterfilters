@@ -149,7 +149,7 @@ export default function VendorBillingPage() {
 
       const { data: prov } = await supabase
         .from("providers")
-        .select("id, name, contact_email, approval_status")
+        .select("id, name, contact_email, approval_status, stripe_customer_id, stripe_payment_method_id")
         .eq("id", va.provider_id)
         .single();
 
