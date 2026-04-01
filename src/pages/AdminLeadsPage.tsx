@@ -111,12 +111,9 @@ export default function AdminLeadsPage() {
 
       let totalAmount = 0;
       for (const lead of providerLeads) {
-        const systems = lead.recommended_systems || [];
-        let price = 0;
-        for (const sys of systems) {
-          const p = leadPrices.find((lp) => lp.system_type === sys);
-          if (p) price = Math.max(price, Number(p.price_per_lead));
-        }
+        // Owner = $85, Rental = $50 (based on property_type stored in quote)
+        const isRental = lead.property_type === "Apartment" || lead.ownership_status === "Rent";
+        const price = isRental ? 50 : 85;
         totalAmount += price;
       }
 
