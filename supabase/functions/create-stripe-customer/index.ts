@@ -88,6 +88,16 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Save stripe_customer_id to the providers table
+    const { error: updateError } = await supabaseAdmin
+      .from('providers')
+      .update({ stripe_customer_id: customer.id })
+      .eq('id', provider.id)
+
+    if (updateError) {
+      console.error('Failed to save stripe_customer_id:', updateError)
+    }
+
     return new Response(JSON.stringify({
       success: true,
       customer_id: customer.id,
