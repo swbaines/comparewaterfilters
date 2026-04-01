@@ -273,8 +273,15 @@ export default function AdminProvidersPage() {
                             </Button>
                             <Button size="sm" className="gap-1 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
                               const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
-                              if (error) toast.error(error.message);
-                              else { toast.success(`${p.name} approved!`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+                              if (error) { toast.error(error.message); return; }
+                              toast.success(`${p.name} approved!`);
+                              queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                              // Auto-create Stripe customer
+                              supabase.functions.invoke('create-stripe-customer', { body: { provider_id: p.id } })
+                                .then(({ error: stripeErr }) => {
+                                  if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
+                                  else toast.success('Stripe customer created');
+                                });
                             }}>
                               <CheckCircle2 className="h-3 w-3" /> Approve
                             </Button>
@@ -659,12 +666,16 @@ export default function AdminProvidersPage() {
                 <div className="flex gap-2 pt-2">
                   <Button className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
                     const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", reviewProvider.id);
-                    if (error) toast.error(error.message);
-                    else {
-                      toast.success(`${reviewProvider.name} approved!`);
-                      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
-                      setReviewProvider(null);
-                    }
+                    if (error) { toast.error(error.message); return; }
+                    toast.success(`${reviewProvider.name} approved!`);
+                    queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                    setReviewProvider(null);
+                    // Auto-create Stripe customer
+                    supabase.functions.invoke('create-stripe-customer', { body: { provider_id: reviewProvider.id } })
+                      .then(({ error: stripeErr }) => {
+                        if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
+                        else toast.success('Stripe customer created');
+                      });
                   }}>
                     <CheckCircle2 className="h-4 w-4" /> Approve
                   </Button>
