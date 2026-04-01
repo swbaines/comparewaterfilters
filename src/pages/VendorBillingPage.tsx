@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,10 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, DollarSign, TrendingUp, FileText, CreditCard,
-  ArrowLeft, CheckCircle2, Zap, Bell, ClipboardList, Sparkles
+  ArrowLeft, CheckCircle2, Zap, Bell, ClipboardList, Sparkles, ShieldCheck, AlertCircle
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { toast } from "sonner";
 import PageMeta from "@/components/PageMeta";
 
 const invoiceStatusColors: Record<string, string> = {
