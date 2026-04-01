@@ -509,21 +509,3 @@ export default function VendorBillingPage() {
     </div>
   );
 }
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Once the platform reaches volume, we'll introduce optional monthly subscriptions with featured placement, priority lead matching, and enhanced profile visibility.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {["Featured placement in results", "Priority lead matching", "Predictable monthly cost", "Enhanced profile badge"].map(f => (
-                    <Badge key={f} variant="secondary" className="gap-1">
-                      <CheckCircle2 className="h-3 w-3" /> {f}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
