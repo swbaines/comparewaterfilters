@@ -258,25 +258,7 @@ export default function VendorBillingPage() {
         </Card>
 
         {/* Payment Method */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-primary" /> Payment Method
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 space-y-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                <CreditCard className="h-7 w-7 text-muted-foreground" />
-              </div>
-              <h4 className="font-semibold">Stripe Integration — Coming Soon</h4>
-              <p className="text-sm text-muted-foreground max-w-md">
-                We're working on automatic payments via Stripe. For now, invoices are sent monthly and can be paid via bank transfer using the details on your invoice.
-              </p>
-              <Badge variant="secondary" className="mt-2">Coming Soon</Badge>
-            </div>
-          </CardContent>
-        </Card>
+        <PaymentMethodCard />
 
         {/* Invoice History */}
         <Card>
