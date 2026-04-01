@@ -111,12 +111,8 @@ export default function AdminLeadsPage() {
 
       let totalAmount = 0;
       for (const lead of providerLeads) {
-        const systems = lead.recommended_systems || [];
-        let price = 0;
-        for (const sys of systems) {
-          const p = leadPrices.find((lp) => lp.system_type === sys);
-          if (p) price = Math.max(price, Number(p.price_per_lead));
-        }
+        // Use the lead_price set at quote submission (Owner=$85, Rental=$50)
+        const price = Number(lead.lead_price) || 85;
         totalAmount += price;
       }
 
@@ -137,12 +133,7 @@ export default function AdminLeadsPage() {
       if (invoiceError) throw invoiceError;
 
       for (const lead of providerLeads) {
-        const systems = lead.recommended_systems || [];
-        let price = 0;
-        for (const sys of systems) {
-          const p = leadPrices.find((lp) => lp.system_type === sys);
-          if (p) price = Math.max(price, Number(p.price_per_lead));
-        }
+        const price = Number(lead.lead_price) || 85;
         await supabase
           .from("quote_requests")
           .update({ invoice_id: invoice.id, lead_price: price })

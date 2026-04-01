@@ -22,12 +22,8 @@ import {
 const stripePromise = loadStripe("pk_test_51TGc4tFU68zxLrQXO6emd9pwIuhsswQvxP20juxUrRgoJEFfMy2ZFHjZR5bee7E5kt7WaAdlH8weeFtcv56UORqY00rUvp2yi0");
 
 const LEAD_PRICES = [
-  { type: "Whole home filtration", price: "$85" },
-  { type: "Water softener", price: "$65" },
-  { type: "Reverse osmosis", price: "$40" },
-  { type: "UV system", price: "$40" },
-  { type: "Under-sink carbon", price: "$35" },
-  { type: "All other systems", price: "$35" },
+  { type: "Owner lead", price: "$85" },
+  { type: "Rental lead", price: "$50" },
 ];
 
 const statusColors: Record<string, string> = {
@@ -203,12 +199,8 @@ export default function VendorBillingPage() {
 
   const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
     if (l.lead_price) return sum + Number(l.lead_price);
-    const systems: string[] = l.recommended_systems || [];
-    let price = 35;
-    if (systems.includes("whole-house")) price = 85;
-    else if (systems.includes("water-softener")) price = 65;
-    else if (systems.includes("reverse-osmosis") || systems.includes("uv-system")) price = 40;
-    return sum + price;
+    // Fallback: Owner = $85, Rental = $50
+    return sum + 85;
   }, 0);
 
   const lastMonthInvoice = invoices[0];
