@@ -323,7 +323,7 @@ export default function VendorBillingPage() {
           </Card>
 
           {/* Payment method */}
-          <Card>
+          <Card id="payment-method-section">
             <CardHeader>
               <CardTitle>Payment method</CardTitle>
               <CardDescription>Save a card for automatic monthly billing</CardDescription>
