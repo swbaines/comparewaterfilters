@@ -410,11 +410,74 @@ export default function VendorBillingPage() {
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             {selectedInvoice && (
               <>
-                <DialogHeader>
+                <DialogHeader className="flex flex-row items-center justify-between pr-8">
                   <DialogTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
                     {selectedInvoice.invoice_number}
                   </DialogTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => {
+                      const printContent = document.getElementById("invoice-print-area");
+                      if (!printContent) return;
+                      const win = window.open("", "_blank");
+                      if (!win) return;
+                      win.document.write(`
+                        <html><head><title>${selectedInvoice.invoice_number}</title>
+                        <style>
+                          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #111; }
+                          h1 { font-size: 22px; margin-bottom: 4px; }
+                          .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; font-size: 14px; }
+                          .meta .label { color: #666; margin-bottom: 2px; }
+                          .meta .value { font-weight: 600; }
+                          table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+                          th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; }
+                          td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+                          .text-right { text-align: right; }
+                          .total-row td { border-top: 2px solid #333; font-weight: 700; }
+                          .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+                          .badge-paid { background: #dcfce7; color: #166534; }
+                          .badge-sent { background: #dbeafe; color: #1e40af; }
+                          .badge-overdue { background: #fee2e2; color: #991b1b; }
+                          .badge-draft { background: #f3f4f6; color: #374151; }
+                          .footer { margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 16px; }
+                          @media print { body { padding: 20px; } }
+                        </style></head><body>
+                        <h1>Invoice ${selectedInvoice.invoice_number}</h1>
+                        <p style="color:#666;margin-top:0">Compare Water Filters</p>
+                        <div class="meta">
+                          <div><div class="label">Billing period</div><div class="value">${format(new Date(selectedInvoice.period_start), "d MMM yyyy")} — ${format(new Date(selectedInvoice.period_end), "d MMM yyyy")}</div></div>
+                          <div><div class="label">Status</div><div class="value"><span class="badge badge-${selectedInvoice.status}">${selectedInvoice.status}</span></div></div>
+                          <div><div class="label">Total leads</div><div class="value">${selectedInvoice.lead_count}</div></div>
+                          <div><div class="label">Total amount</div><div class="value">$${Number(selectedInvoice.total_amount).toFixed(2)}</div></div>
+                          ${selectedInvoice.paid_at ? `<div><div class="label">Paid</div><div class="value">${format(new Date(selectedInvoice.paid_at), "d MMM yyyy")}</div></div>` : ""}
+                        </div>
+                        <h3>Leads in this period</h3>
+                        <table>
+                          <thead><tr><th>Date</th><th>Customer</th><th>Location</th><th>System</th><th class="text-right">Price</th></tr></thead>
+                          <tbody>
+                            ${invoiceLeads.map((l: any) => `<tr>
+                              <td>${format(new Date(l.created_at), "d MMM")}</td>
+                              <td>${l.customer_name}</td>
+                              <td>${[l.customer_suburb, l.customer_state].filter(Boolean).join(", ") || "—"}</td>
+                              <td>${(l.recommended_systems || []).join(", ") || "—"}</td>
+                              <td class="text-right">$${Number(l.lead_price || 0).toFixed(2)}</td>
+                            </tr>`).join("")}
+                            <tr class="total-row"><td colspan="4" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="footer">Generated from Compare Water Filters vendor portal — comparewaterfilters.lovable.app</div>
+                        </body></html>
+                      `);
+                      win.document.close();
+                      win.focus();
+                      setTimeout(() => win.print(), 300);
+                    }}
+                  >
+                    <Download className="h-4 w-4" /> Print / Save PDF
+                  </Button>
                 </DialogHeader>
 
                 <div className="space-y-4">
