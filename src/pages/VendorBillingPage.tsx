@@ -373,8 +373,8 @@ export default function VendorBillingPage() {
                 </TableHeader>
                 <TableBody>
                   {invoices.map((inv: any) => (
-                    <TableRow key={inv.id}>
-                      <TableCell className="font-medium">{inv.invoice_number}</TableCell>
+                    <TableRow key={inv.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedInvoice(inv)}>
+                      <TableCell className="font-medium text-primary hover:underline">{inv.invoice_number}</TableCell>
                       <TableCell>
                         {format(new Date(inv.period_start), "d MMM")} — {format(new Date(inv.period_end), "d MMM yyyy")}
                       </TableCell>
