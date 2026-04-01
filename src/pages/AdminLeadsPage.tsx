@@ -133,8 +133,7 @@ export default function AdminLeadsPage() {
       if (invoiceError) throw invoiceError;
 
       for (const lead of providerLeads) {
-        const isRental = lead.property_type === "Apartment" || lead.ownership_status === "Rent";
-        const price = isRental ? 50 : 85;
+        const price = Number(lead.lead_price) || 85;
         await supabase
           .from("quote_requests")
           .update({ invoice_id: invoice.id, lead_price: price })
