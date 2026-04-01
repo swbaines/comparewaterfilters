@@ -416,6 +416,7 @@ function PaymentMethodCard() {
   );
 }
 
+function StatCard({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent: string }) {
   return (
     <Card>
       <CardContent className="flex items-center gap-4 py-5">
