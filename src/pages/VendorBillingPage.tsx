@@ -72,23 +72,12 @@ function CardSetupForm({
       if (stripeError) throw new Error(stripeError.message);
       if (!setupIntent?.payment_method) throw new Error("No payment method returned");
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      // Save payment method via edge function (uses service role to bypass RLS)
+      const { error: saveError } = await supabase.functions.invoke("save-payment-method", {
+        body: { payment_method_id: setupIntent.payment_method as string },
+      });
 
-      const { data: vendorAccount } = await supabase
-        .from("vendor_accounts")
-        .select("provider_id")
-        .eq("user_id", user.id)
-        .single();
-
-      if (!vendorAccount) throw new Error("Vendor account not found");
-
-      const { error: updateError } = await supabase
-        .from("providers")
-        .update({ stripe_payment_method_id: setupIntent.payment_method as string } as any)
-        .eq("id", vendorAccount.provider_id);
-
-      if (updateError) throw updateError;
+      if (saveError) throw new Error(saveError.message || "Failed to save payment method");
 
       toast.success("Card saved successfully — you're all set for automatic billing");
       onSuccess();
