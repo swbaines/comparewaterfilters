@@ -212,11 +212,17 @@ export default function VendorBillingPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="container max-w-5xl py-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Billing &amp; lead pricing</h1>
-          <p className="text-muted-foreground">
-            You are invoiced on the 1st of each month for leads received. Payment is due within 14 days.
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Billing &amp; lead pricing</h1>
+            <p className="text-muted-foreground">
+              You are invoiced on the 1st of each month for leads received. Payment is due within 14 days.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate("/vendor/dashboard")}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
         </div>
 
         {/* Warning banners */}
