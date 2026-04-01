@@ -199,12 +199,8 @@ export default function VendorBillingPage() {
 
   const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
     if (l.lead_price) return sum + Number(l.lead_price);
-    const systems: string[] = l.recommended_systems || [];
-    let price = 35;
-    if (systems.includes("whole-house")) price = 85;
-    else if (systems.includes("water-softener")) price = 65;
-    else if (systems.includes("reverse-osmosis") || systems.includes("uv-system")) price = 40;
-    return sum + price;
+    // Fallback: Owner = $85, Rental = $50
+    return sum + 85;
   }, 0);
 
   const lastMonthInvoice = invoices[0];
