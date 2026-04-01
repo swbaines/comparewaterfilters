@@ -13,3 +13,11 @@ project_id = "xbryypgsryjhuscyglbu"
     verify_jwt = false
   [functions.handle-email-suppression]
     verify_jwt = false
+  [functions.create-stripe-customer]
+    verify_jwt = false
+  [functions.create-setup-intent]
+    verify_jwt = false
+  [functions.charge-vendors-monthly]
+    verify_jwt = false
+  [functions.create-manual-invoice]
+    verify_jwt = false
