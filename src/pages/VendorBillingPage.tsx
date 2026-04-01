@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { loadStripe } from "@stripe/stripe-js";
@@ -118,6 +119,7 @@ function CardSetupForm({
 
 // ── Main billing page ─────────────────────────────────────────────────────────
 export default function VendorBillingPage() {
+  const navigate = useNavigate();
   const [provider, setProvider] = useState<any>(null);
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
@@ -211,11 +213,17 @@ export default function VendorBillingPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="container max-w-5xl py-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Billing &amp; lead pricing</h1>
-          <p className="text-muted-foreground">
-            You are invoiced on the 1st of each month for leads received. Payment is due within 14 days.
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Billing &amp; lead pricing</h1>
+            <p className="text-muted-foreground">
+              You are invoiced on the 1st of each month for leads received. Payment is due within 14 days.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate("/vendor/dashboard")}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
         </div>
 
         {/* Warning banners */}
