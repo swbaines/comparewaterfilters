@@ -335,58 +335,31 @@ export default function AdminLeadsPage() {
       </Dialog>
 
       {/* Lead Prices Dialog */}
-      <LeadPricesDialog open={pricesDialogOpen} onOpenChange={setPricesDialogOpen} prices={leadPrices} />
-    </div>
-  );
-}
-
-function LeadPricesDialog({ open, onOpenChange, prices }: { open: boolean; onOpenChange: (v: boolean) => void; prices: any[] }) {
-  const queryClient = useQueryClient();
-  const [form, setForm] = useState({ system_type: "", price_per_lead: "" });
-
-  const upsertMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from("lead_prices").upsert(
-        { system_type: form.system_type, price_per_lead: Number(form.price_per_lead) },
-        { onConflict: "system_type" }
-      );
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["lead-prices"] });
-      setForm({ system_type: "", price_per_lead: "" });
-      toast.success("Price saved");
-    },
-    onError: (e) => toast.error(e.message),
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>Lead Prices by System Type</DialogTitle></DialogHeader>
-        <div className="space-y-4">
-          {prices.length > 0 && (
+      <Dialog open={pricesDialogOpen} onOpenChange={setPricesDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Lead Pricing</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted.
+            </p>
             <Table>
-              <TableHeader><TableRow><TableHead>System Type</TableHead><TableHead>Price/Lead</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>Lead Type</TableHead><TableHead>Price</TableHead><TableHead>Criteria</TableHead></TableRow></TableHeader>
               <TableBody>
-                {prices.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell>{p.system_type}</TableCell>
-                    <TableCell>${Number(p.price_per_lead).toFixed(2)}</TableCell>
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableCell className="font-medium">Owner lead</TableCell>
+                  <TableCell>$85</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">Customer owns their property</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Rental lead</TableCell>
+                  <TableCell>$50</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">Customer is renting</TableCell>
+                </TableRow>
               </TableBody>
             </Table>
-          )}
-          <div className="grid grid-cols-2 gap-3">
-            <div><Label>System Type</Label><Input value={form.system_type} onChange={(e) => setForm((f) => ({ ...f, system_type: e.target.value }))} placeholder="e.g. Reverse Osmosis" /></div>
-            <div><Label>Price per Lead ($)</Label><Input type="number" value={form.price_per_lead} onChange={(e) => setForm((f) => ({ ...f, price_per_lead: e.target.value }))} placeholder="25" /></div>
           </div>
-          <Button onClick={() => upsertMutation.mutate()} disabled={!form.system_type || !form.price_per_lead} className="w-full">
-            {upsertMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save Price"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
