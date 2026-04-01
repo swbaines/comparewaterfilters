@@ -1,0 +1,1 @@
+ALTER TABLE public.providers ADD COLUMN stripe_customer_id text, ADD COLUMN stripe_payment_method_id text;
