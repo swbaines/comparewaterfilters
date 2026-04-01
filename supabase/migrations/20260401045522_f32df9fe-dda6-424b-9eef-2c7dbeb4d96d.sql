@@ -1,0 +1,1 @@
+UPDATE public.providers SET approval_status = 'pending', stripe_customer_id = NULL WHERE slug = 'e2e-test-filtration-co';
