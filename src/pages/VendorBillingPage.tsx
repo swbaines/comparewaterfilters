@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X } from "lucide-react";
 import { format } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -123,6 +124,24 @@ export default function VendorBillingPage() {
   const [provider, setProvider] = useState<any>(null);
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+
+  // Fetch leads for the selected invoice's billing period
+  const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
+    queryKey: ["invoice-leads", selectedInvoice?.id],
+    enabled: !!selectedInvoice && !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("quote_requests")
+        .select("id, customer_name, customer_email, customer_suburb, customer_state, recommended_systems, lead_price, created_at")
+        .eq("provider_id", provider.id)
+        .gte("created_at", new Date(selectedInvoice.period_start).toISOString())
+        .lte("created_at", new Date(selectedInvoice.period_end + "T23:59:59").toISOString())
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   useEffect(() => {
     const fetchProvider = async () => {
@@ -354,8 +373,8 @@ export default function VendorBillingPage() {
                 </TableHeader>
                 <TableBody>
                   {invoices.map((inv: any) => (
-                    <TableRow key={inv.id}>
-                      <TableCell className="font-medium">{inv.invoice_number}</TableCell>
+                    <TableRow key={inv.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedInvoice(inv)}>
+                      <TableCell className="font-medium text-primary hover:underline">{inv.invoice_number}</TableCell>
                       <TableCell>
                         {format(new Date(inv.period_start), "d MMM")} — {format(new Date(inv.period_end), "d MMM yyyy")}
                       </TableCell>
@@ -386,27 +405,106 @@ export default function VendorBillingPage() {
           </CardContent>
         </Card>
 
-        {/* Monthly subscription teaser */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-6 items-start">
-              <div className="space-y-3">
-                <Badge variant="outline">Coming soon</Badge>
-                <h3 className="text-lg font-semibold">Monthly subscription plan</h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  Once the platform reaches volume, we'll introduce optional monthly subscriptions with featured placement, priority lead matching, and enhanced profile visibility.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {["Featured placement in results", "Priority lead matching", "Predictable monthly cost", "Enhanced profile badge"].map(f => (
-                    <Badge key={f} variant="secondary" className="gap-1">
-                      <CheckCircle2 className="h-3 w-3" /> {f}
-                    </Badge>
-                  ))}
+        {/* Invoice detail dialog */}
+        <Dialog open={!!selectedInvoice} onOpenChange={(open) => !open && setSelectedInvoice(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            {selectedInvoice && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    {selectedInvoice.invoice_number}
+                  </DialogTitle>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  {/* Invoice summary */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Billing period</p>
+                      <p className="font-medium">
+                        {format(new Date(selectedInvoice.period_start), "d MMM yyyy")} — {format(new Date(selectedInvoice.period_end), "d MMM yyyy")}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Status</p>
+                      <Badge variant="secondary" className={statusColors[selectedInvoice.status] || ""}>
+                        {selectedInvoice.status}
+                      </Badge>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Total leads</p>
+                      <p className="font-medium">{selectedInvoice.lead_count}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Total amount</p>
+                      <p className="font-bold text-lg">${Number(selectedInvoice.total_amount).toFixed(2)}</p>
+                    </div>
+                    {selectedInvoice.paid_at && (
+                      <div>
+                        <p className="text-muted-foreground">Paid</p>
+                        <p className="font-medium">{format(new Date(selectedInvoice.paid_at), "d MMM yyyy")}</p>
+                      </div>
+                    )}
+                    {selectedInvoice.notes && (
+                      <div className="col-span-2">
+                        <p className="text-muted-foreground">Notes</p>
+                        <p className="font-medium">{selectedInvoice.notes}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Leads table */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Leads in this period</h3>
+                    {leadsLoading ? (
+                      <div className="flex justify-center py-6">
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : invoiceLeads.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">No leads found for this period</p>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>System</TableHead>
+                            <TableHead className="text-right">Price</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {invoiceLeads.map((lead: any) => (
+                            <TableRow key={lead.id}>
+                              <TableCell className="text-sm">{format(new Date(lead.created_at), "d MMM")}</TableCell>
+                              <TableCell className="text-sm">{lead.customer_name}</TableCell>
+                              <TableCell className="text-sm">
+                                {[lead.customer_suburb, lead.customer_state].filter(Boolean).join(", ") || "—"}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {(lead.recommended_systems || []).join(", ") || "—"}
+                              </TableCell>
+                              <TableCell className="text-sm text-right font-medium">
+                                ${Number(lead.lead_price || 0).toFixed(2)}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          <TableRow className="border-t-2">
+                            <TableCell colSpan={4} className="text-right font-semibold">Total</TableCell>
+                            <TableCell className="text-right font-bold">
+                              ${invoiceLeads.reduce((sum: number, l: any) => sum + Number(l.lead_price || 0), 0).toFixed(2)}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
