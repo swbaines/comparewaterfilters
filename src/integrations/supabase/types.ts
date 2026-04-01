@@ -205,6 +205,8 @@ export type Database = {
           review_count: number
           slug: string
           states: string[]
+          stripe_customer_id: string | null
+          stripe_payment_method_id: string | null
           submitted_by: string | null
           system_types: string[]
           updated_at: string
@@ -238,6 +240,8 @@ export type Database = {
           review_count?: number
           slug: string
           states?: string[]
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
           submitted_by?: string | null
           system_types?: string[]
           updated_at?: string
@@ -271,6 +275,8 @@ export type Database = {
           review_count?: number
           slug?: string
           states?: string[]
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
           submitted_by?: string | null
           system_types?: string[]
           updated_at?: string
