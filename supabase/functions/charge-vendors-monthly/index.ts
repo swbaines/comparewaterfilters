@@ -1,156 +1,187 @@
+import Stripe from "https://esm.sh/stripe@14.21.0";
+
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+  apiVersion: "2024-04-10",
+});
+
+const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+// Lead prices in cents (Stripe uses cents)
+const LEAD_PRICES_CENTS: Record<string, number> = {
+  "whole-house": 8500,
+  "water-softener": 6500,
+  "reverse-osmosis": 4000,
+  "uv-system": 4000,
+  "under-sink-carbon": 3500,
+  "shower-filter": 3500,
+  "tap-filter": 3500,
+  "alkaline-filter": 3500,
+  "tank-filter": 3500,
+};
+
+async function supabaseFetch(path: string, options: RequestInit = {}) {
+  const res = await fetch(`${supabaseUrl}/rest/v1${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": supabaseKey,
+      "Authorization": `Bearer ${supabaseKey}`,
+      "Prefer": "return=representation",
+      ...options.headers,
+    },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(JSON.stringify(data));
+  return data;
 }
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno'
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
+  const results: any[] = [];
+  const errors: any[] = [];
+
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    )
+    // Get date range for last month
+    const now = new Date();
+    const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const periodStart = firstOfLastMonth.toISOString();
+    const periodEnd = firstOfThisMonth.toISOString();
 
-    // This function is called by cron — verify with Authorization header
-    const authHeader = req.headers.get('Authorization')
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Missing authorization' }), {
-        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
+    // Get all approved providers with a Stripe customer ID and card on file
+    const providers = await supabaseFetch(
+      `/providers?approval_status=eq.approved&stripe_customer_id=not.is.null&stripe_payment_method_id=not.is.null&select=id,name,email,stripe_customer_id,stripe_payment_method_id`
+    );
 
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
-      apiVersion: '2023-10-16',
-    })
-
-    // Get previous month range
-    const now = new Date()
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
-    const periodStart = lastMonth.toISOString().split('T')[0]
-    const periodEnd = lastMonthEnd.toISOString().split('T')[0]
-
-    // Get all approved providers
-    const { data: providers, error: provError } = await supabaseAdmin
-      .from('providers')
-      .select('id, name, contact_email, stripe_customer_id, stripe_payment_method_id')
-      .eq('approval_status', 'approved')
-
-    if (provError) throw provError
-
-    const results: Array<{ provider_id: string; status: string; amount?: number; error?: string }> = []
-
-    for (const provider of providers || []) {
+    for (const provider of providers) {
       try {
-        // Get leads for last month
-        const { data: leads, error: leadsError } = await supabaseAdmin
-          .from('quote_requests')
-          .select('id, lead_price, recommended_systems')
-          .eq('provider_id', provider.id)
-          .gte('created_at', `${periodStart}T00:00:00Z`)
-          .lte('created_at', `${periodEnd}T23:59:59Z`)
+        // Get uninvoiced leads for this provider in the last month
+        const leads = await supabaseFetch(
+          `/quote_requests?provider_id=eq.${provider.id}&lead_status=neq.lost&invoice_id=is.null&created_at=gte.${periodStart}&created_at=lt.${periodEnd}&select=id,recommended_systems,lead_price`
+        );
 
-        if (leadsError) throw leadsError
-        if (!leads || leads.length === 0) {
-          results.push({ provider_id: provider.id, status: 'no_leads' })
-          continue
+        if (leads.length === 0) {
+          results.push({ provider: provider.name, status: "skipped", reason: "no leads" });
+          continue;
         }
 
-        // Calculate total
-        let totalAmount = 0
+        // Calculate total amount
+        let totalCents = 0;
+        const lineItems: any[] = [];
+
         for (const lead of leads) {
-          totalAmount += Number(lead.lead_price) || 0
-        }
+          const systems: string[] = lead.recommended_systems || [];
+          let leadPriceCents = 3500; // default $35
 
-        if (totalAmount <= 0) {
-          results.push({ provider_id: provider.id, status: 'zero_amount' })
-          continue
-        }
-
-        // Generate invoice number
-        const monthStr = `${lastMonth.getFullYear()}${String(lastMonth.getMonth() + 1).padStart(2, '0')}`
-        const invoiceNumber = `INV-${monthStr}-${provider.id.substring(0, 8).toUpperCase()}`
-
-        // Create invoice record
-        const { data: invoice, error: invError } = await supabaseAdmin
-          .from('invoices')
-          .insert({
-            provider_id: provider.id,
-            invoice_number: invoiceNumber,
-            period_start: periodStart,
-            period_end: periodEnd,
-            total_amount: totalAmount,
-            lead_count: leads.length,
-            status: 'sent',
-          })
-          .select()
-          .single()
-
-        if (invError) throw invError
-
-        // Use stored Stripe IDs from the providers table
-        const customerId = provider.stripe_customer_id
-        const paymentMethodId = provider.stripe_payment_method_id
-
-        if (!customerId) {
-          results.push({ provider_id: provider.id, status: 'no_stripe_customer', amount: totalAmount })
-        } else if (!paymentMethodId) {
-          results.push({ provider_id: provider.id, status: 'no_payment_method', amount: totalAmount })
-        } else {
-          const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(totalAmount * 100), // cents
-            currency: 'aud',
-            customer: customerId,
-            payment_method: paymentMethodId,
-            off_session: true,
-            confirm: true,
-            metadata: {
-              provider_id: provider.id,
-              invoice_id: invoice.id,
-              invoice_number: invoiceNumber,
-            },
-          })
-
-          if (paymentIntent.status === 'succeeded') {
-            await supabaseAdmin
-              .from('invoices')
-              .update({ status: 'paid', paid_at: new Date().toISOString() })
-              .eq('id', invoice.id)
+          // Use highest price system for this lead
+          for (const sys of systems) {
+            const price = LEAD_PRICES_CENTS[sys];
+            if (price && price > leadPriceCents) {
+              leadPriceCents = price;
+            }
           }
 
-          results.push({
+          totalCents += leadPriceCents;
+          lineItems.push({
+            lead_id: lead.id,
+            systems: systems.join(", "),
+            amount_cents: leadPriceCents,
+          });
+        }
+
+        if (totalCents === 0) {
+          results.push({ provider: provider.name, status: "skipped", reason: "zero amount" });
+          continue;
+        }
+
+        // Create Stripe invoice
+        const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
+
+        // Create invoice in Stripe
+        const stripeInvoice = await stripe.invoices.create({
+          customer: provider.stripe_customer_id,
+          auto_advance: false,
+          collection_method: "charge_automatically",
+          default_payment_method: provider.stripe_payment_method_id,
+          metadata: {
             provider_id: provider.id,
-            status: paymentIntent.status,
-            amount: totalAmount,
-          })
+            period_start: periodStart,
+            period_end: periodEnd,
+            invoice_number: invoiceNumber,
+          },
+          description: `Compare Water Filters — leads for ${firstOfLastMonth.toLocaleString("en-AU", { month: "long", year: "numeric" })}`,
+        });
+
+        // Add line item to Stripe invoice
+        await stripe.invoiceItems.create({
+          customer: provider.stripe_customer_id,
+          invoice: stripeInvoice.id,
+          amount: totalCents,
+          currency: "aud",
+          description: `${leads.length} lead${leads.length > 1 ? "s" : ""} — ${firstOfLastMonth.toLocaleString("en-AU", { month: "long", year: "numeric" })}`,
+        });
+
+        // Finalise and charge the invoice
+        await stripe.invoices.finalizeInvoice(stripeInvoice.id);
+        const paidInvoice = await stripe.invoices.pay(stripeInvoice.id);
+
+        // Save invoice to Supabase
+        const [savedInvoice] = await supabaseFetch("/invoices", {
+          method: "POST",
+          body: JSON.stringify({
+            provider_id: provider.id,
+            invoice_number: invoiceNumber,
+            stripe_invoice_id: stripeInvoice.id,
+            period_start: periodStart,
+            period_end: periodEnd,
+            total_amount: totalCents / 100,
+            lead_count: leads.length,
+            status: paidInvoice.status === "paid" ? "paid" : "sent",
+          }),
+        });
+
+        // Mark all leads as invoiced
+        for (const item of lineItems) {
+          await supabaseFetch(`/quote_requests?id=eq.${item.lead_id}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+              invoice_id: savedInvoice.id,
+              lead_price: item.amount_cents / 100,
+            }),
+          });
         }
 
-        // Link leads to invoice
-        for (const lead of leads) {
-          await supabaseAdmin
-            .from('quote_requests')
-            .update({ invoice_id: invoice.id })
-            .eq('id', lead.id)
-        }
+        results.push({
+          provider: provider.name,
+          status: "charged",
+          leads: leads.length,
+          amount: `$${(totalCents / 100).toFixed(2)}`,
+          stripe_invoice: stripeInvoice.id,
+        });
 
-      } catch (err) {
-        results.push({ provider_id: provider.id, status: 'error', error: err.message })
+      } catch (providerErr: any) {
+        errors.push({ provider: provider.name, error: providerErr.message });
       }
     }
 
-    return new Response(JSON.stringify({ success: true, results }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({ success: true, results, errors }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+    );
 
-  } catch (error) {
-    console.error('Error in charge-vendors-monthly:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+  } catch (err: any) {
+    return new Response(
+      JSON.stringify({ error: err.message }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+    );
   }
-})
+});
