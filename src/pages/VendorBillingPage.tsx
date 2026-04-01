@@ -293,14 +293,16 @@ export default function VendorBillingPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>System type</TableHead>
+                    <TableHead>Lead type</TableHead>
+                    <TableHead>Description</TableHead>
                     <TableHead className="text-right">Per lead</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {LEAD_PRICES.map((lp) => (
                     <TableRow key={lp.type}>
-                      <TableCell>{lp.type}</TableCell>
+                      <TableCell className="font-medium">{lp.type}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{lp.description}</TableCell>
                       <TableCell className="text-right font-medium">{lp.price}</TableCell>
                     </TableRow>
                   ))}
