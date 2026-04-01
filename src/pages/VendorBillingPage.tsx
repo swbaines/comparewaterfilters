@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,10 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, DollarSign, TrendingUp, FileText, CreditCard,
-  ArrowLeft, CheckCircle2, Zap, Bell, ClipboardList, Sparkles
+  ArrowLeft, CheckCircle2, Zap, Bell, ClipboardList, Sparkles, ShieldCheck, AlertCircle
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { toast } from "sonner";
 import PageMeta from "@/components/PageMeta";
 
 const invoiceStatusColors: Record<string, string> = {
@@ -256,25 +258,7 @@ export default function VendorBillingPage() {
         </Card>
 
         {/* Payment Method */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-primary" /> Payment Method
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 space-y-3 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                <CreditCard className="h-7 w-7 text-muted-foreground" />
-              </div>
-              <h4 className="font-semibold">Stripe Integration — Coming Soon</h4>
-              <p className="text-sm text-muted-foreground max-w-md">
-                We're working on automatic payments via Stripe. For now, invoices are sent monthly and can be paid via bank transfer using the details on your invoice.
-              </p>
-              <Badge variant="secondary" className="mt-2">Coming Soon</Badge>
-            </div>
-          </CardContent>
-        </Card>
+        <PaymentMethodCard />
 
         {/* Invoice History */}
         <Card>
@@ -346,6 +330,89 @@ export default function VendorBillingPage() {
         </Card>
       </div>
     </>
+  );
+}
+
+function PaymentMethodCard() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSetupCard = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Not authenticated");
+
+      const { data, error: fnError } = await supabase.functions.invoke("create-setup-intent", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (fnError) throw fnError;
+      if (data?.error) throw new Error(data.error);
+
+      if (data?.client_secret) {
+        // Redirect to Stripe's hosted setup page
+        const stripePublishableKey = "pk_test_placeholder"; // Will be replaced with actual key
+        window.open(
+          `https://checkout.stripe.com/setup/${data.client_secret}`,
+          "_blank"
+        );
+        toast.success("Stripe card setup opened in a new tab. Complete the form to save your card.");
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Failed to start card setup";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <CreditCard className="h-5 w-5 text-primary" /> Payment Method
+        </CardTitle>
+        <CardDescription>
+          Add a card to enable automatic monthly payments for your leads.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-start gap-4 rounded-lg border p-4 bg-muted/30">
+          <ShieldCheck className="h-6 w-6 text-primary mt-0.5 shrink-0" />
+          <div className="space-y-1">
+            <p className="text-sm font-medium">Secure Card Storage via Stripe</p>
+            <p className="text-xs text-muted-foreground">
+              Your card details are securely stored by Stripe — we never see or store your full card number.
+              Your saved card will be charged automatically at the end of each billing period.
+            </p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            {error}
+          </div>
+        )}
+
+        <Button onClick={handleSetupCard} disabled={loading} className="gap-2">
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <CreditCard className="h-4 w-4" />
+          )}
+          {loading ? "Setting up…" : "Add Payment Card"}
+        </Button>
+
+        <p className="text-xs text-muted-foreground">
+          You can update or remove your card at any time. If no card is on file, invoices will be sent for manual bank transfer payment.
+        </p>
+      </CardContent>
+    </Card>
   );
 }
 
