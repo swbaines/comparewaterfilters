@@ -119,6 +119,7 @@ function CardSetupForm({
 
 // ── Main billing page ─────────────────────────────────────────────────────────
 export default function VendorBillingPage() {
+  const navigate = useNavigate();
   const [provider, setProvider] = useState<any>(null);
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
