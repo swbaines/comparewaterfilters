@@ -1,433 +1,423 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2, DollarSign, TrendingUp, FileText, CreditCard,
-  ArrowLeft, CheckCircle2, Zap, Bell, ClipboardList, Sparkles, ShieldCheck, AlertCircle
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import PageMeta from "@/components/PageMeta";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
+import { format } from "date-fns";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
-const invoiceStatusColors: Record<string, string> = {
-  draft: "bg-muted text-muted-foreground",
-  sent: "bg-blue-100 text-blue-800",
+// ── Stripe publishable key ────────────────────────────────────────────────────
+const stripePromise = loadStripe("pk_test_51TGc4tFU68zxLrQXO6emd9pwIuhsswQvxP20juxUrRgoJEFfMy2ZFHjZR5bee7E5kt7WaAdlH8weeFtcv56UORqY00rUvp2yi0");
+
+const LEAD_PRICES = [
+  { type: "Whole home filtration", price: "$85" },
+  { type: "Water softener", price: "$65" },
+  { type: "Reverse osmosis", price: "$40" },
+  { type: "UV system", price: "$40" },
+  { type: "Under-sink carbon", price: "$35" },
+  { type: "All other systems", price: "$35" },
+];
+
+const statusColors: Record<string, string> = {
   paid: "bg-green-100 text-green-800",
+  sent: "bg-blue-100 text-blue-800",
+  draft: "bg-gray-100 text-gray-700",
   overdue: "bg-red-100 text-red-800",
-  cancelled: "bg-muted text-muted-foreground line-through",
 };
 
-export default function VendorBillingPage() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+// ── Card setup form (inside Stripe Elements) ──────────────────────────────────
+function CardSetupForm({
+  stripeCustomerId,
+  onSuccess,
+}: {
+  stripeCustomerId: string;
+  onSuccess: () => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [saving, setSaving] = useState(false);
 
-  const { data: vendorAccount, isLoading: vaLoading } = useQuery({
-    queryKey: ["vendor-account", user?.id],
-    enabled: !!user,
-    queryFn: async () => {
-      const { data, error } = await supabase
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-setup-intent", {
+        body: { stripe_customer_id: stripeCustomerId },
+      });
+
+      if (error || !data?.client_secret) {
+        throw new Error(error?.message || "Failed to create setup intent");
+      }
+
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) throw new Error("Card element not found");
+
+      const { setupIntent, error: stripeError } = await stripe.confirmCardSetup(
+        data.client_secret,
+        { payment_method: { card: cardElement } }
+      );
+
+      if (stripeError) throw new Error(stripeError.message);
+      if (!setupIntent?.payment_method) throw new Error("No payment method returned");
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data: vendorAccount } = await supabase
         .from("vendor_accounts")
         .select("provider_id")
-        .eq("user_id", user!.id)
-        .maybeSingle();
-      if (error) throw error;
-      return data;
-    },
-  });
+        .eq("user_id", user.id)
+        .single();
 
-  const providerId = vendorAccount?.provider_id;
+      if (!vendorAccount) throw new Error("Vendor account not found");
 
-  // Leads this month
-  const now = new Date();
-  const monthStart = startOfMonth(now).toISOString();
-  const monthEnd = endOfMonth(now).toISOString();
-  const lastMonthStart = startOfMonth(subMonths(now, 1)).toISOString();
-  const lastMonthEnd = endOfMonth(subMonths(now, 1)).toISOString();
+      const { error: updateError } = await supabase
+        .from("providers")
+        .update({ stripe_payment_method_id: setupIntent.payment_method as string } as any)
+        .eq("id", vendorAccount.provider_id);
 
-  const { data: leadsThisMonth = [], isLoading: leadsLoading } = useQuery({
-    queryKey: ["billing-leads-month", providerId],
-    enabled: !!providerId,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("quote_requests")
-        .select("id, lead_price, created_at")
-        .eq("provider_id", providerId!)
-        .gte("created_at", monthStart)
-        .lte("created_at", monthEnd);
-      if (error) throw error;
-      return data;
-    },
-  });
+      if (updateError) throw updateError;
 
-  const { data: leadsLastMonth = [] } = useQuery({
-    queryKey: ["billing-leads-last-month", providerId],
-    enabled: !!providerId,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("quote_requests")
-        .select("id, lead_price")
-        .eq("provider_id", providerId!)
-        .gte("created_at", lastMonthStart)
-        .lte("created_at", lastMonthEnd);
-      if (error) throw error;
-      return data;
-    },
-  });
+      toast.success("Card saved successfully — you're all set for automatic billing");
+      onSuccess();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save card");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-  const { data: leadPrices = [], isLoading: pricesLoading } = useQuery({
-    queryKey: ["lead-prices"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lead_prices")
-        .select("*")
-        .order("system_type");
-      if (error) throw error;
-      return data;
-    },
-  });
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="rounded-lg border p-4 bg-background">
+        <CardElement
+          options={{
+            style: {
+              base: {
+                fontSize: "16px",
+                color: "#424770",
+                "::placeholder": { color: "#aab7c4" },
+              },
+              invalid: { color: "#9e2146" },
+            },
+          }}
+        />
+      </div>
 
-  const { data: invoices = [], isLoading: invoicesLoading } = useQuery({
-    queryKey: ["billing-invoices", providerId],
-    enabled: !!providerId,
+      <Button type="submit" disabled={!stripe || saving} className="w-full gap-2">
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+        Save card
+      </Button>
+
+      <p className="text-xs text-muted-foreground text-center">
+        Secured by Stripe. Your card details are never stored on our servers.
+      </p>
+    </form>
+  );
+}
+
+// ── Main billing page ─────────────────────────────────────────────────────────
+export default function VendorBillingPage() {
+  const [provider, setProvider] = useState<any>(null);
+  const [showCardForm, setShowCardForm] = useState(false);
+  const [cardSaved, setCardSaved] = useState(false);
+
+  useEffect(() => {
+    const fetchProvider = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: va } = await supabase
+        .from("vendor_accounts")
+        .select("provider_id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!va) return;
+
+      const { data: prov } = await supabase
+        .from("providers")
+        .select("id, name, contact_email, approval_status")
+        .eq("id", va.provider_id)
+        .single();
+
+      setProvider(prov);
+      setCardSaved(!!(prov as any)?.stripe_payment_method_id);
+    };
+
+    fetchProvider();
+  }, [cardSaved]);
+
+  const { data: invoices = [] } = useQuery({
+    queryKey: ["vendor-invoices", provider?.id],
+    enabled: !!provider?.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("invoices")
         .select("*")
-        .eq("provider_id", providerId!)
+        .eq("provider_id", provider.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const isLoading = vaLoading || leadsLoading || pricesLoading || invoicesLoading;
+  const { data: leadsThisMonth = [] } = useQuery({
+    queryKey: ["vendor-leads-this-month", provider?.id],
+    enabled: !!provider?.id,
+    queryFn: async () => {
+      const now = new Date();
+      const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const { data, error } = await supabase
+        .from("quote_requests")
+        .select("id, lead_price, recommended_systems")
+        .eq("provider_id", provider.id)
+        .neq("lead_status", "lost")
+        .gte("created_at", firstOfMonth);
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const estimatedThisMonth = leadsThisMonth.reduce((sum, l) => sum + (Number(l.lead_price) || 0), 0);
-  const lastMonthTotal = leadsLastMonth.reduce((sum, l) => sum + (Number(l.lead_price) || 0), 0);
-  const outstandingBalance = invoices
-    .filter((inv) => inv.status === "sent" || inv.status === "overdue")
-    .reduce((sum, inv) => sum + Number(inv.total_amount), 0);
+  const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
+    if (l.lead_price) return sum + Number(l.lead_price);
+    const systems: string[] = l.recommended_systems || [];
+    let price = 35;
+    if (systems.includes("whole-house")) price = 85;
+    else if (systems.includes("water-softener")) price = 65;
+    else if (systems.includes("reverse-osmosis") || systems.includes("uv-system")) price = 40;
+    return sum + price;
+  }, 0);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  const formatSystemLabel = (type: string) =>
-    type.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const lastMonthInvoice = invoices[0];
+  const outstanding = invoices
+    .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
+    .reduce((sum: number, inv: any) => sum + Number(inv.total_amount), 0);
 
   return (
-    <>
-      <PageMeta title="Billing & Lead Pricing — Compare Water Filters" description="View your lead costs, invoices, and billing details." />
-      <div className="container max-w-5xl py-10 space-y-8">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/vendor/dashboard")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Billing & Lead Pricing</h1>
-            <p className="text-muted-foreground text-sm">Track your costs, view invoices, and understand how billing works.</p>
-          </div>
+    <div className="min-h-screen bg-muted/30">
+      <div className="container max-w-5xl py-8 space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Billing &amp; lead pricing</h1>
+          <p className="text-muted-foreground">
+            You are invoiced on the 1st of each month for leads received. Payment is due within 14 days.
+          </p>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard
-            icon={<ClipboardList className="h-5 w-5" />}
-            label="Leads This Month"
-            value={String(leadsThisMonth.length)}
-            accent="text-primary"
-          />
-          <StatCard
-            icon={<DollarSign className="h-5 w-5" />}
-            label="Estimated This Month"
-            value={`$${estimatedThisMonth.toFixed(2)}`}
-            accent="text-primary"
-          />
-          <StatCard
-            icon={<TrendingUp className="h-5 w-5" />}
-            label="Last Month Total"
-            value={`$${lastMonthTotal.toFixed(2)}`}
-            accent="text-muted-foreground"
-          />
-          <StatCard
-            icon={<FileText className="h-5 w-5" />}
-            label="Outstanding Balance"
-            value={`$${outstandingBalance.toFixed(2)}`}
-            accent={outstandingBalance > 0 ? "text-destructive" : "text-green-600"}
-          />
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Leads this month</p>
+              <p className="text-2xl font-bold">{leadsThisMonth.length}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Est. this month</p>
+              <p className="text-2xl font-bold">${estimatedThisMonth.toFixed(0)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Last invoice</p>
+              <p className="text-2xl font-bold">
+                {lastMonthInvoice ? `$${Number(lastMonthInvoice.total_amount).toFixed(0)}` : "$0"}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Outstanding</p>
+              <p className={`text-2xl font-bold ${outstanding > 0 ? "text-destructive" : ""}`}>
+                ${outstanding.toFixed(0)}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Lead Pricing Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" /> Lead Pricing by System Type
-            </CardTitle>
-            <CardDescription>You are charged per qualified lead sent to your business. Prices vary by system type.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {leadPrices.length > 0 ? (
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Lead pricing */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Lead pricing</CardTitle>
+              <CardDescription>Charged per quote request received</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>System Type</TableHead>
-                    <TableHead className="text-right">Price Per Lead</TableHead>
+                    <TableHead>System type</TableHead>
+                    <TableHead className="text-right">Per lead</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {leadPrices.map((lp) => (
-                    <TableRow key={lp.id}>
-                      <TableCell className="font-medium">{formatSystemLabel(lp.system_type)}</TableCell>
-                      <TableCell className="text-right font-semibold">${Number(lp.price_per_lead).toFixed(2)}</TableCell>
+                  {LEAD_PRICES.map((lp) => (
+                    <TableRow key={lp.type}>
+                      <TableCell>{lp.type}</TableCell>
+                      <TableCell className="text-right font-medium">{lp.price}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            ) : (
-              <p className="text-sm text-muted-foreground py-4 text-center">No pricing configured yet.</p>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* How Billing Works */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" /> How Billing Works
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                { step: 1, title: "Customer Submits Quiz", desc: "A homeowner completes our recommendation quiz and requests a quote." },
-                { step: 2, title: "Lead Matched to You", desc: "Based on your service area, system types, and availability, the lead is sent to you." },
-                { step: 3, title: "You Receive the Lead", desc: "You get an email notification with the customer's details and recommended systems." },
-                { step: 4, title: "Monthly Invoice", desc: "At the end of each billing period, you receive an invoice for all leads delivered." },
-              ].map((item) => (
-                <div key={item.step} className="text-center space-y-2">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg">
-                    {item.step}
-                  </div>
-                  <h4 className="font-semibold text-sm">{item.title}</h4>
-                  <p className="text-xs text-muted-foreground">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* What Counts as a Lead */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-primary" /> What Counts as a Lead?
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">A lead is counted when a qualified customer request is matched to your business. Each lead includes:</p>
-            <ul className="space-y-2 text-sm">
-              {[
-                "Customer name, email, and mobile number",
-                "Property type, household size, and location details",
-                "Water concerns and recommended system types",
-                "Budget range and any additional notes",
-              ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <Separator />
-            <p className="text-xs text-muted-foreground">
-              If you believe a lead is invalid (e.g. fake details, duplicate, or outside your service area), contact us within 7 days to dispute.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Payment Method */}
-        <PaymentMethodCard />
-
-        {/* Invoice History */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" /> Invoice History
-            </CardTitle>
-            <CardDescription>All invoices for your account are listed below.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {invoices.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Invoice #</TableHead>
-                      <TableHead>Period</TableHead>
-                      <TableHead className="text-center">Leads</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-right">Paid</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {invoices.map((inv) => (
-                      <TableRow key={inv.id}>
-                        <TableCell className="font-medium">{inv.invoice_number}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {format(new Date(inv.period_start), "dd MMM")} – {format(new Date(inv.period_end), "dd MMM yyyy")}
-                        </TableCell>
-                        <TableCell className="text-center">{inv.lead_count}</TableCell>
-                        <TableCell className="text-right font-semibold">${Number(inv.total_amount).toFixed(2)}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="secondary" className={invoiceStatusColors[inv.status] || ""}>
-                            {inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right text-sm text-muted-foreground">
-                          {inv.paid_at ? format(new Date(inv.paid_at), "dd MMM yyyy") : "—"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p>Invoices issued on the 1st of each month</p>
+                <p>Dispute invalid leads within 14 days at hello@comparewaterfilters.com.au</p>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Payment method */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment method</CardTitle>
+              <CardDescription>Save a card for automatic monthly billing</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!(provider as any)?.stripe_customer_id ? (
+                <div className="flex items-start gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+                  <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
+                  <p>
+                    Your account is pending approval. Payment setup will be available once approved.
+                  </p>
+                </div>
+              ) : cardSaved ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    <div>
+                      <p className="font-medium">Card on file</p>
+                      <p className="text-sm text-muted-foreground">
+                        Your account will be charged automatically on the 1st of each month
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => { setCardSaved(false); setShowCardForm(true); }}
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" /> Update card
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+                    <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
+                    <p>
+                      No card saved — add a card to enable automatic monthly billing. Without a card on file, invoices will be sent by email.
+                    </p>
+                  </div>
+                  {!showCardForm ? (
+                    <Button onClick={() => setShowCardForm(true)} className="w-full gap-2">
+                      <CreditCard className="h-4 w-4" /> Add payment card
+                    </Button>
+                  ) : (
+                    <Elements stripe={stripePromise}>
+                      <CardSetupForm
+                        stripeCustomerId={(provider as any)?.stripe_customer_id || ""}
+                        onSuccess={() => { setCardSaved(true); setShowCardForm(false); }}
+                      />
+                    </Elements>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Invoice history */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Invoice history</CardTitle>
+            <CardDescription>All invoices are also sent to your registered email address</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {invoices.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No invoices yet — your first invoice will appear here after your first month of leads
+              </p>
             ) : (
-              <p className="text-sm text-muted-foreground py-6 text-center">No invoices yet. Invoices will appear here once your first billing period is complete.</p>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Invoice</TableHead>
+                    <TableHead>Period</TableHead>
+                    <TableHead>Leads</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((inv: any) => (
+                    <TableRow key={inv.id}>
+                      <TableCell className="font-medium">{inv.invoice_number}</TableCell>
+                      <TableCell>
+                        {format(new Date(inv.period_start), "d MMM")} — {format(new Date(inv.period_end), "d MMM yyyy")}
+                      </TableCell>
+                      <TableCell>{inv.lead_count}</TableCell>
+                      <TableCell>${Number(inv.total_amount).toFixed(2)}</TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={statusColors[inv.status] || ""}>
+                          {inv.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {(inv as any).stripe_invoice_id && (
+                          <a
+                            href={`https://dashboard.stripe.com/invoices/${(inv as any).stripe_invoice_id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+                          >
+                            View <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
 
-        {/* Monthly Subscription Teaser */}
-        <Card className="border-dashed border-2 border-primary/30 bg-primary/5">
-          <CardContent className="flex flex-col items-center justify-center py-10 space-y-3 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-              <Sparkles className="h-7 w-7 text-primary" />
-            </div>
-            <h3 className="text-lg font-bold">Monthly Subscription Plans — Coming Soon</h3>
-            <p className="text-sm text-muted-foreground max-w-lg">
-              We're designing subscription tiers that give you unlimited leads in your service area for a fixed monthly fee.
-              Stay tuned — early adopters will get exclusive launch pricing.
-            </p>
-            <div className="flex gap-2 mt-2">
-              <Badge variant="secondary">Unlimited Leads</Badge>
-              <Badge variant="secondary">Fixed Monthly Fee</Badge>
-              <Badge variant="secondary">Priority Matching</Badge>
+        {/* Monthly subscription teaser */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="space-y-3">
+                <Badge variant="outline">Coming soon</Badge>
+                <h3 className="text-lg font-semibold">Monthly subscription plan</h3>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  Once the platform reaches volume, we'll introduce optional monthly subscriptions with featured placement, priority lead matching, and enhanced profile visibility.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["Featured placement in results", "Priority lead matching", "Predictable monthly cost", "Enhanced profile badge"].map(f => (
+                    <Badge key={f} variant="secondary" className="gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> {f}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
-    </>
-  );
-}
-
-function PaymentMethodCard() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSetupCard = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-      if (!token) throw new Error("Not authenticated");
-
-      const { data, error: fnError } = await supabase.functions.invoke("create-setup-intent", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (fnError) throw fnError;
-      if (data?.error) throw new Error(data.error);
-
-      if (data?.client_secret) {
-        // Redirect to Stripe's hosted setup page
-        const stripePublishableKey = "pk_test_placeholder"; // Will be replaced with actual key
-        window.open(
-          `https://checkout.stripe.com/setup/${data.client_secret}`,
-          "_blank"
-        );
-        toast.success("Stripe card setup opened in a new tab. Complete the form to save your card.");
-      }
-    } catch (err: any) {
-      const msg = err?.message || "Failed to start card setup";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <CreditCard className="h-5 w-5 text-primary" /> Payment Method
-        </CardTitle>
-        <CardDescription>
-          Add a card to enable automatic monthly payments for your leads.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-start gap-4 rounded-lg border p-4 bg-muted/30">
-          <ShieldCheck className="h-6 w-6 text-primary mt-0.5 shrink-0" />
-          <div className="space-y-1">
-            <p className="text-sm font-medium">Secure Card Storage via Stripe</p>
-            <p className="text-xs text-muted-foreground">
-              Your card details are securely stored by Stripe — we never see or store your full card number.
-              Your saved card will be charged automatically at the end of each billing period.
-            </p>
-          </div>
-        </div>
-
-        {error && (
-          <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            {error}
-          </div>
-        )}
-
-        <Button onClick={handleSetupCard} disabled={loading} className="gap-2">
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <CreditCard className="h-4 w-4" />
-          )}
-          {loading ? "Setting up…" : "Add Payment Card"}
-        </Button>
-
-        <p className="text-xs text-muted-foreground">
-          You can update or remove your card at any time. If no card is on file, invoices will be sent for manual bank transfer payment.
-        </p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function StatCard({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent: string }) {
-  return (
-    <Card>
-      <CardContent className="flex items-center gap-4 py-5">
-        <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 ${accent}`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className={`text-xl font-bold ${accent}`}>{value}</p>
-        </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
