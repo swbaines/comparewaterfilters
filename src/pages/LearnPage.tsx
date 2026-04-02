@@ -29,6 +29,7 @@ export default function LearnPage() {
                   <Badge variant="secondary" className="mb-3">{article.category}</Badge>
                   <h3 className="text-base font-semibold leading-snug">{article.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{article.summary}</p>
+                  {article.readTime && <p className="mt-1 text-xs text-muted-foreground">{article.readTime}</p>}
                   <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
                     Read article <ArrowRight className="h-3 w-3" />
                   </span>
