@@ -26,6 +26,7 @@ import VendorProfilePage from "@/pages/VendorProfilePage";
 import VendorBillingPage from "@/pages/VendorBillingPage";
 import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
+import WaterQualityPage from "@/pages/WaterQualityPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
