@@ -7,6 +7,7 @@ export interface Article {
   seoTitle: string;
   seoDescription: string;
   publishedAt: string;
+  readTime?: string;
   body: string;
 }
 
