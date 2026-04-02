@@ -342,7 +342,7 @@ export default function WaterQualityPage() {
               <div className="space-y-3">
                 {recs.map((rec, i) => (
                   <Card key={i}>
-                    <CardContent className="flex items-center justify-between gap-4 pt-6">
+                    <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-start gap-3">
                         {i === 0 && <Badge className="shrink-0">Best match</Badge>}
                         <div>
