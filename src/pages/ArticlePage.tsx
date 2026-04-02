@@ -1,8 +1,11 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect } from "react";
 import PageMeta from "@/components/PageMeta";
 import { articles } from "@/data/articles";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
+
+const BASE_URL = "https://www.comparewaterfilters.com.au";
 
 export default function ArticlePage() {
   const { slug } = useParams();
