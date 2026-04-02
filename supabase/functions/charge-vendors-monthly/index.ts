@@ -12,18 +12,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Lead prices in cents (Stripe uses cents)
-const LEAD_PRICES_CENTS: Record<string, number> = {
-  "whole-house": 8500,
-  "water-softener": 6500,
-  "reverse-osmosis": 4000,
-  "uv-system": 4000,
-  "under-sink-carbon": 3500,
-  "shower-filter": 3500,
-  "tap-filter": 3500,
-  "alkaline-filter": 3500,
-  "tank-filter": 3500,
-};
+// Default lead price in dollars if not set on the record
+const DEFAULT_LEAD_PRICE = 85;
 
 async function supabaseFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${supabaseUrl}/rest/v1${path}`, {
@@ -59,7 +49,7 @@ Deno.serve(async (req) => {
 
     // Get all approved providers with a Stripe customer ID and card on file
     const providers = await supabaseFetch(
-      `/providers?approval_status=eq.approved&stripe_customer_id=not.is.null&stripe_payment_method_id=not.is.null&select=id,name,email,stripe_customer_id,stripe_payment_method_id`
+      `/providers?approval_status=eq.approved&stripe_customer_id=not.is.null&stripe_payment_method_id=not.is.null&select=id,name,contact_email,stripe_customer_id,stripe_payment_method_id`
     );
 
     for (const provider of providers) {
@@ -74,26 +64,18 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Calculate total amount
+        // Calculate total amount using stored lead_price
         let totalCents = 0;
         const lineItems: any[] = [];
 
         for (const lead of leads) {
-          const systems: string[] = lead.recommended_systems || [];
-          let leadPriceCents = 3500; // default $35
-
-          // Use highest price system for this lead
-          for (const sys of systems) {
-            const price = LEAD_PRICES_CENTS[sys];
-            if (price && price > leadPriceCents) {
-              leadPriceCents = price;
-            }
-          }
+          // Use the lead_price set at quote submission (Owner=$85, Rental=$50)
+          const leadPriceDollars = Number(lead.lead_price) || DEFAULT_LEAD_PRICE;
+          const leadPriceCents = Math.round(leadPriceDollars * 100);
 
           totalCents += leadPriceCents;
           lineItems.push({
             lead_id: lead.id,
-            systems: systems.join(", "),
             amount_cents: leadPriceCents,
           });
         }
@@ -140,12 +122,13 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             provider_id: provider.id,
             invoice_number: invoiceNumber,
-            stripe_invoice_id: stripeInvoice.id,
             period_start: periodStart,
             period_end: periodEnd,
             total_amount: totalCents / 100,
             lead_count: leads.length,
             status: paidInvoice.status === "paid" ? "paid" : "sent",
+            paid_at: paidInvoice.status === "paid" ? new Date().toISOString() : null,
+            notes: `Stripe Invoice: ${stripeInvoice.id}`,
           }),
         });
 
