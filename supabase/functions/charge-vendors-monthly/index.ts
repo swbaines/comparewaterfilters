@@ -122,12 +122,13 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             provider_id: provider.id,
             invoice_number: invoiceNumber,
-            stripe_invoice_id: stripeInvoice.id,
             period_start: periodStart,
             period_end: periodEnd,
             total_amount: totalCents / 100,
             lead_count: leads.length,
             status: paidInvoice.status === "paid" ? "paid" : "sent",
+            paid_at: paidInvoice.status === "paid" ? new Date().toISOString() : null,
+            notes: `Stripe Invoice: ${stripeInvoice.id}`,
           }),
         });
 
