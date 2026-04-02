@@ -369,8 +369,8 @@ export default function WaterQualityPage() {
             <Card className="bg-primary/5 border-primary/20">
               <CardContent className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
                 <div>
-                  <h3 className="font-semibold">Want personalised recommendations?</h3>
-                  <p className="text-sm text-muted-foreground">Take our 2-minute quiz and get matched with local vendors who know your water.</p>
+                  <h3 className="font-semibold">Ready to improve your water?</h3>
+                  <p className="text-sm text-muted-foreground">Take our 2-minute quiz and we'll match you with trusted local installers who understand your area's water.</p>
                 </div>
                 <Link to="/quiz" className="shrink-0">
                   <Button>
