@@ -12,18 +12,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Lead prices in cents (Stripe uses cents)
-const LEAD_PRICES_CENTS: Record<string, number> = {
-  "whole-house": 8500,
-  "water-softener": 6500,
-  "reverse-osmosis": 4000,
-  "uv-system": 4000,
-  "under-sink-carbon": 3500,
-  "shower-filter": 3500,
-  "tap-filter": 3500,
-  "alkaline-filter": 3500,
-  "tank-filter": 3500,
-};
+// Default lead price in dollars if not set on the record
+const DEFAULT_LEAD_PRICE = 85;
 
 async function supabaseFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${supabaseUrl}/rest/v1${path}`, {
