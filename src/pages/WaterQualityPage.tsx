@@ -180,7 +180,7 @@ export default function WaterQualityPage() {
           <Badge variant="secondary" className="mb-4">Free water quality lookup</Badge>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">What's in my water?</h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Enter your suburb or postcode to see a plain-English breakdown of your local water quality — hardness, chlorine, fluoride, and more.
+            Australian tap water is safe to drink — but safe doesn't mean perfect. Most of us can smell and taste the chlorine, and families want to know exactly what's coming out of the tap. Enter your suburb or postcode for a plain-English breakdown.
           </p>
           <form onSubmit={handleSearch} className="mt-8 flex gap-2">
             <div className="relative flex-1">
