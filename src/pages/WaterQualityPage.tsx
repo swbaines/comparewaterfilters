@@ -212,7 +212,6 @@ export default function WaterQualityPage() {
                 Your water meets Australian safety standards — but every home can benefit from filtration. Whether it's removing the chlorine taste, protecting appliances from scale, or simply giving your family cleaner water for drinking and bathing, the right filter makes a real difference.
               </p>
             </div>
-            </div>
 
             {/* Metric cards */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
