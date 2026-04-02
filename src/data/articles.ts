@@ -13,6 +13,124 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "7",
+    title: "Is Australian Tap Water Getting Worse? What the Data Actually Says",
+    slug: "is-australian-tap-water-getting-worse",
+    summary: "An evidence-based look at chlorine levels, algal blooms, bushfire impacts, and PFAS — and what it means for your household.",
+    category: "Water Quality",
+    seoTitle: "Is Australian Tap Water Getting Worse? What the Data Says (2026)",
+    seoDescription: "Evidence-based analysis of Australian tap water quality trends — chlorine, algal blooms, PFAS, and bushfire impacts. What the data means for your home.",
+    publishedAt: "2026-04-02",
+    readTime: "8 min read",
+    body: `Australian tap water is safe to drink. No serious scientist or health authority disputes that. But "safe" and "pleasant" are two very different things — and an honest look at the data shows that the taste, smell, and aesthetic quality of Australian tap water has been declining in measurable ways.
+
+Here is what the evidence actually shows.
+
+**Chlorine: Why Your Water Tastes More Like a Swimming Pool**
+
+Chlorine has been added to Australian tap water for over a century to kill bacteria and keep water safe as it travels through distribution networks. That's not changing.
+
+What is changing is how much chlorine needs to be added — and why.
+
+Australian cities are growing. Pipe networks are getting longer. As water travels further from treatment plants to reach new outer suburbs, more chlorine is needed to maintain safe levels at the end of the line. On top of that, Australia's summers are getting hotter. Heat accelerates bacterial growth in pipes, which means utilities must dose more chlorine at the source to compensate.
+
+The practical result: many Australians living in outer suburbs or at the end of long distribution networks are receiving water with chlorine levels above the 0.6 mg/L taste and smell threshold — the point at which most people start to notice a chemical taste or odour.
+
+Greater Western Water, which supplies Melbourne's north and west, has confirmed chlorine levels up to 1.2 mg/L in parts of its network. SA Water has recorded levels approaching 1.8 mg/L in northern Adelaide suburbs. While both figures remain within the Australian Drinking Water Guidelines (ADWG) health limit of 5 mg/L, they are significantly above what most people find palatable.
+
+For context: the average backyard swimming pool is maintained at 1.0 to 3.0 mg/L. Many Australians are showering and drinking water that isn't below pool levels.
+
+Making matters worse, an increasing number of utilities are transitioning from chlorine to chloramine — a compound formed by adding ammonia to chlorine. Chloramine is more stable than chlorine, meaning it maintains disinfection protection over longer pipe distances without breaking down. For water authorities, this is an advantage. For consumers, it creates a new problem: chloramine is significantly harder to remove from water than free chlorine. Standard jug filters and cheap tap-mounted units have little effect on it. Only quality activated carbon block filters can adequately reduce chloramine.
+
+**Algal Blooms: The Hidden Threat Getting Worse Every Summer**
+
+If you've noticed your Brisbane tap water tasting earthy or grassy after heavy rain, you're not imagining it. Seqwater issued a public notice in late 2024 confirming exactly this problem — and explaining that it's becoming a recurring issue.
+
+The culprit is a pair of naturally occurring organic compounds called MIB (2-methylisoborneol) and geosmin, both produced by algae and bacteria that bloom in dam catchments after hot and wet conditions. The compounds are harmless but detectable by the human nose at extraordinarily low concentrations — around 0.00001 mg/L for geosmin. A single teaspoon dissolved across 200 Olympic swimming pools would be enough for sensitive individuals to smell it.
+
+When algal levels spike in source water, treatment plants work to remove MIB and geosmin using powdered activated carbon. But as Seqwater has publicly acknowledged, the process can't always remove all of it — and some makes it through to taps.
+
+This is not a Queensland-only problem. The Australian Government's State of the Environment report, the most comprehensive assessment of Australia's environmental health, confirmed that algal bloom frequency across the country is increasing. The report directly links this trend to climate change: warmer temperatures, changed rainfall patterns, and more extreme wet-dry cycles create ideal conditions for algal growth.
+
+The peer-reviewed journal Communications Earth & Environment published research in March 2025 confirming that water quality in rivers flowing into the Great Barrier Reef region has declined measurably over two decades, with climate change identified as the primary driver.
+
+South Australia's 2025 algal event brought the issue into stark national focus. A toxic algal bloom — driven by a marine heatwave that raised ocean temperatures 2.5°C above normal — devastated more than 4,500 square kilometres of the state's waters, killing thousands of marine animals and forcing the closure of shellfish harvesting regions. The Biodiversity Council called it "one of the worst marine disasters in living memory."
+
+The NSW State of the Environment 2024 report was similarly direct, stating that "decreased rainfall can lead to poorer water quality or increases in blooms of blue-green algae."
+
+**Bushfires: How the 2019-20 Fires Changed Australia's Water Forever**
+
+The Black Summer fires of 2019-20 burned more than 170,000 square kilometres of Australia. For most people, the story ended when the fires were extinguished. For water quality scientists, it was just beginning.
+
+The fires burned 30% of Warragamba Dam's entire catchment area — Sydney's primary water supply. They burned 39% of the Corin Dam catchment that supplies Canberra. They burned 57% of the Hume Dam catchment in the southern Murray-Darling Basin.
+
+The Australian Government's own environment report documented the consequences in detail: ash-enriched soils washed into reservoirs during rainfall events, significantly increasing turbidity and nutrient loads. This elevated nutrient load creates ideal conditions for algal blooms — the same compounds that create taste and odour problems in treated water. The effects are expected to persist for years as burned catchments slowly revegetate.
+
+The 2019-20 fires also triggered a catastrophic hypoxic blackwater event in the Murray-Darling Basin, with rotten egg odours from hydrogen sulfide reported as far as Albury. Albury City Council formally reported water quality supply issues to authorities.
+
+This is not an isolated historical event. Bushfire scientists warn that as Australia's climate warms, fires of this scale and intensity will occur more frequently. Each major fire season in a water catchment creates a multi-year legacy of elevated turbidity, algal growth potential, and treatment challenges.
+
+**PFAS: The Forever Chemicals Now in Our Water Supply**
+
+Per- and polyfluoroalkyl substances — PFAS, commonly called "forever chemicals" — do not occur naturally in water. They enter water supplies from industrial activity, firefighting foams used at airports and military bases, and widespread use in consumer products.
+
+In 2024, elevated PFAS levels were detected at Sydney's Cascade Water Filtration Plant, which serves the Blue Mountains region. The announcement prompted concern among residents and water quality advocates. NSW Health and Sydney Water confirmed that levels remained within the then-current Australian Drinking Water Guidelines.
+
+The critical word is "then-current." In June 2025, the National Health and Medical Research Council released updated Australian Drinking Water Guidelines that set significantly lower PFAS limits — acknowledging that earlier standards were insufficient given emerging health research. The update was a formal recognition by Australia's peak health body that PFAS in drinking water is a real and growing concern.
+
+The challenge with PFAS is that they are effectively invisible and tasteless. You cannot detect them by smelling your water or observing its colour. They are only identified through laboratory testing. And crucially, carbon filters — the most common household filtration technology — have limited effectiveness against PFAS. Only reverse osmosis systems reliably remove them.
+
+Monitoring for PFAS in Australian water supplies has only expanded relatively recently. Greater Western Water confirmed it began PFAS testing in 2023. The fact that more monitoring is now occurring is encouraging — but it also means that elevated readings, which would previously have gone undetected, are now being identified and reported.
+
+**What the Data Means for Your Household**
+
+Australian tap water will not make you sick. The system of treatment, monitoring, and regulation that protects public health is robust and well-resourced.
+
+But the evidence is clear that the aesthetic quality of tap water — its taste, smell, and freedom from emerging contaminants — is under genuine and increasing pressure from climate change, population growth, and the expanding use of treatment chemicals.
+
+The specific risks vary significantly by location:
+
+- **Adelaide** faces the most significant challenges of any Australian capital — the hardest water, the highest chlorine levels, and a Murray River source that carries agricultural runoff and elevated mineral content. Northern suburbs around Salisbury and Elizabeth receive water that regularly exceeds the taste threshold for chlorine.
+- **Perth** has the most variable water quality of any Australian capital. Northern suburbs like Wanneroo, Yanchep, and Two Rocks receive groundwater with hardness levels up to 228 mg/L — among the highest in the country. Scale damage to appliances, shower screens, and hot water systems is a significant and ongoing cost for households in these areas.
+- **Brisbane and South East Queensland** experience seasonal taste and odour events driven by algal blooms in Wivenhoe and North Pine dams. These events are expected to become more frequent as summers grow hotter and wetter. The water remains safe, but the taste complaints are legitimate.
+- **Melbourne** has some of the softest and cleanest water of any Australian city — but chlorine levels are notably higher than many people realise, and skin irritation from chlorine in shower water is a genuine and commonly reported issue.
+- **Sydney** has soft, well-treated water, but uses both chlorine and chloramine for disinfection. The Blue Mountains PFAS detection in 2024 serves as a reminder that no water supply is entirely insulated from contamination risks.
+
+**What Actually Works**
+
+Given the specific nature of the issues — chlorine taste and skin irritation, algal compounds, hard water scale, and PFAS — different filtration solutions address different problems:
+
+- **For chlorine taste, smell, and skin irritation:** A quality under-sink carbon block filter for drinking water, or a whole house carbon filtration system for whole-home chlorine removal including showers. This is the most common and cost-effective upgrade for Australian households.
+- **For hard water and scale:** A water softener (for severe hardness in Perth northern suburbs and parts of Adelaide) or a whole house system with a scale-reduction stage (for moderate hardness in Brisbane, Adelaide, and parts of Perth).
+- **For fluoride, PFAS, heavy metals, and microplastics:** A reverse osmosis system. Carbon filters reduce but do not eliminate these contaminants. RO is the only household technology that effectively removes PFAS.
+- **For bore water, rainwater, and tank water:** A sediment pre-filter combined with UV disinfection is the essential starting point. Adding an under-sink carbon or RO system for drinking water provides additional protection.
+
+**The Bottom Line**
+
+The question isn't whether Australian tap water is safe — it is. The question is whether it's as good as it was, and whether it's going to get better or worse.
+
+The data points in one direction. Hotter summers, more frequent algal blooms, longer distribution networks, expanded chloramine use, and emerging contaminants like PFAS are all placing increasing pressure on the quality of water that reaches Australian taps.
+
+For households that are already noticing taste, smell, or skin concerns from their tap water — the trend is not in their favour.
+
+The good news is that effective solutions exist for every situation and budget. The first step is understanding what's actually in your water and what it means for your home.
+
+**Sources:**
+
+- Melbourne Water Annual Drinking Water Quality Report 2024–25
+- Sydney Water Quarterly Drinking Water Quality Reports 2024–25
+- Water Corporation WA Drinking Water Quality Annual Report 2023–24
+- Seqwater QLD Monthly Water Quality Reports 2024–25
+- SA Water Annual Drinking Water Quality Report 2023–24
+- Greater Western Water Annual Drinking Water Quality Report 2024
+- Australian Government State of the Environment Report 2021 — Inland Water
+- NSW State of the Environment 2024 — Climate Change
+- Communications Earth & Environment: "Australian water quality trends over two decades" (March 2025)
+- Bureau of Meteorology: Tracking Australia's climate and water resources through 2025
+- NHMRC: Australian Drinking Water Guidelines updated June 2025
+- Biodiversity Council: South Australian algal bloom assessment 2025`,
+  },
+  {
     id: "1",
     title: "Do I Need Reverse Osmosis or Whole House Filtration?",
     slug: "reverse-osmosis-vs-whole-house",
