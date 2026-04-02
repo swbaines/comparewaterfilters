@@ -304,8 +304,8 @@ export default function WaterQualityPage() {
                     <h4 className="font-semibold">Chlorine &amp; taste</h4>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {result.chlorine >= 1.0
-                        ? `Higher chlorine at ${result.chlorine} mg/L — above the 0.6 mg/L taste threshold. A noticeable chemical smell and taste is common, and chlorine in shower water can cause skin irritation, eczema, and hair dryness.`
-                        : `Chlorine at ${result.chlorine} mg/L — within normal range but still noticeable to sensitive individuals. A carbon filter will eliminate it entirely.`}
+                        ? `At ${result.chlorine} mg/L, chlorine is above the taste threshold — most people in your area will notice the smell when filling a glass or running a shower. Many families find that removing chlorine is the single biggest improvement to their water. It also helps with dry skin, eczema-prone kids, and hair that feels stripped after washing.`
+                        : `At ${result.chlorine} mg/L, chlorine is within normal range — but most people can still smell and taste it, especially first thing in the morning or after the water has been sitting in pipes. A simple carbon filter removes it completely and is the most popular upgrade Australian families make.`}
                     </p>
                   </div>
                 </div>
