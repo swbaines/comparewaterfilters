@@ -11,7 +11,7 @@ const priceTable = [
   { system: "Whole house carbon filter", installed: "$3,000 – $5,000", maintenance: "$200 – $500/yr" },
   { system: "UV disinfection", installed: "$800 – $2,500", maintenance: "$100 – $250/yr" },
   { system: "Water softener", installed: "$2,000 – $6,000", maintenance: "$150 – $400/yr" },
-  { system: "Whole house + drinking water combo", installed: "$4,000 – $6,500", maintenance: "$350 – $700/yr" },
+  { system: "Whole house + drinking water combo", installed: "$4,000 – $6,500+", maintenance: "$350 – $700/yr" },
 ];
 
 const factors = [
