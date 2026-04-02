@@ -64,26 +64,18 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        // Calculate total amount
+        // Calculate total amount using stored lead_price
         let totalCents = 0;
         const lineItems: any[] = [];
 
         for (const lead of leads) {
-          const systems: string[] = lead.recommended_systems || [];
-          let leadPriceCents = 3500; // default $35
-
-          // Use highest price system for this lead
-          for (const sys of systems) {
-            const price = LEAD_PRICES_CENTS[sys];
-            if (price && price > leadPriceCents) {
-              leadPriceCents = price;
-            }
-          }
+          // Use the lead_price set at quote submission (Owner=$85, Rental=$50)
+          const leadPriceDollars = Number(lead.lead_price) || DEFAULT_LEAD_PRICE;
+          const leadPriceCents = Math.round(leadPriceDollars * 100);
 
           totalCents += leadPriceCents;
           lineItems.push({
             lead_id: lead.id,
-            systems: systems.join(", "),
             amount_cents: leadPriceCents,
           });
         }
