@@ -11,11 +11,11 @@ import {
 
 const navLinks = [
 { to: "/", label: "Home" },
-{ to: "/how-it-works", label: "How It Works" },
-{ to: "/water-quality", label: "Water Quality" }];
+{ to: "/how-it-works", label: "How It Works" }];
 
 
 const resourceLinks = [
+{ to: "/water-quality", label: "Water Quality" },
 { to: "/system-types", label: "System Types" },
 { to: "/pricing-guide", label: "Pricing Guide" },
 { to: "/learn", label: "Learn" }];
