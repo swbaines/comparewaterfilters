@@ -142,7 +142,7 @@ function findProfile(query: string): SuburbProfile | null {
           } else if (parseInt(range) === postcode) return p;
         }
       }
-      if (p.suburb.toLowerCase().includes(q) || q.includes(p.state.toLowerCase())) return p;
+      if (p.suburb.toLowerCase().includes(q) || q === p.state.toLowerCase()) return p;
     }
   }
   return null;
