@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
 
     // Get all approved providers with a Stripe customer ID and card on file
     const providers = await supabaseFetch(
-      `/providers?approval_status=eq.approved&stripe_customer_id=not.is.null&stripe_payment_method_id=not.is.null&select=id,name,email,stripe_customer_id,stripe_payment_method_id`
+      `/providers?approval_status=eq.approved&stripe_customer_id=not.is.null&stripe_payment_method_id=not.is.null&select=id,name,contact_email,stripe_customer_id,stripe_payment_method_id`
     );
 
     for (const provider of providers) {
