@@ -544,6 +544,12 @@ export default function VendorBillingPage() {
                         <p className="font-medium">{format(new Date(selectedInvoice.paid_at), "d MMM yyyy")}</p>
                       </div>
                     )}
+                    {selectedInvoice.stripe_invoice_id && (
+                      <div>
+                        <p className="text-muted-foreground">Stripe reference</p>
+                        <p className="font-medium text-xs font-mono">{selectedInvoice.stripe_invoice_id}</p>
+                      </div>
+                    )}
                     {selectedInvoice.notes && (
                       <div className="col-span-2">
                         <p className="text-muted-foreground">Notes</p>
