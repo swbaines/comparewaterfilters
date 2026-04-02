@@ -1,12 +1,41 @@
 import { useParams, Link } from "react-router-dom";
+import { useEffect } from "react";
 import PageMeta from "@/components/PageMeta";
 import { articles } from "@/data/articles";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from "lucide-react";
 
+const BASE_URL = "https://www.comparewaterfilters.com.au";
+
 export default function ArticlePage() {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
+
+  useEffect(() => {
+    if (!article) return;
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.title,
+      description: article.seoDescription || article.summary,
+      datePublished: article.publishedAt,
+      url: `${BASE_URL}/learn/${article.slug}`,
+      publisher: {
+        "@type": "Organization",
+        name: "Compare Water Filters",
+        url: BASE_URL,
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${BASE_URL}/learn/${article.slug}`,
+      },
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, [article]);
 
   if (!article) {
     return (
