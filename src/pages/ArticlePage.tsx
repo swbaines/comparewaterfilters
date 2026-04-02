@@ -30,7 +30,10 @@ export default function ArticlePage() {
         </Link>
         <Badge variant="secondary" className="mb-3">{article.category}</Badge>
         <h1 className="text-2xl font-bold sm:text-3xl">{article.title}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Published {new Date(article.publishedAt).toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" })}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Published {new Date(article.publishedAt).toLocaleDateString("en-AU", { year: "numeric", month: "long", day: "numeric" })}
+          {article.readTime && <> · {article.readTime}</>}
+        </p>
         <div className="prose prose-sm mt-8 max-w-none text-muted-foreground">
           {article.body.split("\n\n").map((para, i) => {
             if (para.startsWith("**") && para.endsWith("**")) {
