@@ -11,15 +11,6 @@ export default function ArticlePage() {
   const { slug } = useParams();
   const article = articles.find((a) => a.slug === slug);
 
-  if (!article) {
-    return (
-      <div className="container py-20 text-center">
-        <h1 className="text-2xl font-bold">Article not found</h1>
-        <Link to="/learn" className="mt-4 inline-block text-primary hover:underline">← Back to articles</Link>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (!article) return;
     const jsonLd = {
@@ -45,6 +36,15 @@ export default function ArticlePage() {
     document.head.appendChild(script);
     return () => { document.head.removeChild(script); };
   }, [article]);
+
+  if (!article) {
+    return (
+      <div className="container py-20 text-center">
+        <h1 className="text-2xl font-bold">Article not found</h1>
+        <Link to="/learn" className="mt-4 inline-block text-primary hover:underline">← Back to articles</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="py-12 sm:py-16">
