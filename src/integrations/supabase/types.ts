@@ -113,6 +113,7 @@ export type Database = {
           period_start: string
           provider_id: string
           status: Database["public"]["Enums"]["invoice_status"]
+          stripe_invoice_id: string | null
           total_amount: number
           updated_at: string
         }
@@ -127,6 +128,7 @@ export type Database = {
           period_start: string
           provider_id: string
           status?: Database["public"]["Enums"]["invoice_status"]
+          stripe_invoice_id?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -141,6 +143,7 @@ export type Database = {
           period_start?: string
           provider_id?: string
           status?: Database["public"]["Enums"]["invoice_status"]
+          stripe_invoice_id?: string | null
           total_amount?: number
           updated_at?: string
         }
