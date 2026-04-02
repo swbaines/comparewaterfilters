@@ -122,6 +122,7 @@ Deno.serve(async (req) => {
           body: JSON.stringify({
             provider_id: provider.id,
             invoice_number: invoiceNumber,
+            stripe_invoice_id: stripeInvoice.id,
             period_start: periodStart,
             period_end: periodEnd,
             total_amount: totalCents / 100,
