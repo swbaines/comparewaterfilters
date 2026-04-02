@@ -136,6 +136,12 @@ Deno.serve(async (req) => {
 
         await stripe.invoices.sendInvoice(stripeInvoice.id)
         stripeInvoiceId = stripeInvoice.id
+
+        // Save stripe_invoice_id back to the invoice record
+        await supabaseAdmin
+          .from('invoices')
+          .update({ stripe_invoice_id: stripeInvoiceId })
+          .eq('id', invoice.id)
       }
     }
 
