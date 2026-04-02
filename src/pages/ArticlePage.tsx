@@ -20,6 +20,32 @@ export default function ArticlePage() {
     );
   }
 
+  useEffect(() => {
+    if (!article) return;
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.title,
+      description: article.seoDescription || article.summary,
+      datePublished: article.publishedAt,
+      url: `${BASE_URL}/learn/${article.slug}`,
+      publisher: {
+        "@type": "Organization",
+        name: "Compare Water Filters",
+        url: BASE_URL,
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${BASE_URL}/learn/${article.slug}`,
+      },
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, [article]);
+
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
