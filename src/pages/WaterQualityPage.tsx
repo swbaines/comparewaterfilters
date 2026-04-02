@@ -320,8 +320,8 @@ export default function WaterQualityPage() {
                     <h4 className="font-semibold">Fluoride</h4>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {result.fluoride === 0
-                        ? `${result.state} does not fluoridate its water supply. If you want fluoride-free water, you don't need an RO system for this reason — though RO still provides the highest purity drinking water.`
-                        : `Fluoride is added at ${result.fluoride} mg/L for dental health. This is well within the 1.5 mg/L Australian guideline. If you prefer fluoride-free water, only a reverse osmosis system effectively removes it — tap and carbon filters do not.`}
+                        ? `${result.state} does not add fluoride to its water supply. If fluoride-free water is important to you, your tap water already is — though a reverse osmosis system still provides the highest purity drinking water overall.`
+                        : `Fluoride is added at ${result.fluoride} mg/L for dental health, well within the 1.5 mg/L Australian guideline. Some families prefer to remove it and choose their own fluoride sources — if that's you, a reverse osmosis system is the only household filter that effectively removes it.`}
                     </p>
                   </div>
                 </div>
