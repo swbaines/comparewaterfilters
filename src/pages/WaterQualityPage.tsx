@@ -332,7 +332,7 @@ export default function WaterQualityPage() {
                     <div>
                       <h4 className="font-semibold">PFAS</h4>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        PFAS monitoring is active in your area. Current levels meet Australian Drinking Water Guidelines but if you have concerns, a reverse osmosis system provides the most effective household protection.
+                        PFAS monitoring is active in your area. Current levels meet Australian Drinking Water Guidelines, so there's no immediate concern — but many families prefer the peace of mind that comes with a reverse osmosis system, which is the most effective household technology for PFAS removal.
                       </p>
                     </div>
                   </div>
