@@ -286,10 +286,10 @@ export default function WaterQualityPage() {
                     <h4 className="font-semibold">Hard water &amp; scale</h4>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {result.hardness >= 180
-                        ? `Very hard water at ${result.hardness} mg/L — you'll see white scale in your kettle, on taps, shower screens, and inside appliances. This shortens the life of your hot water system and dishwasher significantly.`
+                        ? `At ${result.hardness} mg/L, your water is quite hard — you've probably noticed white scale building up in the kettle, on taps, and on shower screens. Over time, this can reduce the lifespan of your hot water system and dishwasher. A water softener or scale-reduction filter pays for itself in appliance savings.`
                         : result.hardness >= 120
-                        ? `Moderate hardness at ${result.hardness} mg/L — some scale buildup in appliances and on fixtures. A scale-reduction filter will extend appliance life.`
-                        : `Soft water at ${result.hardness} mg/L — scale is not a significant issue in your area. No softener needed.`}
+                        ? `At ${result.hardness} mg/L, you may notice some scale on taps and in the kettle. A scale-reduction filter helps protect your appliances and keeps things looking cleaner for longer.`
+                        : `At ${result.hardness} mg/L, your water is soft — great news for your appliances. No softener needed here.`}
                     </p>
                   </div>
                 </div>
