@@ -115,6 +115,10 @@ For households that are already noticing taste, smell, or skin concerns from the
 
 The good news is that effective solutions exist for every situation and budget. The first step is understanding what's actually in your water and what it means for your home.
 
+**Want to know what's in your local water?** Use our free <a href="/water-quality" class="text-primary underline">postcode water quality lookup</a> to see hardness, chlorine, fluoride, and PFAS risk for your suburb — with plain-English explanations and personalised filter recommendations.
+
+**Ready to get quotes?** <a href="/quiz" class="text-primary underline">Take our 2-minute quiz</a> and get matched with licensed local vendors who know your water.
+
 **Sources:**
 
 - Melbourne Water Annual Drinking Water Quality Report 2024–25
