@@ -67,7 +67,7 @@ export const systemTypes: SystemType[] = [
     whatItDoes: "Installed at the point of entry to your property, filtering all water before it reaches any tap, shower, or appliance. Removes chlorine, sediment, and improves water quality throughout the entire home.",
     whatItDoesNot: "Does not remove fluoride, heavy metals, or dissolved minerals. Does not produce ultra-pure drinking water. Not a substitute for UV treatment on untreated water sources.",
     whoItSuits: "Families wanting chlorine-free water from every tap and shower. Homeowners concerned about skin irritation, dry hair, or protecting appliances from sediment and chlorine.",
-    priceRange: "$2,000 – $5,000 installed",
+    priceRange: "$3,000 – $5,000 installed",
     maintenance: "Filter replacement every 6–12 months depending on water usage. Annual cost typically $200–$600.",
     pros: [
       "Filters every tap, shower, and appliance",
