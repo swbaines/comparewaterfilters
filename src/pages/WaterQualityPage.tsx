@@ -208,6 +208,10 @@ export default function WaterQualityPage() {
             <div>
               <h2 className="text-2xl font-bold">{result.suburb}</h2>
               <p className="text-muted-foreground">{result.state} · Postcodes {result.postcode} · Source: {result.source}</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Your water meets Australian safety standards — but every home can benefit from filtration. Whether it's removing the chlorine taste, protecting appliances from scale, or simply giving your family cleaner water for drinking and bathing, the right filter makes a real difference.
+              </p>
+            </div>
             </div>
 
             {/* Metric cards */}
