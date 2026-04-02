@@ -180,7 +180,7 @@ export default function WaterQualityPage() {
           <Badge variant="secondary" className="mb-4">Free water quality lookup</Badge>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">What's in my water?</h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Enter your suburb or postcode to see a plain-English breakdown of your local water quality — hardness, chlorine, fluoride, and more.
+            Australian tap water is safe to drink — but safe doesn't mean perfect. Most of us can smell and taste the chlorine, and families want to know exactly what's coming out of the tap. Enter your suburb or postcode for a plain-English breakdown.
           </p>
           <form onSubmit={handleSearch} className="mt-8 flex gap-2">
             <div className="relative flex-1">
@@ -208,6 +208,9 @@ export default function WaterQualityPage() {
             <div>
               <h2 className="text-2xl font-bold">{result.suburb}</h2>
               <p className="text-muted-foreground">{result.state} · Postcodes {result.postcode} · Source: {result.source}</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Your water meets Australian safety standards — but every home can benefit from filtration. Whether it's removing the chlorine taste, protecting appliances from scale, or simply giving your family cleaner water for drinking and bathing, the right filter makes a real difference.
+              </p>
             </div>
 
             {/* Metric cards */}
@@ -282,10 +285,10 @@ export default function WaterQualityPage() {
                     <h4 className="font-semibold">Hard water &amp; scale</h4>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {result.hardness >= 180
-                        ? `Very hard water at ${result.hardness} mg/L — you'll see white scale in your kettle, on taps, shower screens, and inside appliances. This shortens the life of your hot water system and dishwasher significantly.`
+                        ? `At ${result.hardness} mg/L, your water is quite hard — you've probably noticed white scale building up in the kettle, on taps, and on shower screens. Over time, this can reduce the lifespan of your hot water system and dishwasher. A water softener or scale-reduction filter pays for itself in appliance savings.`
                         : result.hardness >= 120
-                        ? `Moderate hardness at ${result.hardness} mg/L — some scale buildup in appliances and on fixtures. A scale-reduction filter will extend appliance life.`
-                        : `Soft water at ${result.hardness} mg/L — scale is not a significant issue in your area. No softener needed.`}
+                        ? `At ${result.hardness} mg/L, you may notice some scale on taps and in the kettle. A scale-reduction filter helps protect your appliances and keeps things looking cleaner for longer.`
+                        : `At ${result.hardness} mg/L, your water is soft — great news for your appliances. No softener needed here.`}
                     </p>
                   </div>
                 </div>
@@ -300,8 +303,8 @@ export default function WaterQualityPage() {
                     <h4 className="font-semibold">Chlorine &amp; taste</h4>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {result.chlorine >= 1.0
-                        ? `Higher chlorine at ${result.chlorine} mg/L — above the 0.6 mg/L taste threshold. A noticeable chemical smell and taste is common, and chlorine in shower water can cause skin irritation, eczema, and hair dryness.`
-                        : `Chlorine at ${result.chlorine} mg/L — within normal range but still noticeable to sensitive individuals. A carbon filter will eliminate it entirely.`}
+                        ? `At ${result.chlorine} mg/L, chlorine is above the taste threshold — most people in your area will notice the smell when filling a glass or running a shower. Many families find that removing chlorine is the single biggest improvement to their water. It also helps with dry skin, eczema-prone kids, and hair that feels stripped after washing.`
+                        : `At ${result.chlorine} mg/L, chlorine is within normal range — but most people can still smell and taste it, especially first thing in the morning or after the water has been sitting in pipes. A simple carbon filter removes it completely and is the most popular upgrade Australian families make.`}
                     </p>
                   </div>
                 </div>
@@ -316,8 +319,8 @@ export default function WaterQualityPage() {
                     <h4 className="font-semibold">Fluoride</h4>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {result.fluoride === 0
-                        ? `${result.state} does not fluoridate its water supply. If you want fluoride-free water, you don't need an RO system for this reason — though RO still provides the highest purity drinking water.`
-                        : `Fluoride is added at ${result.fluoride} mg/L for dental health. This is well within the 1.5 mg/L Australian guideline. If you prefer fluoride-free water, only a reverse osmosis system effectively removes it — tap and carbon filters do not.`}
+                        ? `${result.state} does not add fluoride to its water supply. If fluoride-free water is important to you, your tap water already is — though a reverse osmosis system still provides the highest purity drinking water overall.`
+                        : `Fluoride is added at ${result.fluoride} mg/L for dental health, well within the 1.5 mg/L Australian guideline. Some families prefer to remove it and choose their own fluoride sources — if that's you, a reverse osmosis system is the only household filter that effectively removes it.`}
                     </p>
                   </div>
                 </div>
@@ -328,7 +331,7 @@ export default function WaterQualityPage() {
                     <div>
                       <h4 className="font-semibold">PFAS</h4>
                       <p className="mt-1 text-sm text-muted-foreground">
-                        PFAS monitoring is active in your area. Current levels meet Australian Drinking Water Guidelines but if you have concerns, a reverse osmosis system provides the most effective household protection.
+                        PFAS monitoring is active in your area. Current levels meet Australian Drinking Water Guidelines, so there's no immediate concern — but many families prefer the peace of mind that comes with a reverse osmosis system, which is the most effective household technology for PFAS removal.
                       </p>
                     </div>
                   </div>
@@ -365,8 +368,8 @@ export default function WaterQualityPage() {
             <Card className="bg-primary/5 border-primary/20">
               <CardContent className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
                 <div>
-                  <h3 className="font-semibold">Want personalised recommendations?</h3>
-                  <p className="text-sm text-muted-foreground">Take our 2-minute quiz and get matched with local vendors who know your water.</p>
+                  <h3 className="font-semibold">Ready to improve your water?</h3>
+                  <p className="text-sm text-muted-foreground">Take our 2-minute quiz and we'll match you with trusted local installers who understand your area's water.</p>
                 </div>
                 <Link to="/quiz" className="shrink-0">
                   <Button>
