@@ -11,8 +11,7 @@ import {
 
 const navLinks = [
 { to: "/", label: "Home" },
-{ to: "/how-it-works", label: "How It Works" },
-{ to: "/contact", label: "Contact" }];
+{ to: "/how-it-works", label: "How It Works" }];
 
 
 const resourceLinks = [
