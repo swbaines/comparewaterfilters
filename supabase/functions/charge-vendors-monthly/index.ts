@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
             lead_count: leads.length,
             status: paidInvoice.status === "paid" ? "paid" : "sent",
             paid_at: paidInvoice.status === "paid" ? new Date().toISOString() : null,
-            notes: `Stripe Invoice: ${stripeInvoice.id}`,
+            
           }),
         });
 
