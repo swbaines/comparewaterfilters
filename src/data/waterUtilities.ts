@@ -430,6 +430,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.8,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Wivenhoe / Somerset Dams via Seqwater",
     notes: "Ipswich and Logan receive moderately hard water from the Wivenhoe system. Scale-reduction filter recommended for appliances. Whole house filtration for chlorine taste.",
   },
