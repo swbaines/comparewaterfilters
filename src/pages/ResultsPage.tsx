@@ -350,8 +350,8 @@ export default function ResultsPage() {
         {/* 3 Recommendation cards */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          <RecCard rec={result.primary} label="Best value" reason={result.primaryReason} variant="value" />
-          <RecCard rec={result.secondary} label="Best all-rounder" reason={result.secondaryReason} variant="allrounder" />
+          <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+          <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
           <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
         </div>
 
@@ -448,34 +448,34 @@ export default function ResultsPage() {
             <thead>
               <tr className="border-b">
                 <th className="pb-3 text-left font-medium text-muted-foreground"></th>
-                <th className="pb-3 text-left font-medium">Best value</th>
-                <th className="pb-3 text-left font-medium">All-rounder</th>
+                <th className="pb-3 text-left font-medium">Budget alternative</th>
+                <th className="pb-3 text-left font-medium">Our recommendation</th>
                 <th className="pb-3 text-left font-medium">Premium</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">System type</td>
-                <td className="py-3">{result.primary.title}</td>
                 <td className="py-3">{result.secondary.title}</td>
+                <td className="py-3">{result.primary.title}</td>
                 <td className="py-3">{result.premium.title}</td>
               </tr>
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">Price range</td>
-                <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
                 <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
+                <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
                 <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
               </tr>
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
-                <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
                 <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
+                <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
                 <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
               </tr>
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">Category</td>
-                <td className="py-3">{result.primary.category}</td>
                 <td className="py-3">{result.secondary.category}</td>
+                <td className="py-3">{result.primary.category}</td>
                 <td className="py-3">{result.premium.category}</td>
               </tr>
             </tbody>
