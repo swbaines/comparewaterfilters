@@ -292,6 +292,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 1.0,
     ph: 7.5,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Prospect WFP (Warragamba Dam)",
     notes: "The Sutherland Shire and southern Sydney receive soft water from the Warragamba catchment. Good quality — carbon filter for chlorine taste.",
   },
