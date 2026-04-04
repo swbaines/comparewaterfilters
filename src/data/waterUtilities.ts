@@ -810,9 +810,16 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       [7000, 7055], // Hobart, Sandy Bay, Battery Point, Glenorchy, Moonah, Kingston
     ],
     suburbs: [
-      "Hobart", "Sandy Bay", "Battery Point", "Glenorchy", "Moonah",
+      "Hobart", "Hobart CBD", "Sandy Bay", "Battery Point", "Glenorchy", "Moonah",
       "Kingston", "Blackmans Bay", "Howrah", "Bellerive", "Lindisfarne",
-      "Claremont", "New Town", "Lenah Valley",
+      "Claremont", "New Town", "Lenah Valley", "West Hobart", "North Hobart",
+      "South Hobart", "Dynnyrne", "Mount Nelson", "Taroona", "Tranmere",
+      "Warrane", "Mornington", "Rosny", "Rosny Park", "Montagu Bay",
+      "Rose Bay", "Lutana", "Derwent Park", "Austins Ferry",
+      "Granton", "Berriedale", "Chigwell", "Bridgewater",
+      "Brighton", "Old Beach", "Rokeby", "Lauderdale", "Opossum Bay",
+      "Margate", "Snug", "Kettering", "Sorell", "Midway Point",
+      "Dodges Ferry", "Seven Mile Beach", "Cambridge", "Richmond",
     ],
     hardness: 18,
     chlorine: 0.4,
