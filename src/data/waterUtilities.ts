@@ -745,6 +745,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.6,
     ph: 7.6,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Mount Lofty Ranges reservoirs (Mount Bold, Kangaroo Creek)",
     notes: "Adelaide Hills has the softest water in the Adelaide metro area from local mountain catchments. Better taste than other SA zones. Chloramine treatment — carbon filter for preference.",
   },
