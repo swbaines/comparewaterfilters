@@ -492,9 +492,9 @@ export default function ResultsPage() {
             ];
 
             const variantColors = {
-              value: "border-primary/20",
-              allrounder: "border-primary",
-              premium: "border-warm/30",
+              value: "border-primary/20 bg-sage-light/30",
+              allrounder: "border-primary bg-accent/40",
+              premium: "border-warm/30 bg-warm-light/40",
             };
 
             return (
