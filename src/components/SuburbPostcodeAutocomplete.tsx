@@ -55,11 +55,21 @@ function useDetectedState() {
   const [detectedState, setDetectedState] = useState<string>(() => {
     return sessionStorage.getItem("detected_au_state") || "";
   });
+  const [autoDetectFailed, setAutoDetectFailed] = useState(false);
 
   useEffect(() => {
     if (detectedState) return;
 
-    // Try geolocation first
+    const applyFallback = () => {
+      const fallback = timezoneToState();
+      if (fallback) {
+        setDetectedState(fallback);
+        sessionStorage.setItem("detected_au_state", fallback);
+      } else {
+        setAutoDetectFailed(true);
+      }
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -67,27 +77,21 @@ function useDetectedState() {
           setDetectedState(state);
           sessionStorage.setItem("detected_au_state", state);
         },
-        () => {
-          // Geolocation denied/failed – fall back to timezone
-          const fallback = timezoneToState();
-          if (fallback) {
-            setDetectedState(fallback);
-            sessionStorage.setItem("detected_au_state", fallback);
-          }
-        },
+        () => applyFallback(),
         { timeout: 5000, maximumAge: 600000 }
       );
     } else {
-      // No geolocation API – use timezone
-      const fallback = timezoneToState();
-      if (fallback) {
-        setDetectedState(fallback);
-        sessionStorage.setItem("detected_au_state", fallback);
-      }
+      applyFallback();
     }
   }, [detectedState]);
 
-  return detectedState;
+  const setManualState = (state: string) => {
+    setDetectedState(state);
+    setAutoDetectFailed(false);
+    sessionStorage.setItem("detected_au_state", state);
+  };
+
+  return { detectedState, autoDetectFailed, setManualState };
 }
 
 export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect }: Props) {
@@ -97,7 +101,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
-  const detectedState = useDetectedState();
+  const { detectedState, autoDetectFailed, setManualState } = useDetectedState();
 
   // Sync display when parent resets
   useEffect(() => {
@@ -160,9 +164,28 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const AU_STATES = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"] as const;
+
   return (
     <div ref={containerRef} className="relative">
       <label className="mb-1.5 block text-sm font-medium">Suburb or postcode</label>
+      {autoDetectFailed && (
+        <div className="mb-2">
+          <p className="mb-1 text-xs text-muted-foreground">Select your state to improve results:</p>
+          <div className="flex flex-wrap gap-1.5">
+            {AU_STATES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setManualState(s)}
+                className="rounded-full border px-3 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <Input
         placeholder="Start typing suburb or postcode..."
         value={query}
