@@ -130,6 +130,19 @@ export default function PricingGuidePage() {
           </div>
         </section>
 
+        {/* FAQ */}
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">Frequently asked questions</h2>
+          <Accordion type="single" collapsible className="w-full">
+            {pricingFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </section>
+
         <div className="mt-12 text-center">
           <Link to="/quiz">
             <Button size="lg" className="gap-2">
