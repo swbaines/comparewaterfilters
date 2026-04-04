@@ -140,7 +140,7 @@ export default function WaterQualityPage() {
           <Badge variant="secondary" className="mb-4">Free water quality lookup</Badge>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">What's in my water?</h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Australian tap water is safe to drink — but safe doesn't mean perfect. Most of us can smell and taste the chlorine, and families want to know exactly what's coming out of the tap. Enter your suburb or postcode for a plain-English breakdown.
+            Australian tap water meets safety standards — but "safe" doesn't mean "ideal." Chlorine, chloramine, and trace contaminants are present in every supply, and there's no health benefit to consuming them. Enter your suburb below to see exactly what's in your water and what you can do about it.
           </p>
           <form onSubmit={handleSearch} className="mt-8 flex gap-2">
             <div className="relative flex-1" ref={wrapperRef}>
