@@ -418,7 +418,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       primaryId = "under-sink-carbon";
       primaryReason = `${stateChlorineNote}An under-sink carbon filter is the ideal solution for your needs — effectively removing chlorine, improving taste, and delivering noticeably better drinking water. $300–$1,200 installed.`;
       secondaryId = "under-sink-carbon";
-      secondaryReason = `The under-sink carbon filter is already the best match — affordable, effective, and easy to maintain.`;
+      secondaryReason = `This is already the most affordable effective option — a quality under-sink carbon filter delivers the best value for taste and chlorine concerns. No cheaper alternative will meaningfully improve your water.`;
       premiumId = "reverse-osmosis";
       premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,500 installed.`;
     }
