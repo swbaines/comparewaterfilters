@@ -406,6 +406,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.8,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Wivenhoe Dam / North Pine Dam via Seqwater",
     notes: "Brisbane has moderately hard water with higher chlorine. Seasonal earthy/musty taste after rain is naturally occurring. A whole house filtration addresses chlorine taste — add scale-reduction if you notice buildup in kettles.",
   },
