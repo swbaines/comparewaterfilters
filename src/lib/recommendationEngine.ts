@@ -488,12 +488,13 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
         : "";
 
       if (f.wantsWholeHome || f.budget3kTo6k || f.budgetPremium) {
-        primaryId = "reverse-osmosis";
-        primaryReason = `${fluorideNote}A reverse osmosis system is the only household technology that effectively eliminates fluoride, PFAS, heavy metals, and microplastics from drinking water — carbon filters can reduce but not eliminate these contaminants. Installed under the kitchen sink at $800–$1,500.`;
+        // Whole home coverage + serious contaminants: lead with whole house, RO as premium
+        primaryId = "whole-house-carbon";
+        primaryReason = `${stateChlorineNote}A whole house filtration system is the essential foundation — removing chlorine, sediment, and chemicals from every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `Particularly important in ${answers.state} where chlorine levels are among Australia's highest.` : "This protects your skin, hair, and appliances from chlorine exposure."} Typically $1,500–$5,000 installed.`;
         secondaryId = "whole-house-carbon";
-        secondaryReason = `Combining your RO drinking system with a whole house filtration is the complete solution — ultra-pure drinking water at the kitchen tap plus ${f.isHighChlorineState ? `${answers.state}'s notably chlorinated water` : "chlorine"} removed from every shower and tap. Typically $4,000–$7,000 installed.`;
-        premiumId = "whole-house-carbon";
-        premiumReason = `The premium setup: a whole house filtration plus RO unit with a 3-way mixer tap (ideal for stone benchtops) — the best possible water quality for both drinking and whole-home use.`;
+        secondaryReason = `Our most popular combination: a whole house filtration paired with a reverse osmosis drinking water unit — chlorine-free water throughout your entire home plus ultra-pure drinking water at the kitchen that removes fluoride, PFAS, heavy metals, and microplastics. Typically $4,000–$7,000 installed.`;
+        premiumId = "reverse-osmosis";
+        premiumReason = `${fluorideNote}The premium setup: a high-capacity whole house filtration combined with an RO unit and 3-way mixer tap (perfect for stone benchtops, providing hot, cold, and filtered water from one tap) — the only household technology that effectively eliminates fluoride, PFAS, heavy metals, and microplastics. The best water quality solution available for Australian homes.`;
       } else {
         primaryId = "reverse-osmosis";
         primaryReason = `${fluorideNote}A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Carbon filters reduce these contaminants but cannot eliminate them. Installed under the kitchen sink at $800–$1,500.`;
