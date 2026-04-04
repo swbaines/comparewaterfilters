@@ -204,7 +204,7 @@ export default function WaterQualityPage() {
             <Button type="submit">Check water</Button>
           </form>
           <p className="mt-3 text-xs text-muted-foreground">
-            Data sourced from Yarra Valley Water, South East Water, Greater Western Water, Sydney Water, Hunter Water, Urban Utilities, SA Water, Water Corporation WA, TasWater, Icon Water and Power and Water Corporation annual reports 2023–24
+            Data sourced from Yarra Valley Water, South East Water, Greater Western Water, Sydney Water, Hunter Water, Urban Utilities, SA Water, Water Corporation WA, TasWater, Icon Water and Power and Water Corporation annual reports 2024–25
           </p>
         </div>
       </section>
