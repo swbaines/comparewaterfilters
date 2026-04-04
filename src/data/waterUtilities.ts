@@ -622,7 +622,11 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     suburbs: [
       "Midland", "Helena Valley", "Mundaring", "Kalamunda", "Lesmurdie",
       "High Wycombe", "Forrestfield", "Maida Vale", "Darlington",
-      "Glen Forrest", "Parkerville",
+      "Glen Forrest", "Parkerville", "Sawyers Valley", "Stoneville",
+      "Mount Helena", "Chidlow", "Wooroloo", "Boya", "Gooseberry Hill",
+      "Walliston", "Carmel", "Pickering Brook", "Roleystone",
+      "Kelmscott", "Seville Grove", "Champion Lakes", "Wattle Grove",
+      "Orange Grove", "Martin", "Bickley",
     ],
     hardness: 155,
     chlorine: 0.8,
