@@ -13,6 +13,7 @@ const staticPages = [
   { path: "/learn", changefreq: "weekly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/provider-match", changefreq: "monthly", priority: "0.6" },
+  { path: "/water-quality", changefreq: "weekly", priority: "0.8" },
 ];
 
 const articleEntries = articles.map((a) => ({
