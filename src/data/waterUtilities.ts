@@ -536,7 +536,10 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     suburbs: [
       "Perth CBD", "West Perth", "East Perth", "Subiaco", "Leederville",
       "Mount Lawley", "Northbridge", "Claremont", "Cottesloe",
-      "Nedlands", "Dalkeith", "Peppermint Grove",
+      "Nedlands", "Dalkeith", "Peppermint Grove", "Crawley", "Shenton Park",
+      "Wembley", "Floreat", "City Beach", "Scarborough", "Doubleview",
+      "Churchlands", "Karrinyup", "Innaloo", "Mosman Park", "Swanbourne",
+      "Mount Hawthorn", "North Perth", "Highgate", "Menora",
     ],
     hardness: 135,
     chlorine: 0.8,
