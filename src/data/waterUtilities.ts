@@ -689,7 +689,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       "Modbury", "Tea Tree Gully", "Golden Grove", "Mawson Lakes",
       "Parafield Gardens", "Smithfield", "Davoren Park",
     ],
-    hardness: 138,
+    hardness: 132,
     chlorine: 1.5,
     fluoride: 0.6,
     ph: 7.5,
