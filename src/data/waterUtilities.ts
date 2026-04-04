@@ -666,7 +666,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       "Burnside", "Kensington", "Goodwood", "Parkside", "Fullarton",
       "Mile End", "Torrensville", "Magill", "Campbelltown", "Payneham",
     ],
-    hardness: 125,
+    hardness: 105,
     chlorine: 1.3,
     fluoride: 0.6,
     ph: 7.6,
