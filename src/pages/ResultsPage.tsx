@@ -347,13 +347,20 @@ export default function ResultsPage() {
           </CardContent>
         </Card>
 
-        {/* 3 Recommendation cards */}
+        {/* 3 Recommendation cards (or 2 if budget = recommendation) */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-          <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-          <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
-        </div>
+        {result.secondary.id === result.primary.id ? (
+          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+          </div>
+        )}
 
         <div className="mt-14">
           <div className="mb-6 text-center">
