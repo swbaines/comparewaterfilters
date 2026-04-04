@@ -469,7 +469,7 @@ export default function ResultsPage() {
               {
                 label: "Removes chlorine",
                 render: (r) => {
-                  const chlorineIds = ["under-sink-carbon", "under-sink-ro", "whole-house", "whole-house-combo"];
+                  const chlorineIds = ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo"];
                   return chlorineIds.includes(r.id)
                     ? <Check className="h-4 w-4 text-primary" />
                     : <span className="text-muted-foreground">—</span>;
@@ -478,7 +478,7 @@ export default function ResultsPage() {
               {
                 label: "Removes fluoride & PFAS",
                 render: (r) => {
-                  const roIds = ["under-sink-ro", "whole-house-combo"];
+                  const roIds = ["reverse-osmosis", "whole-house-combo"];
                   return roIds.includes(r.id)
                     ? <Check className="h-4 w-4 text-primary" />
                     : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
@@ -487,7 +487,7 @@ export default function ResultsPage() {
               {
                 label: "Whole home protection",
                 render: (r) => {
-                  const wholeHomeIds = ["whole-house", "whole-house-combo"];
+                  const wholeHomeIds = ["whole-house-carbon", "whole-house-combo"];
                   return wholeHomeIds.includes(r.id)
                     ? <Check className="h-4 w-4 text-primary" />
                     : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
