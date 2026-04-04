@@ -386,7 +386,10 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     suburbs: [
       "Blue Mountains", "Glenbrook", "Springwood", "Katoomba",
       "Leura", "Blackheath", "Wentworth Falls", "Faulconbridge",
-      "Winmalee", "Hazelbrook",
+      "Winmalee", "Hazelbrook", "Lawson", "Bullaburra",
+      "Valley Heights", "Warrimoo", "Blaxland", "Mount Riverview",
+      "Lapstone", "Woodford", "Linden", "Mount Victoria",
+      "Medlow Bath", "Megalong Valley", "Bell",
     ],
     hardness: 32,
     chlorine: 0.6,
