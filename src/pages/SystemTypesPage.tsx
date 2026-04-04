@@ -4,6 +4,7 @@ import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
 import { systemTypes } from "@/data/systemTypes";
 import { CheckCircle2, XCircle, Droplets, ShieldCheck, Home, Zap, Waves, Layers } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const iconMap: Record<string, React.ElementType> = {
   droplets: Droplets,
