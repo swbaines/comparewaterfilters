@@ -14,7 +14,7 @@ import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
+function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
     allrounder: "bg-accent text-accent-foreground border-primary/30",
@@ -24,7 +24,10 @@ function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: 
   return (
     <Card className={`overflow-hidden border-2 ${variant === "allrounder" ? "border-primary shadow-lg" : ""}`}>
       <CardHeader className="pb-3">
-        <Badge className={`mb-2 w-fit ${colors[variant]}`}>{label}</Badge>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
+          {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+        </div>
         <CardTitle className="text-lg">{rec.title}</CardTitle>
         <p className="text-sm text-muted-foreground">{rec.category}</p>
       </CardHeader>
