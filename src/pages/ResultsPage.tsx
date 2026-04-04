@@ -278,7 +278,7 @@ export default function ResultsPage() {
             Hi {answers.firstName}, here's what we recommend
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Based on your household, water source, concerns, and budget, we've matched you with the most suitable system types and local providers.
+            Your tap water is treated to meet safety standards — but there's no upside to drinking chlorine, chloramine, and trace contaminants when you don't have to. Based on your home and water profile, here's how to upgrade.
           </p>
           <Button
             variant="outline"

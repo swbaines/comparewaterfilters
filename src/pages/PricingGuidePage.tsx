@@ -35,7 +35,7 @@ export default function PricingGuidePage() {
         <SectionHeading
           badge="Pricing guide"
           title="Understanding water filter pricing in Australia"
-          subtitle="Why quotes vary so much, and how to compare costs fairly."
+          subtitle="A water filter isn't a luxury — it's the simplest upgrade you can make for your family's health. Here's what to expect on cost."
         />
 
         {/* Why quotes vary */}

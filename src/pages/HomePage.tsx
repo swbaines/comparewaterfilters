@@ -164,9 +164,9 @@ export default function HomePage() {
       {/* Final CTA */}
       <section className="py-16 sm:py-20">
         <div className="container text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">Ready to find your match?</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Every Australian home deserves filtered water</h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Answer a few questions about your home and water concerns. We'll recommend the right system type, explain what it does, and show you realistic pricing.
+            There's simply no upside to drinking chlorine, chloramine, and trace contaminants when you don't have to. Answer a few questions and we'll match you with the right system — it's faster and easier than you think.
           </p>
           <Link to="/quiz">
             <Button size="lg" className="mt-8 gap-2">

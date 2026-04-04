@@ -204,7 +204,7 @@ export default function WaterQualityPage() {
               </div>
               <p className="mt-1 text-sm text-muted-foreground">Source: {result.source}</p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Your water meets Australian safety standards — but every home can benefit from filtration. Whether it's removing the chlorine taste, protecting appliances from scale, or simply giving your family cleaner water for drinking and bathing, the right filter makes a real difference.
+                Your water meets Australian safety standards — but there's no benefit to your family consuming chlorine, chloramine, or trace contaminants when you don't have to. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.
               </p>
             </div>
 

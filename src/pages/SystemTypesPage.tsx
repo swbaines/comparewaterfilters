@@ -35,7 +35,7 @@ export default function SystemTypesPage() {
         <SectionHeading
           badge="System types"
           title="Understanding water filtration systems"
-          subtitle="A plain-English guide to the main categories of water filtration available for Australian homes."
+          subtitle="Australian tap water is treated to be safe — but chlorine, chloramine, and trace contaminants remain in every supply. Here's what each system removes and why it matters for your home."
         />
 
         <div className="mt-12 space-y-8">
