@@ -223,7 +223,7 @@ export default function WaterQualityPage() {
                   }
                   return "";
                 })()}
-                {" — "}but there's no benefit to your family consuming chlorine, chloramine, or trace contaminants when you don't have to. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.
+                . A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.
               </p>
             </div>
 
