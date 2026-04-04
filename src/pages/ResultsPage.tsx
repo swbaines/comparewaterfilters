@@ -468,21 +468,30 @@ export default function ResultsPage() {
               { label: "Coverage", render: (r) => r.idealHomeType },
               {
                 label: "Removes chlorine",
-                render: (r) => r.bestFor.some((b) => b.toLowerCase().includes("chlorine"))
-                  ? <Check className="h-4 w-4 text-primary" />
-                  : <span className="text-muted-foreground">—</span>,
+                render: (r) => {
+                  const chlorineIds = ["under-sink-carbon", "under-sink-ro", "whole-house", "whole-house-combo"];
+                  return chlorineIds.includes(r.id)
+                    ? <Check className="h-4 w-4 text-primary" />
+                    : <span className="text-muted-foreground">—</span>;
+                },
               },
               {
                 label: "Removes fluoride & PFAS",
-                render: (r) => r.notFor.some((n) => n.toLowerCase().includes("fluoride"))
-                  ? <XCircle className="h-4 w-4 text-muted-foreground/50" />
-                  : <Check className="h-4 w-4 text-primary" />,
+                render: (r) => {
+                  const roIds = ["under-sink-ro", "whole-house-combo"];
+                  return roIds.includes(r.id)
+                    ? <Check className="h-4 w-4 text-primary" />
+                    : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
+                },
               },
               {
                 label: "Whole home protection",
-                render: (r) => r.bestFor.some((b) => b.toLowerCase().includes("whole house") || b.toLowerCase().includes("every tap"))
-                  ? <Check className="h-4 w-4 text-primary" />
-                  : <XCircle className="h-4 w-4 text-muted-foreground/50" />,
+                render: (r) => {
+                  const wholeHomeIds = ["whole-house", "whole-house-combo"];
+                  return wholeHomeIds.includes(r.id)
+                    ? <Check className="h-4 w-4 text-primary" />
+                    : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
+                },
               },
               { label: "Key tradeoff", render: (r) => r.tradeoffs[0] || "—" },
             ];
