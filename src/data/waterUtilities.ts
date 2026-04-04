@@ -13,6 +13,7 @@ export interface WaterUtilityProfile {
   fluoride: number;
   ph: number;
   pfasRisk: "low" | "moderate" | "elevated";
+  usesChloramine?: boolean;
   source: string;
   notes: string;
 }
