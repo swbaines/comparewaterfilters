@@ -21,8 +21,6 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // VICTORIA
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    key: "yvw",
   // ── Greater Western Water — Inner Melbourne (former City West Water) ────────
   {
     key: "gww-inner",
