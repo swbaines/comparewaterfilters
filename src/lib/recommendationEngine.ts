@@ -255,7 +255,7 @@ function getStateWarnings(answers: QuizAnswers, f: ReturnType<typeof getFlags>):
     case "VIC":
       if (!f.hasChlorineConcern && f.canHaveWholeHome) {
         warnings.push(
-          "Melbourne's water is very soft (no scale issues) but has notably higher chlorine levels than most Australian cities. Many Melbourne households notice improved skin, hair, and taste with a whole house carbon filter."
+          "Melbourne's water is very soft (no scale issues) but has notably higher chlorine levels than most Australian cities. Many Melbourne households notice improved skin, hair, and taste with a whole house filtration."
         );
       }
       break;
@@ -283,7 +283,7 @@ function getStateWarnings(answers: QuizAnswers, f: ReturnType<typeof getFlags>):
 
     case "SA":
       warnings.push(
-        "Adelaide has Australia's most complained-about tap water. The Murray River source brings high mineral content, and chlorine levels regularly exceed the taste threshold — sometimes reaching 1.8 mg/L. Adelaide also has the hardest water of any mainland capital city. A whole house carbon filter with scale-reduction is the most impactful upgrade for SA households."
+        "Adelaide has Australia's most complained-about tap water. The Murray River source brings high mineral content, and chlorine levels regularly exceed the taste threshold — sometimes reaching 1.8 mg/L. Adelaide also has the hardest water of any mainland capital city. A whole house filtration with scale-reduction is the most impactful upgrade for SA households."
       );
       break;
 
@@ -370,7 +370,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       premiumId = "reverse-osmosis";
       premiumReason = `For the highest quality drinking water alongside your shower filter, a reverse osmosis system delivers ultra-pure water free from chlorine, fluoride, and other contaminants.`;
       warnings.push(
-        "Important: Shower filters are significantly less effective than a whole house system for skin and hair concerns — they only treat water at one shower head. A whole house carbon filter would be the proper long-term solution if you move into an owned property."
+        "Important: Shower filters are significantly less effective than a whole house system for skin and hair concerns — they only treat water at one shower head. A whole house filtration would be the proper long-term solution if you move into an owned property."
       );
     } else if (f.hasChlorineConcern) {
       primaryId = "under-sink-carbon";
@@ -423,16 +423,16 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
           primaryId = "water-softener";
           primaryReason = `${stateHardnessNote}a water softener is the most effective solution for Perth homes with hard water — directly targeting the calcium and magnesium causing scale in your kettle, shower screens, and hot water system. Particularly essential in northern suburbs where hardness exceeds 180 mg/L.`;
           secondaryId = "whole-house-carbon";
-          secondaryReason = `A whole house carbon filter with scale-reduction is a strong complement — addressing chlorine taste and general water quality throughout your home alongside your softener.`;
+          secondaryReason = `A whole house filtration with scale-reduction is a strong complement — addressing chlorine taste and general water quality throughout your home alongside your softener.`;
           premiumId = "whole-house-carbon";
-          premiumReason = `The ultimate Perth setup: a water softener combined with a whole house carbon filter and reverse osmosis drinking system — soft water throughout the home plus ultra-pure drinking water at the kitchen tap.`;
+          premiumReason = `The ultimate Perth setup: a water softener combined with a whole house filtration and reverse osmosis drinking system — soft water throughout the home plus ultra-pure drinking water at the kitchen tap.`;
         } else {
           primaryId = "whole-house-carbon";
           primaryReason = `${stateHardnessNote}a whole house filtration system with a scale-reduction filter addresses both Perth's hard water and chlorine throughout your home — protecting your appliances and improving water quality from every tap and shower.`;
           secondaryId = "water-softener";
           secondaryReason = `If scale is your primary concern — especially in northern suburbs where hardness exceeds 180 mg/L — a dedicated water softener is the most targeted solution.`;
           premiumId = "whole-house-carbon";
-          premiumReason = `The complete Perth solution: a water softener combined with a whole house carbon filter and RO drinking system — the most comprehensive water quality setup available.`;
+          premiumReason = `The complete Perth solution: a water softener combined with a whole house filtration and RO drinking system — the most comprehensive water quality setup available.`;
         }
       } else {
         // QLD and other moderate hard water states
@@ -469,14 +469,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
         secondaryId = "under-sink-carbon";
         secondaryReason = `If a whole house system is at the top of your budget right now, an under-sink carbon filter is a solid starting point for your drinking water — and you can always upgrade to whole house filtration when ready.`;
         premiumId = "reverse-osmosis";
-        premiumReason = `For the best possible outcome, combine a whole house carbon filter with a reverse osmosis drinking water unit — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen tap. Typically $4,000–$7,000 installed.`;
+        premiumReason = `For the best possible outcome, combine a whole house filtration with a reverse osmosis drinking water unit — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen tap. Typically $4,000–$7,000 installed.`;
       } else {
         primaryId = "whole-house-carbon";
         primaryReason = `A whole house filtration system is the gold standard for skin and hair concerns — filtering chlorine from every tap, shower, and bath in your home. ${chlorineContext} With your budget, you can invest in a quality system with a long service life.`;
         secondaryId = "whole-house-carbon";
-        secondaryReason = `Our most popular combination: a whole house carbon filter paired with a reverse osmosis drinking water unit — chlorine-free water throughout your entire home plus ultra-pure drinking water at the kitchen. Typically $4,000–$7,000 installed.`;
+        secondaryReason = `Our most popular combination: a whole house filtration paired with a reverse osmosis drinking water unit — chlorine-free water throughout your entire home plus ultra-pure drinking water at the kitchen. Typically $4,000–$7,000 installed.`;
         premiumId = "reverse-osmosis";
-        premiumReason = `The premium setup: a high-capacity whole house carbon filter combined with an RO unit and 3-way mixer tap (perfect for stone benchtops, providing hot, cold, and filtered water from one tap) — the best water quality solution available for Australian homes.`;
+        premiumReason = `The premium setup: a high-capacity whole house filtration combined with an RO unit and 3-way mixer tap (perfect for stone benchtops, providing hot, cold, and filtered water from one tap) — the best water quality solution available for Australian homes.`;
       }
     }
 
@@ -491,16 +491,16 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
         primaryId = "reverse-osmosis";
         primaryReason = `${fluorideNote}A reverse osmosis system is the only household technology that effectively eliminates fluoride, PFAS, heavy metals, and microplastics from drinking water — carbon filters can reduce but not eliminate these contaminants. Installed under the kitchen sink at $800–$1,500.`;
         secondaryId = "whole-house-carbon";
-        secondaryReason = `Combining your RO drinking system with a whole house carbon filter is the complete solution — ultra-pure drinking water at the kitchen tap plus ${f.isHighChlorineState ? `${answers.state}'s notably chlorinated water` : "chlorine"} removed from every shower and tap. Typically $4,000–$7,000 installed.`;
+        secondaryReason = `Combining your RO drinking system with a whole house filtration is the complete solution — ultra-pure drinking water at the kitchen tap plus ${f.isHighChlorineState ? `${answers.state}'s notably chlorinated water` : "chlorine"} removed from every shower and tap. Typically $4,000–$7,000 installed.`;
         premiumId = "whole-house-carbon";
-        premiumReason = `The premium setup: a whole house carbon filter plus RO unit with a 3-way mixer tap (ideal for stone benchtops) — the best possible water quality for both drinking and whole-home use.`;
+        premiumReason = `The premium setup: a whole house filtration plus RO unit with a 3-way mixer tap (ideal for stone benchtops) — the best possible water quality for both drinking and whole-home use.`;
       } else {
         primaryId = "reverse-osmosis";
         primaryReason = `${fluorideNote}A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Carbon filters reduce these contaminants but cannot eliminate them. Installed under the kitchen sink at $800–$1,500.`;
         secondaryId = "under-sink-carbon";
         secondaryReason = `If an RO system isn't quite in budget, a quality under-sink carbon filter significantly improves your drinking water — though it reduces rather than eliminates fluoride and heavy metals.`;
         premiumId = "whole-house-carbon";
-        premiumReason = `For the complete solution, add a whole house carbon filter to your RO system — ${f.isHighChlorineState ? `particularly valuable in ${answers.state} where chlorine levels are among Australia's highest` : "removing chlorine from every tap and shower"}. Typically $4,000–$7,000 installed together.`;
+        premiumReason = `For the complete solution, add a whole house filtration to your RO system — ${f.isHighChlorineState ? `particularly valuable in ${answers.state} where chlorine levels are among Australia's highest` : "removing chlorine from every tap and shower"}. Typically $4,000–$7,000 installed together.`;
       }
     }
 
@@ -552,7 +552,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryId = "reverse-osmosis";
       secondaryReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,500 installed.`;
       premiumId = "whole-house-carbon";
-      premiumReason = `For complete home protection, a whole house carbon filter removes chlorine from every tap and shower — protecting your skin, hair, and appliances${f.isScaleState ? `, with a scale-reduction stage for ${answers.state}'s harder water` : ""}. The most comprehensive solution for Australian town water homes.`;
+      premiumReason = `For complete home protection, a whole house filtration removes chlorine from every tap and shower — protecting your skin, hair, and appliances${f.isScaleState ? `, with a scale-reduction stage for ${answers.state}'s harder water` : ""}. The most comprehensive solution for Australian town water homes.`;
     }
   }
 

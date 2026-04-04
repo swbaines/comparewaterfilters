@@ -44,7 +44,7 @@ function getFilterRecommendations(profile: WaterUtilityProfile) {
     recs.push({ primary: "Whole house carbon + scale-reduction filter", reason: "Moderately hard water combined with higher chlorine means a whole house system with scale-reduction is the most impactful upgrade.", cta: "Get quotes" });
   }
   if (profile.chlorine >= 1.0 || profile.hardness < 120) {
-    recs.push({ primary: "Whole house carbon filter", reason: `${profile.state === "SA" ? "Adelaide has Australia's highest chlorine levels" : profile.state === "VIC" ? "Melbourne's chlorine is notably higher than most cities" : "Chlorine removal"} — a whole house carbon filter improves taste, skin, and hair from every tap and shower.`, cta: "Get quotes" });
+    recs.push({ primary: "Whole house filtration", reason: `${profile.state === "SA" ? "Adelaide has Australia's highest chlorine levels" : profile.state === "VIC" ? "Melbourne's chlorine is notably higher than most cities" : "Chlorine removal"} — a whole house filtration improves taste, skin, and hair from every tap and shower.`, cta: "Get quotes" });
   }
   if (profile.pfasRisk === "elevated" || profile.pfasRisk === "moderate") {
     recs.push({ primary: "Reverse osmosis", reason: "PFAS monitoring is active in your area. RO is the most effective household technology for removing PFAS and other contaminants from drinking water.", cta: "Get quotes" });
