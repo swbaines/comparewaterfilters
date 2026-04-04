@@ -13,6 +13,7 @@ export interface WaterUtilityProfile {
   fluoride: number;
   ph: number;
   pfasRisk: "low" | "moderate" | "elevated";
+  usesChloramine?: boolean;
   source: string;
   notes: string;
 }
@@ -223,6 +224,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 1.0,
     ph: 7.5,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Prospect WFP (Warragamba Dam)",
     notes: "Sydney Water supplies soft water from Warragamba Dam via the Prospect Water Filtration Plant. Chloramine is used in some areas instead of chlorine. Good quality — a carbon filter removes taste and improves skin comfort.",
   },
@@ -246,6 +248,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 1.0,
     ph: 7.5,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Prospect & Orchard Hills WFPs (Warragamba Dam)",
     notes: "Western Sydney receives water from the same Warragamba catchment but through longer distribution networks, resulting in slightly higher chlorine residual. Still soft water — no softener needed. Carbon filter recommended for taste.",
   },
@@ -289,6 +292,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 1.0,
     ph: 7.5,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Prospect WFP (Warragamba Dam)",
     notes: "The Sutherland Shire and southern Sydney receive soft water from the Warragamba catchment. Good quality — carbon filter for chlorine taste.",
   },
@@ -402,6 +406,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.8,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Wivenhoe Dam / North Pine Dam via Seqwater",
     notes: "Brisbane has moderately hard water with higher chlorine. Seasonal earthy/musty taste after rain is naturally occurring. A whole house filtration addresses chlorine taste — add scale-reduction if you notice buildup in kettles.",
   },
@@ -425,6 +430,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.8,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Wivenhoe / Somerset Dams via Seqwater",
     notes: "Ipswich and Logan receive moderately hard water from the Wivenhoe system. Scale-reduction filter recommended for appliances. Whole house filtration for chlorine taste.",
   },
@@ -448,6 +454,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.7,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Baroon Pocket Dam / North Pine Dam via Seqwater",
     notes: "Unitywater serves the Sunshine Coast and Moreton Bay regions with moderate hardness water. Carbon filter for chlorine taste — scale-reduction is optional but helpful for kettles.",
   },
@@ -470,6 +477,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.6,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Hinze Dam",
     notes: "Gold Coast water is much softer than Brisbane thanks to the Hinze Dam source. No scale issues. A carbon filter for chlorine taste is the main upgrade most families consider.",
   },
@@ -716,6 +724,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.6,
     ph: 7.7,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Myponga Reservoir",
     notes: "Southern Adelaide is slightly softer than the north, using Myponga Reservoir water treated with chloramine. Carbon filter recommended for taste — scale-reduction helpful for appliances.",
   },
@@ -736,6 +745,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.6,
     ph: 7.6,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Mount Lofty Ranges reservoirs (Mount Bold, Kangaroo Creek)",
     notes: "Adelaide Hills has the softest water in the Adelaide metro area from local mountain catchments. Better taste than other SA zones. Chloramine treatment — carbon filter for preference.",
   },
