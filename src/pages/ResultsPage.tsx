@@ -448,8 +448,8 @@ export default function ResultsPage() {
             <thead>
               <tr className="border-b">
                 <th className="pb-3 text-left font-medium text-muted-foreground"></th>
-                <th className="pb-3 text-left font-medium">Best value</th>
-                <th className="pb-3 text-left font-medium">All-rounder</th>
+                <th className="pb-3 text-left font-medium">Budget alternative</th>
+                <th className="pb-3 text-left font-medium">Our recommendation</th>
                 <th className="pb-3 text-left font-medium">Premium</th>
               </tr>
             </thead>
