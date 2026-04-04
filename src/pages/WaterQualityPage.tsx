@@ -41,7 +41,7 @@ function getFilterRecommendations(profile: WaterUtilityProfile) {
     recs.push({ primary: "Water softener", reason: "Your area has very hard water — a softener eliminates the scale damaging your appliances, shower screens, and hot water system.", cta: "Get quotes" });
   }
   if (profile.hardness >= 120) {
-    recs.push({ primary: "Whole house carbon + scale-reduction filter", reason: "Moderately hard water combined with higher chlorine means a whole house system with scale-reduction is the most impactful upgrade.", cta: "Get quotes" });
+    recs.push({ primary: "Whole house filtration with scale-reduction", reason: "Moderately hard water combined with higher chlorine means a whole house system with scale-reduction is the most impactful upgrade.", cta: "Get quotes" });
   }
   if (profile.chlorine >= 1.0 || profile.hardness < 120) {
     recs.push({ primary: "Whole house filtration", reason: `${profile.state === "SA" ? "Adelaide has Australia's highest chlorine levels" : profile.state === "VIC" ? "Melbourne's chlorine is notably higher than most cities" : "Chlorine removal"} — a whole house filtration improves taste, skin, and hair from every tap and shower.`, cta: "Get quotes" });

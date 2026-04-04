@@ -100,7 +100,7 @@ The specific risks vary significantly by location:
 
 Given the specific nature of the issues — chlorine taste and skin irritation, algal compounds, hard water scale, and PFAS — different filtration solutions address different problems:
 
-- **For chlorine taste, smell, and skin irritation:** A quality under-sink carbon block filter for drinking water, or a whole house carbon filtration system for whole-home chlorine removal including showers. This is the most common and cost-effective upgrade for Australian households.
+- **For chlorine taste, smell, and skin irritation:** A quality under-sink carbon block filter for drinking water, or a whole house filtration system for whole-home chlorine removal including showers. This is the most common and cost-effective upgrade for Australian households.
 - **For hard water and scale:** A water softener (for severe hardness in Perth northern suburbs and parts of Adelaide) or a whole house system with a scale-reduction stage (for moderate hardness in Brisbane, Adelaide, and parts of Perth).
 - **For fluoride, PFAS, heavy metals, and microplastics:** A reverse osmosis system. Carbon filters reduce but do not eliminate these contaminants. RO is the only household technology that effectively removes PFAS.
 - **For bore water, rainwater, and tank water:** A sediment pre-filter combined with UV disinfection is the essential starting point. Adding an under-sink carbon or RO system for drinking water provides additional protection.

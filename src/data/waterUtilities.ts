@@ -426,7 +426,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.8,
     pfasRisk: "low",
     source: "Wivenhoe / Somerset Dams via Seqwater",
-    notes: "Ipswich and Logan receive moderately hard water from the Wivenhoe system. Scale-reduction filter recommended for appliances. Whole house carbon for chlorine taste.",
+    notes: "Ipswich and Logan receive moderately hard water from the Wivenhoe system. Scale-reduction filter recommended for appliances. Whole house filtration for chlorine taste.",
   },
   {
     key: "unity-water",
@@ -536,7 +536,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.6,
     pfasRisk: "low",
     source: "Mixed: Perth Seawater Desalination Plant + Mundaring Weir",
-    notes: "Central Perth receives a mix of desalinated and dam water. Moderately hard — scale buildup on taps and appliances is common. Whole house carbon + scale-reduction filter is the recommended setup.",
+    notes: "Central Perth receives a mix of desalinated and dam water. Moderately hard — scale buildup on taps and appliances is common. Whole house filtration with scale-reduction is the recommended setup.",
   },
   {
     key: "watercorp-perth-north",
