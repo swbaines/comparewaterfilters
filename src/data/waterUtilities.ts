@@ -454,6 +454,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.7,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Baroon Pocket Dam / North Pine Dam via Seqwater",
     notes: "Unitywater serves the Sunshine Coast and Moreton Bay regions with moderate hardness water. Carbon filter for chlorine taste — scale-reduction is optional but helpful for kettles.",
   },
