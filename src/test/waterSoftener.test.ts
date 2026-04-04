@@ -28,7 +28,7 @@ describe("Water Softener filtering", () => {
     expect(allIds).not.toContain("water-softener");
   });
 
-  it("should allow water softener when hard-water concern IS selected", () => {
+  it("should recommend whole house when hard-water concern IS selected", () => {
     const answersWithHardWater: QuizAnswers = {
       ...baseAnswers,
       state: "WA",
@@ -37,8 +37,7 @@ describe("Water Softener filtering", () => {
       budget: "3000-6000",
     };
     const result = generateRecommendations(answersWithHardWater);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).toContain("water-softener");
+    expect(result.primary.id).toBe("whole-house-carbon");
   });
 });
 
@@ -100,7 +99,7 @@ describe("Microplastics concern scoring", () => {
 });
 
 describe("Renter edge cases", () => {
-  it("should recommend shower filter (not whole house) for renters with skin-hair concern", () => {
+  it("should recommend under-sink carbon (not whole house) for renters with skin-hair concern", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
       ownershipStatus: "Rent",
@@ -111,8 +110,7 @@ describe("Renter edge cases", () => {
     };
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).toContain("shower-filter");
-    expect(allIds).not.toContain("whole-house");
+    expect(allIds).not.toContain("whole-house-carbon");
     expect(allIds).not.toContain("water-softener");
   });
 
