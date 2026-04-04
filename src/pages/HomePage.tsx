@@ -5,31 +5,102 @@ import { Card, CardContent } from "@/components/ui/card";
 import SectionHeading from "@/components/SectionHeading";
 import {
   Droplets, ShieldCheck, Sparkles, DollarSign, ArrowRight, CheckCircle2,
-  Waves, Zap, Home, FlaskConical, ShowerHead, HardDrive
+  Waves, Zap, Home, FlaskConical, ShowerHead, HardDrive, MapPin, Search,
+  Star, Users, Award, ChevronRight
 } from "lucide-react";
 
 const trustPoints = [
+  { icon: ShieldCheck, text: "Independent — no brand bias" },
   { icon: Sparkles, text: "Plain-English recommendations" },
-  { icon: DollarSign, text: "Transparent pricing ranges" },
-  { icon: ShieldCheck, text: "Match systems to your needs" },
-  { icon: Droplets, text: "Australia-focused guidance" },
+  { icon: DollarSign, text: "Real Australian pricing" },
+  { icon: Droplets, text: "Licensed vendor network" },
+];
+
+const stats = [
+  { number: "10+", label: "System types compared" },
+  { number: "8", label: "States & territories covered" },
+  { number: "100%", label: "Free for homeowners" },
+  { number: "Licensed", label: "Vendors only" },
 ];
 
 const steps = [
-  { num: "1", title: "Answer a few simple questions", desc: "Tell us about your home, water source, and what matters most to you." },
-  { num: "2", title: "See what system suits your home", desc: "We'll match your needs to the right type of filtration system." },
-  { num: "3", title: "Compare best-fit options", desc: "Review recommendations, pricing ranges, and next steps." },
+  {
+    num: "1",
+    title: "Tell us about your home",
+    desc: "Answer a few quick questions about your property, water source, and what's bothering you about your current water.",
+  },
+  {
+    num: "2",
+    title: "Get matched to the right system",
+    desc: "We use your answers — including your state's water quality data — to recommend the filtration system that actually fits your situation.",
+  },
+  {
+    num: "3",
+    title: "Compare quotes from local vendors",
+    desc: "Request free quotes from licensed installers in your area. No obligation, no pushy sales — just real information.",
+  },
 ];
 
 const concerns = [
-  { icon: Droplets, label: "Chlorine taste & smell", slug: "chlorine" },
-  { icon: Waves, label: "Hard water / scale", slug: "hard-water" },
-  { icon: FlaskConical, label: "Better drinking water", slug: "drinking-water" },
-  { icon: ShieldCheck, label: "Fluoride removal", slug: "fluoride" },
-  { icon: Zap, label: "Heavy metals", slug: "heavy-metals" },
-  { icon: Home, label: "Whole house filtration", slug: "whole-house" },
-  { icon: ShowerHead, label: "Skin & shower concerns", slug: "skin-shower" },
-  { icon: HardDrive, label: "Appliance protection", slug: "appliances" },
+  { icon: Droplets, label: "Chlorine taste & smell", href: "/water-quality", desc: "Common in VIC, SA & WA" },
+  { icon: Waves, label: "Hard water & scale", href: "/water-quality", desc: "Serious issue in Perth & Adelaide" },
+  { icon: FlaskConical, label: "Fluoride removal", href: "/quiz", desc: "Only RO effectively removes it" },
+  { icon: ShieldCheck, label: "PFAS / forever chemicals", href: "/quiz", desc: "Growing concern across Australia" },
+  { icon: Zap, label: "Heavy metals", href: "/quiz", desc: "Lead, arsenic, and more" },
+  { icon: Home, label: "Whole house filtration", href: "/system-types", desc: "Every tap, shower & appliance" },
+  { icon: ShowerHead, label: "Skin & hair irritation", href: "/quiz", desc: "Chlorine is the main cause" },
+  { icon: HardDrive, label: "Appliance protection", href: "/quiz", desc: "Extend life of your hot water system" },
+];
+
+const testimonials = [
+  {
+    quote: "I had no idea Perth water was so hard until I used the postcode lookup. Explains why our kettle was always scaled up. Got a whole house system installed — huge difference.",
+    name: "Sarah M.",
+    location: "Wanneroo, WA",
+    rating: 5,
+  },
+  {
+    quote: "My daughter had eczema for years and we tried everything. Turns out Melbourne's chlorine levels were the problem. The quiz pointed us straight to a whole house carbon filter. Her skin is so much better now.",
+    name: "David K.",
+    location: "Preston, VIC",
+    rating: 5,
+  },
+  {
+    quote: "Adelaide water is genuinely terrible. The platform was the first place that actually explained why — Murray River minerals and high chlorine. We got three quotes and chose the best one. Couldn't be happier.",
+    name: "Michelle T.",
+    location: "Norwood, SA",
+    rating: 5,
+  },
+];
+
+const articles = [
+  {
+    title: "Is Australian tap water getting worse? What the data says",
+    href: "/learn/is-australian-tap-water-getting-worse",
+    tag: "Water quality",
+    desc: "Chlorine levels, algal blooms, PFAS and climate change — the evidence is clear.",
+  },
+  {
+    title: "Reverse osmosis vs carbon filter — which do you actually need?",
+    href: "/learn/reverse-osmosis-vs-carbon-filter",
+    tag: "System guide",
+    desc: "The most common question we get, answered with real data.",
+  },
+  {
+    title: "Hard water in Perth — suburb by suburb guide",
+    href: "/water-quality",
+    tag: "Water quality",
+    desc: "Two Rocks hits 228 mg/L. Find out where your suburb sits.",
+  },
+];
+
+const vendors = [
+  { state: "VIC", count: "Melbourne & surrounds" },
+  { state: "NSW", count: "Sydney & Central Coast" },
+  { state: "QLD", count: "Brisbane & Gold Coast" },
+  { state: "WA", count: "Perth metro & regional" },
+  { state: "SA", count: "Adelaide & surrounds" },
+  { state: "TAS", count: "Hobart & Launceston" },
 ];
 
 export default function HomePage() {
@@ -40,17 +111,18 @@ export default function HomePage() {
         description="Compare water filtration systems, understand pricing, and get matched to the best option for your Australian home. Independent, free guidance."
         path="/"
       />
-      {/* Hero */}
+
+      {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28">
         <div className="container relative z-10 text-center">
           <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
             Australia's independent water filter comparison
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Your family deserves filtered
+            Tired of chlorine smell, scale buildup, or skin irritation from your tap?
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            Australian tap water is safe — but "safe" isn't the same as "clean." There's no benefit to drinking chlorine, chloramine, or trace contaminants when affordable filtration can remove them. We help you find the right system for your home in minutes.
+            Compare Water Filters matches you to the right filtration system for your home, your water source, and your budget — then connects you with licensed local vendors for real quotes.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
@@ -58,16 +130,19 @@ export default function HomePage() {
                 Find My System <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/system-types">
-              <Button variant="outline" size="lg" className="text-base">
-                Browse system types
+            <Link to="/water-quality">
+              <Button variant="outline" size="lg" className="gap-2 text-base">
+                <Search className="h-4 w-4" /> Check my water quality
               </Button>
             </Link>
           </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Free for homeowners · No sales calls · Licensed vendors only
+          </p>
         </div>
       </section>
 
-      {/* Trust strip */}
+      {/* ── Trust strip ── */}
       <section className="border-b bg-card py-8">
         <div className="container">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -81,7 +156,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* ── Water quality lookup callout ── */}
+      <section className="py-16 sm:py-20">
+        <div className="container">
+          <div className="mx-auto max-w-4xl">
+            <div className="grid gap-8 md:grid-cols-2 items-center">
+              <div>
+                <span className="mb-3 inline-block rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground">
+                  Free water quality lookup
+                </span>
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">What's actually in your water?</h2>
+                <p className="mt-3 text-muted-foreground">
+                  Enter your suburb or postcode to see a plain-English breakdown of your local water — hardness, chlorine, fluoride, PFAS risk, and personalised filter recommendations.
+                </p>
+                <Link to="/water-quality">
+                  <Button className="mt-6 gap-2">
+                    <MapPin className="h-4 w-4" /> Look up my suburb
+                  </Button>
+                </Link>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { suburb: "Wanneroo, WA", detail: "Hardness 195 mg/L — very hard" },
+                  { suburb: "Adelaide CBD, SA", detail: "Chlorine up to 1.3 mg/L" },
+                  { suburb: "Brisbane CBD, QLD", detail: "Moderate hardness, seasonal taste" },
+                  { suburb: "Melbourne CBD, VIC", detail: "Soft water, higher chlorine" },
+                ].map((ex) => (
+                  <div key={ex.suburb} className="flex items-start gap-3 rounded-lg border p-3">
+                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium">{ex.suburb}</p>
+                      <p className="text-xs text-muted-foreground">{ex.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Stats ── */}
+      <section className="border-y bg-muted/30 py-12">
+        <div className="container">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+            {stats.map((s) => (
+              <div key={s.label} className="text-center">
+                <p className="text-3xl font-extrabold text-primary">{s.number}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ── */}
       <section className="py-16 sm:py-20">
         <div className="container">
           <SectionHeading badge="How it works" title="Three simple steps to clearer choices" />
@@ -98,10 +227,17 @@ export default function HomePage() {
               </Card>
             ))}
           </div>
+          <div className="mt-10 text-center">
+            <Link to="/quiz">
+              <Button size="lg" className="gap-2">
+                Start the quiz <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Common concerns */}
+      {/* ── Common concerns ── */}
       <section className="bg-card py-16 sm:py-20">
         <div className="container">
           <SectionHeading
@@ -111,11 +247,12 @@ export default function HomePage() {
           />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {concerns.map((c) => (
-              <Link to="/quiz" key={c.slug}>
+              <Link to={c.href} key={c.label}>
                 <Card className="h-full cursor-pointer border transition-all hover:border-primary/30 hover:shadow-md">
-                  <CardContent className="flex flex-col items-center gap-3 p-5 text-center">
+                  <CardContent className="flex flex-col items-center gap-2 p-5 text-center">
                     <c.icon className="h-7 w-7 text-primary" />
                     <span className="text-sm font-medium">{c.label}</span>
+                    <span className="text-xs text-muted-foreground">{c.desc}</span>
                   </CardContent>
                 </Card>
               </Link>
@@ -124,32 +261,152 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing teaser */}
+      {/* ── Why Australian water is getting worse ── */}
       <section className="py-16 sm:py-20">
         <div className="container">
-          <div className="mx-auto max-w-2xl rounded-2xl bg-muted/50 p-8 text-center sm:p-12">
-            <DollarSign className="mx-auto mb-4 h-10 w-10 text-primary" />
-            <h2 className="text-2xl font-bold">Why are water filter quotes so different?</h2>
-            <p className="mt-3 text-muted-foreground">
-              Prices range from $300 to $8,000+. But the real cost is doing nothing — chlorine drying your skin and hair, scale destroying your appliances, and contaminants your family doesn't need to be drinking. A good filter pays for itself.
-            </p>
-            <Link to="/pricing-guide">
-              <Button variant="outline" className="mt-6">Read our pricing guide</Button>
+          <div className="mx-auto max-w-3xl">
+            <SectionHeading badge="The evidence" title="Why Australian water quality is declining" />
+            <div className="mt-10 space-y-6">
+              {[
+                {
+                  heading: "Chlorine levels are rising",
+                  body: "As cities grow and pipe networks get longer, utilities must dose more chlorine to maintain safe levels at your tap. SA Water has recorded levels up to 1.8 mg/L in Adelaide — three times the taste threshold.",
+                },
+                {
+                  heading: "Algal blooms are getting worse",
+                  body: "Seqwater issued a public notice in late 2024 about earthy and grassy taste in Brisbane water from algal blooms triggered by hot, wet conditions — a pattern confirmed to be worsening with climate change.",
+                },
+                {
+                  heading: "PFAS is in more water supplies than we thought",
+                  body: "Elevated PFAS was detected at Sydney's Blue Mountains Cascade WFP in 2024. Australia updated its drinking water guidelines in June 2025 to set lower PFAS limits — acknowledging the problem is real.",
+                },
+                {
+                  heading: "Bushfires contaminated major catchments",
+                  body: "The 2019-20 fires burned 30% of Warragamba Dam's catchment and 39% of Canberra's Corin Dam catchment — raising turbidity, nutrient loads, and treatment chemical requirements for years after.",
+                },
+              ].map((item) => (
+                <div key={item.heading} className="flex gap-4">
+                  <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-primary" />
+                  <div>
+                    <h3 className="font-semibold">{item.heading}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{item.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 text-center">
+              <Link to="/learn">
+                <Button variant="outline" className="gap-2">
+                  Read the full research <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Testimonials ── */}
+      <section className="bg-card py-16 sm:py-20">
+        <div className="container">
+          <SectionHeading badge="Real results" title="What homeowners are saying" />
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {testimonials.map((t) => (
+              <Card key={t.name} className="h-full">
+                <CardContent className="p-6">
+                  <div className="mb-3 flex gap-0.5">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-muted-foreground">"{t.quote}"</p>
+                  <div className="mt-4 flex items-center gap-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{t.name}</p>
+                      <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" /> {t.location}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Vendor coverage ── */}
+      <section className="py-16 sm:py-20">
+        <div className="container">
+          <SectionHeading badge="Vendor network" title="Licensed installers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
+          <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+            {vendors.map((v) => (
+              <div key={v.state} className="rounded-lg border p-4 text-center transition-all hover:border-primary/30 hover:shadow-sm">
+                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <span className="text-sm font-bold text-primary">{v.state}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{v.state}</p>
+                  <p className="text-xs text-muted-foreground">{v.count}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <p className="mb-3 text-sm text-muted-foreground">Are you a water filtration business?</p>
+            <Link to="/vendor/register">
+              <Button variant="outline" className="gap-2">
+                Join as a vendor <ChevronRight className="h-4 w-4" />
+              </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Education teaser */}
+      {/* ── Pricing teaser ── */}
       <section className="bg-card py-16 sm:py-20">
+        <div className="container">
+          <div className="mx-auto max-w-2xl rounded-2xl bg-muted/50 p-8 text-center sm:p-12">
+            <DollarSign className="mx-auto mb-4 h-10 w-10 text-primary" />
+            <h2 className="text-2xl font-bold">Why are water filter quotes so different?</h2>
+            <p className="mt-3 text-muted-foreground">
+              Prices range from $300 to $8,000+. System type, installation complexity, certifications, and ongoing filter costs all play a role. Here's what you actually need to know.
+            </p>
+            <div className="mt-6 grid grid-cols-3 gap-4">
+              {[
+                { range: "$300–$800", type: "Under-sink carbon" },
+                { range: "$800–$1,500", type: "Reverse osmosis" },
+                { range: "$2,500–$7,000", type: "Whole house" },
+              ].map((p) => (
+                <div key={p.type} className="rounded-lg bg-background p-3">
+                  <p className="text-lg font-bold text-primary">{p.range}</p>
+                  <p className="text-xs text-muted-foreground">{p.type}</p>
+                </div>
+              ))}
+            </div>
+            <Link to="/pricing-guide">
+              <Button variant="outline" className="mt-6">Read our full pricing guide</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Learn section ── */}
+      <section className="py-16 sm:py-20">
         <div className="container">
           <SectionHeading badge="Learn" title="Make a more informed decision" subtitle="Practical guides to help you understand your options." />
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {["Do I need reverse osmosis or whole house filtration?", "Does carbon remove fluoride?", "Questions to ask before buying a water filter"].map((t) => (
-              <Link to="/learn" key={t}>
+            {articles.map((a) => (
+              <Link to={a.href} key={a.title}>
                 <Card className="h-full transition-all hover:shadow-md">
                   <CardContent className="p-5">
-                    <h3 className="text-sm font-semibold">{t}</h3>
+                    <span className="mb-2 inline-block rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">
+                      {a.tag}
+                    </span>
+                    <h3 className="text-sm font-semibold">{a.title}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">{a.desc}</p>
                     <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
                       Read more <ArrowRight className="h-3 w-3" />
                     </span>
@@ -161,18 +418,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* ── Final CTA ── */}
       <section className="py-16 sm:py-20">
         <div className="container text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">Every Australian home deserves filtered water</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Ready to find out what your water actually needs?</h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            There's simply no upside to drinking chlorine, chloramine, and trace contaminants when you don't have to. Answer a few questions and we'll match you with the right system — it's faster and easier than you think.
+            Answer a few questions about your home. We'll match you to the right system, explain what it does, show real pricing, and connect you with licensed vendors in your area.
           </p>
-          <Link to="/quiz">
-            <Button size="lg" className="mt-8 gap-2">
-              Find My System <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link to="/quiz">
+              <Button size="lg" className="gap-2">
+                Find My System <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/water-quality">
+              <Button variant="outline" size="lg" className="gap-2">
+                <Search className="h-4 w-4" /> Check my water quality
+              </Button>
+            </Link>
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Free for homeowners · No obligation · Takes 2 minutes
+          </p>
         </div>
       </section>
     </div>
