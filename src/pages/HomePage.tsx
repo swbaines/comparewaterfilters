@@ -118,7 +118,7 @@ export default function HomePage() {
           <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
             Australia's independent water filter comparison
           </span>
-          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl">
             Tired of chlorine smell, scale buildup, or skin irritation from your tap?
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
