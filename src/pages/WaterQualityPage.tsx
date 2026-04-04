@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
-import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2 } from "lucide-react";
-import { findUtilityProfile, type WaterUtilityProfile } from "@/data/waterUtilities";
+import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2, MapPin } from "lucide-react";
+import { findUtilityProfile, getSuburbSuggestions, type WaterUtilityProfile, type SuburbSuggestion } from "@/data/waterUtilities";
 
 function getHardnessLabel(h: number) {
   if (h < 60) return { label: "Soft", color: "text-green-800", bg: "bg-green-100" };
@@ -57,13 +57,68 @@ export default function WaterQualityPage() {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<(WaterUtilityProfile & { matchedSuburb?: string }) | null>(null);
   const [searched, setSearched] = useState(false);
+  const [suggestions, setSuggestions] = useState<SuburbSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const selectSuggestion = useCallback((suggestion: SuburbSuggestion) => {
+    setQuery(suggestion.suburb);
+    setShowSuggestions(false);
+    setSuggestions([]);
+    const found = findUtilityProfile(suggestion.suburb);
+    setResult(found);
+    setSearched(true);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    setActiveIndex(-1);
+    if (val.trim().length >= 2) {
+      const s = getSuburbSuggestions(val);
+      setSuggestions(s);
+      setShowSuggestions(s.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      selectSuggestion(suggestions[activeIndex]);
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowSuggestions(false);
     const found = findUtilityProfile(query);
     setResult(found);
     setSearched(true);
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const hardness = result ? getHardnessLabel(result.hardness) : null;
   const chlorine = result ? getChlorineLabel(result.chlorine) : null;
