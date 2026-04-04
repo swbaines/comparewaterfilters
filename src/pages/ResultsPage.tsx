@@ -469,10 +469,10 @@ export default function ResultsPage() {
               {
                 label: "Removes chlorine",
                 render: (r) => {
-                  const chlorineIds = ["under-sink-carbon", "whole-house", "whole-house-combo"];
+                  const chlorineIds = ["under-sink-carbon", "under-sink-ro", "whole-house", "whole-house-combo"];
                   return chlorineIds.includes(r.id)
                     ? <Check className="h-4 w-4 text-primary" />
-                    : r.id === "under-sink-ro" ? <Check className="h-4 w-4 text-primary" /> : <span className="text-muted-foreground">—</span>;
+                    : <span className="text-muted-foreground">—</span>;
                 },
               },
               {
