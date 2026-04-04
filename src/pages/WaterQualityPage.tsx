@@ -219,11 +219,10 @@ export default function WaterQualityPage() {
                     concerns.push("PFAS levels being monitored");
                   }
                   if (concerns.length > 0) {
-                    return `, however your area has ${concerns.join(" and ")}`;
+                    return `, however your area has ${concerns.join(" and ")}. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.`;
                   }
-                  return "";
+                  return ". A quality filtration system removes what the treatment plant leaves behind, and whatever it picks up on the way to your home, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.";
                 })()}
-                . A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.
               </p>
             </div>
 
