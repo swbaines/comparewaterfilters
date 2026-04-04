@@ -204,7 +204,26 @@ export default function WaterQualityPage() {
               </div>
               <p className="mt-1 text-sm text-muted-foreground">Source: {result.source}</p>
               <p className="mt-3 text-sm text-muted-foreground">
-                Your water meets Australian safety standards — but there's no benefit to your family consuming chlorine, chloramine, or trace contaminants when you don't have to. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.
+                Your water meets Australian safety standards
+                {(() => {
+                  const concerns: string[] = [];
+                  const hardnessInfo = getHardnessLabel(result.hardness);
+                  const chlorineInfo = getChlorineLabel(result.chlorine);
+                  if (hardnessInfo.label === "Moderate" || hardnessInfo.label === "Hard" || hardnessInfo.label === "Very hard") {
+                    concerns.push(`${hardnessInfo.label.toLowerCase()} to high hardness`);
+                  }
+                  if (chlorineInfo.label === "Moderate" || chlorineInfo.label === "High") {
+                    concerns.push(`${chlorineInfo.label.toLowerCase()} chlorine levels`);
+                  }
+                  if (result.pfasRisk === "elevated" || result.pfasRisk === "moderate") {
+                    concerns.push("PFAS levels being monitored");
+                  }
+                  if (concerns.length > 0) {
+                    return `, however your area has ${concerns.join(" and ")}`;
+                  }
+                  return "";
+                })()}
+                {" — "}but there's no benefit to your family consuming chlorine, chloramine, or trace contaminants when you don't have to. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.
               </p>
             </div>
 
