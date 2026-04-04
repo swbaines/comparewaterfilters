@@ -85,7 +85,7 @@ const STATE_WATER_PROFILES: Record<string, StateWaterProfile> = {
     softenerNeeded: false,
     scaleReductionRecommended: false,
     primaryComplaints: ["chlorine taste", "chlorine smell", "skin irritation", "hair damage"],
-    notes: "Melbourne has some of Australia's softest water — no softener needed. However chlorine levels are notably higher than most cities, making it a strong candidate for whole house carbon filtration for skin and taste concerns.",
+    notes: "Melbourne has some of Australia's softest water — no softener needed. However chlorine levels are notably higher than most cities, making it a strong candidate for whole house filtration for skin and taste concerns.",
   },
   NSW: {
     hardnessLevel: "soft",             // 30–58 mg/L average
@@ -115,7 +115,7 @@ const STATE_WATER_PROFILES: Record<string, StateWaterProfile> = {
     softenerNeeded: true,
     scaleReductionRecommended: true,
     primaryComplaints: ["strong chlorine taste", "hard water scale", "appliance damage", "skin dryness", "salty taste in some areas"],
-    notes: "Adelaide has Australia's most complained-about tap water. Murray River source brings high minerals and agricultural taste. Chlorine regularly exceeds taste threshold (0.6 mg/L), sometimes reaching 1.8 mg/L. Whole house carbon + scale-reduction is the most impactful upgrade. Northern suburbs (Salisbury, Elizabeth) have the hardest water and strongest chlorine.",
+    notes: "Adelaide has Australia's most complained-about tap water. Murray River source brings high minerals and agricultural taste. Chlorine regularly exceeds taste threshold (0.6 mg/L), sometimes reaching 1.8 mg/L. Whole house filtration with scale-reduction is the most impactful upgrade. Northern suburbs (Salisbury, Elizabeth) have the hardest water and strongest chlorine.",
   },
   WA: {
     hardnessLevel: "hard",             // 28–228 mg/L — huge variation
@@ -416,7 +416,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
         secondaryId = "water-softener";
         secondaryReason = `For northern suburbs like Salisbury and Elizabeth where water hardness is at its highest, a dedicated water softener is the most targeted fix — directly eliminating the calcium and magnesium causing scale throughout your home.`;
         premiumId = "whole-house-carbon";
-        premiumReason = `The complete solution for Adelaide: a whole house carbon + scale-reduction filter combined with a reverse osmosis drinking water unit — addressing chlorine, minerals, and delivering ultra-pure drinking water at the kitchen tap.`;
+        premiumReason = `The complete solution for Adelaide: a whole house filtration with scale-reduction filter combined with a reverse osmosis drinking water unit — addressing chlorine, minerals, and delivering ultra-pure drinking water at the kitchen tap.`;
       } else if (answers.state === "WA") {
         // WA — varies enormously by suburb
         if (f.budget3kTo6k || f.budgetPremium) {
@@ -520,14 +520,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
         }
       } else if (f.budget1kTo3k) {
         primaryId = "whole-house-carbon";
-        primaryReason = `${stateChlorineNote}a whole house carbon filtration system removes chlorine from every tap, shower, and appliance in your home — improving taste, reducing skin irritation, and protecting your appliances. Entry-level systems from around $2,500 installed.`;
+        primaryReason = `${stateChlorineNote}a whole house filtration system removes chlorine from every tap, shower, and appliance in your home — improving taste, reducing skin irritation, and protecting your appliances. Entry-level systems from around $2,500 installed.`;
         secondaryId = "under-sink-carbon";
         secondaryReason = `If a whole house system is at the top of your budget, an under-sink carbon filter is a solid starting point — and you can always upgrade to whole house filtration when ready.`;
         premiumId = "reverse-osmosis";
         premiumReason = `Adding a reverse osmosis unit gives you ultra-pure drinking water at the kitchen tap on top of your whole house filtration — the popular combination at $4,000–$7,000 installed.`;
       } else {
         primaryId = "whole-house-carbon";
-        primaryReason = `${stateChlorineNote}a whole house carbon filtration system is the right investment — removing chlorine from every tap, shower, and appliance in your home. With your budget, you can choose a quality system with a long service life.`;
+        primaryReason = `${stateChlorineNote}a whole house filtration system is the right investment — removing chlorine from every tap, shower, and appliance in your home. With your budget, you can choose a quality system with a long service life.`;
         secondaryId = "reverse-osmosis";
         secondaryReason = `Our most popular combination: pairing your whole house system with a reverse osmosis drinking water unit — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen. Typically $4,000–$7,000 installed together.`;
         premiumId = "whole-house-carbon";
