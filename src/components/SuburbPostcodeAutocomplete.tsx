@@ -27,6 +27,30 @@ function latLngToState(lat: number, lng: number): string {
   return "NSW";
 }
 
+// Fallback: infer state from timezone offset when geolocation is unavailable
+function timezoneToState(): string {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz.includes("Perth")) return "WA";
+    if (tz.includes("Adelaide")) return "SA";
+    if (tz.includes("Darwin")) return "NT";
+    if (tz.includes("Brisbane") || tz.includes("Lindeman")) return "QLD";
+    if (tz.includes("Hobart") || tz.includes("Currie")) return "TAS";
+    if (tz.includes("Melbourne") || tz.includes("Victoria")) return "VIC";
+    if (tz.includes("Sydney") || tz.includes("Canberra")) return "NSW";
+    // Generic Australia/* fallback using UTC offset
+    const offset = new Date().getTimezoneOffset();
+    if (offset === -600) return "VIC"; // AEST – could be NSW/QLD/VIC/TAS, default VIC/NSW
+    if (offset === -660) return "VIC"; // AEDT
+    if (offset === -570) return "SA";  // ACST
+    if (offset === -630) return "SA";  // ACDT
+    if (offset === -480) return "WA";  // AWST
+  } catch {
+    // ignore
+  }
+  return "";
+}
+
 function useDetectedState() {
   const [detectedState, setDetectedState] = useState<string>(() => {
     return sessionStorage.getItem("detected_au_state") || "";
@@ -34,16 +58,33 @@ function useDetectedState() {
 
   useEffect(() => {
     if (detectedState) return;
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const state = latLngToState(pos.coords.latitude, pos.coords.longitude);
-        setDetectedState(state);
-        sessionStorage.setItem("detected_au_state", state);
-      },
-      () => { /* permission denied or error – no-op */ },
-      { timeout: 5000, maximumAge: 600000 }
-    );
+
+    // Try geolocation first
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const state = latLngToState(pos.coords.latitude, pos.coords.longitude);
+          setDetectedState(state);
+          sessionStorage.setItem("detected_au_state", state);
+        },
+        () => {
+          // Geolocation denied/failed – fall back to timezone
+          const fallback = timezoneToState();
+          if (fallback) {
+            setDetectedState(fallback);
+            sessionStorage.setItem("detected_au_state", fallback);
+          }
+        },
+        { timeout: 5000, maximumAge: 600000 }
+      );
+    } else {
+      // No geolocation API – use timezone
+      const fallback = timezoneToState();
+      if (fallback) {
+        setDetectedState(fallback);
+        sessionStorage.setItem("detected_au_state", fallback);
+      }
+    }
   }, [detectedState]);
 
   return detectedState;
