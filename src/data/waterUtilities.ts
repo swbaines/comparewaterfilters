@@ -878,3 +878,44 @@ export function findUtilityProfile(query: string): (WaterUtilityProfile & { matc
 
   return null;
 }
+
+// ── Autocomplete suggestions ────────────────────────────────────────────────
+
+export interface SuburbSuggestion {
+  suburb: string;
+  state: string;
+  utilityName: string;
+  region: string;
+}
+
+export function getSuburbSuggestions(query: string, limit = 8): SuburbSuggestion[] {
+  const q = query.trim().toLowerCase();
+  if (q.length < 2) return [];
+
+  const seen = new Set<string>();
+  const results: SuburbSuggestion[] = [];
+
+  // Exact prefix matches first (higher relevance)
+  for (const util of WATER_UTILITIES) {
+    for (const sub of util.suburbs) {
+      const key = `${sub}-${util.key}`;
+      if (!seen.has(key) && sub.toLowerCase().startsWith(q)) {
+        seen.add(key);
+        results.push({ suburb: sub, state: util.state, utilityName: util.utilityName, region: util.region });
+      }
+    }
+  }
+
+  // Then partial matches
+  for (const util of WATER_UTILITIES) {
+    for (const sub of util.suburbs) {
+      const key = `${sub}-${util.key}`;
+      if (!seen.has(key) && sub.toLowerCase().includes(q)) {
+        seen.add(key);
+        results.push({ suburb: sub, state: util.state, utilityName: util.utilityName, region: util.region });
+      }
+    }
+  }
+
+  return results.slice(0, limit);
+}

@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
-import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2 } from "lucide-react";
-import { findUtilityProfile, type WaterUtilityProfile } from "@/data/waterUtilities";
+import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2, MapPin } from "lucide-react";
+import { findUtilityProfile, getSuburbSuggestions, type WaterUtilityProfile, type SuburbSuggestion } from "@/data/waterUtilities";
 
 function getHardnessLabel(h: number) {
   if (h < 60) return { label: "Soft", color: "text-green-800", bg: "bg-green-100" };
@@ -57,13 +57,68 @@ export default function WaterQualityPage() {
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<(WaterUtilityProfile & { matchedSuburb?: string }) | null>(null);
   const [searched, setSearched] = useState(false);
+  const [suggestions, setSuggestions] = useState<SuburbSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const selectSuggestion = useCallback((suggestion: SuburbSuggestion) => {
+    setQuery(suggestion.suburb);
+    setShowSuggestions(false);
+    setSuggestions([]);
+    const found = findUtilityProfile(suggestion.suburb);
+    setResult(found);
+    setSearched(true);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setQuery(val);
+    setActiveIndex(-1);
+    if (val.trim().length >= 2) {
+      const s = getSuburbSuggestions(val);
+      setSuggestions(s);
+      setShowSuggestions(s.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      selectSuggestion(suggestions[activeIndex]);
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowSuggestions(false);
     const found = findUtilityProfile(query);
     setResult(found);
     setSearched(true);
   };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   const hardness = result ? getHardnessLabel(result.hardness) : null;
   const chlorine = result ? getChlorineLabel(result.chlorine) : null;
@@ -88,14 +143,37 @@ export default function WaterQualityPage() {
             Australian tap water is safe to drink — but safe doesn't mean perfect. Most of us can smell and taste the chlorine, and families want to know exactly what's coming out of the tap. Enter your suburb or postcode for a plain-English breakdown.
           </p>
           <form onSubmit={handleSearch} className="mt-8 flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative flex-1" ref={wrapperRef}>
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
               <Input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
                 placeholder="Suburb or postcode — e.g. Wanneroo or 3000"
                 className="pl-9"
+                autoComplete="off"
               />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-72 overflow-auto rounded-md border bg-popover shadow-lg">
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={`${s.suburb}-${s.utilityName}`}
+                      type="button"
+                      className={`flex w-full items-start gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-accent ${i === activeIndex ? "bg-accent" : ""}`}
+                      onMouseDown={() => selectSuggestion(s)}
+                      onMouseEnter={() => setActiveIndex(i)}
+                    >
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <span className="font-medium">{s.suburb}</span>
+                        <span className="ml-1.5 text-muted-foreground">{s.state}</span>
+                        <p className="truncate text-xs text-muted-foreground">{s.utilityName} · {s.region}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <Button type="submit">Check water</Button>
           </form>
