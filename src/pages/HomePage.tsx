@@ -104,83 +104,82 @@ const vendors = [
   { state: "TAS", count: "Hobart & Launceston" },
 ];
 
+const jsonLdData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Compare Water Filters",
+    url: "https://www.comparewaterfilters.com.au",
+    description: "Australia's independent water filter comparison platform. Compare filtration systems, understand pricing, and get matched to licensed local vendors.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://www.comparewaterfilters.com.au/water-quality?q={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Compare Water Filters",
+    url: "https://www.comparewaterfilters.com.au",
+    logo: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
+    description: "Independent water filtration comparison and recommendation platform for Australian homeowners.",
+    areaServed: { "@type": "Country", name: "Australia" },
+    sameAs: [],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How much does a water filter system cost in Australia?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Prices range from $300–$800 for under-sink carbon filters, $800–$1,500 for reverse osmosis systems, and $2,500–$7,000 for whole house filtration systems.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Compare Water Filters free for homeowners?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with licensed vendors — with no obligation or sales calls.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What contaminants does a water filter remove?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Depending on the system type, water filters can remove chlorine, sediment, heavy metals, fluoride, PFAS (forever chemicals), and more.",
+        },
+      },
+    ],
+  },
+];
+
 export default function HomePage() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(jsonLdData);
+    script.id = "homepage-jsonld";
+    document.head.appendChild(script);
+    return () => {
+      document.getElementById("homepage-jsonld")?.remove();
+    };
+  }, []);
+
   return (
     <div>
       <PageMeta
         title="Compare Water Filters — Find the Right System for Your Home"
         description="Compare water filtration systems, understand pricing, and get matched to the best option for your Australian home. Independent, free guidance."
         path="/"
-      />
-
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            {
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: "Compare Water Filters",
-              url: "https://www.comparewaterfilters.com.au",
-              description:
-                "Australia's independent water filter comparison platform. Compare filtration systems, understand pricing, and get matched to licensed local vendors.",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate:
-                    "https://www.comparewaterfilters.com.au/water-quality?q={search_term_string}",
-                },
-                "query-input": "required name=search_term_string",
-              },
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              name: "Compare Water Filters",
-              url: "https://www.comparewaterfilters.com.au",
-              logo: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
-              description:
-                "Independent water filtration comparison and recommendation platform for Australian homeowners.",
-              areaServed: {
-                "@type": "Country",
-                name: "Australia",
-              },
-              sameAs: [],
-            },
-            {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: [
-                {
-                  "@type": "Question",
-                  name: "How much does a water filter system cost in Australia?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Prices range from $300–$800 for under-sink carbon filters, $800–$1,500 for reverse osmosis systems, and $2,500–$7,000 for whole house filtration systems. Installation complexity and certifications also affect pricing.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "Is Compare Water Filters free for homeowners?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with licensed vendors — with no obligation or sales calls.",
-                  },
-                },
-                {
-                  "@type": "Question",
-                  name: "What contaminants does a water filter remove?",
-                  acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Depending on the system type, water filters can remove chlorine, sediment, heavy metals, fluoride, PFAS (forever chemicals), and more. Reverse osmosis systems offer the most comprehensive removal, while carbon filters excel at chlorine and taste improvement.",
-                  },
-                },
-              ],
-            },
-          ]),
-        }}
       />
 
       {/* ── Hero ── */}
