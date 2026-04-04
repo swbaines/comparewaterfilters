@@ -248,6 +248,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 1.0,
     ph: 7.5,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Prospect & Orchard Hills WFPs (Warragamba Dam)",
     notes: "Western Sydney receives water from the same Warragamba catchment but through longer distribution networks, resulting in slightly higher chlorine residual. Still soft water — no softener needed. Carbon filter recommended for taste.",
   },
