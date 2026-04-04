@@ -218,7 +218,7 @@ function getFlags(answers: QuizAnswers) {
   const wantsWholeHome =
     hasConcern("whole-home") ||
     hasConcern("appliance") ||
-    coverage === "whole-house-carbon" ||
+    coverage === "whole-house" ||
     coverage === "whole-house-plus";
 
   return {
