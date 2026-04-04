@@ -14,7 +14,7 @@ import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium" }) {
+function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
     allrounder: "bg-accent text-accent-foreground border-primary/30",
@@ -24,7 +24,10 @@ function RecCard({ rec, label, reason, variant }: { rec: Recommendation; label: 
   return (
     <Card className={`overflow-hidden border-2 ${variant === "allrounder" ? "border-primary shadow-lg" : ""}`}>
       <CardHeader className="pb-3">
-        <Badge className={`mb-2 w-fit ${colors[variant]}`}>{label}</Badge>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
+          {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+        </div>
         <CardTitle className="text-lg">{rec.title}</CardTitle>
         <p className="text-sm text-muted-foreground">{rec.category}</p>
       </CardHeader>
@@ -347,13 +350,20 @@ export default function ResultsPage() {
           </CardContent>
         </Card>
 
-        {/* 3 Recommendation cards */}
+        {/* 3 Recommendation cards (or 2 if budget = recommendation) */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-          <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-          <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
-        </div>
+        {result.secondary.id === result.primary.id ? (
+          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+          </div>
+        )}
 
         <div className="mt-14">
           <div className="mb-6 text-center">
@@ -444,42 +454,76 @@ export default function ResultsPage() {
         {/* Comparison table */}
         <div className="mt-12 overflow-x-auto">
           <h2 className="mb-4 text-lg font-bold">Quick comparison</h2>
-          <table className="w-full min-w-[600px] text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="pb-3 text-left font-medium text-muted-foreground"></th>
-                <th className="pb-3 text-left font-medium">Budget alternative</th>
-                <th className="pb-3 text-left font-medium">Our recommendation</th>
-                <th className="pb-3 text-left font-medium">Premium</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">System type</td>
-                <td className="py-3">{result.secondary.title}</td>
-                <td className="py-3">{result.primary.title}</td>
-                <td className="py-3">{result.premium.title}</td>
-              </tr>
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">Price range</td>
-                <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
-                <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
-                <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
-                <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
-                <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
-                <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
-              </tr>
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">Category</td>
-                <td className="py-3">{result.secondary.category}</td>
-                <td className="py-3">{result.primary.category}</td>
-                <td className="py-3">{result.premium.category}</td>
-              </tr>
-            </tbody>
-          </table>
+          {result.secondary.id === result.primary.id ? (
+            <table className="w-full min-w-[400px] text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="pb-3 text-left font-medium text-muted-foreground"></th>
+                  <th className="pb-3 text-left font-medium">Our recommendation</th>
+                  <th className="pb-3 text-left font-medium">Premium</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">System type</td>
+                  <td className="py-3">{result.primary.title}</td>
+                  <td className="py-3">{result.premium.title}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Price range</td>
+                  <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
+                  <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
+                  <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
+                  <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Category</td>
+                  <td className="py-3">{result.primary.category}</td>
+                  <td className="py-3">{result.premium.category}</td>
+                </tr>
+              </tbody>
+            </table>
+          ) : (
+            <table className="w-full min-w-[600px] text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="pb-3 text-left font-medium text-muted-foreground"></th>
+                  <th className="pb-3 text-left font-medium">Budget alternative</th>
+                  <th className="pb-3 text-left font-medium">Our recommendation</th>
+                  <th className="pb-3 text-left font-medium">Premium</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">System type</td>
+                  <td className="py-3">{result.secondary.title}</td>
+                  <td className="py-3">{result.primary.title}</td>
+                  <td className="py-3">{result.premium.title}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Price range</td>
+                  <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
+                  <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
+                  <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
+                  <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
+                  <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
+                  <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Category</td>
+                  <td className="py-3">{result.secondary.category}</td>
+                  <td className="py-3">{result.primary.category}</td>
+                  <td className="py-3">{result.premium.category}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Disclaimer */}
