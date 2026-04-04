@@ -452,71 +452,99 @@ export default function ResultsPage() {
         </div>
 
         {/* Comparison table */}
-        <div className="mt-12 overflow-x-auto">
+        <div className="mt-12">
           <h2 className="mb-4 text-lg font-bold">Quick comparison</h2>
           {(() => {
             const collapsed = result.secondary.id === result.primary.id;
             const recs = collapsed
-              ? [{ label: "Our recommendation", rec: result.primary }, { label: "Premium", rec: result.premium }]
-              : [{ label: "Budget alternative", rec: result.secondary }, { label: "Our recommendation", rec: result.primary }, { label: "Premium", rec: result.premium }];
+              ? [{ label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }]
+              : [{ label: "Budget alternative", rec: result.secondary, variant: "value" as const }, { label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }];
+
+            const chlorineIds = ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo"];
+            const roIds = ["reverse-osmosis", "whole-house-combo"];
+            const wholeHomeIds = ["whole-house-carbon", "whole-house-combo"];
 
             const rows: { label: string; render: (rec: Recommendation) => React.ReactNode }[] = [
-              { label: "System type", render: (r) => r.title },
+              { label: "System type", render: (r) => <span className="font-medium">{r.title}</span> },
               { label: "Price range", render: (r) => `$${r.priceMin.toLocaleString()} – $${r.priceMax.toLocaleString()}` },
               { label: "Annual maintenance", render: (r) => `$${r.annualMaintenanceMin} – $${r.annualMaintenanceMax}/yr` },
               { label: "Filter changes", render: (r) => r.filterFrequency },
               { label: "Coverage", render: (r) => r.idealHomeType },
               {
                 label: "Removes chlorine",
-                render: (r) => {
-                  const chlorineIds = ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo"];
-                  return chlorineIds.includes(r.id)
-                    ? <Check className="h-4 w-4 text-primary" />
-                    : <span className="text-muted-foreground">—</span>;
-                },
+                render: (r) => chlorineIds.includes(r.id)
+                  ? <Check className="h-4 w-4 text-primary" />
+                  : <XCircle className="h-4 w-4 text-muted-foreground/50" />,
               },
               {
                 label: "Removes fluoride & PFAS",
-                render: (r) => {
-                  const roIds = ["reverse-osmosis", "whole-house-combo"];
-                  return roIds.includes(r.id)
-                    ? <Check className="h-4 w-4 text-primary" />
-                    : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
-                },
+                render: (r) => roIds.includes(r.id)
+                  ? <Check className="h-4 w-4 text-primary" />
+                  : <XCircle className="h-4 w-4 text-muted-foreground/50" />,
               },
               {
                 label: "Whole home protection",
-                render: (r) => {
-                  const wholeHomeIds = ["whole-house-carbon", "whole-house-combo"];
-                  return wholeHomeIds.includes(r.id)
-                    ? <Check className="h-4 w-4 text-primary" />
-                    : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
-                },
+                render: (r) => wholeHomeIds.includes(r.id)
+                  ? <Check className="h-4 w-4 text-primary" />
+                  : <XCircle className="h-4 w-4 text-muted-foreground/50" />,
               },
               { label: "Key tradeoff", render: (r) => r.tradeoffs[0] || "—" },
             ];
 
+            const variantColors = {
+              value: "border-primary/20",
+              allrounder: "border-primary",
+              premium: "border-warm/30",
+            };
+
             return (
-              <table className={`w-full text-sm ${collapsed ? "min-w-[400px]" : "min-w-[600px]"}`}>
-                <thead>
-                  <tr className="border-b">
-                    <th className="pb-3 pr-4 text-left font-medium text-muted-foreground"></th>
-                    {recs.map((col) => (
-                      <th key={col.label} className="pb-3 pr-4 text-left font-medium">{col.label}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {rows.map((row) => (
-                    <tr key={row.label}>
-                      <td className="py-3 pr-4 font-medium text-muted-foreground whitespace-nowrap">{row.label}</td>
-                      {recs.map((col) => (
-                        <td key={col.label} className="py-3 pr-4">{row.render(col.rec)}</td>
+              <>
+                {/* Desktop: horizontal table */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className={`w-full text-sm ${collapsed ? "min-w-[400px]" : "min-w-[600px]"}`}>
+                    <thead>
+                      <tr className="border-b">
+                        <th className="pb-3 pr-4 text-left font-medium text-muted-foreground"></th>
+                        {recs.map((col) => (
+                          <th key={col.label} className="pb-3 pr-4 text-left font-medium">{col.label}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {rows.map((row) => (
+                        <tr key={row.label}>
+                          <td className="py-3 pr-4 font-medium text-muted-foreground whitespace-nowrap">{row.label}</td>
+                          {recs.map((col) => (
+                            <td key={col.label} className="py-3 pr-4">{row.render(col.rec)}</td>
+                          ))}
+                        </tr>
                       ))}
-                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile: stacked cards */}
+                <div className="flex flex-col gap-4 sm:hidden">
+                  {recs.map((col) => (
+                    <Card key={col.label} className={`border-2 ${variantColors[col.variant]}`}>
+                      <CardHeader className="pb-2">
+                        <Badge className="w-fit text-xs">{col.label}</Badge>
+                        <CardTitle className="text-base">{col.rec.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <dl className="divide-y text-sm">
+                          {rows.slice(1).map((row) => (
+                            <div key={row.label} className="flex items-start justify-between gap-3 py-2.5">
+                              <dt className="text-muted-foreground shrink-0">{row.label}</dt>
+                              <dd className="text-right">{row.render(col.rec)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </CardContent>
+                    </Card>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             );
           })()}
         </div>
