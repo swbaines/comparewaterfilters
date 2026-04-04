@@ -106,8 +106,8 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             badge="Common concerns"
-            title="What's bothering you about your water?"
-            subtitle="Select a concern to learn more, or start the quiz for a personalised recommendation."
+            title="What's really in your water?"
+            subtitle="Chlorine, chloramine, fluoride, sediment — even 'safe' water carries things your family doesn't need to be consuming. Select a concern or take the quiz."
           />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {concerns.map((c) => (
