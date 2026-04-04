@@ -487,7 +487,7 @@ export default function ResultsPage() {
               {
                 label: "Whole home protection",
                 render: (r) => {
-                  const wholeHomeIds = ["whole-house", "whole-house-combo"];
+                  const wholeHomeIds = ["whole-house-carbon", "whole-house-combo"];
                   return wholeHomeIds.includes(r.id)
                     ? <Check className="h-4 w-4 text-primary" />
                     : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
