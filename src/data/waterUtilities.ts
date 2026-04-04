@@ -715,9 +715,12 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       [5159, 5174], // Morphett Vale, Noarlunga, Reynella, Seaford, McLaren Vale
     ],
     suburbs: [
-      "Morphett Vale", "Noarlunga", "Reynella", "Seaford", "Aldinga",
-      "McLaren Vale", "Christies Beach", "Hackham", "Mitcham",
-      "Blackwood", "Aberfoyle Park", "Happy Valley",
+      "Morphett Vale", "Noarlunga", "Port Noarlunga", "Reynella", "Seaford",
+      "Aldinga", "Aldinga Beach", "McLaren Vale", "McLaren Flat", "Moana",
+      "Christies Beach", "Hackham", "Mitcham", "Blackwood", "Aberfoyle Park",
+      "Happy Valley", "Old Reynella", "Woodcroft", "Hallett Cove",
+      "Sheidow Park", "Trott Park", "O'Halloran Hill", "Lonsdale",
+      "Port Willunga", "Maslin Beach", "Sellicks Beach", "Willunga",
     ],
     hardness: 115,
     chlorine: 1.2,
