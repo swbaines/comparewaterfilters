@@ -36,17 +36,35 @@ export default function PricingGuidePage() {
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "application/ld+json";
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: pricingFaqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    });
+    script.id = "pricing-jsonld";
+    script.text = JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Water Filter Pricing Guide — Compare Water Filters",
+        description: "Understand Australian water filter costs — installation prices, annual maintenance, and what affects the total cost of ownership.",
+        url: "https://www.comparewaterfilters.com.au/pricing-guide",
+        isPartOf: { "@type": "WebSite", name: "Compare Water Filters", url: "https://www.comparewaterfilters.com.au" },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://www.comparewaterfilters.com.au" },
+            { "@type": "ListItem", position: 2, name: "Pricing Guide", item: "https://www.comparewaterfilters.com.au/pricing-guide" },
+          ],
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: pricingFaqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ]);
     document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
+    return () => { document.getElementById("pricing-jsonld")?.remove(); };
   }, []);
   return (
     <div className="py-12 sm:py-16">
