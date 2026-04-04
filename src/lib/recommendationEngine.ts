@@ -115,7 +115,7 @@ const STATE_WATER_PROFILES: Record<string, StateWaterProfile> = {
     softenerNeeded: true,
     scaleReductionRecommended: true,
     primaryComplaints: ["strong chlorine taste", "hard water scale", "appliance damage", "skin dryness", "salty taste in some areas"],
-    notes: "Adelaide has Australia's most complained-about tap water. Murray River source brings high minerals and agricultural taste. Chlorine regularly exceeds taste threshold (0.6 mg/L), sometimes reaching 1.8 mg/L. Whole house carbon + scale-reduction is the most impactful upgrade. Northern suburbs (Salisbury, Elizabeth) have the hardest water and strongest chlorine.",
+    notes: "Adelaide has Australia's most complained-about tap water. Murray River source brings high minerals and agricultural taste. Chlorine regularly exceeds taste threshold (0.6 mg/L), sometimes reaching 1.8 mg/L. Whole house filtration with scale-reduction is the most impactful upgrade. Northern suburbs (Salisbury, Elizabeth) have the hardest water and strongest chlorine.",
   },
   WA: {
     hardnessLevel: "hard",             // 28–228 mg/L — huge variation
