@@ -480,70 +480,44 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       }
     }
 
-    // ── B4: RO-ESSENTIAL CONCERNS ─────────────────────────────────────────────
-    else if (f.needsRO) {
-      // Special case: NT doesn't fluoridate — adjust fluoride messaging
+    // ── B4: WHOLE HOME INTENT (always leads with whole-house) ──────────────────
+    else if (f.wantsWholeHome) {
       const fluorideNote = !f.isFluoridated && f.hasConcern("fluoride")
         ? "Note: The NT does not fluoridate its water supply, so fluoride removal is less of a priority here. However, RO still provides the highest purity drinking water available. "
         : "";
 
-      if (f.wantsWholeHome || f.budget3kTo6k || f.budgetPremium) {
-        // Whole home coverage + serious contaminants: lead with whole house, RO as premium
+      if (f.needsRO) {
+        // Whole home + serious contaminants (fluoride, heavy metals, PFAS, microplastics, bacteria)
+        // → whole house primary, combo all-rounder, RO premium
         primaryId = "whole-house-carbon";
-        primaryReason = `${stateChlorineNote}A whole house filtration system is the essential foundation — removing chlorine, sediment, and chemicals from every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `Particularly important in ${answers.state} where chlorine levels are among Australia's highest.` : "This protects your skin, hair, and appliances from chlorine exposure."} Typically $1,500–$5,000 installed.`;
+        primaryReason = `${stateChlorineNote}A whole house filtration system is the essential foundation — no other solution filters water at every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `Particularly important in ${answers.state} where chlorine levels are among Australia's highest.` : "This protects your skin, hair, and appliances from chlorine exposure."} Typically $1,500–$5,000 installed.`;
         secondaryId = "whole-house-carbon";
         secondaryReason = `Our most popular combination: a whole house filtration paired with a reverse osmosis drinking water unit — chlorine-free water throughout your entire home plus ultra-pure drinking water at the kitchen that removes fluoride, PFAS, heavy metals, and microplastics. Typically $4,000–$7,000 installed.`;
         premiumId = "reverse-osmosis";
         premiumReason = `${fluorideNote}The premium setup: a high-capacity whole house filtration combined with an RO unit and 3-way mixer tap (perfect for stone benchtops, providing hot, cold, and filtered water from one tap) — the only household technology that effectively eliminates fluoride, PFAS, heavy metals, and microplastics. The best water quality solution available for Australian homes.`;
       } else {
-        primaryId = "reverse-osmosis";
-        primaryReason = `${fluorideNote}A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Carbon filters reduce these contaminants but cannot eliminate them. Installed under the kitchen sink at $800–$1,500.`;
+        // Whole home + only taste/chlorine/odor concerns — whole house is sufficient
+        primaryId = "whole-house-carbon";
+        primaryReason = `A whole house filtration system is the right choice — no other solution delivers filtered water to every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `${stateChlorineNote}this removes chlorine from every water outlet, protecting your skin, hair, and appliances.` : "It removes chlorine, sediment, and chemicals from your entire water supply."} Typically $1,500–$5,000 installed.`;
         secondaryId = "under-sink-carbon";
-        secondaryReason = `If an RO system isn't quite in budget, a quality under-sink carbon filter significantly improves your drinking water — though it reduces rather than eliminates fluoride and heavy metals.`;
+        secondaryReason = `If a whole house system is at the top of your budget right now, an under-sink carbon filter is a solid starting point for your drinking water — and you can always upgrade to whole house filtration when ready.`;
         premiumId = "whole-house-carbon";
-        premiumReason = `For the complete solution, add a whole house filtration to your RO system — ${f.isHighChlorineState ? `particularly valuable in ${answers.state} where chlorine levels are among Australia's highest` : "removing chlorine from every tap and shower"}. Typically $4,000–$7,000 installed together.`;
+        premiumReason = `The complete premium solution: a high-capacity whole house system combined with an RO unit and 3-way mixer tap — whole-home chlorine removal plus ultra-pure drinking water at the kitchen. The best of both worlds at $4,000–$7,000 installed.`;
       }
     }
 
-    // ── B5: CHLORINE / TASTE — TOWN WATER ────────────────────────────────────
-    else if (f.hasChlorineConcern && f.isTownWater) {
-      if (f.budgetUnder1k) {
-        primaryId = "under-sink-carbon";
-        primaryReason = `${stateChlorineNote}an under-sink carbon filter is the best value option within your budget — effectively removing chlorine and improving the taste and smell of your drinking water.`;
-        secondaryId = "tap-filter";
-        secondaryReason = `A tap-mounted filter is the most affordable option — easy to install yourself without a plumber.`;
-        premiumId = "whole-house-carbon";
-        premiumReason = `When your budget allows, a whole house filtration system removes chlorine from every tap and shower. Entry-level systems from around $2,500 installed.`;
-        if (f.isHighChlorineState) {
-          warnings.push(
-            `${answers.state} water has higher chlorine levels than most states — you're likely to notice a stronger improvement when you upgrade to whole house filtration.`
-          );
-        }
-      } else if (f.budget1kTo3k) {
-        primaryId = "whole-house-carbon";
-        primaryReason = `${stateChlorineNote}a whole house filtration system removes chlorine from every tap, shower, and appliance in your home — improving taste, reducing skin irritation, and protecting your appliances. Entry-level systems from around $2,500 installed.`;
-        secondaryId = "under-sink-carbon";
-        secondaryReason = `If a whole house system is at the top of your budget, an under-sink carbon filter is a solid starting point — and you can always upgrade to whole house filtration when ready.`;
-        premiumId = "reverse-osmosis";
-        premiumReason = `Adding a reverse osmosis unit gives you ultra-pure drinking water at the kitchen tap on top of your whole house filtration — the popular combination at $4,000–$7,000 installed.`;
-      } else {
-        primaryId = "whole-house-carbon";
-        primaryReason = `${stateChlorineNote}a whole house filtration system is the right investment — removing chlorine from every tap, shower, and appliance in your home. With your budget, you can choose a quality system with a long service life.`;
-        secondaryId = "reverse-osmosis";
-        secondaryReason = `Our most popular combination: pairing your whole house system with a reverse osmosis drinking water unit — chlorine-free water throughout your home plus ultra-pure drinking water at the kitchen. Typically $4,000–$7,000 installed together.`;
-        premiumId = "whole-house-carbon";
-        premiumReason = `The premium setup: a high-capacity whole house system combined with an RO unit and 3-way mixer tap (perfect for stone benchtops providing hot, cold, and filtered water from one tap) — the ultimate water quality solution for Australian homes.`;
-      }
-    }
+    // ── B5: RO-ESSENTIAL CONCERNS (drinking-water-only coverage) ──────────────
+    else if (f.needsRO) {
+      const fluorideNote = !f.isFluoridated && f.hasConcern("fluoride")
+        ? "Note: The NT does not fluoridate its water supply, so fluoride removal is less of a priority here. However, RO still provides the highest purity drinking water available. "
+        : "";
 
-    // ── B6: WHOLE HOME INTENT ─────────────────────────────────────────────────
-    else if (f.wantsWholeHome) {
-      primaryId = "whole-house-carbon";
-      primaryReason = `A whole house filtration system delivers filtered water to every tap, shower, and appliance in your home — protecting your hot water system, dishwasher, and washing machine${f.isScaleState ? `, and with a scale-reduction stage addresses ${answers.state}'s moderately hard water` : ""}.`;
-      secondaryId = "reverse-osmosis";
-      secondaryReason = `Adding a reverse osmosis drinking water unit is the popular upgrade — ultra-pure water at the kitchen tap on top of your whole house filtration. Combined systems typically $4,000–$7,000 installed.`;
+      primaryId = "reverse-osmosis";
+      primaryReason = `${fluorideNote}A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Carbon filters reduce these contaminants but cannot eliminate them. Installed under the kitchen sink at $800–$1,500.`;
+      secondaryId = "under-sink-carbon";
+      secondaryReason = `If an RO system isn't quite in budget, a quality under-sink carbon filter significantly improves your drinking water — though it reduces rather than eliminates fluoride and heavy metals.`;
       premiumId = "whole-house-carbon";
-      premiumReason = `The complete premium solution: a high-capacity whole house system combined with an RO unit and 3-way mixer tap — the best of both worlds for drinking water purity and whole-home protection.`;
+      premiumReason = `For the complete solution, add a whole house filtration to your RO system — ${f.isHighChlorineState ? `particularly valuable in ${answers.state} where chlorine levels are among Australia's highest` : "removing chlorine from every tap and shower"}. Typically $4,000–$7,000 installed together.`;
     }
 
     // ── B7: DEFAULT ───────────────────────────────────────────────────────────
