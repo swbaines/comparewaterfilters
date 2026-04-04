@@ -466,7 +466,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       "Oxenford", "Ormeau", "Pimpama",
     ],
     hardness: 34,
-    chlorine: 0.8,
+    chlorine: 1.2,
     fluoride: 0.85,
     ph: 7.6,
     pfasRisk: "low",
