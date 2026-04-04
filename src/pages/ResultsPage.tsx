@@ -350,8 +350,8 @@ export default function ResultsPage() {
         {/* 3 Recommendation cards */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
         <div className="grid gap-6 md:grid-cols-3">
-          <RecCard rec={result.primary} label="Best value" reason={result.primaryReason} variant="value" />
-          <RecCard rec={result.secondary} label="Best all-rounder" reason={result.secondaryReason} variant="allrounder" />
+          <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+          <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
           <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
         </div>
 
