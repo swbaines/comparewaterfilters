@@ -47,10 +47,10 @@ export default function HomePage() {
             Australia's independent water filter comparison
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Your shortcut to cleaner, healthier water at home
+            Your family deserves better than straight-from-the-tap
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            Compare Water Filters helps you cut through the noise — compare filtration systems, understand real pricing, and get matched to the right setup for your home in minutes.
+            Australian tap water is safe — but "safe" isn't the same as "clean." There's no benefit to drinking chlorine, chloramine, or trace contaminants when affordable filtration can remove them. We help you find the right system for your home in minutes.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
@@ -106,8 +106,8 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading
             badge="Common concerns"
-            title="What's bothering you about your water?"
-            subtitle="Select a concern to learn more, or start the quiz for a personalised recommendation."
+            title="What's really in your water?"
+            subtitle="Chlorine, chloramine, fluoride, sediment — even 'safe' water carries things your family doesn't need to be consuming. Select a concern or take the quiz."
           />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {concerns.map((c) => (
@@ -131,7 +131,7 @@ export default function HomePage() {
             <DollarSign className="mx-auto mb-4 h-10 w-10 text-primary" />
             <h2 className="text-2xl font-bold">Why are water filter quotes so different?</h2>
             <p className="mt-3 text-muted-foreground">
-              Prices range from $300 to $8,000+. System type, installation complexity, certifications, and ongoing filter costs all play a role.
+              Prices range from $300 to $8,000+. But the real cost is doing nothing — chlorine drying your skin and hair, scale destroying your appliances, and contaminants your family doesn't need to be drinking. A good filter pays for itself.
             </p>
             <Link to="/pricing-guide">
               <Button variant="outline" className="mt-6">Read our pricing guide</Button>
@@ -164,9 +164,9 @@ export default function HomePage() {
       {/* Final CTA */}
       <section className="py-16 sm:py-20">
         <div className="container text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">Ready to find your match?</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Every Australian home deserves filtered water</h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Answer a few questions about your home and water concerns. We'll recommend the right system type, explain what it does, and show you realistic pricing.
+            There's simply no upside to drinking chlorine, chloramine, and trace contaminants when you don't have to. Answer a few questions and we'll match you with the right system — it's faster and easier than you think.
           </p>
           <Link to="/quiz">
             <Button size="lg" className="mt-8 gap-2">

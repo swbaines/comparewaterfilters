@@ -22,7 +22,7 @@ export default function HowItWorksPage() {
         <SectionHeading
           badge="How it works"
           title="How our recommendations work"
-          subtitle="Transparent, clear, and designed to help — not sell."
+          subtitle="We believe every Australian household deserves filtered water. There's no benefit to consuming chlorine, chloramine, or trace contaminants — and the right system makes it easy to stop."
         />
 
         <div className="mt-12 space-y-6">
