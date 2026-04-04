@@ -478,7 +478,7 @@ export default function ResultsPage() {
               {
                 label: "Removes fluoride & PFAS",
                 render: (r) => {
-                  const roIds = ["under-sink-ro", "whole-house-combo"];
+                  const roIds = ["reverse-osmosis", "whole-house-combo"];
                   return roIds.includes(r.id)
                     ? <Check className="h-4 w-4 text-primary" />
                     : <XCircle className="h-4 w-4 text-muted-foreground/50" />;
