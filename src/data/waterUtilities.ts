@@ -724,6 +724,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.6,
     ph: 7.7,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Myponga Reservoir",
     notes: "Southern Adelaide is slightly softer than the north, using Myponga Reservoir water treated with chloramine. Carbon filter recommended for taste — scale-reduction helpful for appliances.",
   },
