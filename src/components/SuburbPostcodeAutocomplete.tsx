@@ -101,7 +101,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
-  const detectedState = useDetectedState();
+  const { detectedState, autoDetectFailed, setManualState } = useDetectedState();
 
   // Sync display when parent resets
   useEffect(() => {
