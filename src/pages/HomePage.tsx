@@ -47,7 +47,7 @@ export default function HomePage() {
             Australia's independent water filter comparison
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Your family deserves better than straight-from-the-tap
+            Your family deserves filtered
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
             Australian tap water is safe — but "safe" isn't the same as "clean." There's no benefit to drinking chlorine, chloramine, or trace contaminants when affordable filtration can remove them. We help you find the right system for your home in minutes.
