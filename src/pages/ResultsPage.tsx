@@ -456,26 +456,26 @@ export default function ResultsPage() {
             <tbody className="divide-y">
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">System type</td>
-                <td className="py-3">{result.primary.title}</td>
                 <td className="py-3">{result.secondary.title}</td>
+                <td className="py-3">{result.primary.title}</td>
                 <td className="py-3">{result.premium.title}</td>
               </tr>
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">Price range</td>
-                <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
                 <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
+                <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
                 <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
               </tr>
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
-                <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
                 <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
+                <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
                 <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
               </tr>
               <tr>
                 <td className="py-3 font-medium text-muted-foreground">Category</td>
-                <td className="py-3">{result.primary.category}</td>
                 <td className="py-3">{result.secondary.category}</td>
+                <td className="py-3">{result.primary.category}</td>
                 <td className="py-3">{result.premium.category}</td>
               </tr>
             </tbody>
