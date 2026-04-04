@@ -263,6 +263,7 @@ export default function WaterQualityPage() {
                 <div>
                   <p className="text-sm font-medium">Water supplied by {result.utilityName}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{result.notes}</p>
+                  <p className="mt-2 text-xs text-muted-foreground/70 italic">Note: Water quality levels are sourced from official utility reports and may vary over time. Figures represent typical reported values and may not reflect exact current conditions at your tap.</p>
                 </div>
               </CardContent>
             </Card>
