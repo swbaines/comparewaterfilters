@@ -210,7 +210,7 @@ export default function WaterQualityPage() {
                   const hardnessInfo = getHardnessLabel(result.hardness);
                   const chlorineInfo = getChlorineLabel(result.chlorine);
                   if (hardnessInfo.label === "Moderate" || hardnessInfo.label === "Hard" || hardnessInfo.label === "Very hard") {
-                    concerns.push(`${hardnessInfo.label.toLowerCase()} to high hardness`);
+                    concerns.push(`${hardnessInfo.label.toLowerCase()} hardness`);
                   }
                   if (chlorineInfo.label === "Moderate" || chlorineInfo.label === "High") {
                     concerns.push(`${chlorineInfo.label.toLowerCase()} chlorine levels`);
