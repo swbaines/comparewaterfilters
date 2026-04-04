@@ -131,7 +131,7 @@ export default function HomePage() {
             <DollarSign className="mx-auto mb-4 h-10 w-10 text-primary" />
             <h2 className="text-2xl font-bold">Why are water filter quotes so different?</h2>
             <p className="mt-3 text-muted-foreground">
-              Prices range from $300 to $8,000+. System type, installation complexity, certifications, and ongoing filter costs all play a role.
+              Prices range from $300 to $8,000+. But the real cost is doing nothing — chlorine drying your skin and hair, scale destroying your appliances, and contaminants your family doesn't need to be drinking. A good filter pays for itself.
             </p>
             <Link to="/pricing-guide">
               <Button variant="outline" className="mt-6">Read our pricing guide</Button>
