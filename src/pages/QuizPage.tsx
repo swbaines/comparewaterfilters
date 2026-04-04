@@ -325,18 +325,6 @@ export default function QuizPage() {
             {step === 7 && (
               <div className="space-y-5">
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium">Upload an existing quote (optional)</label>
-                  <div className="flex h-20 items-center justify-center rounded-lg border-2 border-dashed text-sm text-muted-foreground">
-                    <Upload className="mr-2 h-4 w-4" /> Upload feature coming soon
-                  </div>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Upload a water report (optional)</label>
-                  <div className="flex h-20 items-center justify-center rounded-lg border-2 border-dashed text-sm text-muted-foreground">
-                    <Upload className="mr-2 h-4 w-4" /> Upload feature coming soon
-                  </div>
-                </div>
-                <div>
                   <label className="mb-1.5 block text-sm font-medium">Anything else we should know?</label>
                   <Textarea placeholder="Any specific concerns, existing systems, or questions..." value={answers.notes} onChange={(e) => set("notes", e.target.value)} />
                 </div>
