@@ -499,7 +499,7 @@ export default function WaterQualityPage() {
         <div className="mt-12 rounded-lg border bg-muted/50 p-6">
           <div className="text-sm text-muted-foreground">
             <h3 className="mb-2 font-semibold text-foreground">Data sources &amp; disclaimer</h3>
-            <p>Water quality data is sourced from annual drinking water quality reports (2023–24) published by Yarra Valley Water, South East Water, Greater Western Water, Barwon Water, Sydney Water, Hunter Water, Urban Utilities, Unitywater, Gold Coast Water, Water Corporation WA, SA Water, TasWater, Icon Water, and Power and Water Corporation. Data represents typical averages for each utility's supply zone and may vary by exact address, season, and current treatment conditions. For the most precise data for your address, contact your local water utility. This information is provided for general guidance only and does not constitute professional advice.</p>
+            <p>Water quality data is sourced from annual drinking water quality reports (2024–25) published by Yarra Valley Water, South East Water, Greater Western Water, Barwon Water, Sydney Water, Hunter Water, Urban Utilities, Unitywater, Gold Coast Water, Water Corporation WA, SA Water, TasWater, Icon Water, and Power and Water Corporation. Data represents typical averages for each utility's supply zone and may vary by exact address, season, and current treatment conditions. For the most precise data for your address, contact your local water utility. This information is provided for general guidance only and does not constitute professional advice.</p>
           </div>
         </div>
       </div>
