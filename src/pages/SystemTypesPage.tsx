@@ -125,6 +125,19 @@ export default function SystemTypesPage() {
             );
           })}
         </div>
+
+        {/* FAQ */}
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">Frequently asked questions</h2>
+          <Accordion type="single" collapsible className="w-full">
+            {systemFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </section>
       </div>
     </div>
   );
