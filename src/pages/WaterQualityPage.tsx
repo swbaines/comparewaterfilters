@@ -5,82 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
-import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info } from "lucide-react";
-
-// ── Real water quality data sourced from state water authorities ──────────────
-interface SuburbProfile {
-  suburb: string;
-  state: string;
-  postcode: string;
-  hardness: number;
-  chlorine: number;
-  fluoride: number;
-  ph: number;
-  pfasRisk: "low" | "moderate" | "elevated";
-  source: string;
-  notes: string;
-}
-
-const WATER_DATA: Record<string, SuburbProfile[]> = {
-  NSW: [
-    { suburb: "Sydney CBD / Inner Sydney", state: "NSW", postcode: "2000-2099", hardness: 49, chlorine: 0.6, fluoride: 1.0, ph: 7.5, pfasRisk: "low", source: "Prospect WFP (Warragamba Dam)", notes: "Soft water, chloramine used in some areas. Good quality — carbon filter for taste." },
-    { suburb: "Parramatta / Blacktown / Liverpool", state: "NSW", postcode: "2100-2199", hardness: 50, chlorine: 0.7, fluoride: 1.0, ph: 7.5, pfasRisk: "low", source: "Prospect WFP", notes: "Consistent soft water. Chloramine disinfection in parts. Carbon filter recommended for taste." },
-    { suburb: "Western Sydney / Penrith / St Marys", state: "NSW", postcode: "2740-2770", hardness: 58, chlorine: 0.8, fluoride: 1.0, ph: 7.4, pfasRisk: "low", source: "Orchard Hills zone (Warragamba)", notes: "Hardest water in Sydney network but still classified soft. No softener needed." },
-    { suburb: "Northern Beaches / Manly", state: "NSW", postcode: "2085-2108", hardness: 35, chlorine: 0.5, fluoride: 1.0, ph: 7.6, pfasRisk: "low", source: "Warringah WFP", notes: "Very soft water, low chlorine. Excellent water quality." },
-    { suburb: "Blue Mountains", state: "NSW", postcode: "2780-2790", hardness: 32, chlorine: 0.6, fluoride: 1.0, ph: 7.5, pfasRisk: "moderate", source: "Cascade WFP", notes: "PFAS elevated in 2024 at Cascade WFP — now within updated 2025 guidelines. RO recommended for PFAS-concerned households." },
-    { suburb: "Newcastle / Hunter", state: "NSW", postcode: "2300-2310", hardness: 45, chlorine: 0.6, fluoride: 1.0, ph: 7.4, pfasRisk: "low", source: "Hunter Water", notes: "Soft water, good quality. Carbon filter for taste improvement." },
-    { suburb: "Wollongong / Illawarra", state: "NSW", postcode: "2500-2530", hardness: 38, chlorine: 0.5, fluoride: 1.0, ph: 7.5, pfasRisk: "low", source: "Illawarra WFP", notes: "Soft water. Very good quality overall." },
-    { suburb: "Central Coast", state: "NSW", postcode: "2250-2263", hardness: 42, chlorine: 0.6, fluoride: 1.0, ph: 7.4, pfasRisk: "low", source: "Mardi WFP", notes: "Soft water. Carbon filter for chlorine taste." },
-  ],
-  VIC: [
-    { suburb: "Melbourne CBD / Inner East", state: "VIC", postcode: "3000-3099", hardness: 28, chlorine: 0.9, fluoride: 0.9, ph: 7.3, pfasRisk: "low", source: "Silvan/Sugarloaf Reservoir", notes: "Australia's softest capital city water. No softener needed. Chlorine slightly higher than average — whole house carbon filter excellent for skin and taste." },
-    { suburb: "Melbourne North / Northcote / Preston", state: "VIC", postcode: "3070-3078", hardness: 25, chlorine: 0.9, fluoride: 0.9, ph: 7.3, pfasRisk: "low", source: "Greenvale Reservoir", notes: "Very soft water. Higher chlorine can affect skin and hair — whole house carbon filter recommended." },
-    { suburb: "Melbourne South / St Kilda / Bayside", state: "VIC", postcode: "3182-3207", hardness: 30, chlorine: 0.8, fluoride: 0.9, ph: 7.4, pfasRisk: "low", source: "Cardinia Reservoir / SEW", notes: "Soft water. Good quality. Carbon filter for chlorine taste and skin comfort." },
-    { suburb: "Melbourne West / Footscray / Werribee", state: "VIC", postcode: "3011-3030", hardness: 32, chlorine: 1.0, fluoride: 0.9, ph: 7.2, pfasRisk: "low", source: "Sugarloaf / Greenvale", notes: "Soft water. Chlorine slightly higher in western distribution. Carbon filter recommended." },
-    { suburb: "Melbourne East / Box Hill / Ringwood", state: "VIC", postcode: "3128-3136", hardness: 22, chlorine: 0.7, fluoride: 0.9, ph: 7.5, pfasRisk: "low", source: "Silvan Reservoir", notes: "Exceptionally soft water from mountain catchment. Very good quality." },
-    { suburb: "Geelong", state: "VIC", postcode: "3220-3228", hardness: 35, chlorine: 0.8, fluoride: 0.9, ph: 7.4, pfasRisk: "low", source: "Barwon Water", notes: "Soft water. Good quality overall." },
-    { suburb: "Mornington Peninsula", state: "VIC", postcode: "3930-3945", hardness: 28, chlorine: 0.7, fluoride: 0.9, ph: 7.5, pfasRisk: "low", source: "Tarago / Cardinia via SEW", notes: "Soft water from Tarago WTP. Excellent quality." },
-    { suburb: "Sunbury / Melton", state: "VIC", postcode: "3337-3430", hardness: 40, chlorine: 1.1, fluoride: 0.9, ph: 7.2, pfasRisk: "low", source: "Rosslynne / Merrimu", notes: "Slightly harder outer western suburbs. Higher chlorine in longer distribution network." },
-  ],
-  QLD: [
-    { suburb: "Brisbane CBD / Inner Suburbs", state: "QLD", postcode: "4000-4059", hardness: 115, chlorine: 1.1, fluoride: 0.85, ph: 7.8, pfasRisk: "low", source: "Wivenhoe Dam / North Pine Dam", notes: "Moderately hard water. Seasonal earthy/musty taste after rain — naturally occurring, carbon filter addresses this well." },
-    { suburb: "Brisbane North / Northside", state: "QLD", postcode: "4030-4060", hardness: 110, chlorine: 1.0, fluoride: 0.85, ph: 7.8, pfasRisk: "low", source: "North Pine Dam", notes: "Moderate hardness. Scale-reduction filter beneficial for appliances. Carbon filter for chlorine taste." },
-    { suburb: "Brisbane South / Southside", state: "QLD", postcode: "4101-4130", hardness: 118, chlorine: 1.1, fluoride: 0.85, ph: 7.7, pfasRisk: "low", source: "Wivenhoe Dam", notes: "Moderate hardness. Whole house carbon + scale-reduction is the recommended setup." },
-    { suburb: "Gold Coast", state: "QLD", postcode: "4210-4230", hardness: 34, chlorine: 0.8, fluoride: 0.85, ph: 7.6, pfasRisk: "low", source: "Hinze Dam", notes: "Much softer than Brisbane. No scale issues. Carbon filter for taste." },
-    { suburb: "Sunshine Coast", state: "QLD", postcode: "4550-4575", hardness: 90, chlorine: 0.9, fluoride: 0.85, ph: 7.7, pfasRisk: "low", source: "Baroon Pocket Dam", notes: "Moderate hardness. Fluoridated. Carbon filter for taste." },
-    { suburb: "Ipswich / Logan", state: "QLD", postcode: "4300-4360", hardness: 120, chlorine: 1.1, fluoride: 0.85, ph: 7.8, pfasRisk: "low", source: "Wivenhoe / Somerset Dam", notes: "Moderately hard. Scale-reduction filter recommended for appliances." },
-    { suburb: "Toowoomba / Darling Downs", state: "QLD", postcode: "4350-4352", hardness: 160, chlorine: 0.9, fluoride: 0.85, ph: 7.6, pfasRisk: "low", source: "Local weirs and groundwater", notes: "Harder than Brisbane. Scale buildup a known issue. Whole house filter with scale-reduction recommended." },
-    { suburb: "Cairns", state: "QLD", postcode: "4870-4879", hardness: 55, chlorine: 0.7, fluoride: 0.7, ph: 7.5, pfasRisk: "low", source: "Copperlode Dam", notes: "Soft water. Good quality. Carbon filter for taste preference." },
-  ],
-  WA: [
-    { suburb: "Perth CBD / Inner Perth", state: "WA", postcode: "6000-6010", hardness: 135, chlorine: 0.8, fluoride: 0.75, ph: 7.6, pfasRisk: "low", source: "Mixed: desalination + Mundaring Weir", notes: "Moderately hard. Scale buildup on taps and appliances is common. Whole house carbon + scale-reduction recommended." },
-    { suburb: "Perth North / Joondalup / Wanneroo", state: "WA", postcode: "6025-6065", hardness: 195, chlorine: 0.9, fluoride: 0.75, ph: 7.5, pfasRisk: "low", source: "Gnangara Mound groundwater", notes: "Very hard water (approaching 200 mg/L). White scale visible on everything. Water softener strongly recommended in this area." },
-    { suburb: "Yanchep / Two Rocks", state: "WA", postcode: "6035-6037", hardness: 228, chlorine: 0.9, fluoride: 0.75, ph: 7.4, pfasRisk: "low", source: "Gnangara Mound groundwater", notes: "Among the hardest water in Australia at 228 mg/L. Water softener is essential. RO for drinking water highly recommended." },
-    { suburb: "Perth South / Fremantle / Cockburn", state: "WA", postcode: "6155-6172", hardness: 120, chlorine: 0.7, fluoride: 0.75, ph: 7.7, pfasRisk: "low", source: "Desalination blend", notes: "Moderately hard — softer than northern suburbs due to more desalinated water. Scale-reduction filter recommended." },
-    { suburb: "Perth East / Midland / Kalamunda", state: "WA", postcode: "6056-6076", hardness: 155, chlorine: 0.8, fluoride: 0.75, ph: 7.5, pfasRisk: "low", source: "Mundaring Weir blend", notes: "Hard water. Scale a common complaint. Whole house filter with scale-reduction or softener recommended." },
-    { suburb: "Mandurah / Rockingham", state: "WA", postcode: "6020-6022", hardness: 90, chlorine: 0.7, fluoride: 0.75, ph: 7.7, pfasRisk: "low", source: "Desalination / Serpentine", notes: "Moderately soft for Perth. Less scale than northern suburbs. Carbon filter for chlorine taste." },
-    { suburb: "Bunbury / South West WA", state: "WA", postcode: "6230-6235", hardness: 100, chlorine: 0.7, fluoride: 0.75, ph: 7.6, pfasRisk: "low", source: "Wellington Dam / groundwater", notes: "Moderate hardness. Good quality for regional WA. Carbon filter + scale-reduction recommended." },
-  ],
-  SA: [
-    { suburb: "Adelaide CBD / Inner Adelaide", state: "SA", postcode: "5000-5010", hardness: 125, chlorine: 1.3, fluoride: 0.6, ph: 7.6, pfasRisk: "low", source: "Happy Valley Reservoir / Murray River blend", notes: "Hard water with Australia's highest chlorine levels. Strong chlorine taste common. Whole house carbon filter is the most impactful upgrade for SA homes." },
-    { suburb: "Adelaide North / Salisbury / Elizabeth", state: "SA", postcode: "5106-5115", hardness: 138, chlorine: 1.5, fluoride: 0.6, ph: 7.5, pfasRisk: "low", source: "Murray River / Happy Valley", notes: "Hardest and highest chlorine area of Adelaide. Scale in kettles, shower screens is severe. Water softener + whole house carbon filter recommended." },
-    { suburb: "Adelaide South / Morphett Vale / Noarlunga", state: "SA", postcode: "5162-5168", hardness: 115, chlorine: 1.2, fluoride: 0.6, ph: 7.7, pfasRisk: "low", source: "Myponga Reservoir", notes: "Slightly softer than northern Adelaide. Chloramine treatment at Myponga. Carbon filter recommended." },
-    { suburb: "Adelaide Hills / Stirling / Crafers", state: "SA", postcode: "5152-5155", hardness: 95, chlorine: 1.0, fluoride: 0.6, ph: 7.6, pfasRisk: "low", source: "Mount Lofty Ranges reservoirs", notes: "Softest water in the Adelaide metro. Chloramine treatment. Better taste than other SA areas." },
-    { suburb: "Adelaide East / Burnside / Norwood", state: "SA", postcode: "5066-5070", hardness: 120, chlorine: 1.3, fluoride: 0.6, ph: 7.6, pfasRisk: "low", source: "Murray River / reservoir blend", notes: "Moderate-hard water. High chlorine. Whole house carbon + scale-reduction is the recommended setup." },
-    { suburb: "Adelaide West / Glenelg / Brighton", state: "SA", postcode: "5044-5048", hardness: 115, chlorine: 1.2, fluoride: 0.6, ph: 7.7, pfasRisk: "low", source: "Murray River blend", notes: "Some coastal areas have slightly brackish taste from Murray salinity. Carbon filter + softener for best results." },
-  ],
-  TAS: [
-    { suburb: "Hobart / Greater Hobart", state: "TAS", postcode: "7000-7055", hardness: 18, chlorine: 0.4, fluoride: 1.0, ph: 7.2, pfasRisk: "low", source: "Mount Wellington catchment", notes: "Among the purest water in Australia. Very soft, low chlorine, mountain catchment source. Filtration is mostly a personal preference here." },
-    { suburb: "Launceston", state: "TAS", postcode: "7248-7252", hardness: 22, chlorine: 0.4, fluoride: 1.0, ph: 7.3, pfasRisk: "low", source: "Trevallyn / local catchments", notes: "Excellent soft water. Low treatment levels. One of the best tap waters in Australia." },
-  ],
-  ACT: [
-    { suburb: "Canberra / ACT", state: "ACT", postcode: "2600-2617", hardness: 45, chlorine: 0.6, fluoride: 1.0, ph: 7.4, pfasRisk: "moderate", source: "Googong / Cotter Reservoirs", notes: "Soft water, good quality. PFAS monitoring ongoing near defence and industrial sites. RO recommended for PFAS-concerned households." },
-  ],
-  NT: [
-    { suburb: "Darwin", state: "NT", postcode: "0800-0832", hardness: 75, chlorine: 0.7, fluoride: 0.0, ph: 7.3, pfasRisk: "low", source: "Darwin River Dam / Howard Springs", notes: "NT does NOT fluoridate its water. Moderate hardness. Good quality. Carbon filter for taste preference." },
-    { suburb: "Alice Springs", state: "NT", postcode: "0870-0872", hardness: 180, chlorine: 0.8, fluoride: 0.0, ph: 7.8, pfasRisk: "low", source: "Amadeus Basin groundwater", notes: "Very hard groundwater. NT does not fluoridate. Scale a significant issue. Softener or whole house filter recommended." },
-  ],
-};
+import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2 } from "lucide-react";
+import { findUtilityProfile, type WaterUtilityProfile } from "@/data/waterUtilities";
 
 function getHardnessLabel(h: number) {
   if (h < 60) return { label: "Soft", color: "text-green-800", bg: "bg-green-100" };
@@ -107,7 +33,7 @@ function getPfasLabel(risk: string) {
   return { label: "Within guidelines", color: "text-green-800", bg: "bg-green-100" };
 }
 
-function getFilterRecommendations(profile: SuburbProfile) {
+function getFilterRecommendations(profile: WaterUtilityProfile) {
   const recs: { primary: string; reason: string; cta: string }[] = [];
 
   if (profile.hardness >= 180) {
@@ -127,35 +53,14 @@ function getFilterRecommendations(profile: SuburbProfile) {
   return recs.slice(0, 3);
 }
 
-function findProfile(query: string): SuburbProfile | null {
-  const q = query.trim().toLowerCase();
-  const postcode = parseInt(q);
-
-  for (const profiles of Object.values(WATER_DATA)) {
-    for (const p of profiles) {
-      if (!isNaN(postcode)) {
-        const ranges = p.postcode.split(",").map(r => r.trim());
-        for (const range of ranges) {
-          if (range.includes("-")) {
-            const [min, max] = range.split("-").map(Number);
-            if (postcode >= min && postcode <= max) return p;
-          } else if (parseInt(range) === postcode) return p;
-        }
-      }
-      if (p.suburb.toLowerCase().includes(q) || q === p.state.toLowerCase()) return p;
-    }
-  }
-  return null;
-}
-
 export default function WaterQualityPage() {
   const [query, setQuery] = useState("");
-  const [result, setResult] = useState<SuburbProfile | null>(null);
+  const [result, setResult] = useState<(WaterUtilityProfile & { matchedSuburb?: string }) | null>(null);
   const [searched, setSearched] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const found = findProfile(query);
+    const found = findUtilityProfile(query);
     setResult(found);
     setSearched(true);
   };
@@ -195,7 +100,7 @@ export default function WaterQualityPage() {
             <Button type="submit">Check water</Button>
           </form>
           <p className="mt-3 text-xs text-muted-foreground">
-            Data sourced from Melbourne Water, Sydney Water, Water Corporation WA, Seqwater QLD and SA Water annual reports 2023–24
+            Data sourced from Yarra Valley Water, South East Water, Greater Western Water, Sydney Water, Hunter Water, Urban Utilities, SA Water, Water Corporation WA, TasWater, Icon Water and Power and Water Corporation annual reports 2023–24
           </p>
         </div>
       </section>
@@ -206,8 +111,20 @@ export default function WaterQualityPage() {
           <div className="mt-8 space-y-8">
             {/* Header */}
             <div>
-              <h2 className="text-2xl font-bold">{result.suburb}</h2>
-              <p className="text-muted-foreground">{result.state} · Postcodes {result.postcode} · Source: {result.source}</p>
+              <h2 className="text-2xl font-bold">
+                {result.matchedSuburb || result.region}
+              </h2>
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-muted-foreground">
+                <span>{result.state}</span>
+                <span>·</span>
+                <span className="inline-flex items-center gap-1">
+                  <Building2 className="h-3.5 w-3.5" />
+                  {result.utilityName}
+                </span>
+                <span>·</span>
+                <span>{result.region}</span>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">Source: {result.source}</p>
               <p className="mt-3 text-sm text-muted-foreground">
                 Your water meets Australian safety standards — but every home can benefit from filtration. Whether it's removing the chlorine taste, protecting appliances from scale, or simply giving your family cleaner water for drinking and bathing, the right filter makes a real difference.
               </p>
@@ -261,11 +178,14 @@ export default function WaterQualityPage() {
               </Card>
             </div>
 
-            {/* Local notes */}
+            {/* Utility info card */}
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="flex gap-3 pt-6">
                 <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <p className="text-sm">{result.notes}</p>
+                <div>
+                  <p className="text-sm font-medium">Water supplied by {result.utilityName}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{result.notes}</p>
+                </div>
               </CardContent>
             </Card>
 
@@ -386,7 +306,7 @@ export default function WaterQualityPage() {
           <div className="mt-8 text-center">
             <Card className="inline-block p-8">
               <h2 className="text-xl font-semibold">We don't have specific data for that location yet</h2>
-              <p className="mt-2 text-muted-foreground">Try searching by state name (e.g. "VIC" or "NSW") or a nearby major suburb. We're adding more postcodes regularly.</p>
+              <p className="mt-2 text-muted-foreground">Try searching by suburb name (e.g. "Wanneroo") or postcode (e.g. "3000"). We're adding more suburbs regularly.</p>
               <Link to="/quiz" className="mt-4 inline-block">
                 <Button variant="outline">
                   Take the quiz for personalised advice <ArrowRight className="ml-2 h-4 w-4" />
@@ -398,25 +318,25 @@ export default function WaterQualityPage() {
 
         {/* Browse by state */}
         <div className="mt-12">
-          <h2 className="mb-6 text-xl font-semibold">Browse by state</h2>
+          <h2 className="mb-6 text-xl font-semibold">Browse by city</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { state: "VIC", label: "Victoria", sub: "Soft water, higher chlorine", query: "Melbourne CBD" },
-              { state: "NSW", label: "New South Wales", sub: "Soft water, chloramine", query: "Sydney CBD" },
-              { state: "QLD", label: "Queensland", sub: "Moderate hardness, seasonal taste", query: "Brisbane CBD" },
-              { state: "WA", label: "Western Australia", sub: "Hard water, varies by suburb", query: "Perth CBD" },
-              { state: "SA", label: "South Australia", sub: "Hardest capital, high chlorine", query: "Adelaide CBD" },
-              { state: "TAS", label: "Tasmania", sub: "Excellent soft water", query: "Hobart" },
-              { state: "ACT", label: "ACT", sub: "Soft, PFAS monitored", query: "Canberra" },
-              { state: "NT", label: "Northern Territory", sub: "No fluoride added", query: "Darwin" },
+              { label: "Melbourne", sub: "3 water utilities, soft water", query: "Melbourne CBD" },
+              { label: "Sydney", sub: "Soft water, chloramine zones", query: "Sydney CBD" },
+              { label: "Brisbane", sub: "Moderate hardness, seasonal taste", query: "Brisbane CBD" },
+              { label: "Perth", sub: "Hard water, varies north to south", query: "Perth CBD" },
+              { label: "Adelaide", sub: "Hardest capital, high chlorine", query: "Adelaide CBD" },
+              { label: "Hobart", sub: "Excellent soft water", query: "Hobart" },
+              { label: "Canberra", sub: "Soft, PFAS monitored", query: "Canberra" },
+              { label: "Darwin", sub: "No fluoride added", query: "Darwin" },
             ].map(s => (
               <Card
-                key={s.state}
+                key={s.label}
                 className="cursor-pointer transition-colors hover:bg-accent"
-                onClick={() => { setQuery(s.query); setResult(findProfile(s.query)); setSearched(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                onClick={() => { setQuery(s.query); setResult(findUtilityProfile(s.query)); setSearched(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               >
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold">{s.state}</h3>
+                  <h3 className="font-semibold">{s.label}</h3>
                   <p className="text-sm text-muted-foreground">{s.sub}</p>
                 </CardContent>
               </Card>
@@ -428,7 +348,7 @@ export default function WaterQualityPage() {
         <div className="mt-12 rounded-lg border bg-muted/50 p-6">
           <div className="text-sm text-muted-foreground">
             <h3 className="mb-2 font-semibold text-foreground">Data sources &amp; disclaimer</h3>
-            <p>Water quality data is sourced from Melbourne Water, Sydney Water, Water Corporation WA, Seqwater QLD, and SA Water annual drinking water quality reports (2023–24). Data represents typical averages and may vary by exact address, season, and current treatment conditions. For the most precise data for your address, contact your local water utility. This information is provided for general guidance only and does not constitute professional advice.</p>
+            <p>Water quality data is sourced from annual drinking water quality reports (2023–24) published by Yarra Valley Water, South East Water, Greater Western Water, Barwon Water, Sydney Water, Hunter Water, Urban Utilities, Unitywater, Gold Coast Water, Water Corporation WA, SA Water, TasWater, Icon Water, and Power and Water Corporation. Data represents typical averages for each utility's supply zone and may vary by exact address, season, and current treatment conditions. For the most precise data for your address, contact your local water utility. This information is provided for general guidance only and does not constitute professional advice.</p>
           </div>
         </div>
       </div>
