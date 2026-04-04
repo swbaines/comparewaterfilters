@@ -838,8 +838,12 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       [7248, 7260], // Launceston, Riverside, Prospect, Legana
     ],
     suburbs: [
-      "Launceston", "Riverside", "Prospect", "Legana", "Newnham",
-      "Mowbray", "Kings Meadows", "Youngtown",
+      "Launceston", "Launceston CBD", "Riverside", "Prospect", "Legana", "Newnham",
+      "Mowbray", "Kings Meadows", "Youngtown", "Ravenswood", "Waverley",
+      "St Leonards", "East Launceston", "South Launceston", "Trevallyn",
+      "West Launceston", "Invermay", "Summerhill", "Norwood",
+      "Blackstone Heights", "Prospect Vale", "Hadspen", "Perth",
+      "Longford", "Evandale", "George Town",
     ],
     hardness: 22,
     chlorine: 0.4,
