@@ -121,6 +121,31 @@ export default function WaterQualityPage() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  const waterFaqs = [
+    { q: "Is Australian tap water safe to drink?", a: "Yes — Australian tap water meets safety standards set by the Australian Drinking Water Guidelines. However, 'safe' doesn't mean free of all chemicals. Chlorine, chloramine, fluoride, and trace contaminants are present in every supply, and there's no health benefit to consuming them when affordable filtration can remove them." },
+    { q: "What contaminants are in my tap water?", a: "Common contaminants include chlorine (used for disinfection), chloramine, fluoride (added in most states), sediment, and trace levels of heavy metals, pesticides, and PFAS. Levels vary by location and water utility. Use the lookup tool above to check what's typical for your suburb." },
+    { q: "What is water hardness and does it matter?", a: "Water hardness measures the concentration of calcium and magnesium minerals, reported in mg/L. Hard water (above 120 mg/L) can cause scale buildup in pipes and appliances, reduce soap lathering, and leave spots on surfaces. A water softener or whole house filter can address hard water." },
+    { q: "Should I get my water tested?", a: "If you're on bore water, tank water, or notice changes in taste, colour, or smell, professional testing is recommended. For mains water, utility reports provide a good baseline — but levels can vary at the tap due to your plumbing, pipe age, and distance from the treatment plant." },
+    { q: "Does boiling water remove contaminants?", a: "Boiling kills bacteria and parasites but does not remove chlorine, fluoride, heavy metals, or chemical contaminants. A quality water filter is a more effective and convenient solution for improving your drinking water." },
+    { q: "What are PFAS and should I be concerned?", a: "PFAS (per- and polyfluoroalkyl substances) are synthetic chemicals found in some water supplies, linked to health concerns at elevated levels. Reverse osmosis and activated carbon filters are effective at reducing PFAS. Check your suburb above to see if PFAS has been detected in your area." },
+  ];
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: waterFaqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    });
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, []);
+
   const hardness = result ? getHardnessLabel(result.hardness) : null;
   const chlorine = result ? getChlorineLabel(result.chlorine) : null;
   const fluoride = result ? getFluorideLabel(result.fluoride) : null;
