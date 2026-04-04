@@ -224,6 +224,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 1.0,
     ph: 7.5,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Prospect WFP (Warragamba Dam)",
     notes: "Sydney Water supplies soft water from Warragamba Dam via the Prospect Water Filtration Plant. Chloramine is used in some areas instead of chlorine. Good quality — a carbon filter removes taste and improves skin comfort.",
   },
