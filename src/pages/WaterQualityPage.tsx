@@ -143,14 +143,37 @@ export default function WaterQualityPage() {
             Australian tap water is safe to drink — but safe doesn't mean perfect. Most of us can smell and taste the chlorine, and families want to know exactly what's coming out of the tap. Enter your suburb or postcode for a plain-English breakdown.
           </p>
           <form onSubmit={handleSearch} className="mt-8 flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative flex-1" ref={wrapperRef}>
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
               <Input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
                 placeholder="Suburb or postcode — e.g. Wanneroo or 3000"
                 className="pl-9"
+                autoComplete="off"
               />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-72 overflow-auto rounded-md border bg-popover shadow-lg">
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={`${s.suburb}-${s.utilityName}`}
+                      type="button"
+                      className={`flex w-full items-start gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-accent ${i === activeIndex ? "bg-accent" : ""}`}
+                      onMouseDown={() => selectSuggestion(s)}
+                      onMouseEnter={() => setActiveIndex(i)}
+                    >
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <span className="font-medium">{s.suburb}</span>
+                        <span className="ml-1.5 text-muted-foreground">{s.state}</span>
+                        <p className="truncate text-xs text-muted-foreground">{s.utilityName} · {s.region}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <Button type="submit">Check water</Button>
           </form>
