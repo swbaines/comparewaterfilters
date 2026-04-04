@@ -99,7 +99,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.2,
     pfasRisk: "low",
     source: "Melbourne Water wholesale supply + Rosslynne & Merrimu Reservoirs (regional areas)",
-    notes: "Greater Western Water's western corridor receives Melbourne Water supply through longer distribution networks, resulting in slightly harder water and higher chlorine than inner areas. A whole house carbon filter is strongly recommended, especially for families with young children or skin sensitivities.",
+    notes: "Greater Western Water's western corridor receives Melbourne Water supply through longer distribution networks, resulting in slightly harder water and higher chlorine than inner areas. A whole house filtration is strongly recommended, especially for families with young children or skin sensitivities.",
   },
   // ── Yarra Valley Water — North & Outer East ───────────────────────────────
   {
@@ -139,7 +139,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.4,
     pfasRisk: "low",
     source: "Silvan, Upper Yarra & Maroondah Reservoirs via Melbourne Water",
-    notes: "Yarra Valley Water supplies some of Australia's softest water at just 19 mg/L hardness, drawn from protected mountain catchments east of Melbourne. No softener needed. Chlorine is low — a whole house carbon filter is the most popular upgrade for taste and shower comfort.",
+    notes: "Yarra Valley Water supplies some of Australia's softest water at just 19 mg/L hardness, drawn from protected mountain catchments east of Melbourne. No softener needed. Chlorine is low — a whole house filtration is the most popular upgrade for taste and shower comfort.",
   },
   // ── South East Water ──────────────────────────────────────────────────────
   {
@@ -403,7 +403,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.8,
     pfasRisk: "low",
     source: "Wivenhoe Dam / North Pine Dam via Seqwater",
-    notes: "Brisbane has moderately hard water with higher chlorine. Seasonal earthy/musty taste after rain is naturally occurring. A whole house carbon filter addresses chlorine taste — add scale-reduction if you notice buildup in kettles.",
+    notes: "Brisbane has moderately hard water with higher chlorine. Seasonal earthy/musty taste after rain is naturally occurring. A whole house filtration addresses chlorine taste — add scale-reduction if you notice buildup in kettles.",
   },
   {
     key: "urban-utilities-ipswich",
@@ -672,7 +672,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.6,
     pfasRisk: "low",
     source: "Happy Valley Reservoir / Murray River blend",
-    notes: "Adelaide has Australia's highest chlorine levels and hard water from Murray River blending. Strong chlorine taste is common. A whole house carbon filter is the single most impactful upgrade for SA homes — it transforms the taste, and many families notice softer skin and hair immediately.",
+    notes: "Adelaide has Australia's highest chlorine levels and hard water from Murray River blending. Strong chlorine taste is common. A whole house filtration is the single most impactful upgrade for SA homes — it transforms the taste, and many families notice softer skin and hair immediately.",
   },
   {
     key: "sawater-north",
@@ -695,7 +695,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ph: 7.5,
     pfasRisk: "low",
     source: "Murray River / Happy Valley Reservoir",
-    notes: "Northern Adelaide has the hardest water and highest chlorine in the city. Scale in kettles and on shower screens is severe. A water softener + whole house carbon filter is the recommended combination for this area.",
+    notes: "Northern Adelaide has the hardest water and highest chlorine in the city. Scale in kettles and on shower screens is severe. A water softener + whole house filtration is the recommended combination for this area.",
   },
   {
     key: "sawater-south",
