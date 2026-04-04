@@ -274,6 +274,9 @@ export default function WaterQualityPage() {
                   <p className="mt-2 text-3xl font-bold">{result.chlorine}</p>
                   <p className="text-sm text-muted-foreground">mg/L typical</p>
                   <Badge className={`mt-2 ${chlorine?.bg} ${chlorine?.color} border-0`}>{chlorine?.label}</Badge>
+                  {result.usesChloramine && (
+                    <p className="mt-2 text-xs text-muted-foreground/80">Chloramine is also used as a secondary disinfectant in this area</p>
+                  )}
                 </CardContent>
               </Card>
               <Card>
