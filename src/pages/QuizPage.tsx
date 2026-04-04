@@ -47,8 +47,6 @@ const concernOptions = [
 const coverageOptions = [
   { value: "drinking-water", label: "Drinking water only" },
   { value: "kitchen", label: "Kitchen only" },
-  { value: "one-tap", label: "One tap" },
-  { value: "under-sink", label: "Under sink" },
   { value: "whole-house", label: "Whole house" },
   { value: "whole-house-plus", label: "Whole house + drinking water" },
 ];
