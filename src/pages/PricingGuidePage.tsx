@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,29 @@ const factors = [
   { title: "Ongoing filter costs", desc: "A cheaper system with expensive replacement filters may cost more over 5 years than a mid-range system with affordable consumables." },
 ];
 
+const pricingFaqs = [
+  { q: "How much does a water filter cost in Australia?", a: "Water filter prices in Australia range from $300 for a basic under-sink carbon filter to $6,500+ for a whole house combo system, fully installed. Ongoing maintenance adds $80–$700 per year depending on the system type." },
+  { q: "What affects the price of a water filter?", a: "Key factors include system type and technology, installation complexity, number of filtration stages, certifications (WaterMark, NSF), brand and warranty, and ongoing replacement filter costs." },
+  { q: "Is a cheap water filter worth it?", a: "A budget under-sink carbon filter (under $1,000) is effective for chlorine and sediment removal and suits renters or apartments. However, it won't remove fluoride, heavy metals, or bacteria. For broader protection, a mid-range system ($1,000–$4,000) offers better filtration and longer warranties." },
+  { q: "How much does it cost to maintain a water filter?", a: "Annual maintenance costs range from $80–$200 for under-sink carbon filters, $150–$350 for reverse osmosis systems, and $350–$700 for whole house combo systems. Costs cover replacement filters, UV lamps, or salt for softeners." },
+];
+
 export default function PricingGuidePage() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: pricingFaqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    });
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, []);
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
