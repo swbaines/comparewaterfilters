@@ -253,7 +253,7 @@ export default function WaterQualityPage() {
             </div>
 
             {/* Metric cards */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -290,11 +290,26 @@ export default function WaterQualityPage() {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <AlertTriangle className="h-4 w-4" />
-                    PFAS
+                    <Droplets className="h-4 w-4" />
+                    pH Level
                   </div>
                   <p className="mt-2 text-3xl font-bold">{result.ph}</p>
-                  <p className="text-sm text-muted-foreground">pH level</p>
+                  <p className="text-sm text-muted-foreground">
+                    {result.ph < 6.5 ? "Acidic" : result.ph > 8.5 ? "Alkaline" : "Neutral"}
+                  </p>
+                  <Badge className={`mt-2 ${result.ph >= 6.5 && result.ph <= 8.5 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"} border-0`}>
+                    {result.ph >= 6.5 && result.ph <= 8.5 ? "Normal range" : result.ph < 6.5 ? "Acidic" : "Alkaline"}
+                  </Badge>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <AlertTriangle className="h-4 w-4" />
+                    PFAS Risk
+                  </div>
+                  <p className="mt-2 text-3xl font-bold capitalize">{result.pfasRisk}</p>
+                  <p className="text-sm text-muted-foreground">Local monitoring</p>
                   <Badge className={`mt-2 ${pfas?.bg} ${pfas?.color} border-0`}>{pfas?.label}</Badge>
                 </CardContent>
               </Card>
