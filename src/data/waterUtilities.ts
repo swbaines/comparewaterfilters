@@ -470,8 +470,17 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       [2500, 2530], // Wollongong, Fairy Meadow, Thirroul, Shellharbour
     ],
     suburbs: [
-      "Wollongong", "Fairy Meadow", "Thirroul", "Bulli", "Corrimal",
+      "Wollongong", "Wollongong CBD", "Fairy Meadow", "Thirroul", "Bulli", "Corrimal",
       "Figtree", "Unanderra", "Shellharbour", "Kiama", "Dapto",
+      "North Wollongong", "Coniston", "Mangerton", "Mount Keira",
+      "Gwynneville", "Keiraville", "West Wollongong", "Balgownie",
+      "Austinmer", "Coledale", "Wombarra", "Scarborough", "Stanwell Park",
+      "Warrawong", "Port Kembla", "Berkeley", "Lake Heights",
+      "Windang", "Primbee", "Barrack Heights", "Oak Flats",
+      "Albion Park", "Albion Park Rail", "Tullimbar", "Calderwood",
+      "Bombo", "Minnamurra", "Jamberoo", "Gerringong", "Berry",
+      "Woonona", "Russell Vale", "Bellambi", "East Corrimal",
+      "Tarrawanna", "Towradgi", "Fernhill",
     ],
     hardness: 38,
     chlorine: 0.5,
