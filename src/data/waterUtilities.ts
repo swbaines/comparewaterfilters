@@ -646,7 +646,9 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     ],
     suburbs: [
       "Mandurah", "Halls Head", "Falcon", "Dawesville", "Pinjarra",
-      "Meadow Springs",
+      "Meadow Springs", "Greenfields", "Coodanup", "Dudley Park",
+      "Lakelands", "Madora Bay", "San Remo", "Erskine",
+      "Furnissdale", "South Yunderup", "North Yunderup",
     ],
     hardness: 90,
     chlorine: 0.7,
