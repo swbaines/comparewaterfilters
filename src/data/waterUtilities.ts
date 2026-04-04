@@ -23,104 +23,161 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     key: "yvw",
-    utilityName: "Yarra Valley Water",
-    region: "Melbourne — North & East",
+  // ── Greater Western Water — Inner Melbourne (former City West Water) ────────
+  {
+    key: "gww-inner",
+    utilityName: "Greater Western Water",
+    region: "Melbourne — CBD & Inner Suburbs",
     state: "VIC",
     postcodeRanges: [
-      [3000, 3008], // CBD
-      [3051, 3058], // Inner north (Carlton, Fitzroy, Collingwood)
-      [3065, 3079], // Fitzroy North, Northcote, Thornbury, Preston
-      [3081, 3097], // Ivanhoe, Bundoora, Mill Park, South Morang
-      [3101, 3116], // Kew, Balwyn, Doncaster, Templestowe
-      [3121, 3138], // Richmond, Hawthorn, Camberwell, Box Hill, Ringwood
-      [3140, 3140], // Lilydale
-      [3148, 3156], // Syndal, Glen Waverley (parts), Ferntree Gully
-      [3750, 3767], // Epping, South Morang, Mernda, Whittlesea, Doreen
-      [3770, 3787], // Coldstream, Yarra Glen, Healesville, Mt Evelyn
-      [3795, 3797], // Belgrave, Emerald, Cockatoo
+      [3000, 3008], // Melbourne CBD, Docklands, Southbank
+      [3002, 3002], // East Melbourne
+      [3003, 3003], // West Melbourne
+      [3031, 3031], // Flemington, Kensington
+      [3051, 3058], // North Melbourne, Parkville, Carlton, Brunswick
+      [3065, 3068], // Fitzroy, Collingwood, Clifton Hill
+      [3121, 3121], // Richmond, Burnley, Cremorne, Abbotsford
+      [3122, 3124], // Hawthorn, Hawthorn East, Camberwell (parts)
+      [3141, 3146], // South Yarra, Prahran, Toorak, Malvern, Armadale
+      [3181, 3183], // Windsor, St Kilda, Balaclava, St Kilda East
+      [3185, 3186], // Elsternwick, Ripponlea
+      [3205, 3207], // South Melbourne, Albert Park, Middle Park, Port Melbourne
     ],
     suburbs: [
-      "Melbourne CBD", "Carlton", "Fitzroy", "Collingwood", "Richmond",
-      "Northcote", "Thornbury", "Preston", "Reservoir", "Bundoora",
-      "Mill Park", "South Morang", "Epping", "Mernda", "Doreen",
-      "Whittlesea", "Kew", "Balwyn", "Doncaster", "Templestowe",
-      "Hawthorn", "Camberwell", "Box Hill", "Ringwood", "Croydon",
-      "Lilydale", "Healesville", "Glen Waverley", "Ferntree Gully",
-      "Belgrave", "Ivanhoe", "Heidelberg", "Greensborough", "Eltham",
-      "Diamond Creek", "Hurstbridge",
+      "Melbourne CBD", "Melbourne", "Docklands", "Southbank", "East Melbourne",
+      "West Melbourne", "North Melbourne", "Parkville", "Carlton", "Carlton North",
+      "Carlton South", "Brunswick", "Brunswick East", "Brunswick West",
+      "Brunswick North", "Brunswick South", "Flemington", "Kensington",
+      "Fitzroy", "Fitzroy North", "Collingwood", "Clifton Hill", "Abbotsford",
+      "Richmond", "Richmond North", "Richmond South", "Richmond East",
+      "Burnley", "Cremorne", "Hawthorn", "Hawthorn East", "Hawthorn West",
+      "Hawthorn North", "South Yarra", "Prahran", "Windsor", "Toorak",
+      "Armadale", "Malvern", "Malvern North", "Kooyong",
+      "St Kilda", "St Kilda East", "St Kilda West", "St Kilda South",
+      "Balaclava", "Elsternwick", "Ripponlea",
+      "South Melbourne", "Albert Park", "Middle Park", "Port Melbourne",
+      "Ascot Vale", "Moonee Ponds", "Essendon", "Travancore",
     ],
-    hardness: 25,
-    chlorine: 0.8,
-    fluoride: 0.9,
+    hardness: 16,
+    chlorine: 0.65,
+    fluoride: 0.8,
     ph: 7.4,
     pfasRisk: "low",
-    source: "Silvan, Upper Yarra & Maroondah Reservoirs",
-    notes: "Yarra Valley Water supplies some of Australia's softest water, drawn from protected mountain catchments. No softener needed. Chlorine is moderate — a whole house carbon filter is the most popular upgrade for taste and shower comfort.",
+    source: "Melbourne Water wholesale supply (Silvan, Cardinia & Sugarloaf Reservoirs)",
+    notes: "Greater Western Water supplies inner Melbourne with some of Australia's softest water — just 16 mg/L hardness from protected mountain catchments. No softener needed. Chlorine is low to moderate — a carbon filter is a great upgrade for taste and shower comfort.",
   },
+  // ── Greater Western Water — Western & Outer Suburbs ───────────────────────
   {
-    key: "sew",
-    utilityName: "South East Water",
-    region: "Melbourne — South & Southeast",
-    state: "VIC",
-    postcodeRanges: [
-      [3141, 3146], // South Yarra, Prahran, Malvern
-      [3161, 3186], // Caulfield, Carnegie, Bentleigh, Brighton, Sandringham
-      [3188, 3207], // Hampton, Cheltenham, Moorabbin, Mordialloc, Chelsea, Frankston
-      [3800, 3810], // Monash Uni area, Berwick, Narre Warren
-      [3910, 3920], // Langwarrin, Frankston South, Cranbourne
-      [3930, 3945], // Mornington, Mt Martha, Rosebud, Rye, Sorrento
-      [3158, 3160], // Upwey, Belgrave South
-      [3802, 3806], // Endeavour Hills, Hallam, Berwick
-      [3175, 3178], // Dandenong, Keysborough, Rowville
-    ],
-    suburbs: [
-      "South Yarra", "Prahran", "St Kilda", "Brighton", "Sandringham",
-      "Malvern", "Caulfield", "Carnegie", "Bentleigh", "Moorabbin",
-      "Cheltenham", "Mordialloc", "Chelsea", "Frankston", "Mornington",
-      "Mt Martha", "Rosebud", "Rye", "Sorrento", "Cranbourne",
-      "Narre Warren", "Berwick", "Dandenong", "Keysborough", "Rowville",
-      "Endeavour Hills", "Hallam", "Hampton", "Bayside",
-    ],
-    hardness: 30,
-    chlorine: 0.8,
-    fluoride: 0.9,
-    ph: 7.4,
-    pfasRisk: "low",
-    source: "Cardinia & Tarago Reservoirs",
-    notes: "South East Water draws from Cardinia and Tarago reservoirs — soft, high-quality water. Chlorine is moderate and a carbon filter addresses taste and skin comfort. No scale issues in this area.",
-  },
-  {
-    key: "gww",
+    key: "gww-west",
     utilityName: "Greater Western Water",
     region: "Melbourne — West & Northwest",
     state: "VIC",
     postcodeRanges: [
-      [3011, 3032], // Footscray, Yarraville, Seddon, Williamstown, Altona, Sunshine, St Albans
-      [3033, 3038], // Keilor, Tullamarine, Airport West, Gladstone Park
-      [3020, 3025], // Albion, Sunshine, Deer Park
-      [3335, 3340], // Rockbank, Melton, Bacchus Marsh
-      [3427, 3430], // Roxburgh Park, Craigieburn
-      [3037, 3038], // Hillside, Sydenham, Taylors Lakes
-      [3060, 3064], // Fawkner, Coburg North, Craigieburn (parts)
-      [3428, 3442], // Sunbury, Gisborne, Romsey, Lancefield
+      [3011, 3020], // Footscray, Yarraville, Seddon, Williamstown, Altona
+      [3021, 3030], // St Albans, Sunshine, Deer Park, Werribee
+      [3032, 3038], // Maribyrnong, Keilor, Airport West, Tullamarine
+      [3040, 3044], // Aberfeldie, Essendon West, Niddrie, Gladstone Park
+      [3335, 3342], // Rockbank, Melton, Bacchus Marsh
+      [3427, 3442], // Sunbury, Gisborne, Romsey, Lancefield
+      [3060, 3064], // Fawkner, Broadmeadows (parts)
     ],
     suburbs: [
-      "Footscray", "Yarraville", "Seddon", "Williamstown", "Altona",
-      "Sunshine", "St Albans", "Deer Park", "Keilor", "Tullamarine",
-      "Airport West", "Gladstone Park", "Hillside", "Sydenham",
-      "Taylors Lakes", "Melton", "Bacchus Marsh", "Rockbank",
+      "Footscray", "West Footscray", "Yarraville", "Seddon", "Williamstown",
+      "Altona", "Altona North", "Altona Meadows", "Newport",
+      "Sunshine", "Sunshine North", "Sunshine West", "St Albans",
+      "Deer Park", "Cairnlea", "Derrimut", "Caroline Springs",
+      "Keilor", "Keilor East", "Airport West", "Tullamarine", "Niddrie",
+      "Gladstone Park", "Hillside", "Sydenham", "Taylors Lakes",
+      "Melton", "Melton South", "Melton West", "Bacchus Marsh", "Rockbank",
       "Werribee", "Point Cook", "Hoppers Crossing", "Wyndham Vale",
-      "Tarneit", "Truganina", "Roxburgh Park", "Craigieburn",
-      "Sunbury", "Gisborne", "Fawkner", "Broadmeadows",
+      "Tarneit", "Truganina", "Laverton", "Mambourin",
+      "Sunbury", "Gisborne", "Romsey", "Lancefield",
+      "Fawkner", "Broadmeadows", "Braybrook", "Maidstone",
+      "Maribyrnong", "Kingsville", "Tottenham",
     ],
     hardness: 38,
     chlorine: 1.0,
     fluoride: 0.9,
     ph: 7.2,
     pfasRisk: "low",
-    source: "Sugarloaf, Greenvale & Rosslynne Reservoirs",
-    notes: "Greater Western Water serves Melbourne's growing western corridor. Water is soft but chlorine is slightly higher due to longer distribution networks. A whole house carbon filter is strongly recommended for this area, especially for families with young children or skin sensitivities.",
+    source: "Melbourne Water wholesale supply + Rosslynne & Merrimu Reservoirs (regional areas)",
+    notes: "Greater Western Water's western corridor receives Melbourne Water supply through longer distribution networks, resulting in slightly harder water and higher chlorine than inner areas. A whole house carbon filter is strongly recommended, especially for families with young children or skin sensitivities.",
   },
+  // ── Yarra Valley Water — North & Outer East ───────────────────────────────
+  {
+    key: "yvw",
+    utilityName: "Yarra Valley Water",
+    region: "Melbourne — North & Outer East",
+    state: "VIC",
+    postcodeRanges: [
+      [3070, 3079], // Northcote, Thornbury, Preston, Reservoir
+      [3081, 3097], // Ivanhoe, Bundoora, Mill Park, South Morang
+      [3101, 3116], // Kew, Balwyn, Doncaster, Templestowe
+      [3125, 3138], // Camberwell (parts), Box Hill, Ringwood, Croydon
+      [3140, 3140], // Lilydale
+      [3148, 3156], // Syndal, Glen Waverley, Ferntree Gully
+      [3750, 3767], // Epping, South Morang, Mernda, Whittlesea, Doreen
+      [3770, 3787], // Coldstream, Yarra Glen, Healesville, Mt Evelyn
+      [3795, 3797], // Belgrave, Emerald, Cockatoo
+    ],
+    suburbs: [
+      "Northcote", "Thornbury", "Preston", "Reservoir", "Bundoora",
+      "Mill Park", "South Morang", "Epping", "Mernda", "Doreen",
+      "Whittlesea", "Kew", "Kew East", "Balwyn", "Balwyn North",
+      "Doncaster", "Doncaster East", "Templestowe", "Donvale",
+      "Camberwell", "Surrey Hills", "Box Hill", "Box Hill North",
+      "Box Hill South", "Blackburn", "Ringwood", "Ringwood East",
+      "Ringwood North", "Croydon", "Croydon Hills", "Mooroolbark",
+      "Lilydale", "Healesville", "Mt Evelyn", "Chirnside Park",
+      "Glen Waverley", "Mount Waverley", "Ferntree Gully", "Belgrave",
+      "Ivanhoe", "Heidelberg", "Greensborough", "Eltham",
+      "Diamond Creek", "Hurstbridge", "Alphington", "Fairfield",
+      "Watsonia", "Macleod", "Rosanna", "Viewbank",
+      "Craigieburn", "Roxburgh Park", "Mickleham", "Wollert",
+    ],
+    hardness: 19,
+    chlorine: 0.7,
+    fluoride: 0.8,
+    ph: 7.4,
+    pfasRisk: "low",
+    source: "Silvan, Upper Yarra & Maroondah Reservoirs via Melbourne Water",
+    notes: "Yarra Valley Water supplies some of Australia's softest water at just 19 mg/L hardness, drawn from protected mountain catchments east of Melbourne. No softener needed. Chlorine is low — a whole house carbon filter is the most popular upgrade for taste and shower comfort.",
+  },
+  // ── South East Water ──────────────────────────────────────────────────────
+  {
+    key: "sew",
+    utilityName: "South East Water",
+    region: "Melbourne — South & Southeast",
+    state: "VIC",
+    postcodeRanges: [
+      [3161, 3178], // Caulfield, Carnegie, Bentleigh, Oakleigh, Dandenong, Keysborough
+      [3185, 3210], // Brighton, Sandringham, Cheltenham, Moorabbin, Mordialloc, Chelsea, Frankston
+      [3800, 3810], // Monash Uni area, Berwick, Narre Warren
+      [3910, 3920], // Langwarrin, Frankston South, Cranbourne
+      [3930, 3945], // Mornington, Mt Martha, Rosebud, Rye, Sorrento
+      [3158, 3160], // Upwey, Belgrave South
+      [3802, 3806], // Endeavour Hills, Hallam, Berwick
+    ],
+    suburbs: [
+      "Caulfield", "Caulfield North", "Caulfield South", "Carnegie",
+      "Murrumbeena", "Bentleigh", "Bentleigh East", "Oakleigh",
+      "Brighton", "Brighton East", "Hampton", "Sandringham",
+      "Cheltenham", "Moorabbin", "Mordialloc", "Chelsea",
+      "Frankston", "Frankston South", "Langwarrin",
+      "Mornington", "Mt Martha", "Rosebud", "Rye", "Sorrento",
+      "Cranbourne", "Narre Warren", "Berwick", "Pakenham",
+      "Dandenong", "Keysborough", "Rowville", "Scoresby",
+      "Endeavour Hills", "Hallam", "Springvale",
+    ],
+    hardness: 30,
+    chlorine: 0.8,
+    fluoride: 0.9,
+    ph: 7.4,
+    pfasRisk: "low",
+    source: "Cardinia & Tarago Reservoirs via Melbourne Water",
+    notes: "South East Water draws from Cardinia and Tarago reservoirs — soft, high-quality water. Chlorine is moderate and a carbon filter addresses taste and skin comfort. No scale issues in this area.",
+  },
+  // ── Barwon Water ──────────────────────────────────────────────────────────
   {
     key: "barwon",
     utilityName: "Barwon Water",
