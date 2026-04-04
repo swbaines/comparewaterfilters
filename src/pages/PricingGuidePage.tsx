@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
 import { DollarSign, ArrowRight } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const priceTable = [
   { system: "Under sink carbon filter", installed: "$300 – $1,200", maintenance: "$80 – $200/yr" },
@@ -127,6 +128,19 @@ export default function PricingGuidePage() {
               </Card>
             ))}
           </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">Frequently asked questions</h2>
+          <Accordion type="single" collapsible className="w-full">
+            {pricingFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </section>
 
         <div className="mt-12 text-center">
