@@ -4,6 +4,7 @@ import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
 import { systemTypes } from "@/data/systemTypes";
 import { CheckCircle2, XCircle, Droplets, ShieldCheck, Home, Zap, Waves, Layers } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const iconMap: Record<string, React.ElementType> = {
   droplets: Droplets,
@@ -24,20 +25,21 @@ export default function SystemTypesPage() {
     }
   }, []);
 
+  const systemFaqs = [
+    { q: "What type of water filter is best for my home?", a: "It depends on your water concerns. Under-sink carbon filters suit most households wanting better-tasting drinking water. Reverse osmosis removes fluoride and heavy metals. Whole house systems protect all taps and appliances. Take the quiz to get a personalised recommendation." },
+    { q: "Do I need a whole house water filter?", a: "A whole house filter is ideal if you want filtered water at every tap — for drinking, showering, and protecting appliances from sediment and chlorine. If you only need better drinking water, an under-sink system is more affordable." },
+    { q: "Does reverse osmosis remove fluoride?", a: "Yes. Reverse osmosis is one of the most effective methods for removing fluoride, along with heavy metals, bacteria, and dissolved solids. Standard carbon filters do not remove fluoride." },
+    { q: "What is a UV water filter?", a: "UV (ultraviolet) water filters use UV light to kill bacteria, viruses, and parasites without chemicals. They are essential for bore water or tank water but do not remove chemical contaminants — they are often paired with carbon or sediment filters." },
+    { q: "What does a water softener do?", a: "A water softener removes calcium and magnesium (hard water minerals) using ion exchange. This prevents scale buildup in pipes and appliances, improves soap lathering, and is particularly useful in areas with hard bore or ground water." },
+  ];
+
   useEffect(() => {
-    const faqs = [
-      { q: "What type of water filter is best for my home?", a: "It depends on your water concerns. Under-sink carbon filters suit most households wanting better-tasting drinking water. Reverse osmosis removes fluoride and heavy metals. Whole house systems protect all taps and appliances. Take the quiz to get a personalised recommendation." },
-      { q: "Do I need a whole house water filter?", a: "A whole house filter is ideal if you want filtered water at every tap — for drinking, showering, and protecting appliances from sediment and chlorine. If you only need better drinking water, an under-sink system is more affordable." },
-      { q: "Does reverse osmosis remove fluoride?", a: "Yes. Reverse osmosis is one of the most effective methods for removing fluoride, along with heavy metals, bacteria, and dissolved solids. Standard carbon filters do not remove fluoride." },
-      { q: "What is a UV water filter?", a: "UV (ultraviolet) water filters use UV light to kill bacteria, viruses, and parasites without chemicals. They are essential for bore water or tank water but do not remove chemical contaminants — they are often paired with carbon or sediment filters." },
-      { q: "What does a water softener do?", a: "A water softener removes calcium and magnesium (hard water minerals) using ion exchange. This prevents scale buildup in pipes and appliances, improves soap lathering, and is particularly useful in areas with hard bore or ground water." },
-    ];
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.text = JSON.stringify({
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({
+      mainEntity: systemFaqs.map((f) => ({
         "@type": "Question",
         name: f.q,
         acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -123,6 +125,19 @@ export default function SystemTypesPage() {
             );
           })}
         </div>
+
+        {/* FAQ */}
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">Frequently asked questions</h2>
+          <Accordion type="single" collapsible className="w-full">
+            {systemFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-medium">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </section>
       </div>
     </div>
   );
