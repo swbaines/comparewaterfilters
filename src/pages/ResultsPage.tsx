@@ -454,76 +454,62 @@ export default function ResultsPage() {
         {/* Comparison table */}
         <div className="mt-12 overflow-x-auto">
           <h2 className="mb-4 text-lg font-bold">Quick comparison</h2>
-          {result.secondary.id === result.primary.id ? (
-            <table className="w-full min-w-[400px] text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="pb-3 text-left font-medium text-muted-foreground"></th>
-                  <th className="pb-3 text-left font-medium">Our recommendation</th>
-                  <th className="pb-3 text-left font-medium">Premium</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">System type</td>
-                  <td className="py-3">{result.primary.title}</td>
-                  <td className="py-3">{result.premium.title}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">Price range</td>
-                  <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
-                  <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
-                  <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
-                  <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">Category</td>
-                  <td className="py-3">{result.primary.category}</td>
-                  <td className="py-3">{result.premium.category}</td>
-                </tr>
-              </tbody>
-            </table>
-          ) : (
-            <table className="w-full min-w-[600px] text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="pb-3 text-left font-medium text-muted-foreground"></th>
-                  <th className="pb-3 text-left font-medium">Budget alternative</th>
-                  <th className="pb-3 text-left font-medium">Our recommendation</th>
-                  <th className="pb-3 text-left font-medium">Premium</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">System type</td>
-                  <td className="py-3">{result.secondary.title}</td>
-                  <td className="py-3">{result.primary.title}</td>
-                  <td className="py-3">{result.premium.title}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">Price range</td>
-                  <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
-                  <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
-                  <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
-                  <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
-                  <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
-                  <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
-                </tr>
-                <tr>
-                  <td className="py-3 font-medium text-muted-foreground">Category</td>
-                  <td className="py-3">{result.secondary.category}</td>
-                  <td className="py-3">{result.primary.category}</td>
-                  <td className="py-3">{result.premium.category}</td>
-                </tr>
-              </tbody>
-            </table>
-          )}
+          {(() => {
+            const collapsed = result.secondary.id === result.primary.id;
+            const recs = collapsed
+              ? [{ label: "Our recommendation", rec: result.primary }, { label: "Premium", rec: result.premium }]
+              : [{ label: "Budget alternative", rec: result.secondary }, { label: "Our recommendation", rec: result.primary }, { label: "Premium", rec: result.premium }];
+
+            const rows: { label: string; render: (rec: Recommendation) => React.ReactNode }[] = [
+              { label: "System type", render: (r) => r.title },
+              { label: "Price range", render: (r) => `$${r.priceMin.toLocaleString()} – $${r.priceMax.toLocaleString()}` },
+              { label: "Annual maintenance", render: (r) => `$${r.annualMaintenanceMin} – $${r.annualMaintenanceMax}/yr` },
+              { label: "Filter changes", render: (r) => r.filterFrequency },
+              { label: "Coverage", render: (r) => r.idealHomeType },
+              {
+                label: "Removes chlorine",
+                render: (r) => r.bestFor.some((b) => b.toLowerCase().includes("chlorine"))
+                  ? <Check className="h-4 w-4 text-primary" />
+                  : <span className="text-muted-foreground">—</span>,
+              },
+              {
+                label: "Removes fluoride & PFAS",
+                render: (r) => r.notFor.some((n) => n.toLowerCase().includes("fluoride"))
+                  ? <XCircle className="h-4 w-4 text-muted-foreground/50" />
+                  : <Check className="h-4 w-4 text-primary" />,
+              },
+              {
+                label: "Whole home protection",
+                render: (r) => r.bestFor.some((b) => b.toLowerCase().includes("whole house") || b.toLowerCase().includes("every tap"))
+                  ? <Check className="h-4 w-4 text-primary" />
+                  : <XCircle className="h-4 w-4 text-muted-foreground/50" />,
+              },
+              { label: "Key tradeoff", render: (r) => r.tradeoffs[0] || "—" },
+            ];
+
+            return (
+              <table className={`w-full text-sm ${collapsed ? "min-w-[400px]" : "min-w-[600px]"}`}>
+                <thead>
+                  <tr className="border-b">
+                    <th className="pb-3 pr-4 text-left font-medium text-muted-foreground"></th>
+                    {recs.map((col) => (
+                      <th key={col.label} className="pb-3 pr-4 text-left font-medium">{col.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {rows.map((row) => (
+                    <tr key={row.label}>
+                      <td className="py-3 pr-4 font-medium text-muted-foreground whitespace-nowrap">{row.label}</td>
+                      {recs.map((col) => (
+                        <td key={col.label} className="py-3 pr-4">{row.render(col.rec)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })()}
         </div>
 
         {/* Disclaimer */}
