@@ -477,6 +477,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     fluoride: 0.85,
     ph: 7.6,
     pfasRisk: "low",
+    usesChloramine: true,
     source: "Hinze Dam",
     notes: "Gold Coast water is much softer than Brisbane thanks to the Hinze Dam source. No scale issues. A carbon filter for chlorine taste is the main upgrade most families consider.",
   },
