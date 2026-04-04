@@ -164,9 +164,28 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  const AU_STATES = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"] as const;
+
   return (
     <div ref={containerRef} className="relative">
       <label className="mb-1.5 block text-sm font-medium">Suburb or postcode</label>
+      {autoDetectFailed && (
+        <div className="mb-2">
+          <p className="mb-1 text-xs text-muted-foreground">Select your state to improve results:</p>
+          <div className="flex flex-wrap gap-1.5">
+            {AU_STATES.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setManualState(s)}
+                className="rounded-full border px-3 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <Input
         placeholder="Start typing suburb or postcode..."
         value={query}
