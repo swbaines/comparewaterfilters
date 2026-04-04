@@ -36,17 +36,35 @@ export default function SystemTypesPage() {
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "application/ld+json";
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: systemFaqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    });
+    script.id = "systemtypes-jsonld";
+    script.text = JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: "Water Filter System Types — Compare Water Filters",
+        description: "Explore different water filtration system types — under-sink, whole house, reverse osmosis, UV, and more. Learn the pros, cons, and ideal use cases.",
+        url: "https://www.comparewaterfilters.com.au/system-types",
+        isPartOf: { "@type": "WebSite", name: "Compare Water Filters", url: "https://www.comparewaterfilters.com.au" },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://www.comparewaterfilters.com.au" },
+            { "@type": "ListItem", position: 2, name: "System Types", item: "https://www.comparewaterfilters.com.au/system-types" },
+          ],
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: systemFaqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ]);
     document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
+    return () => { document.getElementById("systemtypes-jsonld")?.remove(); };
   }, []);
 
   return (
