@@ -355,68 +355,91 @@ export default function ResultsPage() {
           <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
         </div>
 
-        {providerMatches.length > 0 && (
-          <div className="mt-14">
-            <div className="mb-6 text-center">
-              <Badge className="mb-3" variant="secondary">
-                <Users className="mr-1 h-3 w-3" /> Matched providers
-              </Badge>
-              <h2 className="text-xl font-bold sm:text-2xl">Providers matched to your needs</h2>
+        <div className="mt-14">
+          <div className="mb-6 text-center">
+            <Badge className="mb-3" variant="secondary">
+              <Users className="mr-1 h-3 w-3" /> Matched providers
+            </Badge>
+            <h2 className="text-xl font-bold sm:text-2xl">Providers matched to your needs</h2>
+            {providerMatches.length > 0 ? (
               <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
                 We've found {providerMatches.length} qualified provider{providerMatches.length > 1 ? "s" : ""} in your area who install your recommended systems. Compare them side by side.
               </p>
-            </div>
-
-            {/* Sort & filter controls */}
-            <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border bg-background p-3">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="match">Best match</SelectItem>
-                  <SelectItem value="rating">Highest rated</SelectItem>
-                  <SelectItem value="reviews">Most reviews</SelectItem>
-                  <SelectItem value="experience">Most experience</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={filterPrice} onValueChange={setFilterPrice}>
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Price range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All price ranges</SelectItem>
-                  <SelectItem value="budget">Budget</SelectItem>
-                  <SelectItem value="mid">Mid-range</SelectItem>
-                  <SelectItem value="premium">Premium</SelectItem>
-                </SelectContent>
-              </Select>
-              {(filterPrice !== "all" || sortBy !== "match") && (
-                <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); }}>
-                  Reset
-                </Button>
-              )}
-            </div>
-
-            {filteredAndSorted.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-3">
-                {filteredAndSorted.map((match, i) => (
-                  <ProviderCard key={match.provider.id} match={match} rank={sortBy === "match" ? i : -1} onRequestQuote={setQuoteProvider} />
-                ))}
-              </div>
             ) : (
-              <Card className="border-0 bg-muted/50 shadow-none">
-                <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">No providers match your current filters.</p>
-                  <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); }}>
-                    Clear filters
-                  </Button>
-                </CardContent>
-              </Card>
+              <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+                We're still growing our network in your area.
+              </p>
             )}
           </div>
-        )}
+
+          {providerMatches.length > 0 ? (
+            <>
+              {/* Sort & filter controls */}
+              <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border bg-background p-3">
+                <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="match">Best match</SelectItem>
+                    <SelectItem value="rating">Highest rated</SelectItem>
+                    <SelectItem value="reviews">Most reviews</SelectItem>
+                    <SelectItem value="experience">Most experience</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterPrice} onValueChange={setFilterPrice}>
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Price range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All price ranges</SelectItem>
+                    <SelectItem value="budget">Budget</SelectItem>
+                    <SelectItem value="mid">Mid-range</SelectItem>
+                    <SelectItem value="premium">Premium</SelectItem>
+                  </SelectContent>
+                </Select>
+                {(filterPrice !== "all" || sortBy !== "match") && (
+                  <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); }}>
+                    Reset
+                  </Button>
+                )}
+              </div>
+
+              {filteredAndSorted.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-3">
+                  {filteredAndSorted.map((match, i) => (
+                    <ProviderCard key={match.provider.id} match={match} rank={sortBy === "match" ? i : -1} onRequestQuote={setQuoteProvider} />
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-0 bg-muted/50 shadow-none">
+                  <CardContent className="p-6 text-center">
+                    <p className="text-muted-foreground">No providers match your current filters.</p>
+                    <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); }}>
+                      Clear filters
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          ) : (
+            <Card className="border border-dashed">
+              <CardContent className="flex flex-col items-center justify-center p-10 text-center">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                  <Users className="h-7 w-7 text-muted-foreground" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold">No providers in your area yet</h3>
+                <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
+                  We don't have any matched providers in your area right now, but we're expanding fast. Your recommendations above are still tailored to your home — use them as a guide when shopping locally or requesting quotes.
+                </p>
+                <Button variant="outline" onClick={() => window.location.href = "/contact"}>
+                  Get in touch for help
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
         {/* Comparison table */}
         <div className="mt-12 overflow-x-auto">
