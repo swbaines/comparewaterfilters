@@ -454,42 +454,76 @@ export default function ResultsPage() {
         {/* Comparison table */}
         <div className="mt-12 overflow-x-auto">
           <h2 className="mb-4 text-lg font-bold">Quick comparison</h2>
-          <table className="w-full min-w-[600px] text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="pb-3 text-left font-medium text-muted-foreground"></th>
-                <th className="pb-3 text-left font-medium">Budget alternative</th>
-                <th className="pb-3 text-left font-medium">Our recommendation</th>
-                <th className="pb-3 text-left font-medium">Premium</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">System type</td>
-                <td className="py-3">{result.secondary.title}</td>
-                <td className="py-3">{result.primary.title}</td>
-                <td className="py-3">{result.premium.title}</td>
-              </tr>
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">Price range</td>
-                <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
-                <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
-                <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
-              </tr>
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
-                <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
-                <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
-                <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
-              </tr>
-              <tr>
-                <td className="py-3 font-medium text-muted-foreground">Category</td>
-                <td className="py-3">{result.secondary.category}</td>
-                <td className="py-3">{result.primary.category}</td>
-                <td className="py-3">{result.premium.category}</td>
-              </tr>
-            </tbody>
-          </table>
+          {result.secondary.id === result.primary.id ? (
+            <table className="w-full min-w-[400px] text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="pb-3 text-left font-medium text-muted-foreground"></th>
+                  <th className="pb-3 text-left font-medium">Our recommendation</th>
+                  <th className="pb-3 text-left font-medium">Premium</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">System type</td>
+                  <td className="py-3">{result.primary.title}</td>
+                  <td className="py-3">{result.premium.title}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Price range</td>
+                  <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
+                  <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
+                  <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
+                  <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Category</td>
+                  <td className="py-3">{result.primary.category}</td>
+                  <td className="py-3">{result.premium.category}</td>
+                </tr>
+              </tbody>
+            </table>
+          ) : (
+            <table className="w-full min-w-[600px] text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="pb-3 text-left font-medium text-muted-foreground"></th>
+                  <th className="pb-3 text-left font-medium">Budget alternative</th>
+                  <th className="pb-3 text-left font-medium">Our recommendation</th>
+                  <th className="pb-3 text-left font-medium">Premium</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">System type</td>
+                  <td className="py-3">{result.secondary.title}</td>
+                  <td className="py-3">{result.primary.title}</td>
+                  <td className="py-3">{result.premium.title}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Price range</td>
+                  <td className="py-3">${result.secondary.priceMin.toLocaleString()} – ${result.secondary.priceMax.toLocaleString()}</td>
+                  <td className="py-3">${result.primary.priceMin.toLocaleString()} – ${result.primary.priceMax.toLocaleString()}</td>
+                  <td className="py-3">${result.premium.priceMin.toLocaleString()} – ${result.premium.priceMax.toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Annual maintenance</td>
+                  <td className="py-3">${result.secondary.annualMaintenanceMin} – ${result.secondary.annualMaintenanceMax}/yr</td>
+                  <td className="py-3">${result.primary.annualMaintenanceMin} – ${result.primary.annualMaintenanceMax}/yr</td>
+                  <td className="py-3">${result.premium.annualMaintenanceMin} – ${result.premium.annualMaintenanceMax}/yr</td>
+                </tr>
+                <tr>
+                  <td className="py-3 font-medium text-muted-foreground">Category</td>
+                  <td className="py-3">{result.secondary.category}</td>
+                  <td className="py-3">{result.primary.category}</td>
+                  <td className="py-3">{result.premium.category}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Disclaimer */}
