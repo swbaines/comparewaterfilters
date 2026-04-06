@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +9,22 @@ import SectionHeading from "@/components/SectionHeading";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function LearnPage() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "learn-jsonld";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://www.comparewaterfilters.com.au" },
+        { "@type": "ListItem", position: 2, name: "Learn", item: "https://www.comparewaterfilters.com.au/learn" },
+      ],
+    });
+    document.head.appendChild(script);
+    return () => { document.getElementById("learn-jsonld")?.remove(); };
+  }, []);
+
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
