@@ -38,6 +38,37 @@ export default function LearnPage() {
             </Link>
           ))}
         </div>
+
+        {/* Cross-links */}
+        <section className="mt-12">
+          <h2 className="mb-4 text-lg font-bold">Related resources</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link to="/water-quality">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Water Quality Lookup</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Check hardness, chlorine, and PFAS levels for your suburb.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/system-types">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">System Types</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Compare under-sink, whole house, RO, UV, and softener systems.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/pricing-guide">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Pricing Guide</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Understand installed prices and annual maintenance costs.</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );

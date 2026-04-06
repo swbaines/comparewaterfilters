@@ -21,6 +21,7 @@ export default function Footer() {
               <li><Link to="/quiz" className="hover:text-foreground">Find My System</Link></li>
               <li><Link to="/system-types" className="hover:text-foreground">System Types</Link></li>
               <li><Link to="/pricing-guide" className="hover:text-foreground">Pricing Guide</Link></li>
+              <li><Link to="/water-quality" className="hover:text-foreground">Water Quality Lookup</Link></li>
               <li><Link to="/learn" className="hover:text-foreground">Learn</Link></li>
             </ul>
           </div>
