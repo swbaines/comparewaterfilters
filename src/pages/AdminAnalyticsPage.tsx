@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import SubmissionsChart from "@/components/analytics/SubmissionsChart";
 import LeadsByProviderChart from "@/components/analytics/LeadsByProviderChart";
 import LeadsByStatusChart from "@/components/analytics/LeadsByStatusChart";
+import StateBreakdownChart from "@/components/analytics/StateBreakdownChart";
 
 const RANGES = [
   { label: "7 days", days: 7 },
@@ -181,6 +182,8 @@ export default function AdminAnalyticsPage() {
               <LeadsByProviderChart byProvider={byProvider} />
               <LeadsByStatusChart byStatus={byStatus} />
             </div>
+
+            <StateBreakdownChart byState={byState} />
           </>
         )}
       </div>
