@@ -420,7 +420,7 @@ export default function VendorBillingPage() {
                     Your account is pending approval. Payment setup will be available once approved.
                   </p>
                 </div>
-              ) : cardSaved ? (
+              ) : cardSaved && !showCardForm ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     {cardInfo ? (
