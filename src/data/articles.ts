@@ -13,6 +13,97 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    id: "8",
+    title: "Best Whole House Water Filter Australia 2026 — Buyer's Guide",
+    slug: "best-whole-house-water-filter-australia",
+    summary: "A comprehensive guide to the best whole house water filtration systems for Australian homes in 2026, covering what to look for, installed costs, and top picks by city.",
+    category: "Guides",
+    seoTitle: "Best Whole House Water Filter Australia 2026 — Top Systems Compared",
+    seoDescription: "Compare the best whole house water filter systems in Australia for 2026. Covers installed costs, features, certifications, and top picks for Sydney, Melbourne, Brisbane, Perth & Adelaide.",
+    publishedAt: "2026-04-06",
+    readTime: "10 min read",
+    body: `If you're looking for the best whole house water filter in Australia in 2026, you're not alone. More Australian households than ever are installing whole house water filtration — and for good reason. Rising chlorine levels, seasonal taste and odour events, and growing awareness of contaminants like PFAS are driving demand across every state.
+
+This guide covers everything you need to know to choose the right whole house water filter for your home — including what to look for, what to avoid, installed costs, and how systems compare across Australia's major cities.
+
+**What Is a Whole House Water Filter?**
+
+A whole house water filter — also called a point-of-entry (POE) system — is installed on your main water line before it splits to individual taps, showers, and appliances. Every drop of water entering your home passes through the filter.
+
+This means filtered water from every tap, every shower, every appliance. No more chlorine smell in the shower. No more sediment in the washing machine. No more chemical taste from the kitchen tap.
+
+Unlike under-sink filters that only treat one tap, a whole house system protects your entire home — including your hot water system, dishwasher, and laundry.
+
+**Why Whole House Filtration Matters in 2026**
+
+Australian water utilities are increasing chlorine dosing to manage longer pipe networks serving growing outer suburbs. Chloramine use is expanding. Algal bloom events in South East Queensland and South Australia are becoming more frequent. And the updated Australian Drinking Water Guidelines released in June 2025 lowered acceptable PFAS limits — confirming that emerging contaminants are a genuine concern.
+
+For most Australian households, a whole house water filter is the single most effective upgrade you can make for day-to-day water quality.
+
+**What to Look for in a Whole House Water Filter**
+
+Not all whole house filters are created equal. Here's what separates a good system from a great one:
+
+- **Filtration media** — Look for high-grade catalytic carbon or coconut shell activated carbon. These are the most effective at removing chlorine, chloramine, and organic compounds. Cheaper systems use lower-grade carbon that exhausts faster and performs worse.
+- **Flow rate** — A whole house system needs to keep up with your household's water demand. For a typical 2-bathroom Australian home, you want a minimum flow rate of 40 litres per minute. Larger homes need 60+ LPM.
+- **Micron rating** — The lower the micron rating, the finer the filtration. A 1-micron sediment pre-filter combined with a 5-micron carbon stage is a solid baseline.
+- **WaterMark certification** — This is the Australian standard for plumbing products. Any system installed by a licensed plumber must be WaterMark certified. If a system isn't certified, walk away.
+- **Warranty and local support** — Look for a minimum 5-year warranty on the tank and 12 months on filters. Local support matters — if something goes wrong, you want a technician who can come to your home, not a call centre overseas.
+- **Filter replacement cost and schedule** — Replacement filters are an ongoing cost. Budget $150–$400 per year depending on the system and your water quality.
+
+**What a Whole House Filter Does NOT Do**
+
+It's important to understand the limitations:
+
+- A standard whole house carbon filter does **not** remove fluoride, heavy metals, or PFAS. For these, you need a reverse osmosis system at the kitchen tap.
+- A whole house filter does **not** soften water. If you have hard water (common in Perth, Adelaide, and parts of Brisbane), you may need a separate water softener.
+- A whole house filter does **not** disinfect water. If you're on tank water, bore water, or rainwater, you'll need UV disinfection in addition to filtration.
+
+**Installed Costs: What to Expect in 2026**
+
+Whole house water filter prices in Australia vary depending on the system, your plumbing, and your location. Here's a realistic guide:
+
+- **Budget systems** — $1,500–$2,500 installed. Basic single-cartridge or twin-cartridge carbon systems. Suitable for smaller homes with town water and moderate chlorine levels. Filter replacement every 6–12 months.
+- **Mid-range systems** — $2,500–$4,500 installed. Multi-stage systems with sediment pre-filter, high-capacity carbon, and often a UV stage. The sweet spot for most Australian households. Filters last 12 months.
+- **Premium systems** — $4,500–$7,000+ installed. Large-capacity commercial-grade tanks, catalytic carbon for chloramine, and additional stages for specific contaminants. Best for large homes, heavy water usage, or areas with particularly challenging water quality.
+
+Installation typically takes 2–4 hours and must be performed by a licensed plumber.
+
+**Best Whole House Water Filter by City**
+
+Water quality varies significantly across Australia. Here's what to prioritise by city:
+
+- **Sydney** — Sydney has soft, well-treated water but uses both chlorine and chloramine. A catalytic carbon whole house filter is the best choice — standard carbon won't adequately remove chloramine. Budget $2,500–$4,000 installed.
+- **Melbourne** — Melbourne's water is among Australia's softest and cleanest, but chlorine levels are higher than many people realise. A standard carbon whole house filter handles Melbourne water well. Budget $2,000–$3,500 installed.
+- **Brisbane** — South East Queensland water has moderate hardness and seasonal taste issues from algal blooms. A multi-stage carbon system with a quality sediment pre-filter is ideal. Consider adding a water softener if you're in a high-hardness area. Budget $2,500–$4,500 installed.
+- **Perth** — Perth has some of the hardest water in Australia, especially in northern suburbs. A whole house filter alone won't solve scale issues — you'll likely need a water softener as well. Budget $3,000–$5,000 for filtration, plus $2,000–$4,000 for a softener if needed.
+- **Adelaide** — Adelaide faces the toughest water quality challenges of any Australian capital: high chlorine, hard water, and Murray River source water with elevated minerals. A comprehensive system with carbon filtration plus softening is often the best approach. Budget $3,500–$6,000+ installed.
+
+**How to Choose the Right System**
+
+The best whole house water filter for your home depends on three things:
+
+1. **Your water quality** — Use our free <a href="/water-quality" class="text-primary underline">water quality lookup tool</a> to check hardness, chlorine, and PFAS risk for your suburb.
+2. **Your household size** — Larger homes need higher flow rates and larger filter capacities.
+3. **Your specific concerns** — Chlorine taste? Scale damage? Skin irritation? Different concerns point to different solutions.
+
+**Our Recommendation**
+
+For most Australian households on town water, a mid-range whole house carbon filter ($2,500–$4,500 installed) paired with an under-sink reverse osmosis system for drinking water ($800–$1,500 installed) provides the best combination of whole-home quality and drinking water purity.
+
+If you're in a hard water area (Perth, Adelaide, parts of Brisbane), add a water softener to protect your plumbing and appliances.
+
+**Ready to compare quotes from licensed local installers?** <a href="/quiz" class="text-primary underline">Take our 2-minute quiz</a> and we'll match you with vetted providers in your area — free, with no obligation.
+
+**Want to understand your water first?** Check your suburb's water quality with our free <a href="/water-quality" class="text-primary underline">postcode lookup tool</a>.
+
+**Further reading:**
+- <a href="/learn/reverse-osmosis-vs-whole-house" class="text-primary underline">Reverse Osmosis vs Whole House Filtration — Which Do You Need?</a>
+- <a href="/learn/is-australian-tap-water-getting-worse" class="text-primary underline">Is Australian Tap Water Getting Worse?</a>
+- <a href="/pricing-guide" class="text-primary underline">Water Filtration Pricing Guide</a>
+- <a href="/system-types" class="text-primary underline">Compare System Types</a>`,
+  },
+  {
     id: "7",
     title: "Is Australian Tap Water Getting Worse? What the Data Actually Says",
     slug: "is-australian-tap-water-getting-worse",
