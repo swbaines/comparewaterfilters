@@ -201,10 +201,10 @@ export default function HomePage() {
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
             Compare Water Filters matches you to the right filtration system for your home, your water source, and your budget — then connects you with licensed local vendors for real quotes.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex flex-col items-center gap-4">
             <Link to="/quiz">
-              <Button size="lg" className="gap-2 text-base">
-                Find My System <ArrowRight className="h-4 w-4" />
+              <Button size="lg" className="gap-2 px-10 py-6 text-lg font-bold shadow-lg">
+                Find My System <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
             <Link to="/water-quality">
