@@ -110,7 +110,7 @@ const jsonLdData = [
     "@type": "WebSite",
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
-    description: "Australia's independent water filter comparison platform. Compare filtration systems, understand pricing, and get matched to licensed local vendors.",
+    description: "Australia's independent water filter comparison platform. Compare the best water filtration systems — whole house water filters, reverse osmosis, under-sink — and get free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth and Adelaide.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -126,8 +126,15 @@ const jsonLdData = [
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
     logo: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
-    description: "Independent water filtration comparison and recommendation platform for Australian homeowners.",
-    areaServed: { "@type": "Country", name: "Australia" },
+    description: "Independent water filtration comparison and recommendation platform for Australian homeowners. Compare the best water filtration systems and get free quotes from licensed installers.",
+    areaServed: [
+      { "@type": "Country", name: "Australia" },
+      { "@type": "City", name: "Sydney" },
+      { "@type": "City", name: "Melbourne" },
+      { "@type": "City", name: "Brisbane" },
+      { "@type": "City", name: "Perth" },
+      { "@type": "City", name: "Adelaide" },
+    ],
     sameAs: [],
   },
   {
@@ -139,7 +146,7 @@ const jsonLdData = [
         name: "How much does a water filter system cost in Australia?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Prices range from $300–$800 for under-sink carbon filters, $800–$1,500 for reverse osmosis systems, and $2,500–$7,000 for whole house filtration systems.",
+          text: "The best water filtration system depends on your water source and concerns. Whole house water filters cost $3,000–$5,000 installed. Reverse osmosis systems cost $800–$3,000. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber.",
         },
       },
       {
@@ -177,8 +184,8 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Compare Water Filters — Find the Right System for Your Home"
-        description="Compare water filtration systems, understand pricing, and get matched to the best option for your Australian home. Independent, free guidance."
+        title="Best Water Filtration System Australia — Compare & Get Free Quotes"
+        description="Compare the best water filtration systems in Australia. Whole house water filters, reverse osmosis, under-sink — independent recommendations and free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth & Adelaide."
         path="/"
       />
 

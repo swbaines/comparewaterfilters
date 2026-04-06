@@ -73,8 +73,8 @@ export default function SystemTypesPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Water Filter System Types"
-        description="Explore different water filtration system types — under-sink, whole house, reverse osmosis, UV, and more. Learn the pros, cons, and ideal use cases."
+        title="Water Filter System Types Australia — Whole House, RO, Under-Sink & More"
+        description="Compare whole house water filters, reverse osmosis, under-sink carbon, UV and water softener systems. Pros, cons, pricing and who each system suits in Australia."
         path="/system-types"
       />
       <div className="container max-w-4xl">
