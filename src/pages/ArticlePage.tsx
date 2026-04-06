@@ -1,9 +1,9 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect } from "react";
 import PageMeta from "@/components/PageMeta";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { articles } from "@/data/articles";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft } from "lucide-react";
 
 const BASE_URL = "https://www.comparewaterfilters.com.au";
 
@@ -54,9 +54,7 @@ export default function ArticlePage() {
         path={`/learn/${article.slug}`}
       />
       <div className="container max-w-3xl">
-        <Link to="/learn" className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-3 w-3" /> Back to articles
-        </Link>
+        <Breadcrumbs items={[{ label: "Learn", href: "/learn" }, { label: article.title }]} />
         <Badge variant="secondary" className="mb-3">{article.category}</Badge>
         <h1 className="text-2xl font-bold sm:text-3xl">{article.title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
