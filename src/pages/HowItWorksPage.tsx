@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
-import { ShieldCheck, BarChart3, MapPin, BookOpen } from "lucide-react";
+import { ShieldCheck, BarChart3, MapPin, BookOpen, ArrowRight } from "lucide-react";
 
 const points = [
   { icon: BarChart3, title: "Based on your inputs", desc: "Recommendations are generated from your household profile, water source, main concerns, coverage needs, budget, and preferences." },
@@ -72,6 +74,52 @@ export default function HowItWorksPage() {
             </ul>
           </CardContent>
         </Card>
+
+        {/* Cross-links */}
+        <section className="mt-10">
+          <h3 className="mb-4 font-semibold">Helpful next steps</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link to="/water-quality">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h4 className="text-sm font-semibold">Check Your Water Quality</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">Look up what's in your local water supply before taking the quiz.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/system-types">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h4 className="text-sm font-semibold">Compare System Types</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">Understand the differences between under-sink, whole house, RO, and UV systems.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/pricing-guide">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h4 className="text-sm font-semibold">Pricing Guide</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">See typical installed prices and ongoing maintenance costs.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/learn">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h4 className="text-sm font-semibold">Learn More</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">Read our guides on water quality, filtration methods, and buying tips.</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+          <div className="mt-6 text-center">
+            <Link to="/quiz">
+              <Button size="lg" className="gap-2">
+                Start the Quiz <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </section>
       </div>
     </div>
   );

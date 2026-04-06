@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
 import { systemTypes } from "@/data/systemTypes";
-import { CheckCircle2, XCircle, Droplets, ShieldCheck, Home, Zap, Waves, Layers } from "lucide-react";
+import { CheckCircle2, XCircle, Droplets, ShieldCheck, Home, Zap, Waves, Layers, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const iconMap: Record<string, React.ElementType> = {
@@ -155,6 +157,44 @@ export default function SystemTypesPage() {
               </AccordionItem>
             ))}
           </Accordion>
+        </section>
+
+        {/* Internal cross-links */}
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">Continue exploring</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link to="/pricing-guide">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Pricing Guide</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">See installed prices and annual maintenance costs for every system type.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/water-quality">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Check Your Water Quality</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Look up hardness, chlorine, fluoride, and PFAS levels for your suburb.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/learn">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Learn More</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Guides and articles on water quality, filtration methods, and buying tips.</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+          <div className="mt-6 text-center">
+            <Link to="/quiz">
+              <Button size="lg" className="gap-2">
+                Find My System <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </section>
       </div>
     </div>
