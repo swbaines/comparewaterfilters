@@ -42,7 +42,7 @@ export default function AdminInvoicesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("invoices")
-        .select("*, providers(name)")
+        .select("*, providers(name, contact_email)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -82,10 +82,13 @@ export default function AdminInvoicesPage() {
       const inv = invoices.find((i) => i.id === invoiceId);
       if (!inv) throw new Error("Invoice not found");
 
+      const providerEmail = (inv as any).providers?.contact_email;
+      if (!providerEmail) throw new Error("Provider has no contact email configured");
+
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "vendor-lead-notification",
-          recipientEmail: (inv.providers as any)?.name ? undefined : undefined,
+          recipientEmail: providerEmail,
           idempotencyKey: `invoice-reminder-${invoiceId}-${Date.now()}`,
         },
       });
