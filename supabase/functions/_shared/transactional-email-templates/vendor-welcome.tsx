@@ -23,7 +23,7 @@ const VendorWelcomeEmail = ({ businessName }: VendorWelcomeProps) => (
         <Hr style={divider} />
 
         <Heading style={h1}>
-          Welcome{businessName ? `, ${businessName}` : ''}! 🎉
+          Welcome{businessName ? `, ${businessName}` : ''}!
         </Heading>
 
         <Text style={text}>
@@ -38,9 +38,9 @@ const VendorWelcomeEmail = ({ businessName }: VendorWelcomeProps) => (
           Once approved, you'll be able to:
         </Text>
 
-        <Text style={listItem}>✅ Receive qualified leads matched to your service area</Text>
-        <Text style={listItem}>✅ Manage and respond to quote requests from your dashboard</Text>
-        <Text style={listItem}>✅ Grow your business with Australia's trusted water filter comparison platform</Text>
+        <Text style={listItem}>💧 Receive qualified leads matched to your service area</Text>
+        <Text style={listItem}>💧 Manage and respond to quote requests from your dashboard</Text>
+        <Text style={listItem}>💧 Grow your business with Australia's trusted water filter comparison platform</Text>
 
         <Text style={text}>
           In the meantime, if you have any questions, feel free to reach out — we're here to help.
