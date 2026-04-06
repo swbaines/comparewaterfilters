@@ -12,8 +12,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Default lead price in dollars if not set on the record
-const DEFAULT_LEAD_PRICE = 85;
+// Ownership-based lead pricing
+const OWNER_LEAD_PRICE = 85;
+const RENTAL_LEAD_PRICE = 50;
 
 async function supabaseFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${supabaseUrl}/rest/v1${path}`, {
@@ -56,7 +57,7 @@ Deno.serve(async (req) => {
       try {
         // Get uninvoiced leads for this provider in the last month
         const leads = await supabaseFetch(
-          `/quote_requests?provider_id=eq.${provider.id}&lead_status=neq.lost&invoice_id=is.null&created_at=gte.${periodStart}&created_at=lt.${periodEnd}&select=id,recommended_systems,lead_price`
+          `/quote_requests?provider_id=eq.${provider.id}&lead_status=neq.lost&invoice_id=is.null&created_at=gte.${periodStart}&created_at=lt.${periodEnd}&select=id,recommended_systems,lead_price,ownership_status`
         );
 
         if (leads.length === 0) {
@@ -69,8 +70,8 @@ Deno.serve(async (req) => {
         const lineItems: any[] = [];
 
         for (const lead of leads) {
-          // Use the lead_price set at quote submission (Owner=$85, Rental=$50)
-          const leadPriceDollars = Number(lead.lead_price) || DEFAULT_LEAD_PRICE;
+          // Price based on ownership status: Own=$85, Rent=$50
+          const leadPriceDollars = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? RENTAL_LEAD_PRICE : OWNER_LEAD_PRICE);
           const leadPriceCents = Math.round(leadPriceDollars * 100);
 
           totalCents += leadPriceCents;
