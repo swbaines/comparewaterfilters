@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
 import PageMeta from "@/components/PageMeta";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { ArrowRight, Mail, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,6 +55,7 @@ export default function ContactPage() {
         path="/contact"
       />
       <div className="container max-w-2xl">
+        <Breadcrumbs items={[{ label: "Contact" }]} />
         <SectionHeading badge="Contact" title="Get in touch" subtitle="Have a question or need help? We're here for you." />
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">

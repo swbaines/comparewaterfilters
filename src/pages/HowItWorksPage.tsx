@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { ShieldCheck, BarChart3, MapPin, BookOpen, ArrowRight } from "lucide-react";
 
 const points = [
@@ -41,6 +42,7 @@ export default function HowItWorksPage() {
         path="/how-it-works"
       />
       <div className="container max-w-3xl">
+        <Breadcrumbs items={[{ label: "How It Works" }]} />
         <SectionHeading
           badge="How it works"
           title="How our recommendations work"

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { systemTypes } from "@/data/systemTypes";
 import { CheckCircle2, XCircle, Droplets, ShieldCheck, Home, Zap, Waves, Layers, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -77,6 +78,7 @@ export default function SystemTypesPage() {
         path="/system-types"
       />
       <div className="container max-w-4xl">
+        <Breadcrumbs items={[{ label: "System Types" }]} />
         <SectionHeading
           badge="System types"
           title="Understanding water filtration systems"

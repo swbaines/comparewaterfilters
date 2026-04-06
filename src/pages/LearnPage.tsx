@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import { articles } from "@/data/articles";
 import SectionHeading from "@/components/SectionHeading";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function LearnPage() {
   return (
@@ -15,6 +16,7 @@ export default function LearnPage() {
         path="/learn"
       />
       <div className="container max-w-4xl">
+        <Breadcrumbs items={[{ label: "Learn" }]} />
         <SectionHeading
           badge="Education hub"
           title="Guides, FAQs, and practical advice"

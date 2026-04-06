@@ -4,6 +4,7 @@ import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import SectionHeading from "@/components/SectionHeading";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { DollarSign, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -74,6 +75,7 @@ export default function PricingGuidePage() {
         path="/pricing-guide"
       />
       <div className="container max-w-4xl">
+        <Breadcrumbs items={[{ label: "Pricing Guide" }]} />
         <SectionHeading
           badge="Pricing guide"
           title="Understanding water filter pricing in Australia"
