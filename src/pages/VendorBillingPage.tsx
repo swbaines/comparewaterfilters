@@ -209,6 +209,23 @@ export default function VendorBillingPage() {
   }, 0);
 
   const lastMonthInvoice = invoices[0];
+  const handlePayNow = async (invoiceId: string) => {
+    setPayingInvoiceId(invoiceId);
+    try {
+      const { data, error } = await supabase.functions.invoke("pay-invoice-now", {
+        body: { invoice_id: invoiceId },
+      });
+      if (error) throw new Error(error.message || "Payment failed");
+      if (data?.error) throw new Error(data.error);
+      toast.success("Payment successful! Invoice marked as paid.");
+      queryClient.invalidateQueries({ queryKey: ["vendor-invoices"] });
+    } catch (err: any) {
+      toast.error(err.message || "Payment failed. Please try again.");
+    } finally {
+      setPayingInvoiceId(null);
+    }
+  };
+
   const outstanding = invoices
     .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
     .reduce((sum: number, inv: any) => sum + Number(inv.total_amount), 0);
