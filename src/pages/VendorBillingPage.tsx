@@ -28,6 +28,38 @@ const LEAD_PRICES = [
   { type: "Rental lead", price: "$1", description: "Customer is renting" },
 ];
 
+// ── Card brand SVG icons ──────────────────────────────────────────────────────
+function CardBrandIcon({ brand }: { brand: string }) {
+  const b = brand.toLowerCase();
+  if (b === "visa") {
+    return (
+      <svg viewBox="0 0 48 32" className="h-8 w-12 shrink-0" aria-label="Visa">
+        <rect width="48" height="32" rx="4" fill="#1A1F71" />
+        <text x="24" y="21" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="sans-serif">VISA</text>
+      </svg>
+    );
+  }
+  if (b === "mastercard") {
+    return (
+      <svg viewBox="0 0 48 32" className="h-8 w-12 shrink-0" aria-label="Mastercard">
+        <rect width="48" height="32" rx="4" fill="#252525" />
+        <circle cx="19" cy="16" r="8" fill="#EB001B" />
+        <circle cx="29" cy="16" r="8" fill="#F79E1B" />
+        <path d="M24 9.4a8 8 0 0 1 0 13.2 8 8 0 0 1 0-13.2z" fill="#FF5F00" />
+      </svg>
+    );
+  }
+  if (b === "amex" || b === "american_express") {
+    return (
+      <svg viewBox="0 0 48 32" className="h-8 w-12 shrink-0" aria-label="Amex">
+        <rect width="48" height="32" rx="4" fill="#2E77BC" />
+        <text x="24" y="21" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="sans-serif">AMEX</text>
+      </svg>
+    );
+  }
+  return <CreditCard className="h-6 w-6 text-muted-foreground shrink-0" />;
+}
+
 const statusColors: Record<string, string> = {
   paid: "bg-green-100 text-green-800",
   sent: "bg-blue-100 text-blue-800",
@@ -128,17 +160,6 @@ export default function VendorBillingPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
 
-  // Fetch saved card details from Stripe
-  const { data: cardDetails } = useQuery({
-    queryKey: ["card-details", cardSaved],
-    enabled: cardSaved,
-    queryFn: async () => {
-      const { data, error } = await supabase.functions.invoke("get-card-details");
-      if (error) throw error;
-      return data?.card as { brand: string; last4: string; exp_month: number; exp_year: number } | null;
-    },
-  });
-
   // Fetch leads for the selected invoice's billing period
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["invoice-leads", selectedInvoice?.id],
@@ -193,6 +214,17 @@ export default function VendorBillingPage() {
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Fetch card brand/last4 from Stripe
+  const { data: cardInfo } = useQuery({
+    queryKey: ["card-details", cardSaved],
+    enabled: cardSaved,
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("get-card-details");
+      if (error) throw error;
+      return data?.card as { brand: string; last4: string; exp_month: number; exp_year: number } | null;
     },
   });
 
@@ -389,16 +421,20 @@ export default function VendorBillingPage() {
               ) : cardSaved ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    {cardInfo ? (
+                      <CardBrandIcon brand={cardInfo.brand} />
+                    ) : (
+                      <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    )}
                     <div>
                       <p className="font-medium">
-                        {cardDetails
-                          ? `${cardDetails.brand.charAt(0).toUpperCase() + cardDetails.brand.slice(1)} •••• ${cardDetails.last4}`
+                        {cardInfo
+                          ? `${cardInfo.brand.charAt(0).toUpperCase() + cardInfo.brand.slice(1)} •••• ${cardInfo.last4}`
                           : "Card on file"}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {cardDetails
-                          ? `Expires ${String(cardDetails.exp_month).padStart(2, "0")}/${cardDetails.exp_year} · Charged automatically on the 1st`
+                        {cardInfo
+                          ? `Expires ${String(cardInfo.exp_month).padStart(2, "0")}/${cardInfo.exp_year} · Charged automatically on the 1st`
                           : "Your account will be charged automatically on the 1st of each month"}
                       </p>
                     </div>
