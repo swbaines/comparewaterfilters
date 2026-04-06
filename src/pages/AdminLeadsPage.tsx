@@ -350,12 +350,10 @@ export default function AdminLeadsPage() {
                   <TableCell>$85</TableCell>
                   <TableCell className="text-muted-foreground text-sm">Customer owns their property (Own)</TableCell>
                 </TableRow>
-                </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Rental lead</TableCell>
                   <TableCell>$50</TableCell>
                   <TableCell className="text-muted-foreground text-sm">Customer is renting (Rent)</TableCell>
-                </TableRow>
                 </TableRow>
               </TableBody>
             </Table>
