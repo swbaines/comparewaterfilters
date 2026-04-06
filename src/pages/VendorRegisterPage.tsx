@@ -212,6 +212,16 @@ export default function VendorRegisterPage() {
 
       if (vaError) throw vaError;
 
+      // Send vendor welcome email
+      await supabase.functions.invoke('send-transactional-email', {
+        body: {
+          templateName: 'vendor-welcome',
+          recipientEmail: email,
+          idempotencyKey: `vendor-welcome-${provider.id}`,
+          templateData: { businessName: profile.name },
+        },
+      });
+
       setStep("success");
       toast.success("Application submitted for review!");
     } catch (err: any) {
