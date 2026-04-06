@@ -13,23 +13,34 @@ export default function ArticlePage() {
 
   useEffect(() => {
     if (!article) return;
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: article.title,
-      description: article.seoDescription || article.summary,
-      datePublished: article.publishedAt,
-      url: `${BASE_URL}/learn/${article.slug}`,
-      publisher: {
-        "@type": "Organization",
-        name: "Compare Water Filters",
-        url: BASE_URL,
+    const jsonLd = [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: article.title,
+        description: article.seoDescription || article.summary,
+        datePublished: article.publishedAt,
+        url: `${BASE_URL}/learn/${article.slug}`,
+        publisher: {
+          "@type": "Organization",
+          name: "Compare Water Filters",
+          url: BASE_URL,
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `${BASE_URL}/learn/${article.slug}`,
+        },
       },
-      mainEntityOfPage: {
-        "@type": "WebPage",
-        "@id": `${BASE_URL}/learn/${article.slug}`,
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+          { "@type": "ListItem", position: 2, name: "Learn", item: `${BASE_URL}/learn` },
+          { "@type": "ListItem", position: 3, name: article.title, item: `${BASE_URL}/learn/${article.slug}` },
+        ],
       },
-    };
+    ];
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.text = JSON.stringify(jsonLd);

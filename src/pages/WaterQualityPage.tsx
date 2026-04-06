@@ -134,15 +134,25 @@ export default function WaterQualityPage() {
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "application/ld+json";
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: waterFaqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    });
+    script.text = JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: waterFaqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.comparewaterfilters.com.au" },
+          { "@type": "ListItem", position: 2, name: "Water Quality", item: "https://www.comparewaterfilters.com.au/water-quality" },
+        ],
+      },
+    ]);
     document.head.appendChild(script);
     return () => { document.head.removeChild(script); };
   }, []);

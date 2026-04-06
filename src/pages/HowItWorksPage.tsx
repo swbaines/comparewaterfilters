@@ -19,17 +19,27 @@ export default function HowItWorksPage() {
     const script = document.createElement("script");
     script.type = "application/ld+json";
     script.id = "howitworks-jsonld";
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      name: "How to find the right water filter for your home",
-      description: "Three simple steps to compare water filtration systems and get matched with licensed local vendors in Australia.",
-      step: [
-        { "@type": "HowToStep", position: 1, name: "Tell us about your home", text: "Answer a few quick questions about your property, water source, and what's bothering you about your current water." },
-        { "@type": "HowToStep", position: 2, name: "Get matched to the right system", text: "We use your answers — including your state's water quality data — to recommend the filtration system that fits your situation." },
-        { "@type": "HowToStep", position: 3, name: "Compare quotes from local vendors", text: "Request free quotes from licensed installers in your area. No obligation, no pushy sales — just real information." },
-      ],
-    });
+    script.text = JSON.stringify([
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: "How to find the right water filter for your home",
+        description: "Three simple steps to compare water filtration systems and get matched with licensed local vendors in Australia.",
+        step: [
+          { "@type": "HowToStep", position: 1, name: "Tell us about your home", text: "Answer a few quick questions about your property, water source, and what's bothering you about your current water." },
+          { "@type": "HowToStep", position: 2, name: "Get matched to the right system", text: "We use your answers — including your state's water quality data — to recommend the filtration system that fits your situation." },
+          { "@type": "HowToStep", position: 3, name: "Compare quotes from local vendors", text: "Request free quotes from licensed installers in your area. No obligation, no pushy sales — just real information." },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.comparewaterfilters.com.au" },
+          { "@type": "ListItem", position: 2, name: "How It Works", item: "https://www.comparewaterfilters.com.au/how-it-works" },
+        ],
+      },
+    ]);
     document.head.appendChild(script);
     return () => { document.getElementById("howitworks-jsonld")?.remove(); };
   }, []);
