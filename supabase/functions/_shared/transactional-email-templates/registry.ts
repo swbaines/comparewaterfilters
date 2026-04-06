@@ -15,6 +15,7 @@ import { template as contactInquiry } from './contact-inquiry.tsx'
 import { template as invoiceReminder } from './invoice-reminder.tsx'
 import { template as paymentConfirmation } from './payment-confirmation.tsx'
 import { template as vendorWelcome } from './vendor-welcome.tsx'
+import { template as adminVendorNotification } from './admin-vendor-notification.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'vendor-lead-notification': vendorLeadNotification,
@@ -23,4 +24,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'invoice-reminder': invoiceReminder,
   'payment-confirmation': paymentConfirmation,
   'vendor-welcome': vendorWelcome,
+  'admin-vendor-notification': adminVendorNotification,
 }

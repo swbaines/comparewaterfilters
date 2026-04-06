@@ -212,15 +212,33 @@ export default function VendorRegisterPage() {
 
       if (vaError) throw vaError;
 
-      // Send vendor welcome email
-      await supabase.functions.invoke('send-transactional-email', {
-        body: {
-          templateName: 'vendor-welcome',
-          recipientEmail: email,
-          idempotencyKey: `vendor-welcome-${provider.id}`,
-          templateData: { businessName: profile.name },
-        },
-      });
+      // Send vendor welcome email and admin notification in parallel
+      await Promise.all([
+        supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'vendor-welcome',
+            recipientEmail: email,
+            idempotencyKey: `vendor-welcome-${provider.id}`,
+            templateData: { businessName: profile.name },
+          },
+        }),
+        supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'admin-vendor-notification',
+            recipientEmail: 'hello@comparewaterfilters.com.au',
+            idempotencyKey: `admin-vendor-notify-${provider.id}`,
+            templateData: {
+              businessName: profile.name,
+              vendorEmail: email,
+              abn: profile.abn.replace(/\s/g, ""),
+              states: profile.states,
+              systemTypes: profile.systemTypes,
+              hasPublicLiability: profile.hasPublicLiability,
+              registeredAt: new Date().toISOString(),
+            },
+          },
+        }),
+      ]);
 
       setStep("success");
       toast.success("Application submitted for review!");
