@@ -87,9 +87,18 @@ export default function AdminInvoicesPage() {
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {
         body: {
-          templateName: "vendor-lead-notification",
+          templateName: "invoice-reminder",
           recipientEmail: providerEmail,
           idempotencyKey: `invoice-reminder-${invoiceId}-${Date.now()}`,
+          templateData: {
+            providerName: (inv as any).providers?.name || "Provider",
+            invoiceNumber: inv.invoice_number,
+            totalAmount: `$${Number(inv.total_amount).toLocaleString()}`,
+            leadCount: inv.lead_count,
+            periodStart: inv.period_start,
+            periodEnd: inv.period_end,
+            status: inv.status,
+          },
         },
       });
       // For now we just mark as sent if not already

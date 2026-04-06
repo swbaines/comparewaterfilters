@@ -12,9 +12,11 @@ export interface TemplateEntry {
 import { template as vendorLeadNotification } from './vendor-lead-notification.tsx'
 import { template as customerQuoteConfirmation } from './customer-quote-confirmation.tsx'
 import { template as contactInquiry } from './contact-inquiry.tsx'
+import { template as invoiceReminder } from './invoice-reminder.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'vendor-lead-notification': vendorLeadNotification,
   'customer-quote-confirmation': customerQuoteConfirmation,
   'contact-inquiry': contactInquiry,
+  'invoice-reminder': invoiceReminder,
 }
