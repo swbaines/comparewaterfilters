@@ -1,7 +1,7 @@
 /// <reference types="npm:@types/react@18.3.1" />
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Section, Row, Column, Hr,
+  Body, Container, Head, Heading, Html, Preview, Text, Section, Row, Column, Hr, Button,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -73,6 +73,12 @@ const InvoiceReminderEmail = ({
           <Text style={bodyText}>
             If you have any questions about this invoice, please reply to this email.
           </Text>
+
+          <Section style={{ textAlign: 'center' as const, margin: '24px 0 0' }}>
+            <Button style={ctaButton} href="https://comparewaterfilters.lovable.app/vendor/dashboard">
+              Pay Now →
+            </Button>
+          </Section>
 
           <Hr style={divider} />
 
