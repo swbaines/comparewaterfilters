@@ -17,6 +17,38 @@ const RANGES = [
   { label: "All time", days: 0 },
 ] as const;
 
+function ChangeBadge({ change }: { change: number | null }) {
+  if (change === null) return null;
+  const rounded = Math.round(change);
+  if (rounded === 0) return (
+    <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
+      <Minus className="h-3 w-3" /> 0%
+    </span>
+  );
+  const positive = rounded > 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${positive ? "text-emerald-600" : "text-red-500"}`}>
+      {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+      {positive ? "+" : ""}{rounded}%
+    </span>
+  );
+}
+
+function MetricCard({ title, value, icon: Icon, change }: { title: string; value: string | number; icon: React.ComponentType<{ className?: string }>; change: number | null }) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        <ChangeBadge change={change} />
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function AdminAnalyticsPage() {
   const [rangeDays, setRangeDays] = useState(30);
 
