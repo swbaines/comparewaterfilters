@@ -63,8 +63,8 @@ Deno.serve(async (req) => {
 
     let totalAmount = 0
     for (const lead of leads || []) {
-      // Price based on ownership status: Own=$85, Rent=$50
-      const price = Number(lead.lead_price) || (lead.ownership_status === 'Rent' ? 50 : 85)
+      // Price based on ownership status (TEST: $1)
+      const price = Number(lead.lead_price) || 1
       totalAmount += price
     }
 
