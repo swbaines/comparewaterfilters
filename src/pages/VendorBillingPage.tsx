@@ -167,7 +167,7 @@ export default function VendorBillingPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("quote_requests")
-        .select("id, customer_name, customer_email, customer_suburb, customer_state, recommended_systems, lead_price, created_at")
+        .select("id, customer_name, customer_email, customer_mobile, customer_suburb, customer_state, customer_postcode, recommended_systems, lead_price, created_at, ownership_status, property_type, household_size, water_source, budget")
         .eq("provider_id", provider.id)
         .gte("created_at", new Date(selectedInvoice.period_start).toISOString())
         .lte("created_at", new Date(selectedInvoice.period_end + "T23:59:59").toISOString())
@@ -595,16 +595,18 @@ export default function VendorBillingPage() {
                         </div>
                         <h3>Leads in this period</h3>
                         <table>
-                          <thead><tr><th>Date</th><th>Customer</th><th>Location</th><th>System</th><th class="text-right">Price</th></tr></thead>
+                          <thead><tr><th>Date</th><th>Customer</th><th>Type</th><th>Location</th><th>Property</th><th>Systems</th><th class="text-right">Price</th></tr></thead>
                           <tbody>
                             ${invoiceLeads.map((l: any) => `<tr>
                               <td>${format(new Date(l.created_at), "d MMM")}</td>
-                              <td>${l.customer_name}</td>
-                              <td>${[l.customer_suburb, l.customer_state].filter(Boolean).join(", ") || "—"}</td>
-                              <td>${(l.recommended_systems || []).join(", ") || "—"}</td>
+                              <td>${l.customer_name}<br/><span style="font-size:11px;color:#888">${l.customer_email}${l.customer_mobile ? '<br/>' + l.customer_mobile : ''}</span></td>
+                              <td>${l.ownership_status || "—"}</td>
+                              <td>${[l.customer_suburb, l.customer_state, l.customer_postcode].filter(Boolean).join(", ") || "—"}</td>
+                              <td style="font-size:12px">${[l.property_type, l.household_size ? l.household_size + ' people' : '', l.water_source, l.budget].filter(Boolean).join(" · ") || "—"}</td>
+                              <td style="font-size:12px">${(l.recommended_systems || []).join(", ") || "—"}</td>
                               <td class="text-right">$${Number(l.lead_price || 0).toFixed(2)}</td>
                             </tr>`).join("")}
-                            <tr class="total-row"><td colspan="4" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
+                            <tr class="total-row"><td colspan="6" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
                           </tbody>
                         </table>
                         <div class="footer">Generated from Compare Water Filters vendor portal — comparewaterfilters.lovable.app</div>
@@ -677,29 +679,48 @@ export default function VendorBillingPage() {
                           <TableRow>
                             <TableHead>Date</TableHead>
                             <TableHead>Customer</TableHead>
+                            <TableHead>Type</TableHead>
                             <TableHead>Location</TableHead>
-                            <TableHead>System</TableHead>
+                            <TableHead>Details</TableHead>
                             <TableHead className="text-right">Price</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {invoiceLeads.map((lead: any) => (
                             <TableRow key={lead.id}>
-                              <TableCell className="text-sm">{format(new Date(lead.created_at), "d MMM")}</TableCell>
-                              <TableCell className="text-sm">{lead.customer_name}</TableCell>
+                              <TableCell className="text-sm whitespace-nowrap">{format(new Date(lead.created_at), "d MMM")}</TableCell>
+                              <TableCell className="text-sm">
+                                <div className="font-medium">{lead.customer_name}</div>
+                                <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
+                                {lead.customer_mobile && <div className="text-xs text-muted-foreground">{lead.customer_mobile}</div>}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                <Badge variant="secondary" className={lead.ownership_status === "Own" ? "bg-blue-100 text-blue-800" : lead.ownership_status === "Rent" ? "bg-amber-100 text-amber-800" : ""}>
+                                  {lead.ownership_status || "—"}
+                                </Badge>
+                              </TableCell>
                               <TableCell className="text-sm">
                                 {[lead.customer_suburb, lead.customer_state].filter(Boolean).join(", ") || "—"}
+                                {lead.customer_postcode && <span className="text-muted-foreground"> {lead.customer_postcode}</span>}
                               </TableCell>
                               <TableCell className="text-sm">
-                                {(lead.recommended_systems || []).join(", ") || "—"}
+                                <div className="space-y-0.5 text-xs">
+                                  {lead.property_type && <div><span className="text-muted-foreground">Property:</span> {lead.property_type}</div>}
+                                  {lead.household_size && <div><span className="text-muted-foreground">Household:</span> {lead.household_size}</div>}
+                                  {lead.water_source && <div><span className="text-muted-foreground">Water:</span> {lead.water_source}</div>}
+                                  {lead.budget && <div><span className="text-muted-foreground">Budget:</span> {lead.budget}</div>}
+                                  {(lead.recommended_systems || []).length > 0 && (
+                                    <div><span className="text-muted-foreground">Systems:</span> {lead.recommended_systems.join(", ")}</div>
+                                  )}
+                                </div>
                               </TableCell>
-                              <TableCell className="text-sm text-right font-medium">
+                              <TableCell className="text-sm text-right font-medium whitespace-nowrap">
                                 ${Number(lead.lead_price || 0).toFixed(2)}
                               </TableCell>
                             </TableRow>
                           ))}
                           <TableRow className="border-t-2">
-                            <TableCell colSpan={4} className="text-right font-semibold">Total</TableCell>
+                            <TableCell colSpan={5} className="text-right font-semibold">Total</TableCell>
                             <TableCell className="text-right font-bold">
                               ${invoiceLeads.reduce((sum: number, l: any) => sum + Number(l.lead_price || 0), 0).toFixed(2)}
                             </TableCell>
