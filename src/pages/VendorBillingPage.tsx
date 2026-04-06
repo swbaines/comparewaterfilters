@@ -465,7 +465,7 @@ export default function VendorBillingPage() {
                     <Elements stripe={stripePromise}>
                       <CardSetupForm
                         stripeCustomerId={(provider as any)?.stripe_customer_id || ""}
-                        onSuccess={() => { setCardSaved(true); setShowCardForm(false); }}
+                        onSuccess={() => { setCardSaved(true); setShowCardForm(false); queryClient.invalidateQueries({ queryKey: ["card-details"] }); }}
                       />
                     </Elements>
                   )}
