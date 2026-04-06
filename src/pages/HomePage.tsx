@@ -110,7 +110,7 @@ const jsonLdData = [
     "@type": "WebSite",
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
-    description: "Australia's independent water filter comparison platform. Compare filtration systems, understand pricing, and get matched to licensed local vendors.",
+    description: "Australia's independent water filter comparison platform. Compare the best water filtration systems — whole house water filters, reverse osmosis, under-sink — and get free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth and Adelaide.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -126,8 +126,15 @@ const jsonLdData = [
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
     logo: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
-    description: "Independent water filtration comparison and recommendation platform for Australian homeowners.",
-    areaServed: { "@type": "Country", name: "Australia" },
+    description: "Independent water filtration comparison and recommendation platform for Australian homeowners. Compare the best water filtration systems and get free quotes from licensed installers.",
+    areaServed: [
+      { "@type": "Country", name: "Australia" },
+      { "@type": "City", name: "Sydney" },
+      { "@type": "City", name: "Melbourne" },
+      { "@type": "City", name: "Brisbane" },
+      { "@type": "City", name: "Perth" },
+      { "@type": "City", name: "Adelaide" },
+    ],
     sameAs: [],
   },
   {
