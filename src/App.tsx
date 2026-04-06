@@ -17,6 +17,8 @@ import ContactPage from "@/pages/ContactPage";
 import ProviderMatchPage from "@/pages/ProviderMatchPage";
 import AdminProvidersPage from "@/pages/AdminProvidersPage";
 import AdminLeadsPage from "@/pages/AdminLeadsPage";
+import AdminAnalyticsPage from "@/pages/AdminAnalyticsPage";
+import AdminInvoicesPage from "@/pages/AdminInvoicesPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
 import VendorRegisterPage from "@/pages/VendorRegisterPage";
@@ -57,6 +59,8 @@ const App = () => (
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin/providers" element={<AdminRoute><AdminProvidersPage /></AdminRoute>} />
             <Route path="/admin/leads" element={<AdminRoute><AdminLeadsPage /></AdminRoute>} />
+            <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
+            <Route path="/admin/invoices" element={<AdminRoute><AdminInvoicesPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
             <Route path="/vendor/register" element={<VendorRegisterPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
