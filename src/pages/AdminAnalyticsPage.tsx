@@ -6,8 +6,9 @@ import AdminNav from "@/components/AdminNav";
 import { format, subDays, startOfDay } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import SubmissionsChart from "@/components/analytics/SubmissionsChart";
+import LeadsByProviderChart from "@/components/analytics/LeadsByProviderChart";
+import LeadsByStatusChart from "@/components/analytics/LeadsByStatusChart";
 
 const RANGES = [
   { label: "7 days", days: 7 },
@@ -173,91 +174,12 @@ export default function AdminAnalyticsPage() {
               </Card>
             </div>
 
-            {/* Breakdown tables */}
-            <div className="grid gap-6 lg:grid-cols-3">
-              {/* By Provider */}
-              <Card>
-                <CardHeader><CardTitle className="text-base">Leads by Provider</CardTitle></CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Provider</TableHead>
-                        <TableHead className="text-right">Leads</TableHead>
-                        <TableHead className="text-right">Won</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(byProvider).map(([name, v]) => (
-                        <TableRow key={name}>
-                          <TableCell className="font-medium text-sm">{name}</TableCell>
-                          <TableCell className="text-right">{v.total}</TableCell>
-                          <TableCell className="text-right">{v.won}</TableCell>
-                        </TableRow>
-                      ))}
-                      {Object.keys(byProvider).length === 0 && (
-                        <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">No data</TableCell></TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+            {/* Charts */}
+            <SubmissionsChart quizSubmissions={quizSubmissions} quoteRequests={quoteRequests} />
 
-              {/* By Status */}
-              <Card>
-                <CardHeader><CardTitle className="text-base">Leads by Status</CardTitle></CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Count</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(byStatus).map(([status, count]) => (
-                        <TableRow key={status}>
-                          <TableCell>
-                            <Badge variant="secondary" className="capitalize">{status}</Badge>
-                          </TableCell>
-                          <TableCell className="text-right">{count}</TableCell>
-                        </TableRow>
-                      ))}
-                      {Object.keys(byStatus).length === 0 && (
-                        <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">No data</TableCell></TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-
-              {/* By State */}
-              <Card>
-                <CardHeader><CardTitle className="text-base">Quiz Submissions by State</CardTitle></CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>State</TableHead>
-                        <TableHead className="text-right">Count</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(byState)
-                        .sort((a, b) => b[1] - a[1])
-                        .map(([state, count]) => (
-                          <TableRow key={state}>
-                            <TableCell className="font-medium">{state}</TableCell>
-                            <TableCell className="text-right">{count}</TableCell>
-                          </TableRow>
-                        ))}
-                      {Object.keys(byState).length === 0 && (
-                        <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">No data</TableCell></TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+            <div className="grid gap-6 lg:grid-cols-2">
+              <LeadsByProviderChart byProvider={byProvider} />
+              <LeadsByStatusChart byStatus={byStatus} />
             </div>
           </>
         )}
