@@ -128,6 +128,17 @@ export default function VendorBillingPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
 
+  // Fetch saved card details from Stripe
+  const { data: cardDetails } = useQuery({
+    queryKey: ["card-details", cardSaved],
+    enabled: cardSaved,
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("get-card-details");
+      if (error) throw error;
+      return data?.card as { brand: string; last4: string; exp_month: number; exp_year: number } | null;
+    },
+  });
+
   // Fetch leads for the selected invoice's billing period
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["invoice-leads", selectedInvoice?.id],
@@ -380,9 +391,15 @@ export default function VendorBillingPage() {
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
                     <div>
-                      <p className="font-medium">Card on file</p>
+                      <p className="font-medium">
+                        {cardDetails
+                          ? `${cardDetails.brand.charAt(0).toUpperCase() + cardDetails.brand.slice(1)} •••• ${cardDetails.last4}`
+                          : "Card on file"}
+                      </p>
                       <p className="text-sm text-muted-foreground">
-                        Your account will be charged automatically on the 1st of each month
+                        {cardDetails
+                          ? `Expires ${String(cardDetails.exp_month).padStart(2, "0")}/${cardDetails.exp_year} · Charged automatically on the 1st`
+                          : "Your account will be charged automatically on the 1st of each month"}
                       </p>
                     </div>
                   </div>
