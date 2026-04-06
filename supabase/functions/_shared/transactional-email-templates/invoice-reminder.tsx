@@ -126,3 +126,4 @@ const statusSent: React.CSSProperties = { backgroundColor: 'hsl(168, 30%, 92%)',
 const statusOverdue: React.CSSProperties = { backgroundColor: 'hsl(0, 72%, 95%)', color: 'hsl(0, 72%, 40%)', padding: '2px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 500 }
 const bodyText = { fontSize: '14px', color: 'hsl(220, 10%, 46%)', lineHeight: '1.6', margin: '0 0 12px' }
 const footer = { fontSize: '12px', color: '#999999', margin: '0', textAlign: 'center' as const }
+const ctaButton = { backgroundColor: 'hsl(168, 42%, 40%)', color: '#ffffff', fontSize: '14px', fontWeight: '600' as const, borderRadius: '12px', padding: '12px 28px', textDecoration: 'none' }
