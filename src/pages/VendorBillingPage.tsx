@@ -160,7 +160,7 @@ export default function VendorBillingPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
 
-  // Fetch leads for the selected invoice's billing period
+  // Fetch leads assigned to this specific invoice
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["invoice-leads", selectedInvoice?.id],
     enabled: !!selectedInvoice && !!provider?.id,
@@ -169,8 +169,7 @@ export default function VendorBillingPage() {
         .from("quote_requests")
         .select("id, customer_name, customer_email, customer_mobile, customer_suburb, customer_state, customer_postcode, recommended_systems, lead_price, created_at, ownership_status, property_type, household_size, water_source, budget")
         .eq("provider_id", provider.id)
-        .gte("created_at", new Date(selectedInvoice.period_start).toISOString())
-        .lte("created_at", new Date(selectedInvoice.period_end + "T23:59:59").toISOString())
+        .eq("invoice_id", selectedInvoice.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
