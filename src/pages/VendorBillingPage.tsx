@@ -677,29 +677,48 @@ export default function VendorBillingPage() {
                           <TableRow>
                             <TableHead>Date</TableHead>
                             <TableHead>Customer</TableHead>
+                            <TableHead>Type</TableHead>
                             <TableHead>Location</TableHead>
-                            <TableHead>System</TableHead>
+                            <TableHead>Details</TableHead>
                             <TableHead className="text-right">Price</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {invoiceLeads.map((lead: any) => (
                             <TableRow key={lead.id}>
-                              <TableCell className="text-sm">{format(new Date(lead.created_at), "d MMM")}</TableCell>
-                              <TableCell className="text-sm">{lead.customer_name}</TableCell>
+                              <TableCell className="text-sm whitespace-nowrap">{format(new Date(lead.created_at), "d MMM")}</TableCell>
+                              <TableCell className="text-sm">
+                                <div className="font-medium">{lead.customer_name}</div>
+                                <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
+                                {lead.customer_mobile && <div className="text-xs text-muted-foreground">{lead.customer_mobile}</div>}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                <Badge variant="secondary" className={lead.ownership_status === "Own" ? "bg-blue-100 text-blue-800" : lead.ownership_status === "Rent" ? "bg-amber-100 text-amber-800" : ""}>
+                                  {lead.ownership_status || "—"}
+                                </Badge>
+                              </TableCell>
                               <TableCell className="text-sm">
                                 {[lead.customer_suburb, lead.customer_state].filter(Boolean).join(", ") || "—"}
+                                {lead.customer_postcode && <span className="text-muted-foreground"> {lead.customer_postcode}</span>}
                               </TableCell>
                               <TableCell className="text-sm">
-                                {(lead.recommended_systems || []).join(", ") || "—"}
+                                <div className="space-y-0.5 text-xs">
+                                  {lead.property_type && <div><span className="text-muted-foreground">Property:</span> {lead.property_type}</div>}
+                                  {lead.household_size && <div><span className="text-muted-foreground">Household:</span> {lead.household_size}</div>}
+                                  {lead.water_source && <div><span className="text-muted-foreground">Water:</span> {lead.water_source}</div>}
+                                  {lead.budget && <div><span className="text-muted-foreground">Budget:</span> {lead.budget}</div>}
+                                  {(lead.recommended_systems || []).length > 0 && (
+                                    <div><span className="text-muted-foreground">Systems:</span> {lead.recommended_systems.join(", ")}</div>
+                                  )}
+                                </div>
                               </TableCell>
-                              <TableCell className="text-sm text-right font-medium">
+                              <TableCell className="text-sm text-right font-medium whitespace-nowrap">
                                 ${Number(lead.lead_price || 0).toFixed(2)}
                               </TableCell>
                             </TableRow>
                           ))}
                           <TableRow className="border-t-2">
-                            <TableCell colSpan={4} className="text-right font-semibold">Total</TableCell>
+                            <TableCell colSpan={5} className="text-right font-semibold">Total</TableCell>
                             <TableCell className="text-right font-bold">
                               ${invoiceLeads.reduce((sum: number, l: any) => sum + Number(l.lead_price || 0), 0).toFixed(2)}
                             </TableCell>
