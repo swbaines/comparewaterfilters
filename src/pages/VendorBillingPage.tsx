@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft, DollarSign } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { loadStripe } from "@stripe/stripe-js";
@@ -124,6 +125,7 @@ export default function VendorBillingPage() {
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
 
   // Fetch leads for the selected invoice's billing period
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
