@@ -5,16 +5,17 @@ const corsHeaders = {
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno'
 
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno'
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    )
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
     // Verify caller is authenticated
     const authHeader = req.headers.get('Authorization')
@@ -56,7 +57,7 @@ Deno.serve(async (req) => {
     // Get provider with Stripe details
     const { data: provider } = await supabaseAdmin
       .from('providers')
-      .select('id, stripe_customer_id, stripe_payment_method_id')
+      .select('id, name, contact_email, stripe_customer_id, stripe_payment_method_id')
       .eq('id', vendorAccount.provider_id)
       .single()
 
@@ -125,15 +126,40 @@ Deno.serve(async (req) => {
     })
 
     if (paymentIntent.status === 'succeeded') {
+      const paidAt = new Date().toISOString()
       // Mark invoice as paid
       await supabaseAdmin
         .from('invoices')
         .update({
           status: 'paid',
-          paid_at: new Date().toISOString(),
+          paid_at: paidAt,
           stripe_invoice_id: paymentIntent.id,
         })
         .eq('id', invoice.id)
+
+      // Send payment confirmation email
+      if (provider.contact_email) {
+        try {
+          await supabaseAdmin.functions.invoke('send-transactional-email', {
+            body: {
+              templateName: 'payment-confirmation',
+              recipientEmail: provider.contact_email,
+              idempotencyKey: `payment-confirm-${invoice.id}`,
+              templateData: {
+                providerName: provider.name,
+                invoiceNumber: invoice.invoice_number,
+                totalAmount: `$${Number(invoice.total_amount).toFixed(2)}`,
+                leadCount: invoice.lead_count,
+                periodStart: invoice.period_start,
+                periodEnd: invoice.period_end,
+                paidAt,
+              },
+            },
+          })
+        } catch (emailErr) {
+          console.error('Failed to send payment confirmation email:', emailErr)
+        }
+      }
 
       return new Response(JSON.stringify({ success: true, status: 'paid' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
