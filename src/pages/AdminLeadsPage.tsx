@@ -348,12 +348,12 @@ export default function AdminLeadsPage() {
                 <TableRow>
                   <TableCell className="font-medium">Owner lead</TableCell>
                   <TableCell>$85</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">Customer owns their property</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">Customer owns their property (Own)</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Rental lead</TableCell>
                   <TableCell>$50</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">Customer is renting</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">Customer is renting (Rent)</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
