@@ -12,11 +12,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, ClipboardList } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import { systemTypes } from "@/data/systemTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -199,6 +199,11 @@ export default function AdminProvidersPage() {
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
           <div className="flex items-center gap-2">
+            <Link to="/admin/leads">
+              <Button variant="outline" size="sm" className="gap-2">
+                <ClipboardList className="h-4 w-4" /> Lead Tracking
+              </Button>
+            </Link>
             <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
               <Plus className="h-4 w-4" /> Add Provider
             </Button>
