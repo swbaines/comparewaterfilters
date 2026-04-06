@@ -1,7 +1,7 @@
 /// <reference types="npm:@types/react@18.3.1" />
 import * as React from 'npm:react@18.3.1'
 import {
-  Body, Container, Head, Heading, Html, Preview, Text, Section, Row, Column, Hr,
+  Body, Container, Head, Heading, Html, Preview, Text, Section, Row, Column, Hr, Button,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
 
@@ -74,6 +74,12 @@ const InvoiceReminderEmail = ({
             If you have any questions about this invoice, please reply to this email.
           </Text>
 
+          <Section style={{ textAlign: 'center' as const, margin: '24px 0 0' }}>
+            <Button style={ctaButton} href="https://comparewaterfilters.lovable.app/vendor/dashboard">
+              Pay Now →
+            </Button>
+          </Section>
+
           <Hr style={divider} />
 
           <Text style={footer}>
@@ -120,3 +126,4 @@ const statusSent: React.CSSProperties = { backgroundColor: 'hsl(168, 30%, 92%)',
 const statusOverdue: React.CSSProperties = { backgroundColor: 'hsl(0, 72%, 95%)', color: 'hsl(0, 72%, 40%)', padding: '2px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: 500 }
 const bodyText = { fontSize: '14px', color: 'hsl(220, 10%, 46%)', lineHeight: '1.6', margin: '0 0 12px' }
 const footer = { fontSize: '12px', color: '#999999', margin: '0', textAlign: 'center' as const }
+const ctaButton = { backgroundColor: 'hsl(168, 42%, 40%)', color: '#ffffff', fontSize: '14px', fontWeight: '600' as const, borderRadius: '12px', padding: '12px 28px', textDecoration: 'none' }
