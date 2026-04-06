@@ -350,6 +350,15 @@ export default function ResultsPage() {
           </CardContent>
         </Card>
 
+        {/* Jump to providers box – mobile only */}
+        <a
+          href="#matched-providers"
+          className="mb-6 flex items-center justify-between rounded-lg border-2 border-primary/20 bg-primary/5 px-4 py-3 text-sm font-medium text-primary transition hover:bg-primary/10 sm:hidden"
+        >
+          <span>View matched providers in your area</span>
+          <ArrowRight className="h-4 w-4 shrink-0" />
+        </a>
+
         {/* 3 Recommendation cards (or 2 if budget = recommendation) */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
         {result.secondary.id === result.primary.id ? (
