@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2, MapPin } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { findUtilityProfile, getSuburbSuggestions, type WaterUtilityProfile, type SuburbSuggestion } from "@/data/waterUtilities";
@@ -210,6 +211,7 @@ export default function WaterQualityPage() {
       </section>
 
       <div className="container max-w-4xl pb-16">
+        <Breadcrumbs items={[{ label: "Water Quality" }]} />
         {/* Results */}
         {searched && result && (
           <div className="mt-8 space-y-8">
