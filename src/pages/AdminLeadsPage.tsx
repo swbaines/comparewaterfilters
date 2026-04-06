@@ -12,8 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 
 const LEAD_STATUSES = ["new", "sent", "contacted", "won", "lost"] as const;
@@ -27,8 +26,6 @@ const statusColors: Record<string, string> = {
 };
 
 export default function AdminLeadsPage() {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [filterProvider, setFilterProvider] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -157,22 +154,17 @@ export default function AdminLeadsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8">
-      <div className="container max-w-7xl">
+    <div className="min-h-screen bg-muted/30">
+      <AdminNav />
+      <div className="container max-w-7xl py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Lead Tracking</h1>
             <p className="text-muted-foreground">Track leads, manage status, and generate invoices</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/admin/providers">
-              <Button variant="outline" size="sm">Manage Providers</Button>
-            </Link>
             <Button variant="outline" size="sm" onClick={() => setPricesDialogOpen(true)} className="gap-1">
               <Settings className="h-4 w-4" /> Lead Prices
-            </Button>
-            <Button variant="outline" size="sm" onClick={async () => { await signOut(); navigate("/admin/login"); }} className="gap-1">
-              Sign Out
             </Button>
           </div>
         </div>

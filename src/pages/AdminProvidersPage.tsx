@@ -12,11 +12,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, ClipboardList } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck } from "lucide-react";
+import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { useAuth } from "@/hooks/useAuth";
+
 import { systemTypes } from "@/data/systemTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -56,8 +56,6 @@ function stringToArray(s: string): string[] {
 }
 
 export default function AdminProvidersPage() {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -65,11 +63,6 @@ export default function AdminProvidersPage() {
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/admin/login");
-  };
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
@@ -191,26 +184,17 @@ export default function AdminProvidersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8">
-      <div className="container max-w-6xl">
+    <div className="min-h-screen bg-muted/30">
+      <AdminNav />
+      <div className="container max-w-6xl py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Provider Management</h1>
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Link to="/admin/leads">
-              <Button variant="outline" size="sm" className="gap-2">
-                <ClipboardList className="h-4 w-4" /> Lead Tracking
-              </Button>
-            </Link>
-            <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
-              <Plus className="h-4 w-4" /> Add Provider
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleSignOut} className="gap-2">
-              <LogOut className="h-4 w-4" /> Sign Out
-            </Button>
-          </div>
+          <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
+            <Plus className="h-4 w-4" /> Add Provider
+          </Button>
         </div>
 
         {/* Pending Applications */}
