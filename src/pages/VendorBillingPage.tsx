@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft, DollarSign } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { loadStripe } from "@stripe/stripe-js";
@@ -120,10 +121,12 @@ function CardSetupForm({
 // ── Main billing page ─────────────────────────────────────────────────────────
 export default function VendorBillingPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [provider, setProvider] = useState<any>(null);
   const [showCardForm, setShowCardForm] = useState(false);
   const [cardSaved, setCardSaved] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
 
   // Fetch leads for the selected invoice's billing period
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
@@ -206,6 +209,23 @@ export default function VendorBillingPage() {
   }, 0);
 
   const lastMonthInvoice = invoices[0];
+  const handlePayNow = async (invoiceId: string) => {
+    setPayingInvoiceId(invoiceId);
+    try {
+      const { data, error } = await supabase.functions.invoke("pay-invoice-now", {
+        body: { invoice_id: invoiceId },
+      });
+      if (error) throw new Error(error.message || "Payment failed");
+      if (data?.error) throw new Error(data.error);
+      toast.success("Payment successful! Invoice marked as paid.");
+      queryClient.invalidateQueries({ queryKey: ["vendor-invoices"] });
+    } catch (err: any) {
+      toast.error(err.message || "Payment failed. Please try again.");
+    } finally {
+      setPayingInvoiceId(null);
+    }
+  };
+
   const outstanding = invoices
     .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
     .reduce((sum: number, inv: any) => sum + Number(inv.total_amount), 0);
@@ -252,8 +272,25 @@ export default function VendorBillingPage() {
         {outstanding > 0 && (
           <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <strong>You have ${outstanding.toFixed(2)} in outstanding invoices.</strong> Please ensure your payment method is up to date to avoid service interruptions.
+            <AlertDescription className="flex items-center justify-between">
+              <span>
+                <strong>You have ${outstanding.toFixed(2)} in outstanding invoices.</strong> Please ensure your payment method is up to date to avoid service interruptions.
+              </span>
+              {cardSaved && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="ml-4 shrink-0 gap-2"
+                  disabled={!!payingInvoiceId}
+                  onClick={() => {
+                    const unpaid = invoices.find((inv: any) => inv.status === "sent" || inv.status === "overdue");
+                    if (unpaid) handlePayNow(unpaid.id);
+                  }}
+                >
+                  {payingInvoiceId ? <Loader2 className="h-4 w-4 animate-spin" /> : <DollarSign className="h-4 w-4" />}
+                  Pay now
+                </Button>
+              )}
             </AlertDescription>
           </Alert>
         )}
@@ -420,7 +457,19 @@ export default function VendorBillingPage() {
                           {inv.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-right space-x-2">
+                        {(inv.status === "sent" || inv.status === "overdue") && cardSaved && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="gap-1"
+                            disabled={payingInvoiceId === inv.id}
+                            onClick={(e) => { e.stopPropagation(); handlePayNow(inv.id); }}
+                          >
+                            {payingInvoiceId === inv.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <DollarSign className="h-3 w-3" />}
+                            Pay now
+                          </Button>
+                        )}
                         {(inv as any).stripe_invoice_id && (
                           <a
                             href={`https://dashboard.stripe.com/test/invoices/${(inv as any).stripe_invoice_id}`}
