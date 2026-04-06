@@ -103,8 +103,8 @@ export default function AdminLeadsPage() {
 
       let totalAmount = 0;
       for (const lead of providerLeads) {
-        // Use the lead_price set at quote submission (Own=$85, Rent=$50)
-        const price = Number(lead.lead_price) || 85;
+        // Use the lead_price set at quote submission (TEST: $1)
+        const price = Number(lead.lead_price) || 1;
         totalAmount += price;
       }
 

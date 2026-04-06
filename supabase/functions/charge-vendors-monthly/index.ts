@@ -13,8 +13,8 @@ const corsHeaders = {
 };
 
 // Ownership-based lead pricing
-const OWNER_LEAD_PRICE = 85;
-const RENTAL_LEAD_PRICE = 50;
+const OWNER_LEAD_PRICE = 1;
+const RENTAL_LEAD_PRICE = 1;
 
 async function supabaseFetch(path: string, options: RequestInit = {}) {
   const res = await fetch(`${supabaseUrl}/rest/v1${path}`, {
