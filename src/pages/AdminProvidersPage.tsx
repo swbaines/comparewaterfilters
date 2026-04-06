@@ -200,6 +200,11 @@ export default function AdminProvidersPage() {
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
           <div className="flex items-center gap-2">
+            <Link to="/admin/leads">
+              <Button variant="outline" size="sm" className="gap-2">
+                <ClipboardList className="h-4 w-4" /> Lead Tracking
+              </Button>
+            </Link>
             <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
               <Plus className="h-4 w-4" /> Add Provider
             </Button>
