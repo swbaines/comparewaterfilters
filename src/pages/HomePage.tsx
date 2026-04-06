@@ -146,7 +146,7 @@ const jsonLdData = [
         name: "How much does a water filter system cost in Australia?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Prices range from $300–$800 for under-sink carbon filters, $800–$1,500 for reverse osmosis systems, and $2,500–$7,000 for whole house filtration systems.",
+          text: "The best water filtration system depends on your water source and concerns. Whole house water filters cost $3,000–$5,000 installed. Reverse osmosis systems cost $800–$3,000. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber.",
         },
       },
       {
