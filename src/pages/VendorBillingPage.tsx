@@ -595,16 +595,18 @@ export default function VendorBillingPage() {
                         </div>
                         <h3>Leads in this period</h3>
                         <table>
-                          <thead><tr><th>Date</th><th>Customer</th><th>Location</th><th>System</th><th class="text-right">Price</th></tr></thead>
+                          <thead><tr><th>Date</th><th>Customer</th><th>Type</th><th>Location</th><th>Property</th><th>Systems</th><th class="text-right">Price</th></tr></thead>
                           <tbody>
                             ${invoiceLeads.map((l: any) => `<tr>
                               <td>${format(new Date(l.created_at), "d MMM")}</td>
-                              <td>${l.customer_name}</td>
-                              <td>${[l.customer_suburb, l.customer_state].filter(Boolean).join(", ") || "—"}</td>
-                              <td>${(l.recommended_systems || []).join(", ") || "—"}</td>
+                              <td>${l.customer_name}<br/><span style="font-size:11px;color:#888">${l.customer_email}${l.customer_mobile ? '<br/>' + l.customer_mobile : ''}</span></td>
+                              <td>${l.ownership_status || "—"}</td>
+                              <td>${[l.customer_suburb, l.customer_state, l.customer_postcode].filter(Boolean).join(", ") || "—"}</td>
+                              <td style="font-size:12px">${[l.property_type, l.household_size ? l.household_size + ' people' : '', l.water_source, l.budget].filter(Boolean).join(" · ") || "—"}</td>
+                              <td style="font-size:12px">${(l.recommended_systems || []).join(", ") || "—"}</td>
                               <td class="text-right">$${Number(l.lead_price || 0).toFixed(2)}</td>
                             </tr>`).join("")}
-                            <tr class="total-row"><td colspan="4" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
+                            <tr class="total-row"><td colspan="6" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
                           </tbody>
                         </table>
                         <div class="footer">Generated from Compare Water Filters vendor portal — comparewaterfilters.lovable.app</div>
