@@ -1,0 +1,1 @@
+UPDATE public.lead_prices SET price_per_lead = 1, updated_at = now();
