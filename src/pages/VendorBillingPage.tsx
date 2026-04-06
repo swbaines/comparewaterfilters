@@ -525,16 +525,6 @@ export default function VendorBillingPage() {
                             Pay now
                           </Button>
                         )}
-                        {(inv as any).stripe_invoice_id && (
-                          <a
-                            href={`https://dashboard.stripe.com/test/invoices/${(inv as any).stripe_invoice_id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
-                          >
-                            View <ExternalLink className="h-3 w-3" />
-                          </a>
-                        )}
                       </TableCell>
                     </TableRow>
                   ))}
