@@ -423,7 +423,7 @@ export default function VendorBillingPage() {
                       <TableCell>
                         {(inv as any).stripe_invoice_id && (
                           <a
-                            href={`https://dashboard.stripe.com/invoices/${(inv as any).stripe_invoice_id}`}
+                            href={`https://dashboard.stripe.com/test/invoices/${(inv as any).stripe_invoice_id}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
