@@ -272,8 +272,25 @@ export default function VendorBillingPage() {
         {outstanding > 0 && (
           <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <strong>You have ${outstanding.toFixed(2)} in outstanding invoices.</strong> Please ensure your payment method is up to date to avoid service interruptions.
+            <AlertDescription className="flex items-center justify-between">
+              <span>
+                <strong>You have ${outstanding.toFixed(2)} in outstanding invoices.</strong> Please ensure your payment method is up to date to avoid service interruptions.
+              </span>
+              {cardSaved && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="ml-4 shrink-0 gap-2"
+                  disabled={!!payingInvoiceId}
+                  onClick={() => {
+                    const unpaid = invoices.find((inv: any) => inv.status === "sent" || inv.status === "overdue");
+                    if (unpaid) handlePayNow(unpaid.id);
+                  }}
+                >
+                  {payingInvoiceId ? <Loader2 className="h-4 w-4 animate-spin" /> : <DollarSign className="h-4 w-4" />}
+                  Pay now
+                </Button>
+              )}
             </AlertDescription>
           </Alert>
         )}
@@ -440,7 +457,19 @@ export default function VendorBillingPage() {
                           {inv.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-right space-x-2">
+                        {(inv.status === "sent" || inv.status === "overdue") && cardSaved && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="gap-1"
+                            disabled={payingInvoiceId === inv.id}
+                            onClick={(e) => { e.stopPropagation(); handlePayNow(inv.id); }}
+                          >
+                            {payingInvoiceId === inv.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <DollarSign className="h-3 w-3" />}
+                            Pay now
+                          </Button>
+                        )}
                         {(inv as any).stripe_invoice_id && (
                           <a
                             href={`https://dashboard.stripe.com/test/invoices/${(inv as any).stripe_invoice_id}`}
