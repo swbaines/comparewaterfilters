@@ -358,12 +358,28 @@ export default function ResultsPage() {
             <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-3">
-            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
-          </div>
+          <>
+            {/* Mobile: recommendation first, then budget & premium */}
+            <div className="flex flex-col gap-6 sm:hidden">
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+            </div>
+            {/* Desktop: standard 3-column order */}
+            <div className="hidden sm:grid gap-6 md:grid-cols-3">
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+            </div>
+          </>
         )}
+
+        {/* Mobile: link to matched providers */}
+        <div className="mt-6 text-center sm:hidden">
+          <a href="#matched-providers" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
+            View matched providers <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
 
         <div className="mt-14">
           <div className="mb-6 text-center">
