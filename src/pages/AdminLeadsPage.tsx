@@ -230,6 +230,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Customer</TableHead>
                   <TableHead>Provider</TableHead>
                   <TableHead>Systems</TableHead>
+                  <TableHead>Ownership</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
@@ -237,7 +238,7 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -252,6 +253,11 @@ export default function AdminLeadsPage() {
                           <Badge key={s} variant="outline" className="text-xs">{s}</Badge>
                         ))}
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={`text-xs ${lead.ownership_status === "Rent" ? "bg-amber-50 text-amber-700 border-amber-200" : lead.ownership_status === "Own" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ""}`}>
+                        {lead.ownership_status || "—"}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <Select
