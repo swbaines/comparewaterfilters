@@ -16,7 +16,7 @@ import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle,
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { useAuth } from "@/hooks/useAuth";
+
 import { systemTypes } from "@/data/systemTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
