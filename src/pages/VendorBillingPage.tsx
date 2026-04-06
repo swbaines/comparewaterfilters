@@ -444,7 +444,7 @@ export default function VendorBillingPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => { setCardSaved(false); setShowCardForm(true); }}
+                    onClick={() => { setShowCardForm(true); }}
                   >
                     <CreditCard className="h-4 w-4 mr-2" /> Update card
                   </Button>
