@@ -161,7 +161,38 @@ export default function PricingGuidePage() {
           </Accordion>
         </section>
 
-        <div className="mt-12 text-center">
+        {/* Cross-links */}
+        <section className="mt-12">
+          <h2 className="mb-4 text-lg font-bold">Related resources</h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Link to="/system-types">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">System Types</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Compare under-sink, whole house, RO, UV, and softener systems side by side.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/water-quality">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Water Quality Lookup</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Check your suburb's water quality to understand what system you need.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/learn">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Learn More</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Guides on choosing filters, understanding costs, and water quality facts.</p>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </section>
+
+        <div className="mt-8 text-center">
           <Link to="/quiz">
             <Button size="lg" className="gap-2">
               Find out what suits your budget <ArrowRight className="h-4 w-4" />
