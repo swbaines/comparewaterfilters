@@ -208,8 +208,8 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link to="/water-quality">
-              <Button variant="outline" size="lg" className="gap-2 text-base">
-                <Search className="h-4 w-4" /> Check my water quality
+              <Button variant="outline" size="sm" className="gap-2 text-sm">
+                <Search className="h-3 w-3" /> Check my water quality
               </Button>
             </Link>
           </div>
