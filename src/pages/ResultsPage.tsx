@@ -381,7 +381,7 @@ export default function ResultsPage() {
           </a>
         </div>
 
-        <div className="mt-14">
+        <div className="mt-14" id="matched-providers">
           <div className="mb-6 text-center">
             <Badge className="mb-3" variant="secondary">
               <Users className="mr-1 h-3 w-3" /> Matched providers
