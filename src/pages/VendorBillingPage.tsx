@@ -197,11 +197,13 @@ export default function VendorBillingPage() {
         .single();
 
       setProvider(prov);
-      setCardSaved(!!(prov as any)?.stripe_payment_method_id);
+      if (!showCardForm) {
+        setCardSaved(!!(prov as any)?.stripe_payment_method_id);
+      }
     };
 
     fetchProvider();
-  }, [cardSaved]);
+  }, []);
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["vendor-invoices", provider?.id],
@@ -418,7 +420,7 @@ export default function VendorBillingPage() {
                     Your account is pending approval. Payment setup will be available once approved.
                   </p>
                 </div>
-              ) : cardSaved ? (
+              ) : cardSaved && !showCardForm ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     {cardInfo ? (
@@ -442,7 +444,7 @@ export default function VendorBillingPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => { setCardSaved(false); setShowCardForm(true); }}
+                    onClick={() => { setShowCardForm(true); }}
                   >
                     <CreditCard className="h-4 w-4 mr-2" /> Update card
                   </Button>
@@ -463,7 +465,7 @@ export default function VendorBillingPage() {
                     <Elements stripe={stripePromise}>
                       <CardSetupForm
                         stripeCustomerId={(provider as any)?.stripe_customer_id || ""}
-                        onSuccess={() => { setCardSaved(true); setShowCardForm(false); }}
+                        onSuccess={() => { setCardSaved(true); setShowCardForm(false); queryClient.invalidateQueries({ queryKey: ["card-details"] }); }}
                       />
                     </Elements>
                   )}
