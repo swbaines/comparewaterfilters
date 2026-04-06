@@ -77,6 +77,7 @@ export default function RequestQuoteDialog({
         budget: answers.budget,
         recommended_systems: [...new Set(recommendedSystems)],
         message: formData.message || null,
+        ownership_status: answers.ownershipStatus || null,
         lead_price: answers.ownershipStatus === "Rent" ? 50 : 85,
       });
       if (error) throw error;

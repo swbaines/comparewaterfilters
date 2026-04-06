@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
     // Get leads in period
     const { data: leads, error: leadsError } = await supabaseAdmin
       .from('quote_requests')
-      .select('id, lead_price, recommended_systems')
+      .select('id, lead_price, recommended_systems, ownership_status')
       .eq('provider_id', provider_id)
       .is('invoice_id', null)
       .gte('created_at', `${period_start}T00:00:00Z`)
@@ -63,7 +63,9 @@ Deno.serve(async (req) => {
 
     let totalAmount = 0
     for (const lead of leads || []) {
-      totalAmount += Number(lead.lead_price) || 0
+      // Price based on ownership status: Own=$85, Rent=$50
+      const price = Number(lead.lead_price) || (lead.ownership_status === 'Rent' ? 50 : 85)
+      totalAmount += price
     }
 
     // Generate invoice number

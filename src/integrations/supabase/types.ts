@@ -372,6 +372,7 @@ export type Database = {
           lead_price: number | null
           lead_status: string
           message: string | null
+          ownership_status: string | null
           property_type: string | null
           provider_id: string | null
           provider_name: string
@@ -397,6 +398,7 @@ export type Database = {
           lead_price?: number | null
           lead_status?: string
           message?: string | null
+          ownership_status?: string | null
           property_type?: string | null
           provider_id?: string | null
           provider_name: string
@@ -422,6 +424,7 @@ export type Database = {
           lead_price?: number | null
           lead_status?: string
           message?: string | null
+          ownership_status?: string | null
           property_type?: string | null
           provider_id?: string | null
           provider_name?: string
