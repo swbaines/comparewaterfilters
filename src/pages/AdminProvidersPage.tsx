@@ -57,6 +57,12 @@ function stringToArray(s: string): string[] {
 
 export default function AdminProvidersPage() {
   const queryClient = useQueryClient();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState(emptyForm);
+  const [scrapeUrl, setScrapeUrl] = useState("");
+  const [scraping, setScraping] = useState(false);
+  const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
