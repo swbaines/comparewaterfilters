@@ -28,6 +28,38 @@ const LEAD_PRICES = [
   { type: "Rental lead", price: "$1", description: "Customer is renting" },
 ];
 
+// ── Card brand SVG icons ──────────────────────────────────────────────────────
+function CardBrandIcon({ brand }: { brand: string }) {
+  const b = brand.toLowerCase();
+  if (b === "visa") {
+    return (
+      <svg viewBox="0 0 48 32" className="h-8 w-12 shrink-0" aria-label="Visa">
+        <rect width="48" height="32" rx="4" fill="#1A1F71" />
+        <text x="24" y="21" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="sans-serif">VISA</text>
+      </svg>
+    );
+  }
+  if (b === "mastercard") {
+    return (
+      <svg viewBox="0 0 48 32" className="h-8 w-12 shrink-0" aria-label="Mastercard">
+        <rect width="48" height="32" rx="4" fill="#252525" />
+        <circle cx="19" cy="16" r="8" fill="#EB001B" />
+        <circle cx="29" cy="16" r="8" fill="#F79E1B" />
+        <path d="M24 9.4a8 8 0 0 1 0 13.2 8 8 0 0 1 0-13.2z" fill="#FF5F00" />
+      </svg>
+    );
+  }
+  if (b === "amex" || b === "american_express") {
+    return (
+      <svg viewBox="0 0 48 32" className="h-8 w-12 shrink-0" aria-label="Amex">
+        <rect width="48" height="32" rx="4" fill="#2E77BC" />
+        <text x="24" y="21" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="sans-serif">AMEX</text>
+      </svg>
+    );
+  }
+  return <CreditCard className="h-6 w-6 text-muted-foreground shrink-0" />;
+}
+
 const statusColors: Record<string, string> = {
   paid: "bg-green-100 text-green-800",
   sent: "bg-blue-100 text-blue-800",
