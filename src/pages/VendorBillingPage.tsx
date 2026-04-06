@@ -197,11 +197,13 @@ export default function VendorBillingPage() {
         .single();
 
       setProvider(prov);
-      setCardSaved(!!(prov as any)?.stripe_payment_method_id);
+      if (!showCardForm) {
+        setCardSaved(!!(prov as any)?.stripe_payment_method_id);
+      }
     };
 
     fetchProvider();
-  }, [cardSaved]);
+  }, []);
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["vendor-invoices", provider?.id],
