@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 
 const LEAD_STATUSES = ["new", "sent", "contacted", "won", "lost"] as const;
