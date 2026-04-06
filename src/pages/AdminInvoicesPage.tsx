@@ -1,13 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, DollarSign, FileText, CheckCircle, Clock } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   draft: "bg-slate-100 text-slate-800",
@@ -17,8 +26,16 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-gray-100 text-gray-500",
 };
 
+type InvoiceAction = {
+  type: "mark_paid" | "mark_sent" | "mark_overdue" | "cancel";
+  invoiceId: string;
+  invoiceNumber: string;
+};
+
 export default function AdminInvoicesPage() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [confirmAction, setConfirmAction] = useState<InvoiceAction | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading } = useQuery({
     queryKey: ["admin-invoices"],
@@ -32,18 +49,110 @@ export default function AdminInvoicesPage() {
     },
   });
 
+  const updateStatus = useMutation({
+    mutationFn: async ({ invoiceId, type }: { invoiceId: string; type: InvoiceAction["type"] }) => {
+      const statusMap: Record<string, string> = {
+        mark_paid: "paid",
+        mark_sent: "sent",
+        mark_overdue: "overdue",
+        cancel: "cancelled",
+      };
+      const newStatus = statusMap[type];
+      const updates: Record<string, any> = { status: newStatus };
+      if (type === "mark_paid") updates.paid_at = new Date().toISOString();
+
+      const { error } = await supabase
+        .from("invoices")
+        .update(updates)
+        .eq("id", invoiceId);
+      if (error) throw error;
+      return newStatus;
+    },
+    onSuccess: (newStatus) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-invoices"] });
+      toast.success(`Invoice marked as ${newStatus}`);
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Failed to update invoice");
+    },
+  });
+
+  const sendReminder = useMutation({
+    mutationFn: async ({ invoiceId }: { invoiceId: string }) => {
+      const inv = invoices.find((i) => i.id === invoiceId);
+      if (!inv) throw new Error("Invoice not found");
+
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "vendor-lead-notification",
+          recipientEmail: (inv.providers as any)?.name ? undefined : undefined,
+          idempotencyKey: `invoice-reminder-${invoiceId}-${Date.now()}`,
+        },
+      });
+      // For now we just mark as sent if not already
+      if (inv.status === "draft") {
+        await supabase.from("invoices").update({ status: "sent" }).eq("id", invoiceId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-invoices"] });
+      toast.success("Invoice marked as sent");
+    },
+    onError: () => {
+      toast.error("Failed to send reminder");
+    },
+  });
+
+  const handleAction = (action: InvoiceAction) => {
+    if (action.type === "mark_paid" || action.type === "cancel") {
+      setConfirmAction(action);
+    } else if (action.type === "mark_sent") {
+      sendReminder.mutate({ invoiceId: action.invoiceId });
+    } else {
+      updateStatus.mutate({ invoiceId: action.invoiceId, type: action.type });
+    }
+  };
+
+  const confirmAndExecute = () => {
+    if (!confirmAction) return;
+    updateStatus.mutate({ invoiceId: confirmAction.invoiceId, type: confirmAction.type });
+    setConfirmAction(null);
+  };
+
   const filtered = filterStatus === "all"
     ? invoices
     : invoices.filter((i) => i.status === filterStatus);
 
   const totalAmount = invoices.reduce((s, i) => s + Number(i.total_amount), 0);
-  const paidAmount = invoices
-    .filter((i) => i.status === "paid")
-    .reduce((s, i) => s + Number(i.total_amount), 0);
-  const pendingAmount = invoices
-    .filter((i) => i.status === "sent" || i.status === "draft")
-    .reduce((s, i) => s + Number(i.total_amount), 0);
+  const paidAmount = invoices.filter((i) => i.status === "paid").reduce((s, i) => s + Number(i.total_amount), 0);
+  const pendingAmount = invoices.filter((i) => i.status === "sent" || i.status === "draft").reduce((s, i) => s + Number(i.total_amount), 0);
   const overdueCount = invoices.filter((i) => i.status === "overdue").length;
+
+  const getActions = (status: string) => {
+    switch (status) {
+      case "draft":
+        return [
+          { type: "mark_sent" as const, label: "Send Invoice", icon: Send },
+          { type: "mark_paid" as const, label: "Mark as Paid", icon: CheckCircle },
+          { type: "cancel" as const, label: "Cancel", icon: Ban },
+        ];
+      case "sent":
+        return [
+          { type: "mark_paid" as const, label: "Mark as Paid", icon: CheckCircle },
+          { type: "mark_overdue" as const, label: "Mark Overdue", icon: Clock },
+          { type: "mark_sent" as const, label: "Send Reminder", icon: Send },
+          { type: "cancel" as const, label: "Cancel", icon: Ban },
+        ];
+      case "overdue":
+        return [
+          { type: "mark_paid" as const, label: "Mark as Paid", icon: CheckCircle },
+          { type: "mark_sent" as const, label: "Send Reminder", icon: Send },
+          { type: "cancel" as const, label: "Cancel", icon: Ban },
+        ];
+      default:
+        return [];
+    }
+  };
 
   return (
     <div>
@@ -120,33 +229,68 @@ export default function AdminInvoicesPage() {
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Created</TableHead>
+                      <TableHead className="w-[60px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filtered.map((inv) => (
-                      <TableRow key={inv.id}>
-                        <TableCell className="font-mono text-sm">{inv.invoice_number}</TableCell>
-                        <TableCell className="font-medium">
-                          {(inv.providers as any)?.name ?? "—"}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {format(new Date(inv.period_start), "dd MMM")} – {format(new Date(inv.period_end), "dd MMM yyyy")}
-                        </TableCell>
-                        <TableCell>{inv.lead_count}</TableCell>
-                        <TableCell className="font-medium">${Number(inv.total_amount).toLocaleString()}</TableCell>
-                        <TableCell>
-                          <Badge className={`${statusColors[inv.status] ?? ""} capitalize`}>
-                            {inv.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {format(new Date(inv.created_at), "dd MMM yyyy")}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {filtered.map((inv) => {
+                      const actions = getActions(inv.status);
+                      return (
+                        <TableRow key={inv.id}>
+                          <TableCell className="font-mono text-sm">{inv.invoice_number}</TableCell>
+                          <TableCell className="font-medium">
+                            {(inv.providers as any)?.name ?? "—"}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {format(new Date(inv.period_start), "dd MMM")} – {format(new Date(inv.period_end), "dd MMM yyyy")}
+                          </TableCell>
+                          <TableCell>{inv.lead_count}</TableCell>
+                          <TableCell className="font-medium">${Number(inv.total_amount).toLocaleString()}</TableCell>
+                          <TableCell>
+                            <Badge className={`${statusColors[inv.status] ?? ""} capitalize`}>
+                              {inv.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {format(new Date(inv.created_at), "dd MMM yyyy")}
+                          </TableCell>
+                          <TableCell>
+                            {actions.length > 0 ? (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  {actions.map((a) => (
+                                    <DropdownMenuItem
+                                      key={a.type}
+                                      onClick={() =>
+                                        handleAction({
+                                          type: a.type,
+                                          invoiceId: inv.id,
+                                          invoiceNumber: inv.invoice_number,
+                                        })
+                                      }
+                                      className={a.type === "cancel" ? "text-destructive" : ""}
+                                    >
+                                      <a.icon className="mr-2 h-4 w-4" />
+                                      {a.label}
+                                    </DropdownMenuItem>
+                                  ))}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                     {filtered.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                           No invoices found
                         </TableCell>
                       </TableRow>
@@ -158,6 +302,30 @@ export default function AdminInvoicesPage() {
           </>
         )}
       </div>
+
+      <AlertDialog open={!!confirmAction} onOpenChange={() => setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction?.type === "mark_paid" ? "Mark Invoice as Paid?" : "Cancel Invoice?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction?.type === "mark_paid"
+                ? `This will mark invoice ${confirmAction?.invoiceNumber} as paid and record the payment date.`
+                : `This will cancel invoice ${confirmAction?.invoiceNumber}. This action cannot be easily undone.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go Back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmAndExecute}
+              className={confirmAction?.type === "cancel" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            >
+              {confirmAction?.type === "mark_paid" ? "Confirm Payment" : "Cancel Invoice"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
