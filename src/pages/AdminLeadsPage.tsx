@@ -12,8 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 
@@ -28,8 +26,6 @@ const statusColors: Record<string, string> = {
 };
 
 export default function AdminLeadsPage() {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [filterProvider, setFilterProvider] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");

@@ -12,8 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, LogOut, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -57,20 +56,7 @@ function stringToArray(s: string): string[] {
 }
 
 export default function AdminProvidersPage() {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState(emptyForm);
-  const [scrapeUrl, setScrapeUrl] = useState("");
-  const [scraping, setScraping] = useState(false);
-  const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/admin/login");
-  };
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
