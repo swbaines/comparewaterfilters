@@ -125,7 +125,7 @@ export default function AdminLeadsPage() {
       if (invoiceError) throw invoiceError;
 
       for (const lead of providerLeads) {
-        const price = Number(lead.lead_price) || 85;
+        const price = Number(lead.lead_price) || 1;
         await supabase
           .from("quote_requests")
           .update({ invoice_id: invoice.id, lead_price: price })
