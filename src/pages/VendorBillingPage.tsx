@@ -185,6 +185,17 @@ export default function VendorBillingPage() {
     },
   });
 
+  // Fetch card brand/last4 from Stripe
+  const { data: cardInfo } = useQuery({
+    queryKey: ["card-details", cardSaved],
+    enabled: cardSaved,
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("get-card-details");
+      if (error) throw error;
+      return data?.card as { brand: string; last4: string; exp_month: number; exp_year: number } | null;
+    },
+  });
+
   const { data: leadsThisMonth = [] } = useQuery({
     queryKey: ["vendor-leads-this-month", provider?.id],
     enabled: !!provider?.id,
@@ -378,11 +389,21 @@ export default function VendorBillingPage() {
               ) : cardSaved ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    {cardInfo ? (
+                      <CardBrandIcon brand={cardInfo.brand} />
+                    ) : (
+                      <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0" />
+                    )}
                     <div>
-                      <p className="font-medium">Card on file</p>
+                      <p className="font-medium">
+                        {cardInfo
+                          ? `${cardInfo.brand.charAt(0).toUpperCase() + cardInfo.brand.slice(1)} •••• ${cardInfo.last4}`
+                          : "Card on file"}
+                      </p>
                       <p className="text-sm text-muted-foreground">
-                        Your account will be charged automatically on the 1st of each month
+                        {cardInfo
+                          ? `Expires ${String(cardInfo.exp_month).padStart(2, "0")}/${cardInfo.exp_year} · Charged automatically on the 1st`
+                          : "Your account will be charged automatically on the 1st of each month"}
                       </p>
                     </div>
                   </div>
