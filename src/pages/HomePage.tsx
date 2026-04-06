@@ -177,8 +177,8 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Compare Water Filters — Find the Right System for Your Home"
-        description="Compare water filtration systems, understand pricing, and get matched to the best option for your Australian home. Independent, free guidance."
+        title="Best Water Filtration System Australia — Compare & Get Free Quotes"
+        description="Compare the best water filtration systems in Australia. Whole house water filters, reverse osmosis, under-sink — independent recommendations and free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth & Adelaide."
         path="/"
       />
 

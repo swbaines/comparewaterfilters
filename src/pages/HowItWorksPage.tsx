@@ -47,8 +47,8 @@ export default function HowItWorksPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="How It Works"
-        description="Learn how Compare Water Filters helps you find the right water filtration system — from quiz to personalised recommendations."
+        title="How It Works — Get Matched to the Best Water Filtration System"
+        description="Three simple steps to find the best water filtration system for your home. Answer a quiz, get independent recommendations, and compare free quotes from licensed Australian installers."
         path="/how-it-works"
       />
       <div className="container max-w-3xl">

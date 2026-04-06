@@ -166,8 +166,8 @@ export default function WaterQualityPage() {
   return (
     <div className="min-h-screen bg-background">
       <PageMeta
-        title="Water Quality by Suburb — Check Your Local Water"
-        description="Free water quality lookup for Australian suburbs. Check hardness, chlorine, fluoride, and PFAS levels in your area and get filter recommendations."
+        title="Water Quality by Suburb Australia — Check Hardness, Chlorine, PFAS"
+        description="Free water quality lookup for Australian suburbs. Check hardness, chlorine, fluoride and PFAS levels in Sydney, Melbourne, Brisbane, Perth, Adelaide and more. Get filter recommendations for your area."
         path="/water-quality"
       />
 
