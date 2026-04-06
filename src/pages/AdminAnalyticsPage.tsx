@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Users, FileText, TrendingUp, DollarSign, BarChart3 } from "lucide-react";
+import { Loader2, Users, FileText, TrendingUp, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format, subDays, startOfDay } from "date-fns";
 import { useState } from "react";
@@ -196,34 +196,10 @@ export default function AdminAnalyticsPage() {
           <>
             {/* Summary cards */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Quiz Completions</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent><div className="text-2xl font-bold">{totalQuizzes}</div></CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Quote Requests</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent><div className="text-2xl font-bold">{totalLeads}</div></CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent><div className="text-2xl font-bold">{conversionRate}%</div></CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Won Leads</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent><div className="text-2xl font-bold">{wonLeads}</div></CardContent>
-              </Card>
+              <MetricCard title="Quiz Completions" value={totalQuizzes} icon={Users} change={pctChange(totalQuizzes, prevQuizzes)} />
+              <MetricCard title="Quote Requests" value={totalLeads} icon={FileText} change={pctChange(totalLeads, prevLeads)} />
+              <MetricCard title="Conversion Rate" value={`${conversionRate}%`} icon={TrendingUp} change={pctChange(parseFloat(conversionRate), prevConversion)} />
+              <MetricCard title="Won Leads" value={wonLeads} icon={BarChart3} change={pctChange(wonLeads, prevWon)} />
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">Revenue (Paid)</CardTitle>
@@ -231,9 +207,12 @@ export default function AdminAnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
-                  {pendingRevenue > 0 && (
-                    <p className="text-xs text-muted-foreground">${pendingRevenue} pending</p>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <ChangeBadge change={pctChange(totalRevenue, prevRevenue)} />
+                    {pendingRevenue > 0 && (
+                      <span className="text-xs text-muted-foreground">${pendingRevenue} pending</span>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
