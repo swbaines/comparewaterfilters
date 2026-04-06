@@ -6,8 +6,9 @@ import AdminNav from "@/components/AdminNav";
 import { format, subDays, startOfDay } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import SubmissionsChart from "@/components/analytics/SubmissionsChart";
+import LeadsByProviderChart from "@/components/analytics/LeadsByProviderChart";
+import LeadsByStatusChart from "@/components/analytics/LeadsByStatusChart";
 
 const RANGES = [
   { label: "7 days", days: 7 },
