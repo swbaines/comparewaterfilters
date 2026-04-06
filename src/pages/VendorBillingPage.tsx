@@ -606,6 +606,76 @@ export default function VendorBillingPage() {
                   >
                     <Download className="h-4 w-4" /> Print / Save PDF
                   </Button>
+                  {selectedInvoice.status === "paid" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => {
+                        const win = window.open("", "_blank");
+                        if (!win) return;
+                        win.document.write(`
+                          <html><head><title>Receipt — ${selectedInvoice.invoice_number}</title>
+                          <style>
+                            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #111; max-width: 600px; margin: 0 auto; }
+                            h1 { font-size: 24px; margin-bottom: 4px; }
+                            .subtitle { color: #666; margin-top: 0; font-size: 14px; }
+                            .success { display: flex; align-items: center; gap: 8px; background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 8px; font-weight: 600; margin: 20px 0; font-size: 14px; }
+                            .success svg { flex-shrink: 0; }
+                            .details { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin: 20px 0; }
+                            .details-row { display: flex; justify-content: space-between; padding: 10px 16px; font-size: 14px; border-bottom: 1px solid #f3f4f6; }
+                            .details-row:last-child { border-bottom: none; }
+                            .details-row .label { color: #6b7280; }
+                            .details-row .value { font-weight: 600; }
+                            .total-row { background: #f9fafb; }
+                            .total-row .value { font-size: 18px; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+                            th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd; font-weight: 600; color: #6b7280; }
+                            td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
+                            .text-right { text-align: right; }
+                            .footer { margin-top: 40px; font-size: 11px; color: #9ca3af; border-top: 1px solid #f3f4f6; padding-top: 16px; text-align: center; }
+                            @media print { body { padding: 20px; } }
+                          </style></head><body>
+                          <h1>Payment Receipt</h1>
+                          <p class="subtitle">Compare Water Filters — ${selectedInvoice.invoice_number}</p>
+                          <div class="success">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                            Payment successful
+                          </div>
+                          <div class="details">
+                            <div class="details-row"><span class="label">Invoice</span><span class="value">${selectedInvoice.invoice_number}</span></div>
+                            <div class="details-row"><span class="label">Billing period</span><span class="value">${format(new Date(selectedInvoice.period_start), "d MMM yyyy")} — ${format(new Date(selectedInvoice.period_end), "d MMM yyyy")}</span></div>
+                            <div class="details-row"><span class="label">Leads</span><span class="value">${selectedInvoice.lead_count}</span></div>
+                            <div class="details-row"><span class="label">Date paid</span><span class="value">${selectedInvoice.paid_at ? format(new Date(selectedInvoice.paid_at), "d MMM yyyy 'at' h:mm a") : "—"}</span></div>
+                            ${selectedInvoice.stripe_invoice_id ? `<div class="details-row"><span class="label">Reference</span><span class="value" style="font-family:monospace;font-size:12px">${selectedInvoice.stripe_invoice_id}</span></div>` : ""}
+                            <div class="details-row total-row"><span class="label">Amount paid</span><span class="value">$${Number(selectedInvoice.total_amount).toFixed(2)} AUD</span></div>
+                          </div>
+                          <h3 style="font-size:14px;color:#374151;margin-bottom:4px">Lead breakdown</h3>
+                          <table>
+                            <thead><tr><th>Date</th><th>Customer</th><th>Location</th><th class="text-right">Price</th></tr></thead>
+                            <tbody>
+                              ${invoiceLeads.map((l: any) => `<tr>
+                                <td>${format(new Date(l.created_at), "d MMM")}</td>
+                                <td>${l.customer_name}</td>
+                                <td>${[l.customer_suburb, l.customer_state].filter(Boolean).join(", ") || "—"}</td>
+                                <td class="text-right">$${Number(l.lead_price || 0).toFixed(2)}</td>
+                              </tr>`).join("")}
+                            </tbody>
+                          </table>
+                          <div class="footer">
+                            This receipt was generated from the Compare Water Filters vendor portal.<br/>
+                            comparewaterfilters.lovable.app
+                          </div>
+                          </body></html>
+                        `);
+                        win.document.close();
+                        win.focus();
+                        setTimeout(() => win.print(), 300);
+                      }}
+                    >
+                      <Receipt className="h-4 w-4" /> Download Receipt
+                    </Button>
+                  )}
                 </DialogHeader>
 
                 <div className="space-y-4">
