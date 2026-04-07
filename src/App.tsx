@@ -75,6 +75,7 @@ const App = () => (
           </Routes>
         </main>
         <Footer />
+        <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
