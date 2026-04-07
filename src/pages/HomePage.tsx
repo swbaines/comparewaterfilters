@@ -21,7 +21,7 @@ const stats = [
   { number: "10+", label: "System types compared" },
   { number: "8", label: "States & territories covered" },
   { number: "100%", label: "Free for homeowners" },
-  { number: "Licensed", label: "Vendors only" },
+  { number: "Trusted", label: "Vendors only" },
 ];
 
 const steps = [
