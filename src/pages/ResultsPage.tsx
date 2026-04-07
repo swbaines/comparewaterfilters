@@ -402,23 +402,6 @@ export default function ResultsPage() {
           </>
         )}
 
-        {/* ── Disclaimer ── */}
-        <div className="mt-12 rounded-xl border border-muted bg-muted/30 px-5 py-5 text-xs leading-relaxed text-muted-foreground sm:px-8 sm:py-6 sm:text-sm">
-          <p className="mb-2 font-semibold text-foreground">Important note</p>
-          <p className="mb-2">
-            The system recommendations provided on this page are based on general information you have supplied and are intended as a starting point for your research only. They do not constitute professional advice.
-          </p>
-          <p className="mb-2">
-            Water filtration suitability depends on your specific water quality, plumbing configuration, property type, and individual circumstances — factors that can only be properly assessed by a licensed professional conducting an in-home inspection.
-          </p>
-          <p className="mb-2">
-            Compare Water Filters is an independent comparison platform. We do not install, manufacture, or supply water filtration systems. We do not endorse or guarantee the quality, workmanship, or suitability of any vendor listed on this platform.
-          </p>
-          <p>
-            Before purchasing or installing any water filtration system, we strongly recommend obtaining at least two quotes from licensed plumbers and requesting a site assessment.
-          </p>
-        </div>
-
         {/* ── Choose a provider divider ── */}
         <div className="mt-16 mb-2">
           <div className="flex items-center gap-4">
@@ -626,16 +609,6 @@ export default function ResultsPage() {
           })()}
         </div>
 
-        {/* Disclaimer */}
-        <Card className="mt-8 border-0 bg-muted/50 shadow-none">
-          <CardContent className="p-5 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Important note</p>
-            <p className="mt-1">
-              These recommendations are based on the information you provided and are intended as general guidance. Final suitability depends on your specific water quality, plumbing setup, and professional assessment. We recommend getting a qualified assessment before making a purchase decision.
-            </p>
-          </CardContent>
-        </Card>
-
         {/* CTAs */}
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link to="/contact">
@@ -647,6 +620,25 @@ export default function ResultsPage() {
             <Button variant="outline" size="lg">Retake quiz</Button>
           </Link>
         </div>
+
+        {/* Disclaimer */}
+        <Card className="mt-10 border-0 bg-muted/50 shadow-none">
+          <CardContent className="p-5 text-xs leading-relaxed text-muted-foreground sm:p-6 sm:text-sm">
+            <p className="mb-2 font-semibold text-foreground">Important note</p>
+            <p className="mb-2">
+              The system recommendations provided on this page are based on general information you have supplied and are intended as a starting point for your research only. They do not constitute professional advice.
+            </p>
+            <p className="mb-2">
+              Water filtration suitability depends on your specific water quality, plumbing configuration, property type, and individual circumstances — factors that can only be properly assessed by a licensed professional conducting an in-home inspection.
+            </p>
+            <p className="mb-2">
+              Compare Water Filters is an independent comparison platform. We do not install, manufacture, or supply water filtration systems. We do not endorse or guarantee the quality, workmanship, or suitability of any vendor listed on this platform.
+            </p>
+            <p>
+              Before purchasing or installing any water filtration system, we strongly recommend obtaining at least two quotes from licensed plumbers and requesting a site assessment.
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Quote dialog */}
