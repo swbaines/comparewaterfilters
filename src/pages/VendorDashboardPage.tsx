@@ -242,6 +242,7 @@ export default function VendorDashboardPage() {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Systems</TableHead>
                 <TableHead>Status</TableHead>
@@ -249,7 +250,7 @@ export default function VendorDashboardPage() {
             </TableHeader>
             <TableBody>
               {leads.length === 0 ? (
-                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
               ) : leads.map((lead) => (
                 <TableRow
                   key={lead.id}
