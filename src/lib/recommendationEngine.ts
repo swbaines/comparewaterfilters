@@ -18,6 +18,7 @@ export interface QuizAnswers {
   email: string;
   mobile: string;
   consent: boolean;
+  disclaimerAck: boolean;
 }
 
 export interface RecommendationResult {
