@@ -19,6 +19,7 @@ const baseAnswers: QuizAnswers = {
   email: "test@example.com",
   mobile: "",
   consent: true,
+  disclaimerAck: true,
 };
 
 describe("Water Softener filtering", () => {
