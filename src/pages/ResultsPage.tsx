@@ -372,9 +372,15 @@ export default function ResultsPage() {
           <ArrowRight className="h-4 w-4 shrink-0" />
         </a>
 
-        {/* 3 Recommendation cards (or 2 if budget = recommendation) */}
+        {/* 3 Recommendation cards (or 2 if budget = recommendation or premium = recommendation) */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
-        {result.secondary.id === result.primary.id ? (
+        {result.primary.id === result.premium.id ? (
+          /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
+          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" />
+            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+          </div>
+        ) : result.secondary.id === result.primary.id ? (
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
             <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" />
             <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
@@ -507,8 +513,10 @@ export default function ResultsPage() {
         <div className="mt-12">
           <h2 className="mb-4 text-lg font-bold">Quick comparison</h2>
           {(() => {
-            const collapsed = result.secondary.id === result.primary.id;
-            const recs = collapsed
+            const collapsed = result.secondary.id === result.primary.id || result.primary.id === result.premium.id;
+            const recs = result.primary.id === result.premium.id
+              ? [{ label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Budget alternative", rec: result.secondary, variant: "value" as const }]
+              : result.secondary.id === result.primary.id
               ? [{ label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }]
               : [{ label: "Budget alternative", rec: result.secondary, variant: "value" as const }, { label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }];
 
