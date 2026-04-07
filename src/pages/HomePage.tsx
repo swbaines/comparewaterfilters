@@ -14,7 +14,7 @@ const trustPoints = [
   { icon: ShieldCheck, text: "Independent — no brand bias" },
   { icon: Sparkles, text: "Filter advice made simple" },
   { icon: DollarSign, text: "Budget considered recommendations" },
-  { icon: Droplets, text: "Licensed vendor network" },
+  { icon: Droplets, text: "Trusted suppliers only" },
 ];
 
 const stats = [
