@@ -272,7 +272,7 @@ export default function HomePage() {
       {/* ── Stats ── */}
       <section className="border-y bg-muted/30 py-12">
         <div className="container">
-          <div className="grid grid-cols-3 gap-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-12 max-w-4xl mx-auto">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <p className="text-3xl font-extrabold text-primary">{s.number}</p>
