@@ -78,6 +78,7 @@ export default function VendorRegisterPage() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [agreeLeadPricing, setAgreeLeadPricing] = useState(false);
   const [agreeLicensedPlumber, setAgreeLicensedPlumber] = useState(false);
+  const [agreeRemovalTerms, setAgreeRemovalTerms] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
