@@ -219,6 +219,7 @@ export type Database = {
           stripe_payment_method_id: string | null
           submitted_by: string | null
           system_types: string[]
+          terms_accepted_at: string | null
           updated_at: string
           warranty: string
           website: string | null
@@ -254,6 +255,7 @@ export type Database = {
           stripe_payment_method_id?: string | null
           submitted_by?: string | null
           system_types?: string[]
+          terms_accepted_at?: string | null
           updated_at?: string
           warranty?: string
           website?: string | null
@@ -289,6 +291,7 @@ export type Database = {
           stripe_payment_method_id?: string | null
           submitted_by?: string | null
           system_types?: string[]
+          terms_accepted_at?: string | null
           updated_at?: string
           warranty?: string
           website?: string | null
