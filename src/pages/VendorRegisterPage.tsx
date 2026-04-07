@@ -660,7 +660,10 @@ export default function VendorRegisterPage() {
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="reg-password">Password</Label>
-              <Input id="reg-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+              <Input id="reg-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
+              <p className="text-xs text-muted-foreground">
+                Must be at least 8 characters and include uppercase, lowercase, a number, and a special character (e.g. !@#$%).
+              </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="reg-confirm">Confirm Password</Label>
