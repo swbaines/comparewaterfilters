@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import PageMeta from "@/components/PageMeta";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -217,6 +217,7 @@ export default function ResultsPage() {
   const [sortBy, setSortBy] = useState<string>("match");
   const [filterPrice, setFilterPrice] = useState<string>("all");
   const [copied, setCopied] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
   const { data: dbProviders = [] } = useProviders();
 
   useEffect(() => {
