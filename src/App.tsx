@@ -30,6 +30,7 @@ import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
 import WaterQualityPage from "@/pages/WaterQualityPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
+import DisclaimerPage from "@/pages/DisclaimerPage";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/vendor/profile" element={<VendorRoute><VendorProfilePage /></VendorRoute>} />
             <Route path="/vendor/billing" element={<VendorRoute><VendorBillingPage /></VendorRoute>} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
+            <Route path="/disclaimer" element={<DisclaimerPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

@@ -44,9 +44,12 @@ export default function Footer() {
             </Link>
           </div>
         </div>
-        <div className="mt-10 border-t pt-6 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="mt-10 border-t pt-6 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
           <span>© {new Date().getFullYear()} Compare Water Filters. All rights reserved. Recommendations are educational and not a substitute for professional assessment.</span>
-          <Link to="/admin/login" className="hover:text-foreground transition-colors">Admin</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link>
+            <Link to="/admin/login" className="hover:text-foreground transition-colors">Admin</Link>
+          </div>
         </div>
       </div>
     </footer>
