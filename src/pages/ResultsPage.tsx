@@ -383,14 +383,28 @@ export default function ResultsPage() {
           </>
         )}
 
-        {/* Mobile: link to matched providers */}
-        <div className="mt-6 text-center sm:hidden">
-          <a href="#matched-providers" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-            View matched providers <ArrowRight className="h-4 w-4" />
-          </a>
+        {/* ── Choose a provider divider ── */}
+        <div className="mt-16 mb-2">
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-primary">Next step</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          </div>
+          <div className="mt-8 rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-accent/30 to-primary/5 px-6 py-10 text-center sm:px-12">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <Users className="h-7 w-7 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold sm:text-3xl">Choose a provider</h2>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              Select a trusted local provider below to request a free quote — your details are pre-filled from your quiz so it only takes one tap.
+            </p>
+            <a href="#matched-providers" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+              See matched providers <ArrowRight className="h-4 w-4" />
+            </a>
+          </div>
         </div>
 
-        <div className="mt-14" id="matched-providers">
+        <div className="mt-10" id="matched-providers">
           <div className="mb-6 text-center">
             <Badge className="mb-3" variant="secondary">
               <Users className="mr-1 h-3 w-3" /> Matched providers
