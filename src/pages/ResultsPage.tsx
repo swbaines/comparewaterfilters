@@ -513,8 +513,10 @@ export default function ResultsPage() {
         <div className="mt-12">
           <h2 className="mb-4 text-lg font-bold">Quick comparison</h2>
           {(() => {
-            const collapsed = result.secondary.id === result.primary.id;
-            const recs = collapsed
+            const collapsed = result.secondary.id === result.primary.id || result.primary.id === result.premium.id;
+            const recs = result.primary.id === result.premium.id
+              ? [{ label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Budget alternative", rec: result.secondary, variant: "value" as const }]
+              : result.secondary.id === result.primary.id
               ? [{ label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }]
               : [{ label: "Budget alternative", rec: result.secondary, variant: "value" as const }, { label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }];
 
