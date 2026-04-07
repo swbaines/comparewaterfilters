@@ -213,9 +213,6 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Free for homeowners · No sales calls · Licensed vendors only
-          </p>
         </div>
       </section>
 
