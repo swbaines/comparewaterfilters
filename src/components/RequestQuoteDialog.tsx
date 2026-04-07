@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,6 +45,7 @@ export default function RequestQuoteDialog({
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("");
+  const [vendorAck, setVendorAck] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,7 +268,18 @@ export default function RequestQuoteDialog({
             />
           </div>
 
-          <Button type="submit" className="w-full gap-2" disabled={sending}>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="vendor-ack"
+              checked={vendorAck}
+              onCheckedChange={(checked) => setVendorAck(!!checked)}
+            />
+            <label htmlFor="vendor-ack" className="text-xs text-muted-foreground leading-relaxed">
+              I understand that Compare Water Filters is a comparison platform only. Vendors I am connected with are independent businesses. Compare Water Filters does not guarantee vendor workmanship, pricing, or availability.
+            </label>
+          </div>
+
+          <Button type="submit" className="w-full gap-2" disabled={sending || !vendorAck}>
             {sending ? (
               <>Sending…</>
             ) : (
