@@ -161,6 +161,49 @@ export default function SystemTypesPage() {
           </Accordion>
         </section>
 
+        {/* Related articles */}
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">Related guides</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link to="/learn/best-whole-house-water-filter-australia">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Best Whole House Water Filter Australia 2026</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Top systems compared — installed costs, features, and city-by-city picks.</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read guide <ArrowRight className="h-3 w-3" /></span>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/learn/reverse-osmosis-vs-whole-house">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Reverse Osmosis vs Whole House — Which Do You Need?</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">The most common question we get, answered with real data and comparisons.</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read guide <ArrowRight className="h-3 w-3" /></span>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/learn/does-carbon-remove-fluoride">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Does Carbon Remove Fluoride?</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Why standard carbon filters can't remove fluoride — and which systems can.</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read article <ArrowRight className="h-3 w-3" /></span>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/learn/what-does-a-water-softener-do">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">What Does a Water Softener Actually Do?</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Ion exchange explained — who needs one and how it helps your home.</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read article <ArrowRight className="h-3 w-3" /></span>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+        </section>
+
         {/* Internal cross-links */}
         <section className="mt-12">
           <h2 className="mb-6 text-xl font-bold">Continue exploring</h2>
@@ -184,7 +227,7 @@ export default function SystemTypesPage() {
             <Link to="/learn">
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
-                  <h3 className="text-sm font-semibold">Learn More</h3>
+                  <h3 className="text-sm font-semibold">Browse All Guides</h3>
                   <p className="mt-1 text-sm text-muted-foreground">Guides and articles on water quality, filtration methods, and buying tips.</p>
                 </CardContent>
               </Card>

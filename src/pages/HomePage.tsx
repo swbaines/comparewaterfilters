@@ -76,22 +76,28 @@ const testimonials = [
 
 const articles = [
   {
+    title: "Best whole house water filter Australia 2026",
+    href: "/learn/best-whole-house-water-filter-australia",
+    tag: "Buyer's guide",
+    desc: "Top systems compared — installed costs, features, and city-by-city picks.",
+  },
+  {
     title: "Is Australian tap water getting worse? What the data says",
     href: "/learn/is-australian-tap-water-getting-worse",
     tag: "Water quality",
     desc: "Chlorine levels, algal blooms, PFAS and climate change — the evidence is clear.",
   },
   {
-    title: "Reverse osmosis vs carbon filter — which do you actually need?",
-    href: "/learn/reverse-osmosis-vs-carbon-filter",
+    title: "Reverse osmosis vs whole house — which do you need?",
+    href: "/learn/reverse-osmosis-vs-whole-house",
     tag: "System guide",
     desc: "The most common question we get, answered with real data.",
   },
   {
-    title: "Hard water in Perth — suburb by suburb guide",
-    href: "/water-quality",
-    tag: "Water quality",
-    desc: "Two Rocks hits 228 mg/L. Find out where your suburb sits.",
+    title: "Why are some water filter systems so expensive?",
+    href: "/learn/why-water-filters-expensive",
+    tag: "Pricing",
+    desc: "What actually drives the cost — and where you can save.",
   },
 ];
 
@@ -459,7 +465,7 @@ export default function HomePage() {
       <section className="py-16 sm:py-20">
         <div className="container">
           <SectionHeading badge="Learn" title="Make a more informed decision" subtitle="Practical guides to help you understand your options." />
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {articles.map((a) => (
               <Link to={a.href} key={a.title}>
                 <Card className="h-full transition-all hover:shadow-md">
@@ -476,6 +482,18 @@ export default function HomePage() {
                 </Card>
               </Link>
             ))}
+          </div>
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Link to="/system-types">
+              <Button variant="outline" className="gap-2">
+                Compare system types <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/learn">
+              <Button variant="ghost" className="gap-2">
+                Browse all guides <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
