@@ -155,6 +155,13 @@ export type Database = {
             referencedRelation: "providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "invoices_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lead_prices: {
@@ -449,6 +456,13 @@ export type Database = {
             referencedRelation: "providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quote_requests_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       suppressed_emails: {
@@ -518,6 +532,13 @@ export type Database = {
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_accounts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers_public"
             referencedColumns: ["id"]
           },
         ]
@@ -591,11 +612,99 @@ export type Database = {
             referencedRelation: "providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "vendor_payment_details_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: true
+            referencedRelation: "providers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      providers_public: {
+        Row: {
+          approval_status: Database["public"]["Enums"]["approval_status"] | null
+          available_for_quote: boolean | null
+          brands: string[] | null
+          certifications: string[] | null
+          created_at: string | null
+          description: string | null
+          highlights: string[] | null
+          id: string | null
+          logo: string | null
+          name: string | null
+          phone: string | null
+          postcode_ranges: string[] | null
+          price_range: Database["public"]["Enums"]["price_range"] | null
+          rating: number | null
+          response_time: string | null
+          review_count: number | null
+          slug: string | null
+          states: string[] | null
+          system_types: string[] | null
+          updated_at: string | null
+          warranty: string | null
+          website: string | null
+          years_in_business: number | null
+        }
+        Insert: {
+          approval_status?:
+            | Database["public"]["Enums"]["approval_status"]
+            | null
+          available_for_quote?: boolean | null
+          brands?: string[] | null
+          certifications?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          highlights?: string[] | null
+          id?: string | null
+          logo?: string | null
+          name?: string | null
+          phone?: string | null
+          postcode_ranges?: string[] | null
+          price_range?: Database["public"]["Enums"]["price_range"] | null
+          rating?: number | null
+          response_time?: string | null
+          review_count?: number | null
+          slug?: string | null
+          states?: string[] | null
+          system_types?: string[] | null
+          updated_at?: string | null
+          warranty?: string | null
+          website?: string | null
+          years_in_business?: number | null
+        }
+        Update: {
+          approval_status?:
+            | Database["public"]["Enums"]["approval_status"]
+            | null
+          available_for_quote?: boolean | null
+          brands?: string[] | null
+          certifications?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          highlights?: string[] | null
+          id?: string | null
+          logo?: string | null
+          name?: string | null
+          phone?: string | null
+          postcode_ranges?: string[] | null
+          price_range?: Database["public"]["Enums"]["price_range"] | null
+          rating?: number | null
+          response_time?: string | null
+          review_count?: number | null
+          slug?: string | null
+          states?: string[] | null
+          system_types?: string[] | null
+          updated_at?: string | null
+          warranty?: string | null
+          website?: string | null
+          years_in_business?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
