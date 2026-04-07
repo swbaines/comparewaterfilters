@@ -183,8 +183,8 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Best Water Filtration System Australia — Compare & Get Free Quotes"
-        description="Compare the best water filtration systems in Australia. Whole house water filters, reverse osmosis, under-sink — independent recommendations and free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth & Adelaide."
+        title="Compare Whole House & Whole Home Water Filters Australia — Free Quotes"
+        description="Compare whole house and whole home water filters, reverse osmosis, and under-sink systems across Australia. Independent recommendations and free quotes from trusted installers in Sydney, Melbourne, Brisbane, Perth & Adelaide."
         path="/"
       />
 
@@ -195,10 +195,10 @@ export default function HomePage() {
             Australia's independent water filter comparison
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl">
-            Tired of chlorine smell, scale buildup, or skin irritation from your tap?
+            Compare Whole Home Water Filters — Find the Right System for Your Home
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            Compare Water Filters matches you to the right filtration system for your home, your water source, and your budget — then connects you with licensed local vendors for real quotes.
+            Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4">
             <Link to="/quiz">
