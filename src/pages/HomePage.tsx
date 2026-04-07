@@ -9,6 +9,7 @@ import {
   Waves, Zap, Home, FlaskConical, ShowerHead, HardDrive, MapPin, Search,
   Star, Users, Award, ChevronRight
 } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const trustPoints = [
   { icon: ShieldCheck, text: "Independent — no brand bias" },
@@ -103,6 +104,15 @@ const vendors = [
   { state: "TAS", count: "Hobart & Launceston" },
 ];
 
+const homeFaqs = [
+  { q: "How do I compare whole home water filters in Australia?", a: "Use our free quiz to answer a few questions about your property, water source, and concerns. We'll recommend the best system type — whole house, reverse osmosis, under-sink, or UV — and connect you with trusted local installers for obligation-free quotes." },
+  { q: "What is the best whole house water filter in Australia?", a: "The best whole house water filter depends on your water supply. Carbon-based systems suit most mains-connected homes for chlorine and sediment removal. If you're on bore or tank water, a multi-stage system with UV is recommended. Our quiz matches you to the right option." },
+  { q: "How much does a water filter system cost in Australia?", a: "Whole house water filters cost $3,000–$5,000 installed. Reverse osmosis systems cost $800–$3,000. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber." },
+  { q: "Is Compare Water Filters free for homeowners?", a: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with trusted vendors — with no obligation or sales calls." },
+  { q: "What contaminants does a water filter remove?", a: "Depending on the system type, water filters can remove chlorine, chloramine, sediment, heavy metals, fluoride, PFAS (forever chemicals), bacteria, and more. Reverse osmosis is the most thorough, while carbon filters handle taste and odour effectively." },
+  { q: "Whole house vs under-sink water filter — which should I choose?", a: "A whole house filter protects every tap, shower, and appliance from chlorine and sediment. An under-sink filter is more affordable and ideal if you only want purified drinking water. Many Australian homeowners combine both for complete coverage." },
+];
+
 const jsonLdData = [
   {
     "@context": "https://schema.org",
@@ -139,32 +149,11 @@ const jsonLdData = [
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "How much does a water filter system cost in Australia?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "The best water filtration system depends on your water source and concerns. Whole house water filters cost $3,000–$5,000 installed. Reverse osmosis systems cost $800–$3,000. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Is Compare Water Filters free for homeowners?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with licensed vendors — with no obligation or sales calls.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What contaminants does a water filter remove?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Depending on the system type, water filters can remove chlorine, sediment, heavy metals, fluoride, PFAS (forever chemicals), and more.",
-        },
-      },
-    ],
+    mainEntity: homeFaqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   },
 ];
 
@@ -488,6 +477,21 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-16 sm:py-20 bg-accent/30">
+        <div className="container max-w-3xl">
+          <SectionHeading badge="FAQ" title="Common questions about water filters" subtitle="Quick answers to help you make an informed decision." />
+          <Accordion type="single" collapsible className="mt-10">
+            {homeFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-semibold">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
