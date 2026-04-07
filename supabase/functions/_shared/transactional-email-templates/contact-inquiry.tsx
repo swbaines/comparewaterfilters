@@ -4,6 +4,7 @@ import {
   Body, Container, Head, Heading, Html, Preview, Text, Section, Hr,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { EmailDisclaimerFooter } from './email-disclaimer-footer.tsx'
 
 const SITE_NAME = 'Compare Water Filters'
 
@@ -36,6 +37,7 @@ const ContactInquiryEmail = ({ name, email, message }: ContactInquiryProps) => (
         <Text style={footer}>
           This email was sent from the {SITE_NAME} website contact form.
         </Text>
+        <EmailDisclaimerFooter />
       </Container>
     </Body>
   </Html>

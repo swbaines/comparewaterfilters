@@ -4,6 +4,7 @@ import {
   Body, Container, Head, Heading, Html, Img, Preview, Text, Hr, Button, Link,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { EmailDisclaimerFooter } from './email-disclaimer-footer.tsx'
 
 const SITE_NAME = 'Compare Water Filters'
 const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-droplets.svg'
@@ -55,6 +56,7 @@ const VendorWelcomeEmail = ({ businessName }: VendorWelcomeProps) => (
         <Text style={footer}>
           Thanks for joining {SITE_NAME} — Australia's trusted guide to cleaner water.
         </Text>
+        <EmailDisclaimerFooter />
       </Container>
     </Body>
   </Html>

@@ -115,7 +115,7 @@ export default function QuizPage() {
     postcode: "", suburb: "", state: "", propertyType: "", ownershipStatus: "",
     householdSize: "", bathrooms: "", waterSource: "", concerns: [],
     coverage: "", budget: "", priorities: [], notes: "",
-    firstName: "", email: "", mobile: "", consent: false,
+    firstName: "", email: "", mobile: "", consent: false, disclaimerAck: false,
   });
 
   const set = (field: keyof QuizAnswers, value: string | string[] | boolean) => {
@@ -138,7 +138,7 @@ export default function QuizPage() {
       case 5: return !!answers.budget;
       case 6: return true; // optional
       case 7: return true; // optional
-      case 8: return !!(answers.firstName && answers.email && answers.mobile && answers.consent);
+      case 8: return !!(answers.firstName && answers.email && answers.mobile && answers.consent && answers.disclaimerAck);
       default: return true;
     }
   };
@@ -355,6 +355,19 @@ export default function QuizPage() {
                   />
                   <label htmlFor="consent" className="text-sm text-muted-foreground">
                     I agree to receive my recommendations via email and understand my information is used to provide personalised guidance. I can unsubscribe at any time.
+                  </label>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Checkbox
+                    id="disclaimerAck"
+                    checked={answers.disclaimerAck}
+                    onCheckedChange={(checked) => set("disclaimerAck", !!checked)}
+                  />
+                  <label htmlFor="disclaimerAck" className="text-sm text-muted-foreground">
+                    I acknowledge that recommendations are for general guidance only and do not constitute professional advice. I have read and accept the{" "}
+                    <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
+                      platform disclaimer
+                    </a>.
                   </label>
                 </div>
               </div>
