@@ -12,7 +12,7 @@ import {
 
 const trustPoints = [
   { icon: ShieldCheck, text: "Independent — no brand bias" },
-  { icon: Sparkles, text: "Plain-English recommendations" },
+  { icon: Sparkles, text: "Filter advice made simple" },
   { icon: DollarSign, text: "Real Australian pricing" },
   { icon: Droplets, text: "Licensed vendor network" },
 ];
