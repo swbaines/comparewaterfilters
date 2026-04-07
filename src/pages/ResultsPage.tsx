@@ -244,6 +244,18 @@ export default function ResultsPage() {
     }
   }, [navigate, dbProviders, searchParams]);
 
+  // Show sticky bar on mobile when provider section is below viewport
+  useEffect(() => {
+    const providerEl = document.getElementById("matched-providers");
+    if (!providerEl) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(providerEl);
+    return () => observer.disconnect();
+  }, [result]);
+
   const filteredAndSorted = useMemo(() => {
     let list = [...providerMatches];
     if (filterPrice !== "all") {
