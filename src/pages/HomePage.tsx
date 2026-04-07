@@ -148,32 +148,11 @@ const jsonLdData = [
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "How much does a water filter system cost in Australia?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "The best water filtration system depends on your water source and concerns. Whole house water filters cost $3,000–$5,000 installed. Reverse osmosis systems cost $800–$3,000. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Is Compare Water Filters free for homeowners?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with licensed vendors — with no obligation or sales calls.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What contaminants does a water filter remove?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Depending on the system type, water filters can remove chlorine, sediment, heavy metals, fluoride, PFAS (forever chemicals), and more.",
-        },
-      },
-    ],
+    mainEntity: homeFaqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   },
 ];
 
