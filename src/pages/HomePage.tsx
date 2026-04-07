@@ -244,7 +244,7 @@ export default function HomePage() {
                 </span>
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">What's actually in your water?</h2>
                 <p className="mt-3 text-muted-foreground">
-                  Enter your suburb or postcode to see a plain-English breakdown of your local water — hardness, chlorine, fluoride, PFAS risk, and personalised filter recommendations.
+                  Enter your suburb or postcode to see a breakdown of your local water — hardness, chlorine, fluoride, PFAS risk, and personalised filter recommendations.
                 </p>
                 <Link to="/water-quality">
                   <Button className="mt-6 gap-2">
