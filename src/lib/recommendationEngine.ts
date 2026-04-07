@@ -442,11 +442,19 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   // ── RULE 1: Whole home triggers ────────────────────────────────────────────
   else if (wholeHomeTrigger && roTrigger) {
-    // Whole home + serious contaminants → Combo primary (the complete solution), under-sink budget, no premium (would duplicate primary)
+    // Whole home + serious contaminants → Combo primary, RO or WH as budget, no premium (would duplicate primary)
     primaryId = "whole-house-combo";
     primaryReason = `${stateChlorineNote}Your concerns need two layers of protection: a whole house filtration system for chlorine-free water at every tap, shower, and appliance — plus a reverse osmosis drinking water unit to eliminate fluoride, PFAS, heavy metals, and microplastics. This combined system is the most effective water quality solution available for Australian homes. Typically $4,000–$8,000 installed.`;
-    secondaryId = "under-sink-carbon";
-    secondaryReason = `An under-sink carbon filter is a more affordable starting point — it improves taste and reduces chlorine at the kitchen tap. However, carbon filters do not eliminate fluoride, PFAS, or heavy metals, and won't address whole-home concerns like skin irritation or appliance protection. $300–$1,200 installed.`;
+    // Budget alternative: RO if contaminant removal is the bigger concern, WH if whole-home is more prominent
+    const contaminantConcernCount = ["fluoride", "heavy-metals", "pfas", "microplastics", "bacteria"].filter(c => answers.concerns.includes(c)).length;
+    const wholeHomeConcernCount = ["skin-hair", "whole-home", "appliance", "hard-water"].filter(c => answers.concerns.includes(c)).length;
+    if (contaminantConcernCount >= wholeHomeConcernCount) {
+      secondaryId = "reverse-osmosis";
+      secondaryReason = `If the full combo is outside your budget, a reverse osmosis system on its own is the priority — it's the only household technology that removes fluoride, PFAS, heavy metals, and microplastics from your drinking water. $800–$1,500 installed. You can add whole house filtration later.`;
+    } else {
+      secondaryId = "whole-house-carbon";
+      secondaryReason = `If the full combo is outside your budget, start with a whole house filtration system — it delivers chlorine-free water to every tap, shower, and appliance, addressing your skin, hair, and whole-home concerns. $1,500–$5,000 installed. You can add an RO drinking water unit later.`;
+    }
     premiumId = "whole-house-combo";
     premiumReason = "";
   }
