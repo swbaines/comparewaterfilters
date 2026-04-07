@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -44,19 +43,10 @@ export default function RequestQuoteDialog({
 }: RequestQuoteDialogProps) {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
-  const [formData, setFormData] = useState({
-    name: answers.firstName,
-    email: answers.email,
-    mobile: answers.mobile,
-    message: "",
-  });
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.email.trim() || !formData.mobile.trim()) {
-      toast.error("Please fill in your name, email, and mobile number.");
-      return;
-    }
     setSending(true);
     try {
       const quoteId = crypto.randomUUID();
@@ -64,9 +54,9 @@ export default function RequestQuoteDialog({
         id: quoteId,
         provider_id: provider.id,
         provider_name: provider.name,
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_mobile: formData.mobile || null,
+        customer_name: answers.firstName,
+        customer_email: answers.email,
+        customer_mobile: answers.mobile || null,
         customer_suburb: answers.suburb,
         customer_state: answers.state,
         customer_postcode: answers.postcode,
@@ -76,7 +66,7 @@ export default function RequestQuoteDialog({
         concerns: answers.concerns,
         budget: answers.budget,
         recommended_systems: [...new Set(recommendedSystems)],
-        message: formData.message || null,
+        message: message || null,
         ownership_status: answers.ownershipStatus || null,
         lead_price: answers.ownershipStatus === "Rent" ? 50 : 85,
       });
@@ -85,9 +75,9 @@ export default function RequestQuoteDialog({
       // Send vendor lead notification email
       const vendorTemplateData = {
         providerName: provider.name,
-        customerName: formData.name,
-        customerEmail: formData.email,
-        customerMobile: formData.mobile || '',
+        customerName: answers.firstName,
+        customerEmail: answers.email,
+        customerMobile: answers.mobile || '',
         customerSuburb: answers.suburb,
         customerState: answers.state,
         customerPostcode: answers.postcode,
@@ -97,7 +87,7 @@ export default function RequestQuoteDialog({
         budget: answers.budget,
         concerns: answers.concerns,
         recommendedSystems,
-        message: formData.message || '',
+        message: message || '',
         createdAt: new Date().toISOString(),
       };
 
@@ -128,13 +118,13 @@ export default function RequestQuoteDialog({
       supabase.functions.invoke("send-transactional-email", {
         body: {
           templateName: "customer-quote-confirmation",
-          recipientEmail: formData.email,
+          recipientEmail: answers.email,
           idempotencyKey: `customer-confirm-${quoteId}`,
           templateData: {
-            customerName: formData.name,
+            customerName: answers.firstName,
             providerName: provider.name,
-            customerEmail: formData.email,
-            customerMobile: formData.mobile || '',
+            customerEmail: answers.email,
+            customerMobile: answers.mobile || '',
             recommendedSystems,
           },
         },
@@ -190,14 +180,36 @@ export default function RequestQuoteDialog({
         <DialogHeader>
           <DialogTitle>Request a quote from {provider.name}</DialogTitle>
           <DialogDescription>
-            Your quiz answers are pre-filled below. Add any extra details and we'll send this to the provider.
+            We'll send your details to the provider so they can prepare a personalised quote.
           </DialogDescription>
         </DialogHeader>
 
-        {/* Pre-filled summary */}
-        <div className="rounded-lg border bg-muted/50 p-4 space-y-2 text-sm">
-          <p className="font-medium text-foreground mb-2">Your details (from quiz)</p>
-          <div className="grid grid-cols-2 gap-2">
+        {/* Read-only customer details */}
+        <div className="rounded-lg border bg-muted/50 p-4 space-y-3 text-sm">
+          <div className="flex items-center justify-between">
+            <p className="font-medium text-foreground">Your details</p>
+            <a href="/quiz" className="text-xs text-primary hover:underline">
+              Not you?
+            </a>
+          </div>
+          <div className="grid gap-2">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <User className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="text-foreground font-medium">{answers.firstName}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Mail className="h-3.5 w-3.5 shrink-0 text-primary" />
+              {answers.email}
+            </div>
+            {answers.mobile && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Phone className="h-3.5 w-3.5 shrink-0 text-primary" />
+                {answers.mobile}
+              </div>
+            )}
+          </div>
+
+          <div className="border-t pt-2 grid grid-cols-2 gap-2">
             <div className="flex items-center gap-2 text-muted-foreground">
               <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
               {answers.suburb}, {answers.state} {answers.postcode}
@@ -216,7 +228,7 @@ export default function RequestQuoteDialog({
             </div>
           </div>
           {answers.concerns.length > 0 && (
-            <div className="pt-1">
+            <div className="border-t pt-2">
               <span className="text-muted-foreground">Concerns: </span>
               <span className="flex flex-wrap gap-1 mt-1">
                 {answers.concerns.map((c) => (
@@ -228,7 +240,7 @@ export default function RequestQuoteDialog({
             </div>
           )}
           {recommendedSystems.length > 0 && (
-            <div className="pt-1">
+            <div className="border-t pt-2">
               <span className="text-muted-foreground">Recommended systems: </span>
               <span className="flex flex-wrap gap-1 mt-1">
                 {[...new Set(recommendedSystems)].map((s) => (
@@ -241,53 +253,15 @@ export default function RequestQuoteDialog({
           )}
         </div>
 
-        {/* Editable form */}
+        {/* Editable form — message only */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="quote-name">
-                <User className="mr-1 inline h-3.5 w-3.5" /> Name
-              </Label>
-              <Input
-                id="quote-name"
-                value={formData.name}
-                onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="quote-mobile">
-                <Phone className="mr-1 inline h-3.5 w-3.5" /> Mobile
-              </Label>
-              <Input
-                id="quote-mobile"
-                value={formData.mobile}
-                onChange={(e) => setFormData((d) => ({ ...d, mobile: e.target.value }))}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="quote-email">
-              <Mail className="mr-1 inline h-3.5 w-3.5" /> Email
-            </Label>
-            <Input
-              id="quote-email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData((d) => ({ ...d, email: e.target.value }))}
-              required
-            />
-          </div>
-
           <div className="space-y-1.5">
             <Label htmlFor="quote-message">Additional notes (optional)</Label>
             <Textarea
               id="quote-message"
               placeholder="Any extra details about your water situation, access, or timing preferences…"
-              value={formData.message}
-              onChange={(e) => setFormData((d) => ({ ...d, message: e.target.value }))}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               rows={3}
             />
           </div>
