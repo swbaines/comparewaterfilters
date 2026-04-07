@@ -304,6 +304,7 @@ export default function AdminProvidersPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Terms</TableHead>
                   <TableHead>Active</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -324,6 +325,16 @@ export default function AdminProvidersPage() {
                         {p.approval_status}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      {(p as any).terms_accepted_at ? (
+                        <Badge variant="outline" className="text-xs border-green-300 text-green-700 gap-1">
+                          <CheckCircle2 className="h-3 w-3" /> Accepted
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 gap-1">
+                          <XCircle className="h-3 w-3" /> Pending
+                        </Badge>
+                      )}
                     <TableCell>{p.available_for_quote ? "✅" : "❌"}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
@@ -336,7 +347,7 @@ export default function AdminProvidersPage() {
                   </TableRow>
                 ))}
                 {providers.filter(p => (p as any).approval_status !== "pending").length === 0 && (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No providers yet</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No providers yet</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
