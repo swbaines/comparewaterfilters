@@ -58,12 +58,12 @@ export default function AdminInvoicesPage() {
         cancel: "cancelled",
       };
       const newStatus = statusMap[type];
-      const updates: Record<string, any> = { status: newStatus };
+      const updates: { status: string; paid_at?: string } = { status: newStatus };
       if (type === "mark_paid") updates.paid_at = new Date().toISOString();
 
       const { error } = await supabase
         .from("invoices")
-        .update(updates)
+        .update(updates as any)
         .eq("id", invoiceId);
       if (error) throw error;
       return newStatus;
