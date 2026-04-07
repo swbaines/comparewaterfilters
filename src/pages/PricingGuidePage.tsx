@@ -201,6 +201,25 @@ export default function PricingGuidePage() {
             </Button>
           </Link>
         </div>
+
+        {/* Disclaimer */}
+        <Card className="mt-10 border-0 bg-muted/50 shadow-none">
+          <CardContent className="p-5 text-xs leading-relaxed text-muted-foreground sm:p-6 sm:text-sm">
+            <p className="mb-2 font-semibold text-foreground">Pricing disclaimer</p>
+            <p className="mb-2">
+              All price ranges shown on this page are indicative only and are based on general market research across Australian water filtration installers. Actual prices may vary significantly depending on your location, property configuration, access requirements, chosen brand and model, installer experience, and current market conditions.
+            </p>
+            <p className="mb-2">
+              Prices shown include installation by a licensed plumber unless stated otherwise. Supply-only prices will be lower. Additional costs may apply for complex installations, older plumbing, or properties requiring non-standard equipment.
+            </p>
+            <p className="mb-2">
+              Compare Water Filters does not set, control, or guarantee vendor pricing. Quotes received through this platform are provided directly by independent vendors and are subject to their own terms and conditions.
+            </p>
+            <p>
+              Always obtain a written, itemised quote before proceeding with any installation.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
