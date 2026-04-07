@@ -9,6 +9,7 @@ import {
   Waves, Zap, Home, FlaskConical, ShowerHead, HardDrive, MapPin, Search,
   Star, Users, Award, ChevronRight
 } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const trustPoints = [
   { icon: ShieldCheck, text: "Independent — no brand bias" },
@@ -476,6 +477,21 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-16 sm:py-20 bg-accent/30">
+        <div className="container max-w-3xl">
+          <SectionHeading badge="FAQ" title="Common questions about water filters" subtitle="Quick answers to help you make an informed decision." />
+          <Accordion type="single" collapsible className="mt-10">
+            {homeFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`faq-${i}`}>
+                <AccordionTrigger className="text-left text-sm font-semibold">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 
