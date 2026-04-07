@@ -4,6 +4,7 @@ import {
   Body, Container, Head, Heading, Html, Preview, Text, Section, Hr, Button, Link,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { EmailDisclaimerFooter } from './email-disclaimer-footer.tsx'
 
 const SITE_NAME = 'Compare Water Filters'
 const SITE_URL = 'https://comparewaterfilters.com.au'
@@ -96,6 +97,7 @@ const CustomerQuoteConfirmationEmail = ({
           <Link href={SITE_URL} style={footerLink}>comparewaterfilters.com.au</Link>
         </Text>
         <Text style={footerBrand}>{SITE_NAME} · Helping Australians find the right water solution</Text>
+        <EmailDisclaimerFooter />
       </Container>
     </Body>
   </Html>

@@ -4,6 +4,7 @@ import {
   Body, Container, Head, Heading, Html, Img, Preview, Text, Hr, Button, Section, Row, Column,
 } from 'npm:@react-email/components@0.0.22'
 import type { TemplateEntry } from './registry.ts'
+import { EmailDisclaimerFooter } from './email-disclaimer-footer.tsx'
 
 const SITE_NAME = 'Compare Water Filters'
 const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-droplets.svg'
@@ -74,6 +75,7 @@ const AdminVendorNotificationEmail = ({
           <Text style={footer}>
             This is an automated notification from {SITE_NAME}.
           </Text>
+          <EmailDisclaimerFooter />
         </Container>
       </Body>
     </Html>
