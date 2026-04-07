@@ -511,12 +511,23 @@ export default function WaterQualityPage() {
         </section>
 
         {/* Disclaimer */}
-        <div className="mt-12 rounded-lg border bg-muted/50 p-6">
-          <div className="text-sm text-muted-foreground">
-            <h3 className="mb-2 font-semibold text-foreground">Data sources &amp; disclaimer</h3>
-            <p>Water quality data is sourced from annual drinking water quality reports (2024–25) published by Yarra Valley Water, South East Water, Greater Western Water, Barwon Water, Sydney Water, Hunter Water, Urban Utilities, Unitywater, Gold Coast Water, Water Corporation WA, SA Water, TasWater, Icon Water, and Power and Water Corporation. Data represents typical averages for each utility's supply zone and may vary by exact address, season, and current treatment conditions. For the most precise data for your address, contact your local water utility. This information is provided for general guidance only and does not constitute professional advice.</p>
-          </div>
-        </div>
+        <Card className="mt-12 border-0 bg-muted/50 shadow-none">
+          <CardContent className="p-5 text-xs leading-relaxed text-muted-foreground sm:p-6 sm:text-sm">
+            <p className="mb-2 font-semibold text-foreground">Data sources &amp; disclaimer</p>
+            <p className="mb-2">
+              Water quality data displayed on this page is sourced from official annual drinking water quality reports published by state water authorities, including Melbourne Water, Sydney Water, Water Corporation WA, Seqwater QLD, and SA Water (reporting period 2023–24).
+            </p>
+            <p className="mb-2">
+              Data represents typical averages across supply zones and localities. Actual water quality at your specific address may differ due to your proximity to treatment plants, local pipe infrastructure, seasonal variation, blending of water sources, and other factors.
+            </p>
+            <p className="mb-2">
+              This information is provided for general guidance only. It does not constitute a professional water quality assessment. For a precise analysis of the water at your property, contact your local water utility or engage a licensed water testing laboratory.
+            </p>
+            <p>
+              Compare Water Filters makes no warranty as to the accuracy, completeness, or currency of this data. We accept no liability for decisions made on the basis of information displayed on this page.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
