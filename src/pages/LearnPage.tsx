@@ -61,7 +61,16 @@ export default function LearnPage() {
         {/* Cross-links */}
         <section className="mt-12">
           <h2 className="mb-4 text-lg font-bold">Related resources</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Link to="/system-types">
+              <Card className="h-full transition-all hover:shadow-md border-primary/20">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Compare System Types</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Whole house, RO, under-sink, UV, and softener — pros, cons and pricing side by side.</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Compare now <ArrowRight className="h-3 w-3" /></span>
+                </CardContent>
+              </Card>
+            </Link>
             <Link to="/water-quality">
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
@@ -70,19 +79,20 @@ export default function LearnPage() {
                 </CardContent>
               </Card>
             </Link>
-            <Link to="/system-types">
-              <Card className="h-full transition-all hover:shadow-md">
-                <CardContent className="p-5">
-                  <h3 className="text-sm font-semibold">System Types</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Compare under-sink, whole house, RO, UV, and softener systems.</p>
-                </CardContent>
-              </Card>
-            </Link>
             <Link to="/pricing-guide">
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Pricing Guide</h3>
                   <p className="mt-1 text-sm text-muted-foreground">Understand installed prices and annual maintenance costs.</p>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link to="/quiz">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardContent className="p-5">
+                  <h3 className="text-sm font-semibold">Find My System</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">Answer a few questions and get a personalised recommendation.</p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Take the quiz <ArrowRight className="h-3 w-3" /></span>
                 </CardContent>
               </Card>
             </Link>
