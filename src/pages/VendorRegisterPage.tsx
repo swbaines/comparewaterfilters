@@ -76,9 +76,6 @@ export default function VendorRegisterPage() {
   const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [agreeLeadPricing, setAgreeLeadPricing] = useState(false);
-  const [agreeLicensedPlumber, setAgreeLicensedPlumber] = useState(false);
-  const [agreeRemovalTerms, setAgreeRemovalTerms] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,18 +141,6 @@ export default function VendorRegisterPage() {
       return;
     }
     // Plumber licence number is optional
-    if (!agreeLeadPricing) {
-      toast.error("You must agree to the lead pricing terms");
-      return;
-    }
-    if (!agreeLicensedPlumber) {
-      toast.error("You must confirm you are a licensed plumber or authorised representative");
-      return;
-    }
-    if (!agreeRemovalTerms) {
-      toast.error("You must acknowledge the listing removal terms");
-      return;
-    }
 
     setLoading(true);
     try {
@@ -620,46 +605,6 @@ export default function VendorRegisterPage() {
               </CardContent>
             </Card>
 
-            {/* Terms Agreement */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" /> Terms & Agreements
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <Checkbox
-                    checked={agreeLeadPricing}
-                    onCheckedChange={(checked) => setAgreeLeadPricing(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <span className="text-sm">
-                    I agree to the lead pricing terms and understand that I will be charged per qualified lead sent to my business. *
-                  </span>
-                </label>
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <Checkbox
-                    checked={agreeLicensedPlumber}
-                    onCheckedChange={(checked) => setAgreeLicensedPlumber(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <span className="text-sm">
-                    I confirm that all plumbing work will be carried out by or under the supervision of a licensed plumber, and I accept responsibility for ensuring compliance with all applicable licensing and regulatory requirements. *
-                  </span>
-                </label>
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <Checkbox
-                    checked={agreeRemovalTerms}
-                    onCheckedChange={(checked) => setAgreeRemovalTerms(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <span className="text-sm">
-                    I acknowledge that Compare Water Filters reserves the right to remove my listing at any time if I fail to maintain required licences, insurance, or professional standards, or if customer complaints indicate conduct unbecoming of a licensed professional. *
-                  </span>
-                </label>
-              </CardContent>
-            </Card>
 
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
