@@ -42,7 +42,7 @@ const AdminVendorNotificationEmail = ({
           <Hr style={divider} />
 
           <Section style={headerSection}>
-            <Text style={headerIcon}>🆕</Text>
+            <Text style={headerIcon}>💧</Text>
             <Heading style={h1}>New Vendor Registration</Heading>
             <Text style={headerSubtext}>
               A new provider has registered and is awaiting your review.
@@ -60,7 +60,7 @@ const AdminVendorNotificationEmail = ({
             <Row style={infoRow}><Column style={labelCol}>ABN</Column><Column style={valueCol}>{abn || 'Not provided'}</Column></Row>
             <Row style={infoRow}><Column style={labelCol}>States</Column><Column style={valueCol}>{states.length > 0 ? states.join(', ') : 'Not specified'}</Column></Row>
             <Row style={infoRow}><Column style={labelCol}>System Types</Column><Column style={valueCol}>{systemTypes.length > 0 ? systemTypes.join(', ') : 'Not specified'}</Column></Row>
-            <Row style={infoRow}><Column style={labelCol}>Public Liability</Column><Column style={valueCol}>{hasPublicLiability ? '✅ Yes' : '❌ No'}</Column></Row>
+            <Row style={infoRow}><Column style={labelCol}>Public Liability</Column><Column style={valueCol}>{hasPublicLiability ? 'Yes' : 'No'}</Column></Row>
           </Section>
 
           <Section style={{ textAlign: 'center' as const, margin: '28px 0 0' }}>
