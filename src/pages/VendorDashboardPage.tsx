@@ -242,6 +242,7 @@ export default function VendorDashboardPage() {
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Customer</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Systems</TableHead>
                 <TableHead>Status</TableHead>
@@ -249,7 +250,7 @@ export default function VendorDashboardPage() {
             </TableHeader>
             <TableBody>
               {leads.length === 0 ? (
-                <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
               ) : leads.map((lead) => (
                 <TableRow
                   key={lead.id}
@@ -260,6 +261,15 @@ export default function VendorDashboardPage() {
                   <TableCell>
                     <div className="text-sm font-medium">{lead.customer_name}</div>
                     <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
+                  </TableCell>
+                  <TableCell>
+                    {lead.ownership_status === "Own" ? (
+                      <Badge variant="outline" className="text-xs border-emerald-300 text-emerald-700">Owner</Badge>
+                    ) : lead.ownership_status === "Rent" ? (
+                      <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">Renter</Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}
