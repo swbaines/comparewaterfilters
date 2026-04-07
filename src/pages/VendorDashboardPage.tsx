@@ -1,4 +1,5 @@
 import { useState } from "react";
+import VendorTermsAcceptance from "@/components/VendorTermsAcceptance";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -168,6 +169,17 @@ export default function VendorDashboardPage() {
       </div>
     );
   }
+
+  // Terms acceptance gate — approved but haven't accepted terms yet
+  if (!provider?.terms_accepted_at) {
+    return (
+      <VendorTermsAcceptance
+        providerId={providerId!}
+        onAccepted={() => queryClient.invalidateQueries({ queryKey: ["vendor-account"] })}
+      />
+    );
+  }
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,

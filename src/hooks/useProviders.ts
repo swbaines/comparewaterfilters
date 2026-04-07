@@ -8,9 +8,10 @@ export function useProviders() {
     queryFn: async (): Promise<Provider[]> => {
       const { data, error } = await supabase
         .from("providers")
-        .select("id, name, slug, description, logo, states, postcode_ranges, system_types, brands, price_range, rating, review_count, years_in_business, certifications, highlights, available_for_quote, response_time, warranty, website, phone, approval_status")
+        .select("id, name, slug, description, logo, states, postcode_ranges, system_types, brands, price_range, rating, review_count, years_in_business, certifications, highlights, available_for_quote, response_time, warranty, website, phone, approval_status, terms_accepted_at")
         .eq("available_for_quote", true)
-        .eq("approval_status", "approved" as any);
+        .eq("approval_status", "approved" as any)
+        .not("terms_accepted_at", "is", null);
 
       if (error) throw error;
 
