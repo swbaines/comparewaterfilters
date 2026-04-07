@@ -33,6 +33,7 @@ import UnsubscribePage from "@/pages/UnsubscribePage";
 import DisclaimerPage from "@/pages/DisclaimerPage";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
+import CookieConsent from "@/components/CookieConsent";
 
 const queryClient = new QueryClient();
 
