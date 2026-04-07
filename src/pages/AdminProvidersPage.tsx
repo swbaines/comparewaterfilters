@@ -335,6 +335,7 @@ export default function AdminProvidersPage() {
                           <XCircle className="h-3 w-3" /> Pending
                         </Badge>
                       )}
+                    </TableCell>
                     <TableCell>{p.available_for_quote ? "✅" : "❌"}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
