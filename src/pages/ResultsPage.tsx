@@ -634,6 +634,16 @@ export default function ResultsPage() {
           recommendedSystems={[result.primary.title, result.secondary.title, result.premium.title]}
         />
       )}
+
+      {/* Sticky mobile bar */}
+      {showStickyBar && providerMatches.length > 0 && (
+        <a
+          href="#matched-providers"
+          className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-center gap-2 bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_-4px_20px_rgba(0,0,0,0.15)] sm:hidden"
+        >
+          View matched providers ↓
+        </a>
+      )}
     </div>
   );
 }
