@@ -152,6 +152,10 @@ export default function VendorRegisterPage() {
       toast.error("You must confirm you are a licensed plumber or authorised representative");
       return;
     }
+    if (!agreeRemovalTerms) {
+      toast.error("You must acknowledge the listing removal terms");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -642,6 +646,16 @@ export default function VendorRegisterPage() {
                   />
                   <span className="text-sm">
                     I confirm that all plumbing work will be carried out by or under the supervision of a licensed plumber, and I accept responsibility for ensuring compliance with all applicable licensing and regulatory requirements. *
+                  </span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    checked={agreeRemovalTerms}
+                    onCheckedChange={(checked) => setAgreeRemovalTerms(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-sm">
+                    I acknowledge that Compare Water Filters reserves the right to remove my listing at any time if I fail to maintain required licences, insurance, or professional standards, or if customer complaints indicate conduct unbecoming of a licensed professional. *
                   </span>
                 </label>
               </CardContent>
