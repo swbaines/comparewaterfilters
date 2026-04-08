@@ -24,8 +24,8 @@ export function matchProviders(
   const budgetMap: Record<string, string[]> = {
     "under-1000": ["budget"],
     "1000-3000": ["budget", "mid"],
-    "3000-6000": ["mid", "premium"],
-    "6000-plus": ["mid", "premium"],
+    "3000-5000": ["mid", "premium"],
+    "5000-plus": ["mid", "premium"],
     "not-sure": ["budget", "mid", "premium"],
   };
   const acceptablePriceRanges = budgetMap[answers.budget] || ["budget", "mid", "premium"];
