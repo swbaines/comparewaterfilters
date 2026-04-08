@@ -445,7 +445,7 @@ export default function HomePage() {
             <div className="mt-6 grid grid-cols-3 gap-4">
               {[
                 { range: "$300–$800", type: "Under-sink carbon" },
-                { range: "$800–$1,500", type: "Reverse osmosis" },
+                { range: "$800–$1,600", type: "Reverse osmosis" },
                 { range: "$3,000–$6,000", type: "Whole house" },
               ].map((p) => (
                 <div key={p.type} className="rounded-lg bg-background p-3">
