@@ -10,8 +10,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 const priceTable = [
   { system: "Under sink carbon filter", installed: "$300 – $1,200", maintenance: "$80 – $200/yr" },
-  { system: "Reverse osmosis", installed: "$800 – $3,000", maintenance: "$150 – $350/yr" },
-  { system: "Whole house filtration", installed: "$3,000 – $5,000", maintenance: "$200 – $500/yr" },
+  { system: "Reverse osmosis", installed: "$800 – $1,600", maintenance: "$150 – $250/yr" },
+  { system: "Whole house filtration", installed: "$3,000 – $6,000", maintenance: "$300 – $500/yr" },
   { system: "UV disinfection", installed: "$800 – $2,500", maintenance: "$100 – $250/yr" },
   { system: "Water softener", installed: "$2,000 – $6,000", maintenance: "$150 – $400/yr" },
   { system: "Whole house + drinking water combo", installed: "$4,000 – $6,500+", maintenance: "$350 – $700/yr" },
