@@ -35,7 +35,7 @@ describe("Water Softener filtering", () => {
       state: "WA",
       concerns: ["hard-water", "appliance"],
       coverage: "whole-house",
-      budget: "3000-6000",
+      budget: "3000-5000",
     };
     const result = generateRecommendations(answersWithHardWater);
     expect(result.primary.id).toBe("whole-house-carbon");
@@ -153,7 +153,7 @@ describe("Renter edge cases", () => {
       ownershipStatus: "Rent",
       concerns: ["hard-water"],
       coverage: "whole-house",
-      budget: "3000-6000",
+      budget: "3000-5000",
       priorities: [],
     };
     const result = generateRecommendations(answers);
@@ -199,7 +199,7 @@ describe("Bore water and rainwater source recommendations", () => {
       waterSource: "tank-water",
       concerns: ["bacteria", "taste", "drinking-quality"],
       coverage: "whole-house",
-      budget: "3000-6000",
+      budget: "3000-5000",
       priorities: ["strongest-filtration"],
     };
     const result = generateRecommendations(answers);

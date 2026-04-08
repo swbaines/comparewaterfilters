@@ -22,8 +22,8 @@ interface RequestQuoteDialogProps {
 const budgetLabels: Record<string, string> = {
   "under-1000": "Under $1,000",
   "1000-3000": "$1,000 – $3,000",
-  "3000-6000": "$3,000 – $6,000",
-  "6000-plus": "$6,000+",
+  "3000-5000": "$3,000 – $5,000",
+  "5000-plus": "$5,000+",
   "not-sure": "Not sure yet",
 };
 
