@@ -193,8 +193,8 @@ function getFlags(answers: QuizAnswers) {
   // Budget tiers (based on real Australian installed prices)
   const budgetUnder1k = budget === "under-1000";
   const budget1kTo3k = budget === "1000-3000";
-  const budget3kTo6k = budget === "3000-6000";
-  const budgetPremium = budget === "6000-plus";
+  const budget3kTo5k = budget === "3000-5000";
+  const budgetPremium = budget === "5000-plus";
 
   // RO-essential concerns
   const needsRO =
@@ -238,7 +238,7 @@ function getFlags(answers: QuizAnswers) {
     isTownWater,
     budgetUnder1k,
     budget1kTo3k,
-    budget3kTo6k,
+    budget3kTo5k,
     budgetPremium,
     needsRO,
     hasSkinHairConcern,
