@@ -454,7 +454,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryReason = `If the full combo is outside your budget, a reverse osmosis system on its own is the priority — it's the only household technology that removes fluoride, PFAS, heavy metals, and microplastics from your drinking water. $800–$1,500 installed. You can add whole house filtration later.`;
     } else {
       secondaryId = "whole-house-carbon";
-      secondaryReason = `If the full combo is outside your budget, start with a whole house filtration system — it delivers chlorine-free water to every tap, shower, and appliance, addressing your skin, hair, and whole-home concerns. $1,500–$5,000 installed. You can add an RO drinking water unit later.`;
+      secondaryReason = `If the full combo is outside your budget, start with a whole house filtration system — it delivers chlorine-free water to every tap, shower, and appliance, addressing your skin, hair, and whole-home concerns. $2,000–$5,000 installed. You can add an RO drinking water unit later.`;
     }
     premiumId = "whole-house-combo";
     premiumReason = "";
@@ -463,7 +463,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   else if (wholeHomeTrigger && !roTrigger) {
     // Whole home + taste/chlorine only → WH primary, under-sink budget, combo premium
     primaryId = "whole-house-carbon";
-    primaryReason = `${stateChlorineNote}A whole house filtration system is the right choice — no other solution delivers filtered water to every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `This removes chlorine from every water outlet, protecting your skin, hair, and appliances.` : "It removes chlorine, sediment, and chemicals from your entire water supply."} Typically $1,500–$5,000 installed.`;
+    primaryReason = `${stateChlorineNote}A whole house filtration system is the right choice — no other solution delivers filtered water to every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `This removes chlorine from every water outlet, protecting your skin, hair, and appliances.` : "It removes chlorine, sediment, and chemicals from your entire water supply."} Typically $2,000–$5,000 installed.`;
     secondaryId = "under-sink-carbon";
     secondaryReason = `An under-sink carbon filter addresses drinking water only — it won't solve whole-home concerns like skin irritation, shower chlorine, or appliance protection. But it's an affordable starting point if a whole house system isn't in budget right now.`;
     premiumId = "whole-house-combo";
