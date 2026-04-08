@@ -30,7 +30,7 @@ const pricingFaqs = [
   { q: "How much does a water filter cost in Australia?", a: "Water filter prices in Australia range from $300 for a basic under-sink carbon filter to $6,500+ for a whole house combo system, fully installed. Ongoing maintenance adds $80–$700 per year depending on the system type." },
   { q: "What affects the price of a water filter?", a: "Key factors include system type and technology, installation complexity, number of filtration stages, certifications (WaterMark, NSF), brand and warranty, and ongoing replacement filter costs." },
   { q: "Is a cheap water filter worth it?", a: "A budget under-sink carbon filter (under $1,000) is effective for chlorine and sediment removal and suits renters or apartments. However, it won't remove fluoride, heavy metals, or bacteria. For broader protection, a mid-range system ($1,000–$4,000) offers better filtration and longer warranties." },
-  { q: "How much does it cost to maintain a water filter?", a: "Annual maintenance costs range from $80–$200 for under-sink carbon filters, $150–$350 for reverse osmosis systems, and $350–$700 for whole house combo systems. Costs cover replacement filters, UV lamps, or salt for softeners." },
+  { q: "How much does it cost to maintain a water filter?", a: "Annual maintenance costs range from $80–$200 for under-sink carbon filters, $150–$250 for reverse osmosis systems, and $350–$700 for whole house combo systems. Costs cover replacement filters, UV lamps, or salt for softeners." },
 ];
 
 export default function PricingGuidePage() {
