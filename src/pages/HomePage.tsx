@@ -446,7 +446,7 @@ export default function HomePage() {
               {[
                 { range: "$300–$800", type: "Under-sink carbon" },
                 { range: "$800–$1,500", type: "Reverse osmosis" },
-                { range: "$2,500–$7,000", type: "Whole house" },
+                { range: "$3,000–$6,000", type: "Whole house" },
               ].map((p) => (
                 <div key={p.type} className="rounded-lg bg-background p-3">
                   <p className="text-lg font-bold text-primary">{p.range}</p>
