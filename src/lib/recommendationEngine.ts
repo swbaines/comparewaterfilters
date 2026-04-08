@@ -238,7 +238,7 @@ function getFlags(answers: QuizAnswers) {
     isTownWater,
     budgetUnder1k,
     budget1kTo3k,
-    budget3kTo6k,
+    budget3kTo5k,
     budgetPremium,
     needsRO,
     hasSkinHairConcern,
