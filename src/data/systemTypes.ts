@@ -20,7 +20,7 @@ export const systemTypes: SystemType[] = [
     whatItDoes: "Installed beneath your kitchen sink, this system uses activated carbon to filter your drinking water. It effectively removes chlorine, sediment, volatile organic compounds (VOCs), and improves overall taste and odour.",
     whatItDoesNot: "Does not remove fluoride, dissolved minerals, heavy metals, or bacteria. Not suitable as a stand-alone solution for untreated water sources.",
     whoItSuits: "Homeowners and renters wanting better-tasting drinking water from a single tap. Great for apartments, townhouses, and budget-conscious households on town water.",
-    priceRange: "$100 – $1000 installed",
+    priceRange: "$300 – $1,200 installed",
     maintenance: "Filter replacement every 6–12 months ($80–$200/year). Simple to change yourself or have serviced.",
     pros: [
       "Affordable entry point to water filtration",
@@ -44,8 +44,8 @@ export const systemTypes: SystemType[] = [
     whatItDoes: "Uses a semi-permeable membrane combined with multiple pre- and post-filters to remove up to 99% of contaminants. Produces ultra-pure drinking water free from fluoride, heavy metals, chlorine, dissolved solids, and more.",
     whatItDoesNot: "Does not filter the whole house — only the tap it's connected to. Produces some wastewater during the filtration process. Does not soften water.",
     whoItSuits: "Health-conscious households, families concerned about fluoride or heavy metals, and anyone wanting the purest possible drinking water.",
-    priceRange: "$800 – $2000 installed",
-    maintenance: "Pre-filters every 6–12 months, RO membrane every 2–3 years. Annual cost typically $150–$350.",
+    priceRange: "$800 – $1,600 installed",
+    maintenance: "Pre-filters every 6–12 months, RO membrane every 2–3 years. Annual cost typically $150–$250.",
     pros: [
       "Highest level of contaminant removal",
       "Removes fluoride and heavy metals",
@@ -67,8 +67,8 @@ export const systemTypes: SystemType[] = [
     whatItDoes: "Installed at the point of entry to your property, filtering all water before it reaches any tap, shower, or appliance. Removes chlorine, sediment, and improves water quality throughout the entire home.",
     whatItDoesNot: "Does not remove fluoride, heavy metals, or dissolved minerals. Does not produce ultra-pure drinking water. Not a substitute for UV treatment on untreated water sources.",
     whoItSuits: "Families wanting chlorine-free water from every tap and shower. Homeowners concerned about skin irritation, dry hair, or protecting appliances from sediment and chlorine.",
-    priceRange: "$3,000 – $5,000 installed",
-    maintenance: "Filter replacement every 6–12 months depending on water usage. Annual cost typically $200–$600.",
+    priceRange: "$3,000 – $6,000 installed",
+    maintenance: "Filter replacement every 6–12 months depending on water usage. Annual cost typically $300–$500.",
     pros: [
       "Filters every tap, shower, and appliance",
       "Removes chlorine throughout the home",
