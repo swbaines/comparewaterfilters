@@ -63,7 +63,7 @@ It's important to understand the limitations:
 
 Whole house water filter prices in Australia vary depending on the system, your plumbing, and your location. Here's a realistic guide:
 
-- **Budget systems** — $1,500–$2,500 installed. Basic single-cartridge or twin-cartridge carbon systems. Suitable for smaller homes with town water and moderate chlorine levels. Filter replacement every 6–12 months.
+- **Budget systems** — $2,000–$3,000 installed. Basic single-cartridge or twin-cartridge carbon systems. Suitable for smaller homes with town water and moderate chlorine levels. Filter replacement every 6–12 months. Basic single-cartridge or twin-cartridge carbon systems. Suitable for smaller homes with town water and moderate chlorine levels. Filter replacement every 6–12 months.
 - **Mid-range systems** — $2,500–$4,500 installed. Multi-stage systems with sediment pre-filter, high-capacity carbon, and often a UV stage. The sweet spot for most Australian households. Filters last 12 months.
 - **Premium systems** — $4,500–$7,000+ installed. Large-capacity commercial-grade tanks, catalytic carbon for chloramine, and additional stages for specific contaminants. Best for large homes, heavy water usage, or areas with particularly challenging water quality.
 
@@ -89,7 +89,7 @@ The best whole house water filter for your home depends on three things:
 
 **Our Recommendation**
 
-For most Australian households on town water, a mid-range whole house carbon filter ($2,500–$4,500 installed) paired with an under-sink reverse osmosis system for drinking water ($800–$1,500 installed) provides the best combination of whole-home quality and drinking water purity.
+For most Australian households on town water, a mid-range whole house carbon filter ($2,500–$4,500 installed) paired with an under-sink reverse osmosis system for drinking water ($800–$1,600 installed) provides the best combination of whole-home quality and drinking water purity.
 
 If you're in a hard water area (Perth, Adelaide, parts of Brisbane), add a water softener to protect your plumbing and appliances.
 
@@ -278,7 +278,7 @@ The good news is that effective solutions exist for every situation and budget. 
     seoTitle: "Best Water Filter for Melbourne — 2024 Guide",
     seoDescription: "Find the best water filtration system for Melbourne homes. Understand Melbourne's water quality and which filter type suits your needs.",
     publishedAt: "2024-09-05",
-    body: "Melbourne is known for having some of the best tap water in Australia, sourced primarily from protected mountain catchments. However, that doesn't mean filtration is unnecessary.\n\n**Why filter Melbourne water?**\n- Chlorine is added for disinfection and can affect taste\n- Older homes may have lead or copper plumbing\n- Some residents prefer to remove fluoride\n- Sediment can occasionally appear after maintenance works\n\n**Best options for Melbourne homes:**\n\n- **For taste improvement:** A quality under-sink carbon filter ($300–$800 installed) will handle chlorine and sediment effectively\n- **For fluoride removal:** A reverse osmosis system ($800–$1,500 installed) is the most practical option\n- **For whole home quality:** A whole house filtration ($2,500–$5,000 installed) removes chlorine from every tap and shower\n- **For complete coverage:** A whole house filter + under-sink RO combo ($4,000–$6,000 installed) gives you the best of both worlds\n\nMelbourne's water quality means you don't need the most aggressive filtration — a well-matched system will do the job without overspending.",
+    body: "Melbourne is known for having some of the best tap water in Australia, sourced primarily from protected mountain catchments. However, that doesn't mean filtration is unnecessary.\n\n**Why filter Melbourne water?**\n- Chlorine is added for disinfection and can affect taste\n- Older homes may have lead or copper plumbing\n- Some residents prefer to remove fluoride\n- Sediment can occasionally appear after maintenance works\n\n**Best options for Melbourne homes:**\n\n- **For taste improvement:** A quality under-sink carbon filter ($300–$800 installed) will handle chlorine and sediment effectively\n- **For fluoride removal:** A reverse osmosis system ($800–$1,600 installed) is the most practical option\n- **For whole home quality:** A whole house filtration ($2,000–$5,000 installed) removes chlorine from every tap and shower\n- **For complete coverage:** A whole house filter + under-sink RO combo ($4,000–$6,000 installed) gives you the best of both worlds\n\nMelbourne's water quality means you don't need the most aggressive filtration — a well-matched system will do the job without overspending.",
   },
   {
     id: "6",
