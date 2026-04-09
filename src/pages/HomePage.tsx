@@ -410,7 +410,7 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading badge="Provider network" title="Trusted providers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-            {vendors.map((v) => (
+            {coverageAreas.map((v) => (
               <div key={v.state} className="rounded-lg border p-4 text-center transition-all hover:border-primary/30 hover:shadow-sm">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                   <span className="text-sm font-bold text-primary">{v.state}</span>
