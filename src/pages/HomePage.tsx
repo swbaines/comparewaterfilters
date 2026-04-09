@@ -408,7 +408,7 @@ export default function HomePage() {
       {/* ── Vendor coverage ── */}
       <section className="py-16 sm:py-20">
         <div className="container">
-          <SectionHeading badge="Vendor network" title="Licensed installers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
+          <SectionHeading badge="Vendor network" title="Trusted providers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
             {vendors.map((v) => (
               <div key={v.state} className="rounded-lg border p-4 text-center transition-all hover:border-primary/30 hover:shadow-sm">
