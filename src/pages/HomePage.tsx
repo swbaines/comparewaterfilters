@@ -101,7 +101,7 @@ const articles = [
   },
 ];
 
-const vendors = [
+const coverageAreas = [
   { state: "VIC", count: "Melbourne & surrounds" },
   { state: "NSW", count: "Sydney & Central Coast" },
   { state: "QLD", count: "Brisbane & Gold Coast" },

@@ -58,7 +58,7 @@ export default function DisclaimerPage() {
           <div>
             <p className="mb-1 font-semibold text-foreground">Complaints</p>
             <p>
-              If you have a complaint about a vendor found through this platform, contact us at{" "}
+              If you have a complaint about a provider found through this platform, contact us at{" "}
               <a href="mailto:hello@comparewaterfilters.com.au" className="font-medium text-primary hover:underline">
                 hello@comparewaterfilters.com.au
               </a>
