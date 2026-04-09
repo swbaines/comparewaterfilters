@@ -31,7 +31,7 @@ export default function Footer() {
               <li><Link to="/how-it-works" className="hover:text-foreground">How Recommendations Work</Link></li>
               <li><Link to="/contact" className="hover:text-foreground">Contact Us</Link></li>
               <li><Link to="/provider-match" className="hover:text-foreground">Request Provider Match</Link></li>
-              <li><Link to="/vendor/login" className="hover:text-foreground">Vendor Portal</Link></li>
+              <li><Link to="/vendor/login" className="hover:text-foreground">Provider Portal</Link></li>
             </ul>
           </div>
           <div>

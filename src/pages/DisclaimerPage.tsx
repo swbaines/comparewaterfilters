@@ -17,7 +17,7 @@ export default function DisclaimerPage() {
       <Card className="mt-8 border-0 bg-muted/50 shadow-none">
         <CardContent className="space-y-6 p-5 text-sm leading-relaxed text-muted-foreground sm:p-8">
           <p>
-            Compare Water Filters is an independent comparison and referral platform. We connect Australian homeowners with licensed water filtration vendors. We are not a water filtration installer, supplier, or manufacturer.
+            Compare Water Filters is an independent comparison and referral platform. We connect Australian homeowners with licensed water filtration providers. We are not a water filtration installer, supplier, or manufacturer.
           </p>
 
           <div>
@@ -28,9 +28,9 @@ export default function DisclaimerPage() {
           </div>
 
           <div>
-            <p className="mb-1 font-semibold text-foreground">Vendor listings</p>
+            <p className="mb-1 font-semibold text-foreground">Provider listings</p>
             <p>
-              Vendors listed on this platform have completed our registration process, including ABN verification and licence number collection. However, Compare Water Filters does not independently verify all vendor claims, does not conduct on-site assessments of vendor quality, and does not guarantee the standard of any vendor's workmanship or products.
+              Providers listed on this platform have completed our registration process, including ABN verification and licence number collection. However, Compare Water Filters does not independently verify all provider claims, does not conduct on-site assessments of provider quality, and does not guarantee the standard of any provider's workmanship or products.
             </p>
           </div>
 
@@ -44,7 +44,7 @@ export default function DisclaimerPage() {
           <div>
             <p className="mb-1 font-semibold text-foreground">No liability</p>
             <p>
-              To the maximum extent permitted by Australian law, Compare Water Filters excludes all liability for any loss, damage, or expense (whether direct, indirect, or consequential) arising from your use of this platform, reliance on any recommendation, or any dealings with vendors found through this platform.
+              To the maximum extent permitted by Australian law, Compare Water Filters excludes all liability for any loss, damage, or expense (whether direct, indirect, or consequential) arising from your use of this platform, reliance on any recommendation, or any dealings with providers found through this platform.
             </p>
           </div>
 

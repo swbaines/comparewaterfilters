@@ -213,7 +213,7 @@ export default function PricingGuidePage() {
               Prices shown include installation by a licensed plumber unless stated otherwise. Supply-only prices will be lower. Additional costs may apply for complex installations, older plumbing, or properties requiring non-standard equipment.
             </p>
             <p className="mb-2">
-              Compare Water Filters does not set, control, or guarantee vendor pricing. Quotes received through this platform are provided directly by independent vendors and are subject to their own terms and conditions.
+              Compare Water Filters does not set, control, or guarantee provider pricing. Quotes received through this platform are provided directly by independent providers and are subject to their own terms and conditions.
             </p>
             <p>
               Always obtain a written, itemised quote before proceeding with any installation.
