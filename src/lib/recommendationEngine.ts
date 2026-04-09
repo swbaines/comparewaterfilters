@@ -372,7 +372,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     if (roTrigger) {
       // Rule 3 adapted for renters
       primaryId = "reverse-osmosis";
-      primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics from drinking water. It installs neatly under your kitchen sink with a dedicated drinking faucet, at $800–$1,500 installed.`;
+      primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics from drinking water. It installs neatly under your kitchen sink with a dedicated drinking faucet, at $800–$1,600 installed.`;
       secondaryId = "under-sink-carbon";
       secondaryReason = `A quality under-sink carbon filter is a more affordable alternative — though carbon filters reduce but do not eliminate these contaminants. RO is the proper solution for fluoride, PFAS, and heavy metals.`;
       premiumId = "reverse-osmosis";
@@ -384,7 +384,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryId = "under-sink-carbon";
       secondaryReason = `This is already the most affordable effective option — a quality under-sink carbon filter delivers the best value for taste and chlorine concerns. No cheaper alternative will meaningfully improve your water.`;
       premiumId = "reverse-osmosis";
-      premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,500 installed.`;
+      premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,600 installed.`;
     }
   }
 
@@ -395,7 +395,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     if (roTrigger) {
       // Rule 3 + budget constraint
       primaryId = "reverse-osmosis";
-      primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Installed under your kitchen sink at $800–$1,500.`;
+      primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Installed under your kitchen sink at $800–$1,600.`;
       secondaryId = "under-sink-carbon";
       secondaryReason = `A quality under-sink carbon filter is a more affordable alternative — though carbon filters reduce but do not eliminate these contaminants. RO is the proper solution.`;
       premiumId = "whole-house-combo";
@@ -421,7 +421,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryId = "under-sink-carbon";
       secondaryReason = `This is already the most affordable effective option — a quality under-sink carbon filter delivers the best value for taste and chlorine concerns. No cheaper alternative will meaningfully improve your water.`;
       premiumId = "reverse-osmosis";
-      premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,500 installed.`;
+      premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,600 installed.`;
     }
   }
 
@@ -451,7 +451,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     const wholeHomeConcernCount = ["skin-hair", "whole-home", "appliance", "hard-water"].filter(c => answers.concerns.includes(c)).length;
     if (contaminantConcernCount >= wholeHomeConcernCount) {
       secondaryId = "reverse-osmosis";
-      secondaryReason = `If the full combo is outside your budget, a reverse osmosis system on its own is the priority — it's the only household technology that removes fluoride, PFAS, heavy metals, and microplastics from your drinking water. $800–$1,500 installed. You can add whole house filtration later.`;
+      secondaryReason = `If the full combo is outside your budget, a reverse osmosis system on its own is the priority — it's the only household technology that removes fluoride, PFAS, heavy metals, and microplastics from your drinking water. $800–$1,600 installed. You can add whole house filtration later.`;
     } else {
       secondaryId = "whole-house-carbon";
       secondaryReason = `If the full combo is outside your budget, start with a whole house filtration system — it delivers chlorine-free water to every tap, shower, and appliance, addressing your skin, hair, and whole-home concerns. $2,000–$5,000 installed. You can add an RO drinking water unit later.`;
@@ -477,7 +477,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       : "";
 
     primaryId = "reverse-osmosis";
-    primaryReason = `${fluorideNote}A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Installed under your kitchen sink at $800–$1,500.`;
+    primaryReason = `${fluorideNote}A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, and microplastics. Installed under your kitchen sink at $800–$1,600.`;
     secondaryId = "under-sink-carbon";
     secondaryReason = `A quality under-sink carbon filter is a more affordable alternative — though carbon filters reduce but do not eliminate these contaminants. RO is the proper solution for fluoride, PFAS, and heavy metals.`;
     premiumId = "whole-house-combo";
@@ -491,7 +491,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     secondaryId = "under-sink-carbon";
     secondaryReason = `This is already the most affordable effective option — a quality under-sink carbon filter delivers the best value for taste and chlorine concerns. No cheaper alternative will meaningfully improve your water.`;
     premiumId = "reverse-osmosis";
-    premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,500 installed.`;
+    premiumReason = `For a significant step up in water purity, a reverse osmosis system removes fluoride, heavy metals, and virtually all contaminants — the premium drinking water solution at $800–$1,600 installed.`;
   }
 
   // ── Add state-specific warnings ───────────────────────────────────────────
