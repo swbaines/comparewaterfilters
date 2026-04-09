@@ -12,7 +12,7 @@ export const EmailDisclaimerFooter = () => (
       This email was sent by Compare Water Filters (<Link href={SITE_URL} style={disclaimerLink}>comparewaterfilters.com.au</Link>). You are receiving this email because you submitted a water filter quote request through our platform.
     </Text>
     <Text style={disclaimerText}>
-      Compare Water Filters is an independent comparison and referral platform. We are not responsible for the products, services, pricing, or workmanship of any vendor. All dealings with vendors are subject to the vendor's own terms and conditions.
+      Compare Water Filters is an independent comparison and referral platform. We are not responsible for the products, services, pricing, or workmanship of any provider. All dealings with providers are subject to the provider's own terms and conditions.
     </Text>
     <Text style={disclaimerText}>
       If you did not request this email, please contact{' '}

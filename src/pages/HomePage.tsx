@@ -37,7 +37,7 @@ const steps = [
   },
   {
     num: "3",
-    title: "Compare quotes from local vendors",
+    title: "Compare quotes from local providers",
     desc: "Request free quotes from licensed installers in your area. No obligation, no pushy sales — just real information.",
   },
 ];
@@ -101,7 +101,7 @@ const articles = [
   },
 ];
 
-const vendors = [
+const coverageAreas = [
   { state: "VIC", count: "Melbourne & surrounds" },
   { state: "NSW", count: "Sydney & Central Coast" },
   { state: "QLD", count: "Brisbane & Gold Coast" },
@@ -114,7 +114,7 @@ const homeFaqs = [
   { q: "How do I compare whole home water filters in Australia?", a: "Use our free quiz to answer a few questions about your property, water source, and concerns. We'll recommend the best system type — whole house, reverse osmosis, under-sink, or UV — and connect you with trusted local installers for obligation-free quotes." },
   { q: "What is the best whole house water filter in Australia?", a: "The best whole house water filter depends on your water supply. Carbon-based systems suit most mains-connected homes for chlorine and sediment removal. If you're on bore or tank water, a multi-stage system with UV is recommended. Our quiz matches you to the right option." },
   { q: "How much does a water filter system cost in Australia?", a: "Whole house water filters cost $2,000–$5,000 installed. Reverse osmosis systems cost $800–$1,600. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber." },
-  { q: "Is Compare Water Filters free for homeowners?", a: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with trusted vendors — with no obligation or sales calls." },
+  { q: "Is Compare Water Filters free for homeowners?", a: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with trusted providers — with no obligation or sales calls." },
   { q: "What contaminants does a water filter remove?", a: "Depending on the system type, water filters can remove chlorine, chloramine, sediment, heavy metals, fluoride, PFAS (forever chemicals), bacteria, and more. Reverse osmosis is the most thorough, while carbon filters handle taste and odour effectively." },
   { q: "Whole house vs under-sink water filter — which should I choose?", a: "A whole house filter protects every tap, shower, and appliance from chlorine and sediment. An under-sink filter is more affordable and ideal if you only want purified drinking water. Many Australian homeowners combine both for complete coverage." },
 ];
@@ -405,12 +405,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Vendor coverage ── */}
+      {/* ── Provider coverage ── */}
       <section className="py-16 sm:py-20">
         <div className="container">
-          <SectionHeading badge="Vendor network" title="Trusted providers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
+          <SectionHeading badge="Provider network" title="Trusted providers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-            {vendors.map((v) => (
+            {coverageAreas.map((v) => (
               <div key={v.state} className="rounded-lg border p-4 text-center transition-all hover:border-primary/30 hover:shadow-sm">
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                   <span className="text-sm font-bold text-primary">{v.state}</span>
@@ -426,7 +426,7 @@ export default function HomePage() {
             <p className="mb-3 text-sm text-muted-foreground">Are you a water filtration business?</p>
             <Link to="/vendor/register">
               <Button variant="outline" className="gap-2">
-                Join as a vendor <ChevronRight className="h-4 w-4" />
+                Join as a provider <ChevronRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -518,7 +518,7 @@ export default function HomePage() {
         <div className="container text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">Ready to find out what your water actually needs?</h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Answer a few questions about your home. We'll match you to the right system, explain what it does, show real pricing, and connect you with licensed vendors in your area.
+            Answer a few questions about your home. We'll match you to the right system, explain what it does, show real pricing, and connect you with licensed providers in your area.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">

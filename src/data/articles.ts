@@ -208,7 +208,7 @@ The good news is that effective solutions exist for every situation and budget. 
 
 **Want to know what's in your local water?** Use our free <a href="/water-quality" class="text-primary underline">postcode water quality lookup</a> to see hardness, chlorine, fluoride, and PFAS risk for your suburb — with plain-English explanations and personalised filter recommendations.
 
-**Ready to get quotes?** <a href="/quiz" class="text-primary underline">Take our 2-minute quiz</a> and get matched with licensed local vendors who know your water.
+**Ready to get quotes?** <a href="/quiz" class="text-primary underline">Take our 2-minute quiz</a> and get matched with licensed local providers who know your water.
 
 **Sources:**
 
