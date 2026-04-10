@@ -179,7 +179,7 @@ export default function HomePage() {
     <div>
       <PageMeta
         title="Compare Whole House & Whole Home Water Filters Australia — Free Quotes"
-        description="Compare whole house and whole home water filters, reverse osmosis, and under-sink systems across Australia. Independent recommendations and free quotes from trusted installers in Sydney, Melbourne, Brisbane, Perth & Adelaide."
+        description="Compare whole house water filters, reverse osmosis & under-sink systems in Australia. Free quotes from trusted local installers."
         path="/"
       />
 
