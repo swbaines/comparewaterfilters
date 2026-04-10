@@ -188,6 +188,48 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_stripe_details: {
+        Row: {
+          created_at: string
+          id: string
+          provider_id: string
+          stripe_customer_id: string | null
+          stripe_payment_method_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider_id: string
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider_id?: string
+          stripe_customer_id?: string | null
+          stripe_payment_method_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_stripe_details_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: true
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_stripe_details_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: true
+            referencedRelation: "providers_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       providers: {
         Row: {
           abn: string | null
@@ -215,8 +257,6 @@ export type Database = {
           review_count: number
           slug: string
           states: string[]
-          stripe_customer_id: string | null
-          stripe_payment_method_id: string | null
           submitted_by: string | null
           system_types: string[]
           terms_accepted_at: string | null
@@ -251,8 +291,6 @@ export type Database = {
           review_count?: number
           slug: string
           states?: string[]
-          stripe_customer_id?: string | null
-          stripe_payment_method_id?: string | null
           submitted_by?: string | null
           system_types?: string[]
           terms_accepted_at?: string | null
@@ -287,8 +325,6 @@ export type Database = {
           review_count?: number
           slug?: string
           states?: string[]
-          stripe_customer_id?: string | null
-          stripe_payment_method_id?: string | null
           submitted_by?: string | null
           system_types?: string[]
           terms_accepted_at?: string | null
