@@ -374,8 +374,8 @@ export default function QuizPage() {
             )}
 
             {/* Navigation */}
-            <div className="mt-8 flex items-center justify-between">
-              <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={step === 1} className="gap-1">
+            <div className="mt-8 flex items-center justify-between gap-2">
+              <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={step === 1} className="gap-1 shrink-0">
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               {step < TOTAL_STEPS ? (
@@ -383,7 +383,7 @@ export default function QuizPage() {
                   Continue <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={handleSubmit} disabled={!canNext()} className="gap-1">
+                <Button onClick={handleSubmit} disabled={!canNext()} className="gap-1 whitespace-nowrap text-sm sm:text-base">
                   See My Recommendations <ArrowRight className="h-4 w-4" />
                 </Button>
               )}
