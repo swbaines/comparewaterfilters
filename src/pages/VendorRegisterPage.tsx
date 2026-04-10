@@ -141,7 +141,7 @@ export default function VendorRegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/vendor/register?step=profile` },
+      options: { emailRedirectTo: `${window.location.origin.includes('lovableproject.com') ? 'https://comparewaterfilters.lovable.app' : window.location.origin}/vendor/register?step=profile` },
     });
     setLoading(false);
     if (error) {
