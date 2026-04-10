@@ -107,25 +107,14 @@ export default function VendorRegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: `${window.location.origin}/vendor/register?step=profile` },
     });
+    setLoading(false);
     if (error) {
-      setLoading(false);
       toast.error(error.message);
       return;
     }
-    // Auto sign-in so the user has an active session for the profile step
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (signInError) {
-      toast.error("Account created but could not sign in automatically. Please log in at the vendor login page.");
-      return;
-    }
-    toast.success("Account created! Now set up your provider profile.");
-    setStep("profile");
+    setStep("verify-email");
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
