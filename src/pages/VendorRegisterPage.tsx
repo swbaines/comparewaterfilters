@@ -56,25 +56,24 @@ export default function VendorRegisterPage() {
     const requestedStep = searchParams.get("step");
 
     if (user) {
-      // Check if this user already has a provider profile
-      supabase
-        .from("vendor_accounts")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1)
-        .then(({ data }) => {
-          if (data && data.length > 0) {
-            // Already has a profile, send to dashboard
-            navigate("/vendor/dashboard", { replace: true });
-          } else if (requestedStep === "profile") {
-            // Came from email verification link — go to profile setup
-            setStep("profile");
-          } else {
-            // Logged in but no provider — show profile step
-            setStep("profile");
-          }
-          setCheckingProfile(false);
-        });
+      // Check if this user already has a vendor account (approved) or a submitted provider (pending)
+      Promise.all([
+        supabase.from("vendor_accounts").select("id").eq("user_id", user.id).limit(1),
+        supabase.from("providers").select("id").eq("submitted_by", user.id).limit(1),
+      ]).then(([vaResult, provResult]) => {
+        if (vaResult.data && vaResult.data.length > 0) {
+          // Approved vendor — send to dashboard
+          navigate("/vendor/dashboard", { replace: true });
+        } else if (provResult.data && provResult.data.length > 0) {
+          // Already submitted a provider (pending approval) — show success/pending screen
+          setStep("success");
+        } else if (requestedStep === "profile") {
+          setStep("profile");
+        } else {
+          setStep("profile");
+        }
+        setCheckingProfile(false);
+      });
     } else {
       setCheckingProfile(false);
     }
@@ -235,12 +234,7 @@ export default function VendorRegisterPage() {
 
       if (providerError) throw providerError;
 
-      // Create vendor account link
-      const { error: vaError } = await supabase
-        .from("vendor_accounts")
-        .insert({ user_id: user.id, provider_id: provider.id });
-
-      if (vaError) throw vaError;
+      // Vendor account will be auto-linked when admin approves the provider
 
       // Send vendor welcome email and admin notification in parallel
       await Promise.all([
