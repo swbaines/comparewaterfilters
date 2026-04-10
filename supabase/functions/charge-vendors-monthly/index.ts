@@ -1,11 +1,5 @@
-import Stripe from "https://esm.sh/stripe@14.21.0";
-
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-04-10",
-});
-
-const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -14,22 +8,6 @@ const corsHeaders = {
 
 const OWNER_LEAD_PRICE = 85;
 const RENTAL_LEAD_PRICE = 50;
-
-async function supabaseFetch(path: string, options: RequestInit = {}) {
-  const res = await fetch(`${supabaseUrl}/rest/v1${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": supabaseKey,
-      "Authorization": `Bearer ${supabaseKey}`,
-      "Prefer": "return=representation",
-      ...options.headers,
-    },
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(JSON.stringify(data));
-  return data;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -40,6 +18,20 @@ Deno.serve(async (req) => {
   const errors: any[] = [];
 
   try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+
+    if (!supabaseUrl || !supabaseKey || !stripeKey) {
+      return new Response(
+        JSON.stringify({ error: "Missing required environment variables" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
+      );
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+
     const now = new Date();
     const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -47,12 +39,15 @@ Deno.serve(async (req) => {
     const periodEnd = firstOfThisMonth.toISOString();
 
     // Get all provider Stripe details that have both customer ID and payment method
-    const stripeDetails = await supabaseFetch(
-      `/provider_stripe_details?stripe_customer_id=not.is.null&stripe_payment_method_id=not.is.null&select=provider_id,stripe_customer_id,stripe_payment_method_id`
-    );
+    const { data: stripeDetails, error: stripeErr } = await supabaseAdmin
+      .from("provider_stripe_details")
+      .select("provider_id, stripe_customer_id, stripe_payment_method_id")
+      .not("stripe_customer_id", "is", null)
+      .not("stripe_payment_method_id", "is", null);
 
-    // Get provider info for those providers
-    const providerIds = stripeDetails.map((s: any) => s.provider_id);
+    if (stripeErr) throw stripeErr;
+
+    const providerIds = (stripeDetails || []).map((s: any) => s.provider_id);
     if (providerIds.length === 0) {
       return new Response(
         JSON.stringify({ success: true, results: [], errors: [], message: "No providers with payment methods" }),
@@ -60,26 +55,37 @@ Deno.serve(async (req) => {
       );
     }
 
-    const providers = await supabaseFetch(
-      `/providers?id=in.(${providerIds.join(",")})&approval_status=eq.approved&select=id,name,contact_email`
-    );
+    const { data: providers, error: provErr } = await supabaseAdmin
+      .from("providers")
+      .select("id, name, contact_email")
+      .in("id", providerIds)
+      .eq("approval_status", "approved");
+
+    if (provErr) throw provErr;
 
     // Build a lookup map for stripe details
     const stripeMap: Record<string, any> = {};
-    for (const s of stripeDetails) {
+    for (const s of stripeDetails || []) {
       stripeMap[s.provider_id] = s;
     }
 
-    for (const provider of providers) {
+    for (const provider of providers || []) {
       try {
         const sd = stripeMap[provider.id];
         if (!sd) continue;
 
-        const leads = await supabaseFetch(
-          `/quote_requests?provider_id=eq.${provider.id}&lead_status=neq.lost&invoice_id=is.null&created_at=gte.${periodStart}&created_at=lt.${periodEnd}&select=id,recommended_systems,lead_price,ownership_status`
-        );
+        const { data: leads, error: leadsErr } = await supabaseAdmin
+          .from("quote_requests")
+          .select("id, recommended_systems, lead_price, ownership_status")
+          .eq("provider_id", provider.id)
+          .neq("lead_status", "lost")
+          .is("invoice_id", null)
+          .gte("created_at", periodStart)
+          .lt("created_at", periodEnd);
 
-        if (leads.length === 0) {
+        if (leadsErr) throw leadsErr;
+
+        if (!leads || leads.length === 0) {
           results.push({ provider: provider.name, status: "skipped", reason: "no leads" });
           continue;
         }
@@ -126,9 +132,9 @@ Deno.serve(async (req) => {
         await stripe.invoices.finalizeInvoice(stripeInvoice.id);
         const paidInvoice = await stripe.invoices.pay(stripeInvoice.id);
 
-        const [savedInvoice] = await supabaseFetch("/invoices", {
-          method: "POST",
-          body: JSON.stringify({
+        const { data: savedInvoice, error: saveErr } = await supabaseAdmin
+          .from("invoices")
+          .insert({
             provider_id: provider.id,
             invoice_number: invoiceNumber,
             stripe_invoice_id: stripeInvoice.id,
@@ -138,17 +144,17 @@ Deno.serve(async (req) => {
             lead_count: leads.length,
             status: paidInvoice.status === "paid" ? "paid" : "sent",
             paid_at: paidInvoice.status === "paid" ? new Date().toISOString() : null,
-          }),
-        });
+          })
+          .select()
+          .single();
+
+        if (saveErr) throw saveErr;
 
         for (const item of lineItems) {
-          await supabaseFetch(`/quote_requests?id=eq.${item.lead_id}`, {
-            method: "PATCH",
-            body: JSON.stringify({
-              invoice_id: savedInvoice.id,
-              lead_price: item.amount_cents / 100,
-            }),
-          });
+          await supabaseAdmin
+            .from("quote_requests")
+            .update({ invoice_id: savedInvoice.id, lead_price: item.amount_cents / 100 })
+            .eq("id", item.lead_id);
         }
 
         results.push({
@@ -159,8 +165,9 @@ Deno.serve(async (req) => {
           stripe_invoice: stripeInvoice.id,
         });
 
-      } catch (providerErr: any) {
-        errors.push({ provider: provider.name, error: providerErr.message });
+      } catch (providerErr: unknown) {
+        const msg = providerErr instanceof Error ? providerErr.message : "Unknown error";
+        errors.push({ provider: provider.name, error: msg });
       }
     }
 
@@ -169,9 +176,11 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
 
-  } catch (err: any) {
+  } catch (err: unknown) {
+    console.error("Error in charge-vendors-monthly:", err);
+    const msg = err instanceof Error ? err.message : "Internal server error";
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: msg }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }

@@ -1,11 +1,9 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,6 +22,15 @@ serve(async (req) => {
     const res = await fetch(
       `https://v0.postcodeapi.com.au/suburbs.json?q=${encodeURIComponent(q)}`
     );
+
+    if (!res.ok) {
+      console.error("Postcode API error:", res.status, await res.text());
+      return new Response(JSON.stringify({ error: "Suburb lookup service unavailable" }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const data = await res.json();
 
     const qLower = q.toLowerCase();
@@ -33,9 +40,7 @@ serve(async (req) => {
       state: (s.state?.abbreviation || "") as string,
     }));
 
-    // Sort: priority state first, then exact prefix matches, then alphabetically
     slim.sort((a, b) => {
-      // Priority state comes first
       if (priorityState) {
         const aPri = a.state === priorityState ? 0 : 1;
         const bPri = b.state === priorityState ? 0 : 1;
@@ -50,7 +55,8 @@ serve(async (req) => {
     return new Response(JSON.stringify(slim), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err) {
+  } catch (err: unknown) {
+    console.error("Error fetching suburbs:", err);
     return new Response(JSON.stringify({ error: "Failed to fetch suburbs" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
