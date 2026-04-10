@@ -22,6 +22,8 @@ import AdminInvoicesPage from "@/pages/AdminInvoicesPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
 import VendorRegisterPage from "@/pages/VendorRegisterPage";
+import VendorForgotPasswordPage from "@/pages/VendorForgotPasswordPage";
+import VendorResetPasswordPage from "@/pages/VendorResetPasswordPage";
 import VendorDashboardPage from "@/pages/VendorDashboardPage";
 import VendorSettingsPage from "@/pages/VendorSettingsPage";
 import VendorProfilePage from "@/pages/VendorProfilePage";
