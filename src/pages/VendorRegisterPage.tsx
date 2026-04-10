@@ -295,6 +295,61 @@ export default function VendorRegisterPage() {
     }
   };
 
+  if (authLoading || checkingProfile) {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (step === "verify-email") {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
+        <Card className="w-full max-w-md text-center">
+          <CardContent className="pt-8 pb-8 space-y-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Check Your Email</h2>
+            <p className="text-muted-foreground">
+              We've sent a verification link to{" "}
+              <span className="font-medium text-foreground">{email}</span>.
+              Please click the link in the email to verify your account.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Once verified, you'll be redirected to complete your provider profile.
+            </p>
+            <div className="pt-2 space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Didn't receive the email? Check your spam folder or{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                  onClick={async () => {
+                    const { error } = await supabase.auth.resend({ type: 'signup', email });
+                    if (error) {
+                      toast.error(error.message);
+                    } else {
+                      toast.success("Verification email resent!");
+                    }
+                  }}
+                >
+                  resend it
+                </button>
+                .
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Already verified?{" "}
+                <Link to="/vendor/login" className="text-primary hover:underline font-medium">Sign in</Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (step === "success") {
     return (
       <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
