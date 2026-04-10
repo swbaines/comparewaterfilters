@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail } from "lucide-react";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -38,7 +38,7 @@ const CERTIFICATIONS = [
   { value: "nsf-ansi", label: "NSF/ANSI" },
 ];
 
-type Step = "signup" | "profile" | "success";
+type Step = "signup" | "verify-email" | "profile" | "success";
 
 export default function VendorRegisterPage() {
   const navigate = useNavigate();
