@@ -17,7 +17,6 @@ Deno.serve(async (req) => {
   try {
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
-    // Verify caller is authenticated
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing authorization' }), {
@@ -41,7 +40,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get vendor's provider
     const { data: vendorAccount } = await supabaseAdmin
       .from('vendor_accounts')
       .select('provider_id')
@@ -54,26 +52,38 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get provider with Stripe details
+    // Get provider basic info
     const { data: provider } = await supabaseAdmin
       .from('providers')
-      .select('id, name, contact_email, stripe_customer_id, stripe_payment_method_id')
+      .select('id, name, contact_email')
       .eq('id', vendorAccount.provider_id)
       .single()
 
-    if (!provider?.stripe_customer_id) {
+    if (!provider) {
+      return new Response(JSON.stringify({ error: 'Provider not found' }), {
+        status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    // Get Stripe details from dedicated table
+    const { data: stripeDetails } = await supabaseAdmin
+      .from('provider_stripe_details')
+      .select('stripe_customer_id, stripe_payment_method_id')
+      .eq('provider_id', provider.id)
+      .single()
+
+    if (!stripeDetails?.stripe_customer_id) {
       return new Response(JSON.stringify({ error: 'No Stripe customer found' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    if (!provider.stripe_payment_method_id) {
+    if (!stripeDetails.stripe_payment_method_id) {
       return new Response(JSON.stringify({ error: 'No payment method on file. Please add a card first.' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    // Get the invoice and verify it belongs to this provider
     const { data: invoice } = await supabaseAdmin
       .from('invoices')
       .select('*')
@@ -110,12 +120,11 @@ Deno.serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Create and confirm a PaymentIntent using the saved card
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
       currency: 'aud',
-      customer: provider.stripe_customer_id,
-      payment_method: provider.stripe_payment_method_id,
+      customer: stripeDetails.stripe_customer_id,
+      payment_method: stripeDetails.stripe_payment_method_id,
       off_session: true,
       confirm: true,
       description: `Invoice ${invoice.invoice_number}`,
@@ -127,7 +136,6 @@ Deno.serve(async (req) => {
 
     if (paymentIntent.status === 'succeeded') {
       const paidAt = new Date().toISOString()
-      // Mark invoice as paid
       await supabaseAdmin
         .from('invoices')
         .update({
@@ -137,7 +145,6 @@ Deno.serve(async (req) => {
         })
         .eq('id', invoice.id)
 
-      // Send payment confirmation email
       if (provider.contact_email) {
         try {
           await supabaseAdmin.functions.invoke('send-transactional-email', {

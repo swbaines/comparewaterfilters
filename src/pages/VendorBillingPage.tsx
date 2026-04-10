@@ -191,13 +191,20 @@ export default function VendorBillingPage() {
 
       const { data: prov } = await supabase
         .from("providers")
-        .select("id, name, contact_email, approval_status, stripe_customer_id, stripe_payment_method_id")
+        .select("id, name, contact_email, approval_status")
         .eq("id", va.provider_id)
         .single();
 
-      setProvider(prov);
+      // Fetch Stripe details from dedicated table
+      const { data: stripeDetails } = await supabase
+        .from("provider_stripe_details")
+        .select("stripe_customer_id, stripe_payment_method_id")
+        .eq("provider_id", va.provider_id)
+        .single();
+
+      setProvider({ ...prov, stripe_customer_id: stripeDetails?.stripe_customer_id, stripe_payment_method_id: stripeDetails?.stripe_payment_method_id });
       if (!showCardForm) {
-        setCardSaved(!!(prov as any)?.stripe_payment_method_id);
+        setCardSaved(!!stripeDetails?.stripe_payment_method_id);
       }
     };
 
