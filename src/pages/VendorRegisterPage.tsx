@@ -43,8 +43,42 @@ type Step = "signup" | "verify-email" | "profile" | "success";
 
 export default function VendorRegisterPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState<Step>("signup");
   const [loading, setLoading] = useState(false);
+  const [checkingProfile, setCheckingProfile] = useState(true);
+
+  // If user is logged in (e.g. after email verification), check if they need to complete profile
+  useEffect(() => {
+    if (authLoading) return;
+
+    const requestedStep = searchParams.get("step");
+
+    if (user) {
+      // Check if this user already has a provider profile
+      supabase
+        .from("vendor_accounts")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            // Already has a profile, send to dashboard
+            navigate("/vendor/dashboard", { replace: true });
+          } else if (requestedStep === "profile") {
+            // Came from email verification link — go to profile setup
+            setStep("profile");
+          } else {
+            // Logged in but no provider — show profile step
+            setStep("profile");
+          }
+          setCheckingProfile(false);
+        });
+    } else {
+      setCheckingProfile(false);
+    }
+  }, [user, authLoading, navigate, searchParams]);
 
   // Signup fields
   const [email, setEmail] = useState("");
