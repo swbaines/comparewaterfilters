@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,12 +20,30 @@ export default function VendorLoginPage() {
     e.preventDefault();
     setLoading(true);
     const { error } = await signIn(email, password);
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast.error(error.message);
-    } else {
-      navigate("/vendor/dashboard");
+      return;
     }
+
+    // Check if user has a provider profile — if not, redirect to complete registration
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: va } = await supabase
+        .from("vendor_accounts")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+
+      if (!va || va.length === 0) {
+        setLoading(false);
+        navigate("/vendor/register?step=profile");
+        return;
+      }
+    }
+
+    setLoading(false);
+    navigate("/vendor/dashboard");
   };
 
   return (

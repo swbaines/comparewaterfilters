@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail } from "lucide-react";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -38,12 +39,46 @@ const CERTIFICATIONS = [
   { value: "nsf-ansi", label: "NSF/ANSI" },
 ];
 
-type Step = "signup" | "profile" | "success";
+type Step = "signup" | "verify-email" | "profile" | "success";
 
 export default function VendorRegisterPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState<Step>("signup");
   const [loading, setLoading] = useState(false);
+  const [checkingProfile, setCheckingProfile] = useState(true);
+
+  // If user is logged in (e.g. after email verification), check if they need to complete profile
+  useEffect(() => {
+    if (authLoading) return;
+
+    const requestedStep = searchParams.get("step");
+
+    if (user) {
+      // Check if this user already has a provider profile
+      supabase
+        .from("vendor_accounts")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            // Already has a profile, send to dashboard
+            navigate("/vendor/dashboard", { replace: true });
+          } else if (requestedStep === "profile") {
+            // Came from email verification link — go to profile setup
+            setStep("profile");
+          } else {
+            // Logged in but no provider — show profile step
+            setStep("profile");
+          }
+          setCheckingProfile(false);
+        });
+    } else {
+      setCheckingProfile(false);
+    }
+  }, [user, authLoading, navigate, searchParams]);
 
   // Signup fields
   const [email, setEmail] = useState("");
@@ -107,25 +142,14 @@ export default function VendorRegisterPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: `${window.location.origin}/vendor/register?step=profile` },
     });
+    setLoading(false);
     if (error) {
-      setLoading(false);
       toast.error(error.message);
       return;
     }
-    // Auto sign-in so the user has an active session for the profile step
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-    if (signInError) {
-      toast.error("Account created but could not sign in automatically. Please log in at the vendor login page.");
-      return;
-    }
-    toast.success("Account created! Now set up your provider profile.");
-    setStep("profile");
+    setStep("verify-email");
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -270,6 +294,61 @@ export default function VendorRegisterPage() {
       setLogoPreview(null);
     }
   };
+
+  if (authLoading || checkingProfile) {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (step === "verify-email") {
+    return (
+      <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
+        <Card className="w-full max-w-md text-center">
+          <CardContent className="pt-8 pb-8 space-y-4">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold">Check Your Email</h2>
+            <p className="text-muted-foreground">
+              We've sent a verification link to{" "}
+              <span className="font-medium text-foreground">{email}</span>.
+              Please click the link in the email to verify your account.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Once verified, you'll be redirected to complete your provider profile.
+            </p>
+            <div className="pt-2 space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Didn't receive the email? Check your spam folder or{" "}
+                <button
+                  type="button"
+                  className="text-primary hover:underline font-medium"
+                  onClick={async () => {
+                    const { error } = await supabase.auth.resend({ type: 'signup', email });
+                    if (error) {
+                      toast.error(error.message);
+                    } else {
+                      toast.success("Verification email resent!");
+                    }
+                  }}
+                >
+                  resend it
+                </button>
+                .
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Already verified?{" "}
+                <Link to="/vendor/login" className="text-primary hover:underline font-medium">Sign in</Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (step === "success") {
     return (
