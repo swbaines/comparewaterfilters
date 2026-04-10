@@ -66,6 +66,8 @@ const App = () => (
             <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
             <Route path="/admin/invoices" element={<AdminRoute><AdminInvoicesPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
+            <Route path="/vendor/forgot-password" element={<VendorForgotPasswordPage />} />
+            <Route path="/vendor/reset-password" element={<VendorResetPasswordPage />} />
             <Route path="/vendor/register" element={<VendorRegisterPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
