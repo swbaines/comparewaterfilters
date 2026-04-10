@@ -22,6 +22,8 @@ import AdminInvoicesPage from "@/pages/AdminInvoicesPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
 import VendorRegisterPage from "@/pages/VendorRegisterPage";
+import VendorForgotPasswordPage from "@/pages/VendorForgotPasswordPage";
+import VendorResetPasswordPage from "@/pages/VendorResetPasswordPage";
 import VendorDashboardPage from "@/pages/VendorDashboardPage";
 import VendorSettingsPage from "@/pages/VendorSettingsPage";
 import VendorProfilePage from "@/pages/VendorProfilePage";
@@ -64,6 +66,8 @@ const App = () => (
             <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
             <Route path="/admin/invoices" element={<AdminRoute><AdminInvoicesPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
+            <Route path="/vendor/forgot-password" element={<VendorForgotPasswordPage />} />
+            <Route path="/vendor/reset-password" element={<VendorResetPasswordPage />} />
             <Route path="/vendor/register" element={<VendorRegisterPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
