@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Verify caller is authenticated vendor
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing authorization' }), {
@@ -33,7 +32,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get vendor's provider
     const { data: vendorAccount } = await supabaseAdmin
       .from('vendor_accounts')
       .select('provider_id')
@@ -58,29 +56,48 @@ Deno.serve(async (req) => {
       })
     }
 
+    // Get Stripe details from dedicated table
+    const { data: stripeDetails } = await supabaseAdmin
+      .from('provider_stripe_details')
+      .select('stripe_customer_id')
+      .eq('provider_id', provider.id)
+      .single()
+
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
       apiVersion: '2023-10-16',
     })
 
-    // Find or create Stripe customer
     let customerId: string
-    const existingCustomers = await stripe.customers.list({
-      email: provider.contact_email || undefined,
-      limit: 1,
-    })
 
-    if (existingCustomers.data.length > 0) {
-      customerId = existingCustomers.data[0].id
+    if (stripeDetails?.stripe_customer_id) {
+      customerId = stripeDetails.stripe_customer_id
     } else {
-      const customer = await stripe.customers.create({
+      // Find or create Stripe customer
+      const existingCustomers = await stripe.customers.list({
         email: provider.contact_email || undefined,
-        name: provider.name,
-        metadata: { provider_id: provider.id },
+        limit: 1,
       })
-      customerId = customer.id
+
+      if (existingCustomers.data.length > 0) {
+        customerId = existingCustomers.data[0].id
+      } else {
+        const customer = await stripe.customers.create({
+          email: provider.contact_email || undefined,
+          name: provider.name,
+          metadata: { provider_id: provider.id },
+        })
+        customerId = customer.id
+      }
+
+      // Save to provider_stripe_details
+      await supabaseAdmin
+        .from('provider_stripe_details')
+        .upsert({
+          provider_id: provider.id,
+          stripe_customer_id: customerId,
+        }, { onConflict: 'provider_id' })
     }
 
-    // Create SetupIntent for saving card
     const setupIntent = await stripe.setupIntents.create({
       customer: customerId,
       payment_method_types: ['card'],

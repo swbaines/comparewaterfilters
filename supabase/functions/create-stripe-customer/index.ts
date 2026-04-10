@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Verify caller is admin
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing authorization' }), {
@@ -49,7 +48,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get provider details
     const { data: provider, error: providerError } = await supabaseAdmin
       .from('providers')
       .select('id, name, contact_email, phone')
@@ -66,7 +64,6 @@ Deno.serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    // Check if customer already exists
     const existingCustomers = await stripe.customers.list({
       email: provider.contact_email || undefined,
       limit: 1,
@@ -75,7 +72,6 @@ Deno.serve(async (req) => {
     let customer
     if (existingCustomers.data.length > 0) {
       customer = existingCustomers.data[0]
-      // Update metadata
       customer = await stripe.customers.update(customer.id, {
         metadata: { provider_id: provider.id, provider_name: provider.name },
       })
@@ -88,11 +84,13 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Save stripe_customer_id to the providers table
+    // Save stripe_customer_id to provider_stripe_details table (upsert)
     const { error: updateError } = await supabaseAdmin
-      .from('providers')
-      .update({ stripe_customer_id: customer.id })
-      .eq('id', provider.id)
+      .from('provider_stripe_details')
+      .upsert({
+        provider_id: provider.id,
+        stripe_customer_id: customer.id,
+      }, { onConflict: 'provider_id' })
 
     if (updateError) {
       console.error('Failed to save stripe_customer_id:', updateError)

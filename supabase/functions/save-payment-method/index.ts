@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Verify caller is authenticated
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Missing authorization' }), {
@@ -40,7 +39,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get vendor's provider
     const { data: vendorAccount } = await supabaseAdmin
       .from('vendor_accounts')
       .select('provider_id')
@@ -53,36 +51,36 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { data: provider } = await supabaseAdmin
-      .from('providers')
-      .select('id, stripe_customer_id')
-      .eq('id', vendorAccount.provider_id)
+    // Read Stripe details from the dedicated table
+    const { data: stripeDetails } = await supabaseAdmin
+      .from('provider_stripe_details')
+      .select('stripe_customer_id')
+      .eq('provider_id', vendorAccount.provider_id)
       .single()
 
-    if (!provider || !provider.stripe_customer_id) {
+    if (!stripeDetails?.stripe_customer_id) {
       return new Response(JSON.stringify({ error: 'Provider or Stripe customer not found' }), {
         status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    // Attach payment method to customer and set as default in Stripe
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, {
       apiVersion: '2023-10-16',
     })
 
     await stripe.paymentMethods.attach(payment_method_id, {
-      customer: provider.stripe_customer_id,
+      customer: stripeDetails.stripe_customer_id,
     })
 
-    await stripe.customers.update(provider.stripe_customer_id, {
+    await stripe.customers.update(stripeDetails.stripe_customer_id, {
       invoice_settings: { default_payment_method: payment_method_id },
     })
 
-    // Save to providers table using service role (bypasses RLS)
+    // Save to provider_stripe_details table
     const { error: updateError } = await supabaseAdmin
-      .from('providers')
+      .from('provider_stripe_details')
       .update({ stripe_payment_method_id: payment_method_id })
-      .eq('id', provider.id)
+      .eq('provider_id', vendorAccount.provider_id)
 
     if (updateError) {
       console.error('Failed to save payment method:', updateError)
