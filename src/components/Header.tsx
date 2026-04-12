@@ -30,7 +30,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center">
-          <img src={logoSrc} alt="Compare Water Filters" className="h-8" />
+          <img src={logoSrc} alt="Compare Water Filters" className="h-10" />
         </Link>
 
         {/* Desktop nav */}
