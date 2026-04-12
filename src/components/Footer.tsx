@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-4">
           <div>
             <Link to="/" className="flex items-center">
-              <img src={logoSrc} alt="Compare Water Filters" className="h-7" />
+              <img src={logoSrc} alt="Compare Water Filters" className="h-9" />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
             Helping Australian households choose the right water filtration system with clear, independent guidance.
