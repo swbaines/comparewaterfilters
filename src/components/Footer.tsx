@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Droplets } from "lucide-react";
+import logoSrc from "@/assets/logo.svg";
 
 export default function Footer() {
   return (
@@ -7,9 +7,8 @@ export default function Footer() {
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div>
-            <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
-              <Droplets className="h-5 w-5 text-primary" />
-              Compare Water Filters
+            <Link to="/" className="flex items-center">
+              <img src={logoSrc} alt="Compare Water Filters" className="h-7" />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
             Helping Australian households choose the right water filtration system with clear, independent guidance.
