@@ -33,6 +33,8 @@ import VendorRoute from "@/components/VendorRoute";
 import WaterQualityPage from "@/pages/WaterQualityPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import DisclaimerPage from "@/pages/DisclaimerPage";
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPage from "@/pages/PrivacyPage";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
@@ -75,6 +77,8 @@ const App = () => (
             <Route path="/vendor/billing" element={<VendorRoute><VendorBillingPage /></VendorRoute>} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="/disclaimer" element={<DisclaimerPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
