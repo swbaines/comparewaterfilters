@@ -354,7 +354,9 @@ export default function QuizPage() {
                     onCheckedChange={(checked) => set("consent", !!checked)}
                   />
                   <label htmlFor="consent" className="text-sm text-muted-foreground">
-                    I agree to receive my recommendations via email and understand my information is used to provide personalised guidance. I can unsubscribe at any time.
+                    I agree to receive my recommendations via email and understand my information is used to provide personalised guidance in accordance with our{" "}
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">Privacy Policy</a> and{" "}
+                    <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">Terms and Conditions</a>. I can unsubscribe at any time.
                   </label>
                 </div>
                 <div className="flex items-start gap-2">
