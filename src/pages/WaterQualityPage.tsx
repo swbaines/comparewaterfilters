@@ -379,7 +379,17 @@ export default function WaterQualityPage() {
                   </div>
                 </div>
 
-              </CardContent>
+                {result.pfasRisk !== "low" && (
+                  <div className="flex gap-3">
+                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
+                    <div>
+                      <h4 className="font-semibold">PFAS</h4>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        PFAS monitoring is active in your area. Current levels meet Australian Drinking Water Guidelines, so there's no immediate concern — but many families prefer the peace of mind that comes with a reverse osmosis system, which is the most effective household technology for PFAS removal.
+                      </p>
+                    </div>
+                  </div>
+                )}
             </Card>
 
             {/* Filter recommendations */}
