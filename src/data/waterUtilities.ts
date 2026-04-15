@@ -681,19 +681,59 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     region: "Cairns",
     state: "QLD",
     postcodeRanges: [
-      [4868, 4879], // Cairns, Cairns North, Edge Hill, Smithfield
+      [4868, 4881], // Cairns, Cairns North, Edge Hill, Smithfield, Northern Beaches
     ],
     suburbs: [
-      "Cairns", "Cairns North", "Edge Hill", "Smithfield", "Trinity Beach",
-      "Palm Cove", "Yorkeys Knob", "Gordonvale",
+      "Cairns", "Cairns CBD", "Cairns North", "Cairns City", "Edge Hill",
+      "Whitfield", "Smithfield", "Trinity Beach", "Trinity Park",
+      "Palm Cove", "Yorkeys Knob", "Gordonvale", "Machans Beach",
+      "Holloways Beach", "Kewarra Beach", "Clifton Beach",
+      "Brinsmead", "Freshwater", "Stratford", "Manoora",
+      "Manunda", "Parramatta Park", "Westcourt", "Mooroobool",
+      "Kanimbla", "Bayview Heights", "Mount Sheridan", "Edmonton",
+      "Bentley Park", "Woree", "White Rock", "Earlville",
+      "Aeroglen", "Portsmith", "Redlynch",
     ],
-    hardness: 55,
-    chlorine: 0.7,
-    fluoride: 0.7,
-    ph: 7.5,
+    hardness: 18,
+    chlorine: 0.6,
+    fluoride: 0.0,
+    ph: 7.2,
     pfasRisk: "low",
-    source: "Copperlode Dam",
-    notes: "Cairns has soft water from the Copperlode Dam catchment. Good quality — a carbon filter is a nice-to-have for taste.",
+    source: "Copperlode Falls Dam (Lake Morris) & Behana Creek",
+    notes: "Cairns has very soft water at just 18 mg/L from protected tropical rainforest catchments. Cairns does NOT fluoridate its water supply. Chlorine is used for disinfection at low levels. A carbon filter is a great upgrade for taste and chlorine removal.",
+  },
+  // ── Townsville City Council ──────────────────────────────────────────────
+  {
+    key: "townsville-water",
+    utilityName: "Townsville City Council",
+    region: "Townsville",
+    state: "QLD",
+    postcodeRanges: [
+      [4810, 4818], // Townsville CBD, South Townsville, North Ward, Belgian Gardens
+      [4812, 4812], // Currajong, Mysterton, Pimlico
+      [4814, 4814], // Aitkenvale, Cranbrook, Douglas
+      [4815, 4815], // Kirwan, Thuringowa Central
+      [4816, 4820], // Outer suburbs, Magnetic Island
+    ],
+    suburbs: [
+      "Townsville", "Townsville CBD", "South Townsville", "North Ward",
+      "Belgian Gardens", "Castle Hill", "Rowes Bay", "Garbutt",
+      "Currajong", "Mysterton", "Pimlico", "Mundingburra",
+      "Aitkenvale", "Cranbrook", "Douglas", "Annandale",
+      "Kirwan", "Thuringowa Central", "Condon", "Kelso",
+      "Rasmussen", "Mount Louisa", "Bohle Plains", "Burdell",
+      "Bushland Beach", "Deeragun", "Jensen", "Mount Low",
+      "Magnetic Island", "Nelly Bay", "Arcadia", "Picnic Bay",
+      "Horseshoe Bay", "West End", "Railway Estate", "Oonoonba",
+      "Stuart", "Wulguru", "Idalia", "Cluden",
+    ],
+    hardness: 25,
+    chlorine: 0.8,
+    fluoride: 0.7,
+    ph: 7.3,
+    pfasRisk: "low",
+    source: "Ross River Dam & Paluma Dam",
+    notes: "Townsville has very soft tropical water at just 25 mg/L hardness from Ross River Dam. No scale issues. Chlorine is moderate — a carbon filter is the main upgrade for taste. Occasional discolouration can occur after heavy rainfall and dam releases.",
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -1080,20 +1120,27 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     region: "Darwin & Palmerston",
     state: "NT",
     postcodeRanges: [
-      [800, 832], // Darwin, Palmerston, Howard Springs
+      [800, 832], // Darwin, Palmerston, Howard Springs, Humpty Doo
     ],
     suburbs: [
-      "Darwin", "Darwin CBD", "Palmerston", "Howard Springs",
-      "Stuart Park", "Fannie Bay", "Parap", "Nightcliff",
-      "Rapid Creek", "Casuarina", "Millner", "Berrimah",
+      "Darwin", "Darwin CBD", "Darwin City", "Palmerston",
+      "Howard Springs", "Humpty Doo",
+      "Stuart Park", "Larrakeyah", "The Gardens", "Fannie Bay",
+      "Parap", "Woolner", "Bayview", "East Point",
+      "Nightcliff", "Coconut Grove", "Rapid Creek", "Millner",
+      "Casuarina", "Nakara", "Tiwi", "Brinkin", "Wanguri",
+      "Malak", "Karama", "Anula", "Berrimah",
+      "Leanyer", "Muirhead", "Lee Point",
+      "Gunn", "Driver", "Durack", "Gray", "Moulden",
+      "Woodroffe", "Rosebery", "Bellamack", "Zuccoli",
     ],
-    hardness: 75,
+    hardness: 43,
     chlorine: 0.7,
-    fluoride: 0.0,
-    ph: 7.3,
-    pfasRisk: "low",
-    source: "Darwin River Dam / Howard Springs",
-    notes: "The Northern Territory does NOT fluoridate its water supply. Moderate hardness. Good quality overall — carbon filter for taste preference. If fluoride-free water is important to you, Darwin already has it.",
+    fluoride: 0.6,
+    ph: 7.4,
+    pfasRisk: "moderate",
+    source: "Darwin River Dam (259,000 ML) & McMinns/Howard East Borefields",
+    notes: "Darwin has soft water at 43 mg/L from tropical rainfall catchments. No scale issues. The NT fluoridates at 0.6 mg/L. Chlorine (not chloramine) is used for disinfection. PFAS has been detected near RAAF Base Darwin from historical firefighting foam use — the reticulated supply is separate but a reverse osmosis system provides the best peace of mind.",
   },
   {
     key: "pwc-alice",
