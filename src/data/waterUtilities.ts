@@ -1,5 +1,5 @@
 // ── Water utility profiles & suburb-to-utility mappings ──────────────────────
-// Data sourced from state water authority annual reports 2024–25
+// Data sourced from state water authority annual reports & WaterScore analysis 2024–25
 
 export interface WaterUtilityProfile {
   key: string;
