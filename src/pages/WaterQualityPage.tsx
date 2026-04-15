@@ -390,6 +390,7 @@ export default function WaterQualityPage() {
                     </div>
                   </div>
                 )}
+              </CardContent>
             </Card>
 
             {/* Filter recommendations */}
