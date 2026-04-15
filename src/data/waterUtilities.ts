@@ -1183,6 +1183,251 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     source: "Amadeus Basin groundwater (Roe Creek borefield)",
     notes: "Alice Springs has very hard groundwater from the Amadeus Basin. Scale is a significant issue. NT does not fluoridate. A water softener or whole house filter with scale-reduction is strongly recommended.",
   },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TASMANIA
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ── TasWater — Greater Hobart ─────────────────────────────────────────────
+  {
+    key: "taswater-hobart",
+    utilityName: "TasWater",
+    region: "Greater Hobart",
+    state: "TAS",
+    postcodeRanges: [
+      [7000, 7000], // Hobart CBD
+      [7001, 7001], // Hobart GPO
+      [7004, 7004], // Battery Point, Sandy Bay
+      [7005, 7005], // Sandy Bay, Dynnyrne
+      [7006, 7006], // Sandy Bay (upper)
+      [7007, 7007], // Mount Nelson, Tolmans Hill
+      [7008, 7008], // New Town, Lenah Valley
+      [7009, 7009], // Lutana, Moonah, Derwent Park
+      [7010, 7011], // Glenorchy, Montrose, Rosetta, Claremont
+      [7012, 7012], // Berriedale, Austins Ferry
+      [7015, 7015], // Lindisfarne, Rose Bay
+      [7016, 7016], // Bellerive, Howrah
+      [7017, 7018], // Rokeby, Clarendon Vale, Lauderdale
+      [7019, 7019], // Tranmere, Droughty Point
+      [7020, 7020], // South Arm
+      [7050, 7050], // Bridgewater, Brighton
+      [7052, 7054], // Sorell, Midway Point, Dodges Ferry
+      [7055, 7055], // Cambridge, Seven Mile Beach
+      [7109, 7109], // Huonville
+      [7170, 7170], // Kingston, Blackmans Bay
+      [7171, 7172], // Kingston Beach, Taroona
+    ],
+    suburbs: [
+      "Hobart", "Hobart CBD", "Battery Point", "Sandy Bay", "Dynnyrne",
+      "Mount Nelson", "Tolmans Hill", "New Town", "Lenah Valley",
+      "Lutana", "Moonah", "Derwent Park", "Glenorchy", "Montrose",
+      "Rosetta", "Claremont", "Berriedale", "Austins Ferry",
+      "Lindisfarne", "Rose Bay", "Bellerive", "Howrah",
+      "Rokeby", "Clarendon Vale", "Lauderdale", "Tranmere",
+      "South Arm", "Bridgewater", "Brighton", "Sorell",
+      "Midway Point", "Dodges Ferry", "Cambridge", "Seven Mile Beach",
+      "Huonville", "Kingston", "Blackmans Bay", "Kingston Beach", "Taroona",
+      "West Hobart", "North Hobart", "South Hobart", "Salamanca",
+      "Mornington", "Warrane", "Risdon Vale", "Old Beach",
+    ],
+    hardness: 24,
+    chlorine: 0.82,
+    fluoride: 0.93,
+    ph: 7.4,
+    pfasRisk: "low",
+    source: "TasWater (Bryn Estyn Water Treatment Plant — Derwent River)",
+    notes: "Hobart's water is soft at just 24 mg/L hardness, sourced from the Derwent River. Free chlorine sits around 0.82 mg/L — a carbon filter will noticeably improve taste. Fluoride is within the recommended range at 0.93 mg/L. Overall excellent quality from protected Tasmanian catchments.",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUSTRALIAN CAPITAL TERRITORY
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ── Icon Water — Canberra / ACT ───────────────────────────────────────────
+  {
+    key: "icon-water-canberra",
+    utilityName: "Icon Water",
+    region: "Canberra & ACT",
+    state: "ACT",
+    postcodeRanges: [
+      [2600, 2600], // Canberra CBD, Barton, Capital Hill
+      [2601, 2601], // Acton, Black Mountain
+      [2602, 2602], // Ainslie, Dickson, Downer, Hackett, Watson
+      [2603, 2603], // Forrest, Griffith, Manuka, Red Hill
+      [2604, 2604], // Kingston, Narrabundah
+      [2605, 2605], // Curtin, Garran, Hughes
+      [2606, 2606], // Phillip, Mawson, Farrer
+      [2607, 2607], // Deakin, Yarralumla
+      [2609, 2609], // Fyshwick, Pialligo
+      [2611, 2611], // Weston Creek, Woden Valley (parts)
+      [2612, 2612], // Braddon, Turner, Campbell, Reid
+      [2614, 2614], // Aranda, Cook, Hawker, Weetangera
+      [2615, 2615], // Belconnen, Macquarie, Scullin, Page
+      [2617, 2617], // Bruce, Evatt, Giralang, Kaleen
+      [2900, 2900], // Tuggeranong, Greenway, Kambah
+      [2903, 2906], // Wanniassa, Fadden, Gordon, Bonython, Isabella Plains
+      [2912, 2914], // Gungahlin, Harrison, Franklin, Mitchell
+    ],
+    suburbs: [
+      "Canberra", "Canberra CBD", "Barton", "Capital Hill", "Acton",
+      "Ainslie", "Dickson", "Downer", "Hackett", "Watson",
+      "Forrest", "Griffith", "Manuka", "Red Hill", "Kingston",
+      "Narrabundah", "Curtin", "Garran", "Hughes", "Phillip",
+      "Mawson", "Farrer", "Deakin", "Yarralumla", "Fyshwick",
+      "Weston Creek", "Woden", "Braddon", "Turner", "Campbell", "Reid",
+      "Aranda", "Cook", "Hawker", "Weetangera", "Belconnen",
+      "Macquarie", "Scullin", "Page", "Bruce", "Evatt",
+      "Giralang", "Kaleen", "Tuggeranong", "Greenway", "Kambah",
+      "Wanniassa", "Fadden", "Gordon", "Bonython", "Isabella Plains",
+      "Gungahlin", "Harrison", "Franklin", "Mitchell", "Casey",
+      "Ngunnawal", "Nicholls", "Amaroo", "Palmerston",
+      "Weston", "Holder", "Duffy", "Rivett", "Chapman",
+    ],
+    hardness: 38,
+    chlorine: 0.69,
+    fluoride: 0.8,
+    ph: 7.78,
+    pfasRisk: "low",
+    usesChloramine: true,
+    source: "Icon Water (Corin, Bendora & Cotter Dams — Cotter River catchment)",
+    notes: "Canberra's water is soft to moderately soft at 38 mg/L hardness, drawn from pristine mountain catchments west of the city. Icon Water uses chloramine (monochloramine) for disinfection — a catalytic carbon filter is recommended over standard carbon for effective removal. Fluoride is at the target level of 0.8 mg/L.",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // NEW SOUTH WALES — REGIONAL
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ── Sydney Water — Illawarra (Wollongong) ─────────────────────────────────
+  {
+    key: "sydney-water-illawarra",
+    utilityName: "Sydney Water",
+    region: "Wollongong & Illawarra",
+    state: "NSW",
+    postcodeRanges: [
+      [2500, 2500], // Wollongong CBD
+      [2502, 2502], // Warrawong, Port Kembla
+      [2505, 2506], // Unanderra, Figtree, Cordeaux Heights
+      [2515, 2515], // Thirroul, Bulli, Austinmer, Coledale
+      [2516, 2517], // Helensburgh, Stanwell Park
+      [2518, 2518], // Corrimal, Bellambi, Tarrawanna
+      [2519, 2519], // Balgownie, Fairy Meadow
+      [2520, 2520], // North Wollongong, Wollongong
+      [2525, 2525], // Shellharbour, Barrack Heights
+      [2526, 2526], // Albion Park, Oak Flats
+      [2527, 2527], // Albion Park Rail, Tongarra
+      [2528, 2528], // Dapto, Kanahooka, Brownsville
+      [2529, 2530], // Horsley, Berkeley, Lake Heights
+      [2533, 2534], // Bombo, Kiama, Gerringong
+    ],
+    suburbs: [
+      "Wollongong", "Wollongong CBD", "North Wollongong", "Warrawong",
+      "Port Kembla", "Unanderra", "Figtree", "Cordeaux Heights",
+      "Thirroul", "Bulli", "Austinmer", "Coledale", "Scarborough",
+      "Helensburgh", "Stanwell Park", "Stanwell Tops", "Coalcliff",
+      "Corrimal", "Bellambi", "Tarrawanna", "East Corrimal",
+      "Balgownie", "Fairy Meadow", "Towradgi", "Fernhill",
+      "Shellharbour", "Barrack Heights", "Warilla", "Lake Illawarra",
+      "Albion Park", "Oak Flats", "Albion Park Rail",
+      "Dapto", "Kanahooka", "Brownsville", "Horsley",
+      "Berkeley", "Lake Heights", "Bombo", "Kiama", "Gerringong",
+      "Keiraville", "Gwynneville", "Mangerton", "Coniston",
+      "West Wollongong", "Mount Keira", "Mount Ousley",
+    ],
+    hardness: 33,
+    chlorine: 1.45,
+    fluoride: 1.03,
+    ph: 7.8,
+    pfasRisk: "low",
+    source: "Sydney Water (Avon & Cordeaux Dams — Illawarra catchment)",
+    notes: "Wollongong receives Sydney Water supply from the Illawarra catchment. Water is soft at 33 mg/L hardness. Chlorine is on the higher side at 1.45 mg/L — a carbon filter is highly recommended for improved taste and shower comfort. Fluoride is at 1.03 mg/L, within guidelines.",
+  },
+  // ── Hunter Water — Greater Newcastle ──────────────────────────────────────
+  {
+    key: "hunter-water-newcastle",
+    utilityName: "Hunter Water",
+    region: "Greater Newcastle & Hunter Valley",
+    state: "NSW",
+    postcodeRanges: [
+      [2280, 2280], // Belmont, Belmont South
+      [2281, 2281], // Swansea, Blacksmiths, Caves Beach
+      [2282, 2282], // Warners Bay, Eleebana, Valentine
+      [2283, 2284], // Toronto, Morisset, Cooranbong
+      [2285, 2285], // Whitebridge, Charlestown, Dudley
+      [2286, 2287], // Kotara, Lambton, Jesmond, Waratah
+      [2289, 2289], // Adamstown, Merewether
+      [2290, 2290], // Charlestown, Kahibah
+      [2291, 2291], // Merewether, The Junction
+      [2292, 2292], // Broadmeadow, Hamilton
+      [2293, 2295], // Maryville, Wickham, Newcastle, Cooks Hill
+      [2296, 2296], // Islington, Tighes Hill
+      [2297, 2299], // Mayfield, Warabrook, Shortland, Jesmond
+      [2300, 2300], // Newcastle CBD, Newcastle East
+      [2302, 2305], // Newcastle West, Stockton, Carrington, Tarro, Maitland (parts)
+      [2320, 2326], // Maitland, Rutherford, Cessnock, Kurri Kurri
+    ],
+    suburbs: [
+      "Newcastle", "Newcastle CBD", "Newcastle East", "Newcastle West",
+      "Belmont", "Belmont South", "Swansea", "Blacksmiths", "Caves Beach",
+      "Warners Bay", "Eleebana", "Valentine", "Toronto",
+      "Morisset", "Cooranbong", "Whitebridge", "Charlestown", "Dudley",
+      "Kotara", "Lambton", "Jesmond", "Waratah", "Adamstown",
+      "Merewether", "Kahibah", "The Junction", "Broadmeadow", "Hamilton",
+      "Maryville", "Wickham", "Cooks Hill", "Islington", "Tighes Hill",
+      "Mayfield", "Warabrook", "Shortland", "Stockton", "Carrington",
+      "Maitland", "Rutherford", "Cessnock", "Kurri Kurri",
+      "New Lambton", "Bar Beach", "King Edward Park", "The Hill",
+      "Wallsend", "Cardiff", "Glendale", "Edgeworth", "Cameron Park",
+    ],
+    hardness: 30,
+    chlorine: 0.78,
+    fluoride: 0.93,
+    ph: 7.5,
+    pfasRisk: "low",
+    source: "Hunter Water (Grahamstown Dam & Chichester Dam — Williams River catchment)",
+    notes: "Newcastle's water is soft at around 30 mg/L hardness from the Hunter region's dammed catchments. Chlorine is moderate at 0.78 mg/L. Note: Hunter Water occasionally reports earthy/musty taste from a naturally occurring compound (MIB) in the Grahamstown supply — this is harmless but a carbon filter will remove it effectively.",
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VICTORIA — REGIONAL
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ── Barwon Water — Greater Geelong ────────────────────────────────────────
+  {
+    key: "barwon-water-geelong",
+    utilityName: "Barwon Water",
+    region: "Greater Geelong & Surf Coast",
+    state: "VIC",
+    postcodeRanges: [
+      [3214, 3214], // Corio, Norlane, North Shore
+      [3215, 3215], // North Geelong, Bell Park, Bell Post Hill
+      [3216, 3216], // Belmont, Grovedale, Highton, Wandana Heights
+      [3217, 3217], // Armstrong Creek, Mount Duneed
+      [3218, 3218], // Waurn Ponds, Deakin University
+      [3219, 3219], // Breakwater, East Geelong, South Geelong
+      [3220, 3220], // Geelong, Geelong CBD, Newtown
+      [3221, 3221], // Geelong West
+      [3222, 3222], // Drysdale, Clifton Springs
+      [3223, 3224], // Queenscliff, Barwon Heads, Ocean Grove
+      [3225, 3225], // Point Lonsdale
+      [3226, 3227], // Leopold, Wallington
+      [3228, 3228], // Torquay, Jan Juc
+      [3230, 3232], // Anglesea, Aireys Inlet, Lorne
+    ],
+    suburbs: [
+      "Geelong", "Geelong CBD", "Geelong West", "South Geelong",
+      "East Geelong", "Newtown", "Chilwell", "Highton", "Belmont",
+      "Grovedale", "Waurn Ponds", "Armstrong Creek", "Mount Duneed",
+      "Corio", "Norlane", "North Shore", "North Geelong", "Bell Park",
+      "Bell Post Hill", "Breakwater", "Drysdale", "Clifton Springs",
+      "Queenscliff", "Barwon Heads", "Ocean Grove", "Point Lonsdale",
+      "Leopold", "Wallington", "Torquay", "Jan Juc",
+      "Anglesea", "Aireys Inlet", "Lorne", "Herne Hill",
+      "Hamlyn Heights", "Manifold Heights", "Drumcondra",
+      "Whittington", "St Albans Park", "Thomson", "Lovely Banks",
+    ],
+    hardness: 19,
+    chlorine: 0.7,
+    fluoride: 0.7,
+    ph: 7.4,
+    pfasRisk: "low",
+    source: "Barwon Water (Wurdee Boluc, West Barwon & Moorabool Reservoirs)",
+    notes: "Geelong's water is very soft at just 19 mg/L hardness — no softener needed. Barwon Water draws from protected catchments in the Otway Ranges. Chlorine and fluoride levels are low to moderate. A carbon filter is a good upgrade for taste, especially in summer when chlorine levels may be slightly higher.",
+  },
 ];
 
 // ── Search logic ────────────────────────────────────────────────────────────
