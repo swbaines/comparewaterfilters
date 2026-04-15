@@ -248,6 +248,9 @@ export default function WaterQualityPage() {
                   if (chlorineInfo.label === "Moderate" || chlorineInfo.label === "High") {
                     concerns.push(`${chlorineInfo.label.toLowerCase()} chlorine levels`);
                   }
+                  if (result.pfasRisk === "elevated" || result.pfasRisk === "moderate") {
+                    concerns.push("PFAS levels being monitored");
+                  }
                   if (concerns.length > 0) {
                     return `, however your area has ${concerns.join(" and ")}. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.`;
                   }
