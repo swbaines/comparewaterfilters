@@ -29,11 +29,6 @@ function getFluorideLabel(f: number) {
   return { label: "Standard", color: "text-yellow-800", bg: "bg-yellow-100" };
 }
 
-function getPfasLabel(risk: string) {
-  if (risk === "elevated") return { label: "Elevated — monitor", color: "text-red-800", bg: "bg-red-100" };
-  if (risk === "moderate") return { label: "Being monitored", color: "text-yellow-800", bg: "bg-yellow-100" };
-  return { label: "Within guidelines", color: "text-green-800", bg: "bg-green-100" };
-}
 
 function getFilterRecommendations(profile: WaterUtilityProfile) {
   const recs: { primary: string; reason: string; cta: string }[] = [];
@@ -47,10 +42,7 @@ function getFilterRecommendations(profile: WaterUtilityProfile) {
   if (profile.chlorine >= 1.0 || profile.hardness < 120) {
     recs.push({ primary: "Whole house filtration", reason: `${profile.state === "SA" ? "Adelaide has Australia's highest chlorine levels" : profile.state === "VIC" ? "Melbourne's chlorine is notably higher than most cities" : "Chlorine removal"} — a whole house filtration improves taste, skin, and hair from every tap and shower.`, cta: "Get quotes" });
   }
-  if (profile.pfasRisk === "elevated" || profile.pfasRisk === "moderate") {
-    recs.push({ primary: "Reverse osmosis", reason: "PFAS monitoring is active in your area. RO is the most effective household technology for removing PFAS and other contaminants from drinking water.", cta: "Get quotes" });
-  }
-  recs.push({ primary: "Reverse osmosis", reason: "For the purest possible drinking water — removes fluoride, PFAS, heavy metals, and virtually all dissolved contaminants.", cta: "Get quotes" });
+  recs.push({ primary: "Reverse osmosis", reason: "For the purest possible drinking water — removes fluoride, heavy metals, and virtually all dissolved contaminants.", cta: "Get quotes" });
 
   return recs.slice(0, 3);
 }
@@ -160,7 +152,7 @@ export default function WaterQualityPage() {
   const hardness = result ? getHardnessLabel(result.hardness) : null;
   const chlorine = result ? getChlorineLabel(result.chlorine) : null;
   const fluoride = result ? getFluorideLabel(result.fluoride) : null;
-  const pfas = result ? getPfasLabel(result.pfasRisk) : null;
+  
   const recs = result ? getFilterRecommendations(result) : [];
 
   return (
@@ -253,9 +245,6 @@ export default function WaterQualityPage() {
                   if (chlorineInfo.label === "Moderate" || chlorineInfo.label === "High") {
                     concerns.push(`${chlorineInfo.label.toLowerCase()} chlorine levels`);
                   }
-                  if (result.pfasRisk === "elevated" || result.pfasRisk === "moderate") {
-                    concerns.push("PFAS levels being monitored");
-                  }
                   if (concerns.length > 0) {
                     return `, however your area has ${concerns.join(" and ")}. A quality filtration system removes what the treatment plant leaves behind, giving you noticeably better water for drinking, cooking, showering, and protecting your appliances.`;
                   }
@@ -315,17 +304,6 @@ export default function WaterQualityPage() {
                   <Badge className={`mt-2 ${result.ph >= 6.5 && result.ph <= 8.5 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"} border-0`}>
                     {result.ph >= 6.5 && result.ph <= 8.5 ? "Normal range" : result.ph < 6.5 ? "Acidic" : "Alkaline"}
                   </Badge>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <AlertTriangle className="h-4 w-4" />
-                    PFAS Risk
-                  </div>
-                  <p className="mt-2 text-3xl font-bold capitalize">{result.pfasRisk}</p>
-                  <p className="text-sm text-muted-foreground">Local monitoring</p>
-                  <Badge className={`mt-2 ${pfas?.bg} ${pfas?.color} border-0`}>{pfas?.label}</Badge>
                 </CardContent>
               </Card>
             </div>
@@ -398,17 +376,6 @@ export default function WaterQualityPage() {
                   </div>
                 </div>
 
-                {result.pfasRisk !== "low" && (
-                  <div className="flex gap-3">
-                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-500" />
-                    <div>
-                      <h4 className="font-semibold">PFAS</h4>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        PFAS monitoring is active in your area. Current levels meet Australian Drinking Water Guidelines, so there's no immediate concern — but many families prefer the peace of mind that comes with a reverse osmosis system, which is the most effective household technology for PFAS removal.
-                      </p>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
