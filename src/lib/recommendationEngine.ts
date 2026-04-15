@@ -358,12 +358,12 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // RULE 4 — RENTER / APARTMENT: never recommend whole-house as primary or premium
   // ────────────────────────────────────────────────────────────────────────────
   if (!f.canHaveWholeHome) {
-    if (f.isRenter) {
+    if (f.isRenter && wholeHomeTrigger) {
       warnings.push(
         "As a renter, a whole house system isn't a practical investment — it's expensive, requires landlord approval, and you'd need to pay to have it removed when you move. We've tailored your recommendations to the best options available for renters."
       );
     }
-    if (f.isApartment) {
+    if (f.isApartment && wholeHomeTrigger) {
       warnings.push(
         "Whole house filtration systems cannot be installed in apartments. We've recommended the best under-sink and point-of-use options for your home."
       );
