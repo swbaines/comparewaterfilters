@@ -158,8 +158,8 @@ export default function WaterQualityPage() {
   return (
     <div className="min-h-screen bg-background">
       <PageMeta
-        title="Water Quality by Suburb Australia — Check Hardness, Chlorine, PFAS"
-        description="Free water quality lookup for Australian suburbs. Check hardness, chlorine, fluoride and PFAS levels in Sydney, Melbourne, Brisbane, Perth, Adelaide and more. Get filter recommendations for your area."
+        title="Water Quality by Suburb Australia — Check Hardness, Chlorine & Fluoride"
+        description="Free water quality lookup for Australian suburbs. Check hardness, chlorine and fluoride levels in Sydney, Melbourne, Brisbane, Perth, Adelaide and more. Get filter recommendations for your area."
         path="/water-quality"
       />
 
@@ -447,7 +447,7 @@ export default function WaterQualityPage() {
               { label: "Perth", sub: "Hard water, varies north to south", query: "Perth CBD" },
               { label: "Adelaide", sub: "Hardest capital, high chlorine", query: "Adelaide CBD" },
               { label: "Hobart", sub: "Excellent soft water", query: "Hobart" },
-              { label: "Canberra", sub: "Soft, PFAS monitored", query: "Canberra" },
+              { label: "Canberra", sub: "Soft, clean water", query: "Canberra" },
               { label: "Darwin", sub: "No fluoride added", query: "Darwin" },
             ].map(s => (
               <Card
