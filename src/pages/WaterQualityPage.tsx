@@ -465,7 +465,9 @@ export default function WaterQualityPage() {
               { label: "Adelaide", sub: "Hardest capital, high chlorine", query: "Adelaide CBD" },
               { label: "Hobart", sub: "Excellent soft water", query: "Hobart" },
               { label: "Canberra", sub: "Soft, clean water", query: "Canberra" },
-              { label: "Darwin", sub: "No fluoride added", query: "Darwin" },
+              { label: "Darwin", sub: "Soft tropical water", query: "Darwin" },
+              { label: "Townsville", sub: "Very soft, tropical source", query: "Townsville" },
+              { label: "Cairns", sub: "Very soft, no fluoride", query: "Cairns" },
             ].map(s => (
               <Card
                 key={s.label}
