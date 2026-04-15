@@ -42,7 +42,10 @@ function getFilterRecommendations(profile: WaterUtilityProfile) {
   if (profile.chlorine >= 1.0 || profile.hardness < 120) {
     recs.push({ primary: "Whole house filtration", reason: `${profile.state === "SA" ? "Adelaide has Australia's highest chlorine levels" : profile.state === "VIC" ? "Melbourne's chlorine is notably higher than most cities" : "Chlorine removal"} — a whole house filtration improves taste, skin, and hair from every tap and shower.`, cta: "Get quotes" });
   }
-  recs.push({ primary: "Reverse osmosis", reason: "For the purest possible drinking water — removes fluoride, heavy metals, and virtually all dissolved contaminants.", cta: "Get quotes" });
+  if (profile.pfasRisk === "elevated" || profile.pfasRisk === "moderate") {
+    recs.push({ primary: "Reverse osmosis", reason: "PFAS monitoring is active in your area. RO is the most effective household technology for removing PFAS and other contaminants from drinking water.", cta: "Get quotes" });
+  }
+  recs.push({ primary: "Reverse osmosis", reason: "For the purest possible drinking water — removes fluoride, PFAS, heavy metals, and virtually all dissolved contaminants.", cta: "Get quotes" });
 
   return recs.slice(0, 3);
 }
