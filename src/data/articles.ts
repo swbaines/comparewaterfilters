@@ -73,7 +73,7 @@ Installation typically takes 2–4 hours and must be performed by a licensed plu
 
 Water quality varies significantly across Australia. Here's what to prioritise by city:
 
-- **Sydney** — Sydney has soft, well-treated water but uses both chlorine and chloramine. A catalytic carbon whole house filter is the best choice — standard carbon won't adequately remove chloramine. Budget $2,500–$4,000 installed.
+- **Sydney** — Sydney has soft, well-treated water but uses both chlorine and chloramine. A catalytic carbon whole house filter is the best choice — standard carbon won't adequately remove chloramine. Budget $3,000–$5,000 installed.
 - **Melbourne** — Melbourne's water is among Australia's softest and cleanest, but chlorine levels are higher than many people realise. A standard carbon whole house filter handles Melbourne water well. Budget $3,000–$5,000 installed.
 - **Brisbane** — South East Queensland water has moderate hardness and seasonal taste issues from algal blooms. A multi-stage carbon system with a quality sediment pre-filter is ideal. Consider adding a water softener if you're in a high-hardness area. Budget $3,000–$6,000 installed.
 - **Perth** — Perth has some of the hardest water in Australia, especially in northern suburbs. A whole house filter alone won't solve scale issues — you'll likely need a water softener as well. Budget $3,000–$5,000 for filtration, plus $2,000–$4,000 for a softener if needed.
