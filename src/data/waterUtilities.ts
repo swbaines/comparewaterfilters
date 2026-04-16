@@ -4,7 +4,7 @@
 export interface WaterUtilityProfile {
   key: string;
   utilityName: string;
-  reportUrl: string;
+  reportUrl?: string;
   region: string;
   state: string;
   postcodeRanges: [number, number][];
