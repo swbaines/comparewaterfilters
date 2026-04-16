@@ -27,6 +27,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "gww-inner",
     utilityName: "Greater Western Water",
+    reportUrl: "https://www.gww.com.au/about/corporate-information/our-strategies-plans-reports/drinking-water-quality-report",
     region: "Melbourne — CBD & Inner Suburbs",
     state: "VIC",
     postcodeRanges: [
@@ -73,6 +74,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "gww-west",
     utilityName: "Greater Western Water",
+    reportUrl: "https://www.gww.com.au/about/corporate-information/our-strategies-plans-reports/drinking-water-quality-report",
     region: "Melbourne — West & Northwest",
     state: "VIC",
     postcodeRanges: [
@@ -110,6 +112,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "yvw",
     utilityName: "Yarra Valley Water",
+    reportUrl: "https://www.yvw.com.au/about-us/reports/water-quality-reports",
     region: "Melbourne — North & Outer East",
     state: "VIC",
     postcodeRanges: [
@@ -157,6 +160,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sew",
     utilityName: "South East Water",
+    reportUrl: "https://southeastwater.com.au/content/sew/au/en/waterquality",
     region: "Melbourne — South & Southeast",
     state: "VIC",
     postcodeRanges: [
@@ -203,6 +207,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "barwon",
     utilityName: "Barwon Water",
+    reportUrl: "https://www.barwonwater.vic.gov.au/water-and-waste/water-quality/results-and-data",
     region: "Geelong & Surf Coast",
     state: "VIC",
     postcodeRanges: [
@@ -236,6 +241,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-inner",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Sydney — Inner City & Eastern Suburbs",
     state: "NSW",
     postcodeRanges: [
@@ -273,6 +279,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-west",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Sydney — Western Suburbs",
     state: "NSW",
     postcodeRanges: [
@@ -311,6 +318,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-north",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Sydney — Northern Beaches & North Shore",
     state: "NSW",
     postcodeRanges: [
@@ -347,6 +355,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-south",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Sydney — Sutherland & South",
     state: "NSW",
     postcodeRanges: [
@@ -379,6 +388,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-bluemountains",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Blue Mountains",
     state: "NSW",
     postcodeRanges: [
@@ -403,6 +413,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-centralcoast",
     utilityName: "Central Coast Council Water",
+    reportUrl: "https://www.centralcoast.nsw.gov.au/council/news-and-updates/water-quality",
     region: "Central Coast",
     state: "NSW",
     postcodeRanges: [
@@ -431,6 +442,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "hunter-water",
     utilityName: "Hunter Water",
+    reportUrl: "https://www.hunterwater.com.au/our-water/water-supply/water-quality",
     region: "Newcastle & Hunter Valley",
     state: "NSW",
     postcodeRanges: [
@@ -465,6 +477,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-illawarra",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Wollongong & Illawarra",
     state: "NSW",
     postcodeRanges: [
@@ -498,6 +511,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "urban-utilities-brisbane",
     utilityName: "Urban Utilities",
+    reportUrl: "https://www.urbanutilities.com.au/about-us/reports-and-publications/drinking-water-quality",
     region: "Brisbane",
     state: "QLD",
     postcodeRanges: [
@@ -549,6 +563,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "urban-utilities-ipswich",
     utilityName: "Urban Utilities",
+    reportUrl: "https://www.urbanutilities.com.au/about-us/reports-and-publications/drinking-water-quality",
     region: "Ipswich & Logan",
     state: "QLD",
     postcodeRanges: [
@@ -585,6 +600,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "unity-water-sc",
     utilityName: "Unitywater",
+    reportUrl: "https://www.unitywater.com/en/about-us/our-business/water-quality/water-quality-testing-and-reports",
     region: "Sunshine Coast",
     state: "QLD",
     postcodeRanges: [
@@ -618,6 +634,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "unity-water-mb",
     utilityName: "Unitywater",
+    reportUrl: "https://www.unitywater.com/en/about-us/our-business/water-quality/water-quality-testing-and-reports",
     region: "Moreton Bay",
     state: "QLD",
     postcodeRanges: [
@@ -645,6 +662,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "gold-coast-water",
     utilityName: "City of Gold Coast",
+    reportUrl: "https://www.goldcoast.qld.gov.au/Services/Water-sewerage/Water-quality/Drinking-water-quality",
     region: "Gold Coast",
     state: "QLD",
     postcodeRanges: [
@@ -680,6 +698,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "toowoomba",
     utilityName: "Toowoomba Regional Council",
+    reportUrl: "https://www.tr.qld.gov.au/environment-water-waste/water-supply-dams/water-quality",
     region: "Toowoomba & Darling Downs",
     state: "QLD",
     postcodeRanges: [
@@ -700,6 +719,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "cairns-water",
     utilityName: "Cairns Regional Council",
+    reportUrl: "https://www.cairns.qld.gov.au/water-waste-environment/water/water-quality",
     region: "Cairns",
     state: "QLD",
     postcodeRanges: [
@@ -728,6 +748,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "townsville-water",
     utilityName: "Townsville City Council",
+    reportUrl: "https://www.townsville.qld.gov.au/water-waste-and-environment/water-supply-and-dams/water-quality",
     region: "Townsville",
     state: "QLD",
     postcodeRanges: [
@@ -764,6 +785,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "watercorp-perth-central",
     utilityName: "Water Corporation",
+    reportUrl: "https://www.watercorporation.com.au/about-us/our-performance/drinking-water-quality",
     region: "Perth — Central & CBD",
     state: "WA",
     postcodeRanges: [
@@ -788,6 +810,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "watercorp-perth-north",
     utilityName: "Water Corporation",
+    reportUrl: "https://www.watercorporation.com.au/about-us/our-performance/drinking-water-quality",
     region: "Perth — Northern Suburbs",
     state: "WA",
     postcodeRanges: [
@@ -818,6 +841,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "watercorp-perth-south",
     utilityName: "Water Corporation",
+    reportUrl: "https://www.watercorporation.com.au/about-us/our-performance/drinking-water-quality",
     region: "Perth — Southern Suburbs",
     state: "WA",
     postcodeRanges: [
@@ -849,6 +873,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "watercorp-perth-east",
     utilityName: "Water Corporation",
+    reportUrl: "https://www.watercorporation.com.au/about-us/our-performance/drinking-water-quality",
     region: "Perth — Eastern Suburbs & Hills",
     state: "WA",
     postcodeRanges: [
@@ -875,6 +900,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "watercorp-mandurah",
     utilityName: "Water Corporation",
+    reportUrl: "https://www.watercorporation.com.au/about-us/our-performance/drinking-water-quality",
     region: "Mandurah & Peel",
     state: "WA",
     postcodeRanges: [
@@ -897,6 +923,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "watercorp-bunbury",
     utilityName: "Water Corporation",
+    reportUrl: "https://www.watercorporation.com.au/about-us/our-performance/drinking-water-quality",
     region: "Bunbury & South West",
     state: "WA",
     postcodeRanges: [
@@ -921,6 +948,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sawater-central",
     utilityName: "SA Water",
+    reportUrl: "https://www.sawater.com.au/water-and-the-environment/safe-and-clean-drinking-water/your-drinking-water-profile",
     region: "Adelaide — CBD & Inner Suburbs",
     state: "SA",
     postcodeRanges: [
@@ -944,6 +972,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sawater-north",
     utilityName: "SA Water",
+    reportUrl: "https://www.sawater.com.au/water-and-the-environment/safe-and-clean-drinking-water/your-drinking-water-profile",
     region: "Adelaide — Northern Suburbs",
     state: "SA",
     postcodeRanges: [
@@ -967,6 +996,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sawater-south",
     utilityName: "SA Water",
+    reportUrl: "https://www.sawater.com.au/water-and-the-environment/safe-and-clean-drinking-water/your-drinking-water-profile",
     region: "Adelaide — Southern Suburbs",
     state: "SA",
     postcodeRanges: [
@@ -993,6 +1023,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sawater-hills",
     utilityName: "SA Water",
+    reportUrl: "https://www.sawater.com.au/water-and-the-environment/safe-and-clean-drinking-water/your-drinking-water-profile",
     region: "Adelaide Hills",
     state: "SA",
     postcodeRanges: [
@@ -1014,6 +1045,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sawater-west",
     utilityName: "SA Water",
+    reportUrl: "https://www.sawater.com.au/water-and-the-environment/safe-and-clean-drinking-water/your-drinking-water-profile",
     region: "Adelaide — Western Suburbs & Beach",
     state: "SA",
     postcodeRanges: [
@@ -1040,6 +1072,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "taswater-hobart",
     utilityName: "TasWater",
+    reportUrl: "https://www.taswater.com.au/community/water-quality/your-drinking-water",
     region: "Hobart & Greater Hobart",
     state: "TAS",
     postcodeRanges: [
@@ -1068,6 +1101,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "taswater-launceston",
     utilityName: "TasWater",
+    reportUrl: "https://www.taswater.com.au/community/water-quality/your-drinking-water",
     region: "Launceston",
     state: "TAS",
     postcodeRanges: [
@@ -1096,6 +1130,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "icon-water",
     utilityName: "Icon Water",
+    reportUrl: "https://www.iconwater.com.au/my-home/water-quality",
     region: "Canberra & ACT",
     state: "ACT",
     postcodeRanges: [
@@ -1139,6 +1174,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "pwc-darwin",
     utilityName: "Power and Water Corporation",
+    reportUrl: "https://www.powerwater.com.au/about-us/what-we-do/water-supply/drinking-water-quality/past-drinking-water-quality-reports",
     region: "Darwin & Palmerston",
     state: "NT",
     postcodeRanges: [
@@ -1167,6 +1203,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "pwc-alice",
     utilityName: "Power and Water Corporation",
+    reportUrl: "https://www.powerwater.com.au/about-us/what-we-do/water-supply/drinking-water-quality/past-drinking-water-quality-reports",
     region: "Alice Springs",
     state: "NT",
     postcodeRanges: [
@@ -1191,6 +1228,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "taswater-hobart",
     utilityName: "TasWater",
+    reportUrl: "https://www.taswater.com.au/community/water-quality/your-drinking-water",
     region: "Greater Hobart",
     state: "TAS",
     postcodeRanges: [
@@ -1245,6 +1283,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "icon-water-canberra",
     utilityName: "Icon Water",
+    reportUrl: "https://www.iconwater.com.au/my-home/water-quality",
     region: "Canberra & ACT",
     state: "ACT",
     postcodeRanges: [
@@ -1298,6 +1337,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "sydney-water-illawarra",
     utilityName: "Sydney Water",
+    reportUrl: "https://www.sydneywater.com.au/water-the-environment/how-we-manage-sydneys-water/safe-drinking-water.html",
     region: "Wollongong & Illawarra",
     state: "NSW",
     postcodeRanges: [
@@ -1342,6 +1382,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "hunter-water-newcastle",
     utilityName: "Hunter Water",
+    reportUrl: "https://www.hunterwater.com.au/our-water/water-supply/water-quality",
     region: "Greater Newcastle & Hunter Valley",
     state: "NSW",
     postcodeRanges: [
@@ -1391,6 +1432,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
   {
     key: "barwon-water-geelong",
     utilityName: "Barwon Water",
+    reportUrl: "https://www.barwonwater.vic.gov.au/water-and-waste/water-quality/results-and-data",
     region: "Greater Geelong & Surf Coast",
     state: "VIC",
     postcodeRanges: [
