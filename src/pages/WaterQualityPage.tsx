@@ -513,7 +513,7 @@ export default function WaterQualityPage() {
           <CardContent className="p-5 text-xs leading-relaxed text-muted-foreground sm:p-6 sm:text-sm">
             <p className="mb-2 font-semibold text-foreground">Data sources &amp; disclaimer</p>
             <p className="mb-2">
-              Water quality data displayed on this page is sourced from official annual drinking water quality reports published by state water authorities, including Melbourne Water, Sydney Water, Water Corporation WA, Seqwater QLD, and SA Water (reporting period 2023–24).
+              Water quality data displayed on this page is sourced from official annual drinking water quality reports published by state and regional water authorities, including Sydney Water, Hunter Water, Greater Western Water, Yarra Valley Water, South East Water, Barwon Water, Urban Utilities, Unitywater, City of Gold Coast, Cairns Regional Council, Townsville City Council, Toowoomba Regional Council, Water Corporation WA, SA Water, TasWater, Icon Water, and Power and Water Corporation (reporting period 2024–25).
             </p>
             <p className="mb-2">
               Data represents typical averages across supply zones and localities. Actual water quality at your specific address may differ due to your proximity to treatment plants, local pipe infrastructure, seasonal variation, blending of water sources, and other factors.
