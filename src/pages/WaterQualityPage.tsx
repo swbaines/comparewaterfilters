@@ -393,6 +393,16 @@ export default function WaterQualityPage() {
                     </div>
                   </div>
                 )}
+
+                <div className="flex gap-3">
+                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-500" />
+                  <div>
+                    <h4 className="font-semibold">Trace contaminants</h4>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Australian tap water can contain trace amounts of other contaminants such as heavy metals (lead, copper, mercury), pesticide residues, microplastics, and PFAS — even when it meets drinking water guidelines. These are typically at very low levels, but long-term exposure is an area of growing research. A quality carbon or reverse osmosis filter provides an extra layer of protection by reducing many of these contaminants to well below detectable levels.
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
