@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2, MapPin } from "lucide-react";
+import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2, MapPin, ExternalLink } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { findUtilityProfile, getSuburbSuggestions, type WaterUtilityProfile, type SuburbSuggestion } from "@/data/waterUtilities";
 
@@ -230,7 +230,10 @@ export default function WaterQualityPage() {
                 <span>·</span>
                 <span className="inline-flex items-center gap-1">
                   <Building2 className="h-3.5 w-3.5" />
-                  {result.utilityName}
+                  <a href={result.reportUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-muted-foreground/40 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary">
+                    {result.utilityName}
+                    <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                  </a>
                 </span>
                 <span>·</span>
                 <span>{result.region}</span>
@@ -319,7 +322,7 @@ export default function WaterQualityPage() {
               <CardContent className="flex gap-3 pt-6">
                 <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                 <div>
-                  <p className="text-sm font-medium">Water supplied by {result.utilityName}</p>
+                  <p className="text-sm font-medium">Water supplied by <a href={result.reportUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-primary/40 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary">{result.utilityName} <ExternalLink className="ml-0.5 inline h-3 w-3" /></a></p>
                   <p className="mt-1 text-sm text-muted-foreground">{result.notes}</p>
                   <p className="mt-2 text-xs text-muted-foreground/70 italic">Note: Water quality levels are sourced from official utility reports and may vary over time. Figures represent typical reported values and may not reflect exact current conditions at your tap.</p>
                 </div>
