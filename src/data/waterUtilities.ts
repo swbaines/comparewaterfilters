@@ -234,6 +234,62 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     source: "Moorabool & West Barwon Reservoirs",
     notes: "Barwon Water provides soft water to the Geelong region. Good quality overall — a carbon filter for chlorine taste is the main upgrade most families consider.",
   },
+  // ── Central Highlands Water — Ballarat ────────────────────────────────────
+  {
+    key: "chw-ballarat",
+    utilityName: "Central Highlands Water",
+    reportUrl: "https://www.chw.net.au/community/water-quality",
+    region: "Ballarat & District",
+    state: "VIC",
+    postcodeRanges: [
+      [3350, 3357], // Ballarat, Ballarat East, Ballarat North, Sebastopol, Buninyong
+    ],
+    suburbs: [
+      "Ballarat", "Ballarat CBD", "Ballarat Central", "Ballarat East", "Ballarat North",
+      "Sebastopol", "Buninyong", "Wendouree", "Lake Wendouree", "Alfredton",
+      "Delacombe", "Lucas", "Mount Pleasant", "Mount Clear",
+      "Brown Hill", "Eureka", "Golden Point", "Soldiers Hill",
+      "Black Hill", "Nerrina", "Redan", "Newington",
+      "Canadian", "Lake Gardens", "Invermay Park",
+      "Cardigan Village", "Smythesdale", "Learmonth",
+      "Creswick", "Daylesford", "Hepburn Springs",
+    ],
+    hardness: 108,
+    chlorine: 0.8,
+    fluoride: 0.7,
+    ph: 7.5,
+    pfasRisk: "low",
+    source: "White Swan & Lal Lal Reservoirs",
+    notes: "Ballarat has moderate hardness at 108 mg/L — enough to cause some scale in kettles and hot water systems over time. Consider a water softener or scale-reducing filter alongside a carbon whole house system. Chlorine and fluoride are within typical ranges.",
+  },
+  // ── Coliban Water — Bendigo ───────────────────────────────────────────────
+  {
+    key: "coliban-bendigo",
+    utilityName: "Coliban Water",
+    reportUrl: "https://coliban.com.au/bendigo",
+    region: "Bendigo & District",
+    state: "VIC",
+    postcodeRanges: [
+      [3550, 3556], // Bendigo, Kangaroo Flat, Golden Square, Eaglehawk
+    ],
+    suburbs: [
+      "Bendigo", "Bendigo CBD", "Kangaroo Flat", "Golden Square",
+      "Eaglehawk", "Strathdale", "Flora Hill", "Kennington",
+      "Epsom", "Huntly", "Spring Gully", "Quarry Hill",
+      "Long Gully", "North Bendigo", "East Bendigo",
+      "Ironbark", "White Hills", "California Gully",
+      "Maiden Gully", "Mandurang", "Junortoun",
+      "Strathfieldsaye", "Marong", "Lockwood",
+      "Castlemaine", "Maldon", "Kyneton", "Woodend",
+    ],
+    hardness: 40,
+    chlorine: 0.8,
+    fluoride: 0.9,
+    ph: 7.4,
+    pfasRisk: "low",
+    source: "Eppalock Reservoir via Sandhurst WTP",
+    notes: "Bendigo's water from Lake Eppalock is relatively soft at 40 mg/L. Chlorine is moderate — a carbon filter addresses taste. Overall good quality for a regional Victorian city. Fluoride is within the recommended range.",
+  },
 
   // ═══════════════════════════════════════════════════════════════════════════
   // NEW SOUTH WALES
@@ -1116,12 +1172,12 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
       "Longford", "Evandale", "George Town",
     ],
     hardness: 22,
-    chlorine: 0.4,
-    fluoride: 1.0,
+    chlorine: 0.6,
+    fluoride: 0.95,
     ph: 7.3,
     pfasRisk: "low",
-    source: "Trevallyn Dam / St Patricks River",
-    notes: "Launceston has excellent soft water from local catchments. One of the best tap waters in Australia. Low treatment levels — filtration is optional.",
+    source: "Trevallyn Dam (South Esk River) via Bryn Estyn WTP",
+    notes: "Launceston has excellent soft water at just 22 mg/L hardness, sourced from the South Esk River. Free chlorine is low at around 0.6 mg/L. Fluoride is within the recommended range. One of the better tap waters in Australia — a simple carbon filter is all most families need for taste improvement.",
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
