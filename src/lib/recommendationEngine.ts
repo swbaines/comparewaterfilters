@@ -21,6 +21,28 @@ export interface QuizAnswers {
   disclaimerAck: boolean;
 }
 
+export type FiredRule =
+  | "rule-1-whole-home"
+  | "rule-2-hard-water-wa-sa"
+  | "rule-3-ro-essential"
+  | "rule-4-drinking-only"
+  | "rule-5-renter-apartment"
+  | "rule-6-budget-under-1k"
+  | "default";
+
+export interface RuleExplanation {
+  /** Machine ID of the dominant rule that fired. */
+  rule: FiredRule;
+  /** Human-friendly rule number + name (e.g. "Rule 2 — Hard water in WA/SA"). */
+  ruleLabel: string;
+  /** All rules that influenced the result, in evaluation order. */
+  appliedRules: { rule: FiredRule; label: string }[];
+  /** Concern IDs from the quiz that triggered this rule. */
+  triggeringConcerns: string[];
+  /** Honest trade-off note for the Good (secondary) tier — what it does and doesn't solve. */
+  goodTierTradeoff: string;
+}
+
 export interface RecommendationResult {
   primary: Recommendation;
   secondary: Recommendation;
@@ -30,6 +52,7 @@ export interface RecommendationResult {
   premiumReason: string;
   summary: string;
   warnings: string[];
+  explanation: RuleExplanation;
 }
 
 /**
