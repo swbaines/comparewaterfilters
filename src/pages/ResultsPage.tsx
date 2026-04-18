@@ -213,6 +213,105 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
   );
 }
 
+// Human-readable labels for the concern IDs used by the recommendation engine.
+// Kept in sync with concernOptions in src/pages/QuizPage.tsx.
+const CONCERN_LABELS: Record<string, string> = {
+  taste: "Taste or smell",
+  chlorine: "Chlorine smell or taste",
+  "skin-hair": "Skin irritation, eczema, hair issues",
+  "skin-shower": "Skin / shower water concerns",
+  "drinking-quality": "Drinking water quality",
+  fluoride: "Fluoride removal",
+  "heavy-metals": "Heavy metals (lead, arsenic etc.)",
+  pfas: "PFAS / forever chemicals",
+  microplastics: "Microplastics",
+  "hard-water": "Hard water / scale buildup",
+  "whole-home": "Whole home protection",
+  appliance: "Appliance & hot water system protection",
+  bacteria: "Bacteria / microbiological safety",
+  "not-sure": "Not sure — just want better water",
+};
+
+function WhyThisRecommendation({ result, answers }: { result: RecommendationResult; answers: QuizAnswers }) {
+  const [open, setOpen] = useState(false);
+  const { explanation, secondary } = result;
+  const labelledConcerns = explanation.triggeringConcerns.map((c) => CONCERN_LABELS[c] ?? c);
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} className="mt-8">
+      <div className="mx-auto max-w-3xl rounded-xl border border-primary/20 bg-accent/30">
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <Info className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold sm:text-base">Why this recommendation?</p>
+              <p className="text-xs text-muted-foreground">
+                See which rule fired and the trade-off behind the Good tier.
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+            aria-hidden
+          />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="space-y-5 border-t border-primary/10 px-5 pb-5 pt-4 text-sm">
+            {/* Rule fired */}
+            <div>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Rule fired
+              </p>
+              <p className="font-medium">{explanation.ruleLabel}</p>
+              {explanation.appliedRules.length > 1 && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Also applied:{" "}
+                  {explanation.appliedRules
+                    .slice(0, -1)
+                    .map((r) => r.label.split(" — ")[0])
+                    .join(", ")}
+                </p>
+              )}
+            </div>
+
+            {/* Triggering concerns */}
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Your concerns that triggered this rule
+              </p>
+              {labelledConcerns.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {labelledConcerns.map((label) => (
+                    <Badge key={label} variant="secondary" className="font-normal">
+                      {label}
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">
+                  {explanation.rule === "rule-5-renter-apartment"
+                    ? `This rule fired because you ${answers.propertyType === "Apartment" ? "live in an apartment" : "rent your home"} — whole-house and softener systems aren't practical, so we picked the best installable option for your concerns.`
+                    : "No specific concerns triggered this — we used the default drinking-water improvement path."}
+                </p>
+              )}
+            </div>
+
+            {/* Good tier trade-off */}
+            <div className="rounded-lg border border-warm/30 bg-warm-light/40 p-3">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-warm-foreground/80">
+                Honest trade-off — Good tier ({secondary.title})
+              </p>
+              <p className="text-foreground/90">{explanation.goodTierTradeoff}</p>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
+  );
+}
+
 export default function ResultsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
