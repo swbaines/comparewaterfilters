@@ -48,6 +48,8 @@ export default function VendorLoginPage() {
   };
 
   return (
+    <>
+    <NoIndex />
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
