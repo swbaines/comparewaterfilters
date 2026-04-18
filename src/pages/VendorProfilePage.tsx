@@ -13,9 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon, Mail } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
-import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
-import { deriveStatesFromBase } from "@/lib/deriveStates";
+import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
+import { computeCoverageStates, detectCoverageMode, CAPITAL_METROS } from "@/lib/serviceArea";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
