@@ -418,7 +418,7 @@ export default function ResultsPage() {
           </>
         )}
 
-        {/* ── Choose a provider divider ── */}
+        {/* ── Now choose who installs it ── */}
         <div className="mt-16 mb-2">
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -429,9 +429,9 @@ export default function ResultsPage() {
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
               <Users className="h-7 w-7 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold sm:text-3xl">Choose a provider</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">Now choose who installs it</h2>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Select a trusted local provider below to request a free quote — your details are pre-filled from your quiz so it only takes one tap.
+              Select a trusted local provider to receive a free quote. Your details are already saved.
             </p>
             <a href="#matched-providers" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
               See matched providers <ArrowRight className="h-4 w-4" />
