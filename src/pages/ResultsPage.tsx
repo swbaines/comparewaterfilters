@@ -9,6 +9,7 @@ import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Sta
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
+import { formatCoverageLabel } from "@/lib/serviceArea";
 import type { Recommendation } from "@/data/recommendations";
 import type { Provider } from "@/data/providers";
 import { useProviders } from "@/hooks/useProviders";
