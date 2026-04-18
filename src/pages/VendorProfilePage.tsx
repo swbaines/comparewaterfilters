@@ -27,14 +27,10 @@ const AU_STATES = [
   { value: "NT", label: "NT" },
 ];
 
-const SYSTEM_TYPES = [
-  { value: "under-sink-carbon", label: "Under-sink Carbon Filter" },
-  { value: "reverse-osmosis", label: "Reverse Osmosis" },
-  { value: "whole-house-filtration", label: "Whole Home Filtration" },
-  { value: "uv-system", label: "UV System" },
-  { value: "water-softener", label: "Water Softener" },
-  { value: "single-tap-filter", label: "Single Tap Filter" },
-];
+import { systemTypes } from "@/data/systemTypes";
+
+const SYSTEM_TYPES = systemTypes.map((s) => ({ value: s.id, label: s.name }));
+const VALID_SYSTEM_TYPE_IDS = new Set(SYSTEM_TYPES.map((s) => s.value));
 
 const CERTIFICATIONS = [
   { value: "watermark-certified", label: "WaterMark Certified" },
