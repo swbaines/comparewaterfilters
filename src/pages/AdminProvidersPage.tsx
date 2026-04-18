@@ -74,7 +74,12 @@ export default function AdminProvidersPage() {
   const sendApplicationDecisionEmail = async (id: string, decision: "approved" | "rejected") => {
     const { data: p } = await supabase.from("providers").select("name, contact_email").eq("id", id).maybeSingle();
     const recipient = p?.contact_email;
-    if (!recipient) return;
+    if (!recipient) {
+      toast.warning("No notification email sent", {
+        description: `${p?.name ?? "This provider"} has no contact email on file.`,
+      });
+      return;
+    }
     const templateName = decision === "approved" ? "vendor-application-approved" : "vendor-application-rejected";
     supabase.functions.invoke("send-transactional-email", {
       body: {
