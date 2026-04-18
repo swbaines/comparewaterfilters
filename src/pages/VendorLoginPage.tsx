@@ -77,5 +77,6 @@ export default function VendorLoginPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }
