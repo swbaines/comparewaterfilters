@@ -48,10 +48,25 @@ Deno.serve(async (req) => {
 
     if (stripeErr) throw stripeErr;
 
-    // Fetch live lead prices (admin-editable in lead_prices table)
-    const { data: priceRows } = await supabaseAdmin.from("lead_prices").select("system_type, price_per_lead");
-    const ownerLeadPrice = Number(priceRows?.find((p: any) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_LEAD_PRICE);
-    const rentalLeadPrice = Number(priceRows?.find((p: any) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_LEAD_PRICE);
+    // Fetch live lead prices and pending price changes (admin-editable in lead_prices table)
+    const [{ data: priceRows }, { data: pendingChanges }] = await Promise.all([
+      supabaseAdmin.from("lead_prices").select("system_type, price_per_lead"),
+      supabaseAdmin
+        .from("lead_price_changes")
+        .select("system_type, old_price, effective_date")
+        .gt("effective_date", new Date().toISOString()),
+    ]);
+
+    const resolveEffective = (type: string, fallback: number): number => {
+      // If a change is pending, use the OLD price until the effective date passes (Terms 19.3)
+      const pending = (pendingChanges || []).find((c: any) => c.system_type === type);
+      if (pending) return Number(pending.old_price);
+      const row = (priceRows || []).find((p: any) => p.system_type === type);
+      return row ? Number(row.price_per_lead) : fallback;
+    };
+
+    const ownerLeadPrice = resolveEffective("owner_lead", DEFAULT_OWNER_LEAD_PRICE);
+    const rentalLeadPrice = resolveEffective("rental_lead", DEFAULT_RENTAL_LEAD_PRICE);
 
     const providerIds = (stripeDetails || []).map((s: any) => s.provider_id);
     if (providerIds.length === 0) {
