@@ -67,11 +67,21 @@ Deno.serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
-    let customerId: string
+    let customerId: string | null = null
 
+    // Try existing stored customer ID — verify it exists in current Stripe mode
     if (stripeDetails?.stripe_customer_id) {
-      customerId = stripeDetails.stripe_customer_id
-    } else {
+      try {
+        const existing = await stripe.customers.retrieve(stripeDetails.stripe_customer_id)
+        if (existing && !(existing as any).deleted) {
+          customerId = stripeDetails.stripe_customer_id
+        }
+      } catch (e) {
+        console.log('Stored Stripe customer not found in current mode, will recreate:', stripeDetails.stripe_customer_id)
+      }
+    }
+
+    if (!customerId) {
       // Find or create Stripe customer
       const existingCustomers = await stripe.customers.list({
         email: provider.contact_email || undefined,
@@ -89,12 +99,13 @@ Deno.serve(async (req) => {
         customerId = customer.id
       }
 
-      // Save to provider_stripe_details
+      // Save/update provider_stripe_details — clear stale payment method too
       await supabaseAdmin
         .from('provider_stripe_details')
         .upsert({
           provider_id: provider.id,
           stripe_customer_id: customerId,
+          stripe_payment_method_id: null,
         }, { onConflict: 'provider_id' })
     }
 
