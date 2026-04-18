@@ -84,7 +84,6 @@ export default function VendorRegisterPage() {
     name: "",
     description: "",
     states: [] as string[],
-    postcodeRanges: "",
     systemTypes: [] as string[],
     brands: "",
     priceRange: "mid" as "budget" | "mid" | "premium",
@@ -271,7 +270,6 @@ export default function VendorRegisterPage() {
           slug,
           description: profile.description,
           states: profile.states,
-          postcode_ranges: toArray(profile.postcodeRanges),
           system_types: profile.systemTypes,
           brands: toArray(profile.brands),
           price_range: profile.priceRange,
@@ -600,10 +598,6 @@ export default function VendorRegisterPage() {
                       ))}
                     </PopoverContent>
                   </Popover>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Postcode Ranges (optional)</Label>
-                  <Input value={profile.postcodeRanges} onChange={e => updateProfile("postcodeRanges", e.target.value)} placeholder="2000-2999, 3000-3999" />
                 </div>
               </CardContent>
             </Card>

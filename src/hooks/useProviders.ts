@@ -22,7 +22,6 @@ export function useProviders() {
         logo: row.logo ?? undefined,
         location: {
           states: row.states,
-          postcodeRanges: row.postcode_ranges ?? undefined,
           serviceBase:
             row.service_base_lat != null && row.service_base_lng != null
               ? {
