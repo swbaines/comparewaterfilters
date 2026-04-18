@@ -232,6 +232,11 @@ export default function VendorRegisterPage() {
     }
     // Plumber licence number is optional
 
+    if (!profile.serviceBaseLat || !profile.serviceBaseLng || !profile.serviceBaseSuburb) {
+      toast.error("Please select your base service location");
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -279,6 +284,12 @@ export default function VendorRegisterPage() {
           slug,
           description: profile.description,
           states: profile.states,
+          service_base_suburb: profile.serviceBaseSuburb,
+          service_base_postcode: profile.serviceBasePostcode,
+          service_base_state: profile.serviceBaseState,
+          service_base_lat: profile.serviceBaseLat,
+          service_base_lng: profile.serviceBaseLng,
+          service_radius_km: profile.statewide ? 5000 : profile.serviceRadiusKm,
           system_types: profile.systemTypes,
           brands: toArray(profile.brands),
           price_range: profile.priceRange,
