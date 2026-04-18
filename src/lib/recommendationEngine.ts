@@ -350,7 +350,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   const RULE_TO_TRIGGERING_CONCERNS: Record<FiredRule, string[]> = {
     "rule-1-whole-home": ["skin-hair", "skin-shower", "appliance", "whole-home", "hard-water", "chlorine"],
-    "rule-2-hard-water-wa-sa": ["hard-water", "appliance"],
+    "rule-2-hard-water-wa-sa": ["hard-water"],
     "rule-3-ro-essential": ["fluoride", "pfas", "heavy-metals", "microplastics", "bacteria"],
     "rule-4-drinking-only": ["taste", "chlorine", "drinking-quality"],
     "rule-5-renter-apartment": [], // not concern-driven — driven by ownership/property type
