@@ -348,9 +348,39 @@ export default function AdminProvidersPage() {
                     <TableCell><Badge variant="secondary" className="text-xs capitalize">{p.price_range}</Badge></TableCell>
                     <TableCell className="flex items-center gap-1"><Star className="h-3 w-3 text-primary" /> {p.rating}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={`text-xs capitalize ${p.approval_status === "approved" ? "border-green-300 text-green-700" : "border-red-300 text-red-700"}`}>
-                        {p.approval_status}
-                      </Badge>
+                      <Select
+                        value={p.approval_status}
+                        onValueChange={async (value) => {
+                          const { error } = await supabase
+                            .from("providers")
+                            .update({ approval_status: value as ProviderRow["approval_status"] })
+                            .eq("id", p.id);
+                          if (error) {
+                            toast.error(error.message);
+                            return;
+                          }
+                          toast.success(`Status updated to ${value}`);
+                          queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                          queryClient.invalidateQueries({ queryKey: ["providers"] });
+                        }}
+                      >
+                        <SelectTrigger
+                          className={`h-7 w-[120px] text-xs capitalize ${
+                            p.approval_status === "approved"
+                              ? "border-green-300 text-green-700"
+                              : p.approval_status === "pending"
+                                ? "border-amber-300 text-amber-700"
+                                : "border-red-300 text-red-700"
+                          }`}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </TableCell>
                     <TableCell>
                       {(p as any).terms_accepted_at ? (
