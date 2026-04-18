@@ -133,14 +133,27 @@ export default function VendorRegisterPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: `${window.location.origin.includes('lovableproject.com') ? 'https://comparewaterfilters.lovable.app' : window.location.origin}/vendor/register?step=profile` },
     });
     setLoading(false);
     if (error) {
+      if (/already|registered|exists/i.test(error.message)) {
+        toast.error("This email is already registered — please sign in instead.", {
+          action: { label: "Sign in", onClick: () => navigate("/vendor/login") },
+        });
+        return;
+      }
       toast.error(error.message);
+      return;
+    }
+    // Supabase returns a user with empty identities array when the email already exists (enumeration protection)
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      toast.error("This email is already registered — please sign in instead.", {
+        action: { label: "Sign in", onClick: () => navigate("/vendor/login") },
+      });
       return;
     }
     setStep("verify-email");
