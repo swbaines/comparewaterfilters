@@ -76,7 +76,7 @@ const InvoiceReminderEmail = ({
           </Text>
 
           <Section style={{ textAlign: 'center' as const, margin: '24px 0 0' }}>
-            <Button style={ctaButton} href="https://comparewaterfilters.lovable.app/vendor/dashboard">
+            <Button style={ctaButton} href="https://comparewaterfilters.com.au/vendor/dashboard">
               Pay Now →
             </Button>
           </Section>

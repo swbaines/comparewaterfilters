@@ -71,7 +71,7 @@ const PaymentConfirmationEmail = ({
           </Text>
 
           <Section style={{ textAlign: 'center' as const, margin: '24px 0 0' }}>
-            <Button style={ctaButton} href="https://comparewaterfilters.lovable.app/vendor/billing">
+            <Button style={ctaButton} href="https://comparewaterfilters.com.au/vendor/billing">
               View Billing Dashboard
             </Button>
           </Section>

@@ -660,7 +660,7 @@ export default function VendorBillingPage() {
                             <tr class="total-row"><td colspan="4" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
                           </tbody>
                         </table>
-                        <div class="footer">Generated from Compare Water Filters vendor portal — comparewaterfilters.lovable.app</div>
+                        <div class="footer">Generated from Compare Water Filters vendor portal — comparewaterfilters.com.au</div>
                         </body></html>
                       `);
                       win.document.close();
@@ -728,7 +728,7 @@ export default function VendorBillingPage() {
                           </table>
                           <div class="footer">
                             This receipt was generated from the Compare Water Filters vendor portal.<br/>
-                            comparewaterfilters.lovable.app
+                            comparewaterfilters.com.au
                           </div>
                           </body></html>
                         `);
