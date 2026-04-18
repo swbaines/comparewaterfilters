@@ -236,8 +236,9 @@ export default function VendorRegisterPage() {
           highlights: toArray(profile.highlights),
           response_time: profile.responseTime,
           warranty: profile.warranty,
-          website: profile.website || null,
+          website: websiteTrim,
           phone: profile.phone || null,
+          contact_email: user.email || email || null,
           available_for_quote: false,
           approval_status: "pending" as any,
           submitted_by: user.id,
@@ -247,7 +248,7 @@ export default function VendorRegisterPage() {
           plumber_licence_number: profile.plumberLicenceNumber.trim(),
           has_public_liability: profile.hasPublicLiability,
           insurer_name: profile.hasPublicLiability ? profile.insurerName.trim() : "",
-          google_business_url: profile.googleBusinessUrl.trim() || "",
+          google_business_url: gbpTrim,
         } as any)
         .select("id")
         .single();
