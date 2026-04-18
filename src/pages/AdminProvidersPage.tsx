@@ -66,6 +66,21 @@ export default function AdminProvidersPage() {
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
+
+  const updateApprovalStatus = async (id: string, value: ProviderRow["approval_status"]) => {
+    const { error } = await supabase
+      .from("providers")
+      .update({ approval_status: value })
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Status updated to ${value}`);
+    queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+    queryClient.invalidateQueries({ queryKey: ["providers"] });
+  };
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
