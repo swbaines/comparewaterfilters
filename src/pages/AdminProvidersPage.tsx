@@ -71,6 +71,23 @@ export default function AdminProvidersPage() {
   const [pendingApprove, setPendingApprove] = useState<{ id: string; name: string } | null>(null);
   const [pendingApplicationReject, setPendingApplicationReject] = useState<{ id: string; name: string } | null>(null);
 
+  const sendApplicationDecisionEmail = async (id: string, decision: "approved" | "rejected") => {
+    const { data: p } = await supabase.from("providers").select("name, contact_email").eq("id", id).maybeSingle();
+    const recipient = p?.contact_email;
+    if (!recipient) return;
+    const templateName = decision === "approved" ? "vendor-application-approved" : "vendor-application-rejected";
+    supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName,
+        recipientEmail: recipient,
+        idempotencyKey: `vendor-app-${decision}-${id}`,
+        templateData: { businessName: p?.name },
+      },
+    }).then(({ error }) => {
+      if (error) console.error(`Failed to send ${decision} email:`, error);
+    });
+  };
+
   const approveApplication = async (id: string, name: string) => {
     const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", id);
     if (error) { toast.error(error.message); return; }
@@ -81,12 +98,17 @@ export default function AdminProvidersPage() {
         if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
         else toast.success('Stripe customer created');
       });
+    sendApplicationDecisionEmail(id, "approved");
   };
 
   const rejectApplication = async (id: string, name: string) => {
     const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", id);
     if (error) toast.error(error.message);
-    else { toast.success(`${name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+    else {
+      toast.success(`${name} rejected`);
+      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+      sendApplicationDecisionEmail(id, "rejected");
+    }
   };
 
   const updateApprovalStatus = async (id: string, value: ProviderRow["approval_status"]) => {
@@ -101,6 +123,9 @@ export default function AdminProvidersPage() {
     toast.success(`Status updated to ${value}`);
     queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
     queryClient.invalidateQueries({ queryKey: ["providers"] });
+    if (value === "approved" || value === "rejected") {
+      sendApplicationDecisionEmail(id, value);
+    }
   };
 
   const { data: providers = [], isLoading } = useQuery({
