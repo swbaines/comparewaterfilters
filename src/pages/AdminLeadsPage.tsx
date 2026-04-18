@@ -433,8 +433,11 @@ export default function AdminLeadsPage() {
           <DialogHeader><DialogTitle>Lead Pricing</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted. Changes apply to new leads going forward.
+              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted.
             </p>
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+              <strong>30-day notice required (Terms 19.3).</strong> Saving will email all approved vendors immediately and the new pricing takes effect <strong>30 days from today</strong>. Until then, new leads continue to use the current rates.
+            </div>
             <div className="space-y-3">
               <div>
                 <Label htmlFor="owner-price">Owner lead price (AUD)</Label>
