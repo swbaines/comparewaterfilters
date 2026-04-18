@@ -184,7 +184,7 @@ export default function TermsPage() {
             <li>Owner-occupier (Customer owns their property): <strong>AUD ${prices.owner_lead} per Lead</strong></li>
             <li>Renter (Customer is renting): <strong>AUD ${prices.rental_lead} per Lead</strong></li>
           </ol>
-          <p>19.3 Lead fees are subject to change. We will provide at least 30 days written notice of any change to lead pricing.</p>
+          <p>19.3 Lead fees are subject to change. Updated pricing applies to all Leads received after the change is published on this page.</p>
           <p>19.4 A Lead is deemed valid when it contains a Customer's verified name, email address, and mobile phone number submitted through the Platform.</p>
           <p>19.5 Invoices are issued on the 1st of each month for all Leads received in the prior calendar month. Payment is due within 14 days of the invoice date.</p>
           <p>19.6 We may charge your nominated payment method automatically on the invoice due date if you have a card on file.</p>

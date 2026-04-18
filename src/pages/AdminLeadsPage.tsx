@@ -93,10 +93,9 @@ export default function AdminLeadsPage() {
         if (error) throw error;
       }
 
-      // If anything actually changed, send 30-day notice emails to all approved vendors
+      // If anything actually changed, send notice emails to all approved vendors (effective immediately)
       if (ownerChanged || rentalChanged) {
-        const effectiveDateIso = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-        const effectiveDateDisplay = new Date(effectiveDateIso).toLocaleDateString("en-AU", {
+        const effectiveDateDisplay = new Date().toLocaleDateString("en-AU", {
           day: "numeric", month: "long", year: "numeric",
         });
         const changes = [
@@ -117,7 +116,7 @@ export default function AdminLeadsPage() {
               body: {
                 templateName: "vendor-price-change-notice",
                 recipientEmail: v.contact_email,
-                idempotencyKey: `price-change-${v.id}-${effectiveDateIso}`,
+                idempotencyKey: `price-change-${v.id}-${Date.now()}`,
                 templateData: {
                   businessName: v.name,
                   effectiveDate: effectiveDateDisplay,
@@ -133,11 +132,10 @@ export default function AdminLeadsPage() {
     },
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["lead-prices"] });
-      queryClient.invalidateQueries({ queryKey: ["lead-price-changes"] });
       if (res.effectiveDate && res.notified > 0) {
-        toast.success(`Lead prices updated. ${res.notified} vendor${res.notified === 1 ? "" : "s"} notified — new pricing effective ${res.effectiveDate}.`);
+        toast.success(`Lead prices updated. ${res.notified} vendor${res.notified === 1 ? "" : "s"} notified — effective immediately.`);
       } else if (res.effectiveDate) {
-        toast.success(`Lead prices updated — new pricing effective ${res.effectiveDate}. (No approved vendors with a contact email to notify.)`);
+        toast.success(`Lead prices updated — effective immediately. (No approved vendors with a contact email to notify.)`);
       } else {
         toast.success("No changes to save");
       }
