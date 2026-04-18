@@ -426,7 +426,7 @@ export default function AdminProvidersPage() {
                       <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => { if (confirm("Delete this provider?")) deleteMutation.mutate(p.id); }}>
+                      <Button variant="ghost" size="icon" onClick={() => setPendingDelete({ id: p.id, name: p.name })}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>
