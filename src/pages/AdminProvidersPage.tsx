@@ -440,6 +440,32 @@ export default function AdminProvidersPage() {
           </Card>
         )}
 
+        {/* Delete confirmation */}
+        <AlertDialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {pendingDelete?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently removes the provider and all of their data. This action cannot be undone. Consider rejecting them instead if you might re-enable them later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (pendingDelete) {
+                    deleteMutation.mutate(pendingDelete.id);
+                    setPendingDelete(null);
+                  }
+                }}
+              >
+                Delete permanently
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Reject confirmation */}
         <AlertDialog open={pendingReject !== null} onOpenChange={(open) => { if (!open) setPendingReject(null); }}>
           <AlertDialogContent>
