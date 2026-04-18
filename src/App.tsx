@@ -38,8 +38,13 @@ import PrivacyPage from "@/pages/PrivacyPage";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
+import { checkSystemTypesSync } from "@/lib/checkSystemTypesSync";
 
 const queryClient = new QueryClient();
+
+if (import.meta.env.DEV) {
+  void checkSystemTypesSync();
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
