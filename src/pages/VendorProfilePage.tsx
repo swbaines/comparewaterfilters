@@ -136,14 +136,6 @@ export default function VendorProfilePage() {
       setForm({
         name: provider.name || "",
         description: provider.description || "",
-        states: provider.states || [],
-        service_base_suburb: provider.service_base_suburb || "",
-        service_base_postcode: provider.service_base_postcode || "",
-        service_base_state: provider.service_base_state || "",
-        service_base_lat: provider.service_base_lat != null ? Number(provider.service_base_lat) : null,
-        service_base_lng: provider.service_base_lng != null ? Number(provider.service_base_lng) : null,
-        service_radius_km: radius >= 2000 ? 500 : radius,
-        statewide: radius >= 2000,
         system_types: provider.system_types || [],
         brands: (provider.brands || []).join(", "),
         price_range: provider.price_range || "mid",
@@ -156,6 +148,20 @@ export default function VendorProfilePage() {
         phone: provider.phone || "",
         contact_email: provider.contact_email || "",
       });
+      const mode = detectCoverageMode(provider.service_base_lat, provider.service_base_lng);
+      const savedStates: string[] = provider.states || [];
+      const metroValues = new Set(CAPITAL_METROS.map((m) => m.value));
+      setServiceArea({
+        mode,
+        baseSuburb: provider.service_base_suburb || "",
+        basePostcode: provider.service_base_postcode || "",
+        baseState: provider.service_base_state || "",
+        baseLat: provider.service_base_lat != null ? Number(provider.service_base_lat) : null,
+        baseLng: provider.service_base_lng != null ? Number(provider.service_base_lng) : null,
+        radiusKm: radius >= 2000 ? 500 : radius,
+        statewide: radius >= 2000,
+        regions: mode === "regions" ? savedStates.filter((s) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
+      });
     }
   }, [provider]);
 
@@ -165,27 +171,53 @@ export default function VendorProfilePage() {
       if (invalid.length > 0) {
         throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
       }
-      if (!form.service_base_lat || !form.service_base_lng) {
-        throw new Error("Please select your base service location");
+
+      let radiusToSave = 0;
+      let baseFields: Record<string, any> = {
+        service_base_suburb: null,
+        service_base_postcode: null,
+        service_base_state: null,
+        service_base_lat: null,
+        service_base_lng: null,
+      };
+      let statesToSave: string[] = [];
+
+      if (serviceArea.mode === "radius") {
+        if (!serviceArea.baseLat || !serviceArea.baseLng) {
+          throw new Error("Please select your base service location");
+        }
+        radiusToSave = serviceArea.statewide ? 5000 : serviceArea.radiusKm;
+        baseFields = {
+          service_base_suburb: serviceArea.baseSuburb,
+          service_base_postcode: serviceArea.basePostcode,
+          service_base_state: serviceArea.baseState,
+          service_base_lat: serviceArea.baseLat,
+          service_base_lng: serviceArea.baseLng,
+        };
+        statesToSave = computeCoverageStates({
+          mode: "radius",
+          baseLat: serviceArea.baseLat,
+          baseLng: serviceArea.baseLng,
+          baseState: serviceArea.baseState,
+          radiusKm: radiusToSave,
+          regionSelections: [],
+        });
+      } else {
+        if (serviceArea.regions.length === 0) {
+          throw new Error("Please select at least one state or metro region");
+        }
+        // Persist the raw selections so metros are preserved across edits.
+        // The matching engine maps metros → states via regionsToStates() at read time.
+        statesToSave = serviceArea.regions;
       }
-      const radiusToSave = form.statewide ? 5000 : form.service_radius_km;
-      const derivedStates = deriveStatesFromBase(
-        form.service_base_lat,
-        form.service_base_lng,
-        form.service_base_state,
-        radiusToSave
-      );
+
       const { error } = await supabase
         .from("providers")
         .update({
           name: form.name,
           description: form.description,
-          states: derivedStates,
-          service_base_suburb: form.service_base_suburb,
-          service_base_postcode: form.service_base_postcode,
-          service_base_state: form.service_base_state,
-          service_base_lat: form.service_base_lat,
-          service_base_lng: form.service_base_lng,
+          states: statesToSave,
+          ...baseFields,
           service_radius_km: radiusToSave,
           system_types: form.system_types,
           brands: form.brands.split(",").map((s) => s.trim()).filter(Boolean),
