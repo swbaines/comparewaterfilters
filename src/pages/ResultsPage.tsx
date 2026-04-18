@@ -471,13 +471,13 @@ export default function ResultsPage() {
                   key={i}
                   className={
                     isInfo
-                      ? "border-sky-500/30 bg-sky-500/5"
+                      ? "border-primary/30 bg-primary/5"
                       : "border-destructive/20 bg-destructive/5"
                   }
                 >
                   <CardContent className="flex items-start gap-3 p-4">
                     {isInfo ? (
-                      <Info className="mt-0.5 h-5 w-5 shrink-0 text-sky-600 dark:text-sky-400" />
+                      <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                     ) : (
                       <Shield className="mt-0.5 h-5 w-5 shrink-0 text-destructive/70" />
                     )}
