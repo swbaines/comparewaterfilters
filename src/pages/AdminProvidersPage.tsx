@@ -393,7 +393,24 @@ export default function AdminProvidersPage() {
                         </Badge>
                       )}
                     </TableCell>
-                    <TableCell>{p.available_for_quote ? "✅" : "❌"}</TableCell>
+                    <TableCell>
+                      <Switch
+                        checked={p.available_for_quote}
+                        onCheckedChange={async (checked) => {
+                          const { error } = await supabase
+                            .from("providers")
+                            .update({ available_for_quote: checked })
+                            .eq("id", p.id);
+                          if (error) {
+                            toast.error(error.message);
+                            return;
+                          }
+                          toast.success(checked ? "Provider activated" : "Provider deactivated");
+                          queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                          queryClient.invalidateQueries({ queryKey: ["providers"] });
+                        }}
+                      />
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
                         <Pencil className="h-4 w-4" />
