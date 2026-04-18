@@ -497,13 +497,39 @@ export default function AdminProvidersPage() {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Delete confirmation */}
-        <AlertDialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
+        {/* Pending application: Approve confirmation */}
+        <AlertDialog open={pendingApprove !== null} onOpenChange={(open) => { if (!open) setPendingApprove(null); }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete {pendingDelete?.name}?</AlertDialogTitle>
+              <AlertDialogTitle>Approve {pendingApprove?.name}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This permanently removes the provider and cannot be undone. Consider rejecting them instead if you may want to restore them later.
+                This will activate the provider and make them visible in customer-facing matches and quote requests. A Stripe customer will also be created for billing.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-green-600 text-white hover:bg-green-700"
+                onClick={() => {
+                  if (pendingApprove) {
+                    approveApplication(pendingApprove.id, pendingApprove.name);
+                    setPendingApprove(null);
+                  }
+                }}
+              >
+                Approve provider
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Pending application: Reject confirmation */}
+        <AlertDialog open={pendingApplicationReject !== null} onOpenChange={(open) => { if (!open) setPendingApplicationReject(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reject {pendingApplicationReject?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will mark the application as rejected. They will not appear in customer-facing results. You can re-approve them later if needed.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -511,13 +537,13 @@ export default function AdminProvidersPage() {
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => {
-                  if (pendingDelete) {
-                    deleteMutation.mutate(pendingDelete.id);
-                    setPendingDelete(null);
+                  if (pendingApplicationReject) {
+                    rejectApplication(pendingApplicationReject.id, pendingApplicationReject.name);
+                    setPendingApplicationReject(null);
                   }
                 }}
               >
-                Delete permanently
+                Reject application
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
