@@ -16,6 +16,8 @@ import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDow
 import { Slider } from "@/components/ui/slider";
 import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
 import { systemTypes } from "@/data/systemTypes";
+import { deriveStatesFromBase } from "@/lib/deriveStates";
+import { Badge } from "@/components/ui/badge";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
