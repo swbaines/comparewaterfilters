@@ -13,6 +13,16 @@ export default function Footer() {
             <p className="mt-3 text-sm text-muted-foreground">
             Helping Australian households choose the right water filtration system with clear, independent guidance.
             </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Australian-owned · Servicing all states &amp; territories
+              <br />
+              <a
+                href="mailto:hello@comparewaterfilters.com.au"
+                className="hover:text-foreground"
+              >
+                hello@comparewaterfilters.com.au
+              </a>
+            </p>
           </div>
           <div>
             <h4 className="mb-3 text-sm font-semibold">Explore</h4>

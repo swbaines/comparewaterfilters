@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import NoIndex from "@/components/NoIndex";
 
 export default function VendorLoginPage() {
   const { signIn } = useAuth();
@@ -47,6 +48,8 @@ export default function VendorLoginPage() {
   };
 
   return (
+    <>
+    <NoIndex />
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
@@ -74,5 +77,6 @@ export default function VendorLoginPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

@@ -8,6 +8,7 @@ import { Loader2, Lock, ArrowLeft, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import NoIndex from "@/components/NoIndex";
 
 type Mode = "signin" | "forgot" | "sent";
 
@@ -52,6 +53,8 @@ export default function AdminLoginPage() {
 
   if (mode === "sent") {
     return (
+      <>
+      <NoIndex />
       <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
         <Card className="w-full max-w-sm text-center">
           <CardHeader>
@@ -79,11 +82,14 @@ export default function AdminLoginPage() {
           </CardContent>
         </Card>
       </div>
+      </>
     );
   }
 
   if (mode === "forgot") {
     return (
+      <>
+      <NoIndex />
       <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
@@ -123,10 +129,13 @@ export default function AdminLoginPage() {
           </CardContent>
         </Card>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    <NoIndex />
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
@@ -163,5 +172,6 @@ export default function AdminLoginPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

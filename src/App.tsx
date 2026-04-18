@@ -39,6 +39,7 @@ import PrivacyPage from "@/pages/PrivacyPage";
 import NotFound from "@/pages/NotFound";
 import ScrollToTop from "@/components/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
+import CanonicalDomainGuard from "@/components/CanonicalDomainGuard";
 import { checkSystemTypesSync } from "@/lib/checkSystemTypesSync";
 
 const queryClient = new QueryClient();
@@ -53,6 +54,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <CanonicalDomainGuard />
         <ScrollToTop />
         <Header />
         <main className="min-h-[calc(100vh-4rem)]">
