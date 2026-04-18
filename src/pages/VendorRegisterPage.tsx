@@ -705,18 +705,18 @@ export default function VendorRegisterPage() {
           <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="reg-email">Email</Label>
-              <Input id="reg-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@business.com" />
+              <Input id="reg-email" name="email" type="email" autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} required placeholder="you@business.com" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="reg-password">Password</Label>
-              <Input id="reg-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
+              <Input id="reg-password" name="new-password" type="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
               <p className="text-xs text-muted-foreground">
                 Must be at least 8 characters and include uppercase, lowercase, a number, and a special character (e.g. !@#$%).
               </p>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="reg-confirm">Confirm Password</Label>
-              <Input id="reg-confirm" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={6} />
+              <Input id="reg-confirm" name="confirm-password" type="password" autoComplete="new-password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required minLength={6} />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
