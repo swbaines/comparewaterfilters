@@ -120,8 +120,10 @@ export default function AdminLeadsPage() {
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["lead-prices"] });
       queryClient.invalidateQueries({ queryKey: ["lead-price-changes"] });
-      if (res.notified > 0) {
+      if (res.effectiveDate && res.notified > 0) {
         toast.success(`Lead prices updated. ${res.notified} vendor${res.notified === 1 ? "" : "s"} notified — new pricing effective ${res.effectiveDate}.`);
+      } else if (res.effectiveDate) {
+        toast.success(`Lead prices updated — new pricing effective ${res.effectiveDate}. (No approved vendors with a contact email to notify.)`);
       } else {
         toast.success("No changes to save");
       }
