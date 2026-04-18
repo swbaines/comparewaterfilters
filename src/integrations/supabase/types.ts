@@ -558,6 +558,21 @@ export type Database = {
         }
         Relationships: []
       }
+      system_type_ids: {
+        Row: {
+          created_at: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
