@@ -170,6 +170,26 @@ describe("Renter & apartment edge cases (Rule 5)", () => {
     expect(validBest).toContain(result.primary.id);
   });
 
+  it("should suppress water softener for WA renters with appliance-only concern and surface renter warning", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      state: "WA",
+      ownershipStatus: "Rent",
+      concerns: ["appliance"],
+      coverage: "whole-house",
+      budget: "3000-5000",
+      priorities: [],
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).not.toContain("water-softener");
+    expect(allIds).not.toContain("whole-house-filtration");
+    expect(allIds).not.toContain("whole-house-combo");
+    // Renter warning must be present
+    const hasRenterWarning = result.warnings.some((w) => w.toLowerCase().includes("renter"));
+    expect(hasRenterWarning).toBe(true);
+  });
+
   it("should not recommend water softener for WA renters even with hard-water concern", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
