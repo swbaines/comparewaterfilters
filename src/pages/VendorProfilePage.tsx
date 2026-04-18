@@ -207,7 +207,7 @@ export default function VendorProfilePage() {
     onError: (err: any) => toast.error("Failed to save: " + err.message),
   });
 
-  const toggleArrayItem = (field: "states" | "system_types" | "certifications", value: string) => {
+  const toggleArrayItem = (field: "system_types" | "certifications", value: string) => {
     setForm((prev) => ({
       ...prev,
       [field]: prev[field].includes(value)
