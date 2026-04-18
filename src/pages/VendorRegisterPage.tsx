@@ -86,14 +86,6 @@ export default function VendorRegisterPage() {
   const [profile, setProfile] = useState({
     name: "",
     description: "",
-    states: [] as string[],
-    serviceBaseSuburb: "",
-    serviceBasePostcode: "",
-    serviceBaseState: "",
-    serviceBaseLat: null as number | null,
-    serviceBaseLng: null as number | null,
-    serviceRadiusKm: 50,
-    statewide: false,
     systemTypes: [] as string[],
     brands: "",
     priceRange: "mid" as "budget" | "mid" | "premium",
@@ -109,6 +101,18 @@ export default function VendorRegisterPage() {
     hasPublicLiability: false,
     insurerName: "",
     googleBusinessUrl: "",
+  });
+
+  const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
+    mode: "radius",
+    baseSuburb: "",
+    basePostcode: "",
+    baseState: "",
+    baseLat: null,
+    baseLng: null,
+    radiusKm: 50,
+    statewide: false,
+    regions: [],
   });
 
   const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
