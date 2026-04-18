@@ -459,33 +459,9 @@ export default function ResultsPage() {
         {/* Warnings */}
         {result.warnings && result.warnings.length > 0 && (
           <div className="mb-8 space-y-3">
-            {result.warnings.map((warning, i) => {
-              const lower = warning.toLowerCase();
-              const isInfo =
-                lower.includes("rent") ||
-                lower.includes("landlord") ||
-                lower.includes("tenant") ||
-                lower.includes("portable");
-              return (
-                <Card
-                  key={i}
-                  className={
-                    isInfo
-                      ? "border-primary/30 bg-primary/5"
-                      : "border-destructive/20 bg-destructive/5"
-                  }
-                >
-                  <CardContent className="flex items-start gap-3 p-4">
-                    {isInfo ? (
-                      <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                    ) : (
-                      <Shield className="mt-0.5 h-5 w-5 shrink-0 text-destructive/70" />
-                    )}
-                    <p className="text-sm text-muted-foreground">{warning}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {result.warnings.map((warning, i) => (
+              <WarningCallout key={i} message={warning} variant={inferWarningVariant(warning)} />
+            ))}
           </div>
         )}
 
