@@ -160,7 +160,7 @@ export default function VendorProfilePage() {
         baseLng: provider.service_base_lng != null ? Number(provider.service_base_lng) : null,
         radiusKm: radius >= 2000 ? 500 : radius,
         statewide: radius >= 2000,
-        regions: mode === "regions" ? savedStates.filter((s) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
+        regions: mode === "regions" ? savedStates.filter((s: string) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
       });
     }
   }, [provider]);
@@ -360,86 +360,8 @@ export default function VendorProfilePage() {
               <MapPin className="h-5 w-5" /> Service Area
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Base Service Location</Label>
-              <ServiceBaseAutocomplete
-                value={
-                  form.service_base_suburb
-                    ? {
-                        suburb: form.service_base_suburb,
-                        postcode: form.service_base_postcode,
-                        state: form.service_base_state,
-                      }
-                    : null
-                }
-                onSelect={(s) =>
-                  setForm((p) => ({
-                    ...p,
-                    service_base_suburb: s.suburb,
-                    service_base_postcode: s.postcode,
-                    service_base_state: s.state,
-                    service_base_lat: s.lat,
-                    service_base_lng: s.lng,
-                  }))
-                }
-              />
-              <p className="text-xs text-muted-foreground">
-                The suburb you operate out of. We use this to match you with nearby customers.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Service Radius</Label>
-                <span className="text-sm font-medium tabular-nums">
-                  {form.statewide ? "Statewide+" : `${form.service_radius_km} km`}
-                </span>
-              </div>
-              <Slider
-                min={5}
-                max={500}
-                step={5}
-                value={[form.service_radius_km]}
-                onValueChange={(v) => setForm((p) => ({ ...p, service_radius_km: v[0], statewide: false }))}
-                disabled={form.statewide}
-              />
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="statewide"
-                  checked={form.statewide}
-                  onCheckedChange={(v) => setForm((p) => ({ ...p, statewide: !!v }))}
-                />
-                <Label htmlFor="statewide" className="text-sm font-normal cursor-pointer">
-                  I service this whole state (or further)
-                </Label>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
-              </p>
-            </div>
-
-            {/* Auto-derived states preview */}
-            <div className="space-y-1.5 rounded-md border border-dashed border-border bg-muted/30 p-3">
-              <Label className="text-xs uppercase tracking-wide text-muted-foreground">States Covered (auto)</Label>
-              {(() => {
-                const derived = deriveStatesFromBase(
-                  form.service_base_lat,
-                  form.service_base_lng,
-                  form.service_base_state,
-                  form.statewide ? 5000 : form.service_radius_km
-                );
-                return derived.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {derived.map((s) => (
-                      <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">Pick a base location to see which states you'll cover.</p>
-                );
-              })()}
-            </div>
+          <CardContent>
+            <ServiceAreaPicker value={serviceArea} onChange={setServiceArea} idPrefix="profile" />
           </CardContent>
         </Card>
 
