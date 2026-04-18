@@ -8,6 +8,7 @@ import { Loader2, Lock, ArrowLeft, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import NoIndex from "@/components/NoIndex";
 
 type Mode = "signin" | "forgot" | "sent";
 

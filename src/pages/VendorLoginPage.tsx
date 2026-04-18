@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import NoIndex from "@/components/NoIndex";
 
 export default function VendorLoginPage() {
   const { signIn } = useAuth();
