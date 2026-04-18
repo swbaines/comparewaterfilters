@@ -13,6 +13,8 @@ import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
 import { systemTypes } from "@/data/systemTypes";
 
 const AU_STATES = [
@@ -84,6 +86,13 @@ export default function VendorRegisterPage() {
     name: "",
     description: "",
     states: [] as string[],
+    serviceBaseSuburb: "",
+    serviceBasePostcode: "",
+    serviceBaseState: "",
+    serviceBaseLat: null as number | null,
+    serviceBaseLng: null as number | null,
+    serviceRadiusKm: 50,
+    statewide: false,
     systemTypes: [] as string[],
     brands: "",
     priceRange: "mid" as "budget" | "mid" | "premium",
