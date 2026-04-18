@@ -221,6 +221,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // Never recommend whole-house or water softener as Best or Premium.
   // Default to Rule 3 (RO-essential) or Rule 4 (taste/chlorine).
   if (!f.canHaveWholeHome) {
+    pushRule("rule-5-renter-apartment");
     if (f.isRenter && (f.wholeHomeTrigger || f.hardWaterWASA)) {
       warnings.push(
         "As a renter, whole house filtration and water softener systems aren't practical — they require landlord approval and permanent plumbing changes. We've tailored your recommendations to the best options available for renters."
@@ -234,6 +235,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
     if (f.roTrigger) {
       // Rule 3 path
+      pushRule("rule-3-ro-essential");
       primaryId = "reverse-osmosis";
       primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, microplastics, and bacteria from drinking water. It installs neatly under your kitchen sink. $800–$1,600 installed.`;
       secondaryId = "under-sink-carbon";
@@ -242,6 +244,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       premiumReason = `For the ultimate drinking water experience, a premium reverse osmosis system with alkaline remineralisation adds beneficial minerals back after filtration — delivering purified, mineral-balanced water from your kitchen tap.`;
     } else {
       // Rule 4 path (taste/chlorine/drinking only)
+      pushRule("rule-4-drinking-only");
       primaryId = "under-sink-carbon";
       primaryReason = `An under-sink carbon and sediment filter is the ideal solution for renters and apartments — effectively removing chlorine, sediment, and improving taste at your kitchen tap. $300–$1,200 installed.`;
       secondaryId = "tap-filter";
