@@ -158,6 +158,26 @@ export default function VendorRegisterPage() {
       toast.error("ABN must be exactly 11 digits");
       return;
     }
+    // Website required + must be a valid URL
+    const websiteTrim = profile.website.trim();
+    if (!websiteTrim) {
+      toast.error("Website is required");
+      return;
+    }
+    try { new URL(websiteTrim); } catch {
+      toast.error("Website must be a valid URL (including https://)");
+      return;
+    }
+    // Google Business Profile required + must be a valid URL
+    const gbpTrim = profile.googleBusinessUrl.trim();
+    if (!gbpTrim) {
+      toast.error("Google Business Profile URL is required");
+      return;
+    }
+    try { new URL(gbpTrim); } catch {
+      toast.error("Google Business Profile must be a valid URL (including https://)");
+      return;
+    }
     // Plumber licence number is optional
 
     setLoading(true);
@@ -216,8 +236,9 @@ export default function VendorRegisterPage() {
           highlights: toArray(profile.highlights),
           response_time: profile.responseTime,
           warranty: profile.warranty,
-          website: profile.website || null,
+          website: websiteTrim,
           phone: profile.phone || null,
+          contact_email: user.email || email || null,
           available_for_quote: false,
           approval_status: "pending" as any,
           submitted_by: user.id,
@@ -227,7 +248,7 @@ export default function VendorRegisterPage() {
           plumber_licence_number: profile.plumberLicenceNumber.trim(),
           has_public_liability: profile.hasPublicLiability,
           insurer_name: profile.hasPublicLiability ? profile.insurerName.trim() : "",
-          google_business_url: profile.googleBusinessUrl.trim() || "",
+          google_business_url: gbpTrim,
         } as any)
         .select("id")
         .single();
@@ -430,8 +451,8 @@ export default function VendorRegisterPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label>Website</Label>
-                    <Input value={profile.website} onChange={e => updateProfile("website", e.target.value)} placeholder="https://..." />
+                    <Label>Website *</Label>
+                    <Input value={profile.website} onChange={e => updateProfile("website", e.target.value)} required type="url" placeholder="https://yourbusiness.com.au" />
                   </div>
                   <div className="space-y-1.5">
                     <Label>Phone</Label>
@@ -439,12 +460,15 @@ export default function VendorRegisterPage() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Google Business Profile URL (optional)</Label>
+                  <Label>Google Business Profile URL *</Label>
                   <Input
                     value={profile.googleBusinessUrl}
                     onChange={e => updateProfile("googleBusinessUrl", e.target.value)}
+                    required
+                    type="url"
                     placeholder="https://g.page/your-business"
                   />
+                  <p className="text-xs text-muted-foreground">Used to verify your business reviews and reputation.</p>
                 </div>
 
                 {/* Public Liability Insurance */}
