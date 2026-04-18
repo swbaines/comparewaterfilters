@@ -6,8 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const OWNER_LEAD_PRICE = 85;
-const RENTAL_LEAD_PRICE = 50;
+// Fallback defaults; live values are read from the lead_prices table (admin-editable)
+const DEFAULT_OWNER_LEAD_PRICE = 85;
+const DEFAULT_RENTAL_LEAD_PRICE = 50;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -46,6 +47,11 @@ Deno.serve(async (req) => {
       .not("stripe_payment_method_id", "is", null);
 
     if (stripeErr) throw stripeErr;
+
+    // Fetch live lead prices (admin-editable in lead_prices table)
+    const { data: priceRows } = await supabaseAdmin.from("lead_prices").select("system_type, price_per_lead");
+    const ownerLeadPrice = Number(priceRows?.find((p: any) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_LEAD_PRICE);
+    const rentalLeadPrice = Number(priceRows?.find((p: any) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_LEAD_PRICE);
 
     const providerIds = (stripeDetails || []).map((s: any) => s.provider_id);
     if (providerIds.length === 0) {
@@ -94,7 +100,7 @@ Deno.serve(async (req) => {
         const lineItems: any[] = [];
 
         for (const lead of leads) {
-          const leadPriceDollars = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? RENTAL_LEAD_PRICE : OWNER_LEAD_PRICE);
+          const leadPriceDollars = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? rentalLeadPrice : ownerLeadPrice);
           const leadPriceCents = Math.round(leadPriceDollars * 100);
           totalCents += leadPriceCents;
           lineItems.push({ lead_id: lead.id, amount_cents: leadPriceCents });

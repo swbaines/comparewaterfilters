@@ -23,10 +23,9 @@ import {
 // ── Stripe publishable key ────────────────────────────────────────────────────
 const stripePromise = loadStripe("pk_live_51TGc4iFAFFjkrVg3A5F9bsS2XXQkwKVWE8wnnPcT8onOI4jeUt8Sjq0H71AAd15jCDm57kDwH0dOzVuojTq3DJqj006YmVTHZi");
 
-const LEAD_PRICES = [
-  { type: "Owner lead", price: "$85", description: "Customer owns their property" },
-  { type: "Rental lead", price: "$50", description: "Customer is renting" },
-];
+// Lead price defaults; live values are fetched from the lead_prices table (admin-editable)
+const DEFAULT_OWNER_PRICE = 85;
+const DEFAULT_RENTAL_PRICE = 50;
 
 // ── Card brand SVG icons ──────────────────────────────────────────────────────
 function CardBrandIcon({ brand }: { brand: string }) {
@@ -253,11 +252,29 @@ export default function VendorBillingPage() {
     },
   });
 
+  const { data: leadPrices = [] } = useQuery({
+    queryKey: ["lead-prices-public"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("lead_prices").select("system_type, price_per_lead");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
+  const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
+
+  const livePriceRows = [
+    { type: "Owner lead", price: `$${ownerLeadPrice}`, description: "Customer owns their property" },
+    { type: "Rental lead", price: `$${rentalLeadPrice}`, description: "Customer is renting" },
+  ];
+
   const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
     if (l.lead_price) return sum + Number(l.lead_price);
-    // Fallback: Owner = $85, Rental = $50
-    return sum + 85;
+    // Fallback uses the current owner price (most common case)
+    return sum + ownerLeadPrice;
   }, 0);
+
 
   const lastMonthInvoice = invoices[0];
   const handlePayNow = async (invoiceId: string) => {
@@ -395,7 +412,7 @@ export default function VendorBillingPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {LEAD_PRICES.map((lp) => (
+                  {livePriceRows.map((lp) => (
                     <TableRow key={lp.type}>
                       <TableCell className="font-medium">{lp.type}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{lp.description}</TableCell>
