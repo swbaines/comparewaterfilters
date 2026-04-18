@@ -619,6 +619,65 @@ export default function VendorRegisterPage() {
                     </PopoverContent>
                   </Popover>
                 </div>
+
+                <div className="space-y-1.5">
+                  <Label>Base Service Location *</Label>
+                  <ServiceBaseAutocomplete
+                    value={
+                      profile.serviceBaseSuburb
+                        ? {
+                            suburb: profile.serviceBaseSuburb,
+                            postcode: profile.serviceBasePostcode,
+                            state: profile.serviceBaseState,
+                          }
+                        : null
+                    }
+                    onSelect={(s) =>
+                      setProfile((p) => ({
+                        ...p,
+                        serviceBaseSuburb: s.suburb,
+                        serviceBasePostcode: s.postcode,
+                        serviceBaseState: s.state,
+                        serviceBaseLat: s.lat,
+                        serviceBaseLng: s.lng,
+                        states: p.states.includes(s.state) ? p.states : [...p.states, s.state],
+                      }))
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    The suburb you operate out of. We use this to match you with nearby customers.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Service Radius</Label>
+                    <span className="text-sm font-medium tabular-nums">
+                      {profile.statewide ? "Statewide+" : `${profile.serviceRadiusKm} km`}
+                    </span>
+                  </div>
+                  <Slider
+                    min={5}
+                    max={500}
+                    step={5}
+                    value={[profile.serviceRadiusKm]}
+                    onValueChange={(v) => setProfile((p) => ({ ...p, serviceRadiusKm: v[0], statewide: false }))}
+                    disabled={profile.statewide}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="statewide-register"
+                      checked={profile.statewide}
+                      onCheckedChange={(v) => setProfile((p) => ({ ...p, statewide: !!v }))}
+                    />
+                    <Label htmlFor="statewide-register" className="text-sm font-normal cursor-pointer">
+                      I service this whole state (or further)
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
