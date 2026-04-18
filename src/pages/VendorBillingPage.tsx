@@ -252,11 +252,29 @@ export default function VendorBillingPage() {
     },
   });
 
+  const { data: leadPrices = [] } = useQuery({
+    queryKey: ["lead-prices-public"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("lead_prices").select("system_type, price_per_lead");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
+  const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
+
+  const livePriceRows = [
+    { type: "Owner lead", price: `$${ownerLeadPrice}`, description: "Customer owns their property" },
+    { type: "Rental lead", price: `$${rentalLeadPrice}`, description: "Customer is renting" },
+  ];
+
   const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
     if (l.lead_price) return sum + Number(l.lead_price);
-    // Fallback: Owner = $85, Rental = $50
-    return sum + 85;
+    // Fallback uses the current owner price (most common case)
+    return sum + ownerLeadPrice;
   }, 0);
+
 
   const lastMonthInvoice = invoices[0];
   const handlePayNow = async (invoiceId: string) => {
