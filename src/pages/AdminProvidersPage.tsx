@@ -67,6 +67,7 @@ export default function AdminProvidersPage() {
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
   const [auditOpen, setAuditOpen] = useState(false);
   const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
 
   const updateApprovalStatus = async (id: string, value: ProviderRow["approval_status"]) => {
     const { error } = await supabase
