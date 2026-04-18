@@ -1,0 +1,5 @@
+Contact: mailto:hello@comparewaterfilters.com.au
+Expires: 2027-04-18T11:53:54.000Z
+Preferred-Languages: en
+Canonical: https://www.comparewaterfilters.com.au/.well-known/security.txt
+Policy: https://www.comparewaterfilters.com.au/privacy
