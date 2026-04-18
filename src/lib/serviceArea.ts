@@ -28,10 +28,10 @@ export const AU_STATES = [
 
 export type CoverageMode = "radius" | "regions";
 
-const METRO_VALUES = new Set(CAPITAL_METROS.map((m) => m.value));
-const METRO_TO_STATE = Object.fromEntries(
+const METRO_VALUES: Set<string> = new Set(CAPITAL_METROS.map((m) => m.value));
+const METRO_TO_STATE: Record<string, string> = Object.fromEntries(
   CAPITAL_METROS.map((m) => [m.value, m.state])
-) as Record<string, string>;
+);
 
 /**
  * Detect coverage mode from saved provider data.
