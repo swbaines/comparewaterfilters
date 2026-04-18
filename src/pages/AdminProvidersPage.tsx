@@ -366,18 +366,12 @@ export default function AdminProvidersPage() {
                     <TableCell>
                       <Select
                         value={p.approval_status}
-                        onValueChange={async (value) => {
-                          const { error } = await supabase
-                            .from("providers")
-                            .update({ approval_status: value as ProviderRow["approval_status"] })
-                            .eq("id", p.id);
-                          if (error) {
-                            toast.error(error.message);
+                        onValueChange={(value) => {
+                          if (value === "rejected" && p.approval_status !== "rejected") {
+                            setPendingReject({ id: p.id, name: p.name });
                             return;
                           }
-                          toast.success(`Status updated to ${value}`);
-                          queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
-                          queryClient.invalidateQueries({ queryKey: ["providers"] });
+                          updateApprovalStatus(p.id, value as ProviderRow["approval_status"]);
                         }}
                       >
                         <SelectTrigger
