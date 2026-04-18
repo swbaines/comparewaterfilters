@@ -237,8 +237,13 @@ export default function VendorRegisterPage() {
     }
     // Plumber licence number is optional
 
-    if (!profile.serviceBaseLat || !profile.serviceBaseLng || !profile.serviceBaseSuburb) {
-      toast.error("Please select your base service location");
+    if (serviceArea.mode === "radius") {
+      if (!serviceArea.baseLat || !serviceArea.baseLng || !serviceArea.baseSuburb) {
+        toast.error("Please select your base service location");
+        return;
+      }
+    } else if (serviceArea.regions.length === 0) {
+      toast.error("Please select at least one state or metro region");
       return;
     }
 
@@ -282,13 +287,20 @@ export default function VendorRegisterPage() {
         throw new Error(`Invalid system type(s): ${invalidSystemTypes.join(", ")}`);
       }
 
-      const radiusToSave = profile.statewide ? 5000 : profile.serviceRadiusKm;
-      const derivedStates = deriveStatesFromBase(
-        profile.serviceBaseLat,
-        profile.serviceBaseLng,
-        profile.serviceBaseState,
-        radiusToSave
-      );
+      const radiusToSave = serviceArea.mode === "radius"
+        ? (serviceArea.statewide ? 5000 : serviceArea.radiusKm)
+        : 0;
+      const statesToSave =
+        serviceArea.mode === "radius"
+          ? computeCoverageStates({
+              mode: "radius",
+              baseLat: serviceArea.baseLat,
+              baseLng: serviceArea.baseLng,
+              baseState: serviceArea.baseState,
+              radiusKm: radiusToSave,
+              regionSelections: [],
+            })
+          : serviceArea.regions; // raw selections (states + metros) preserved for editing
 
       const { data: provider, error: providerError } = await supabase
         .from("providers")
@@ -296,12 +308,12 @@ export default function VendorRegisterPage() {
           name: profile.name,
           slug,
           description: profile.description,
-          states: derivedStates,
-          service_base_suburb: profile.serviceBaseSuburb,
-          service_base_postcode: profile.serviceBasePostcode,
-          service_base_state: profile.serviceBaseState,
-          service_base_lat: profile.serviceBaseLat,
-          service_base_lng: profile.serviceBaseLng,
+          states: statesToSave,
+          service_base_suburb: serviceArea.mode === "radius" ? serviceArea.baseSuburb : null,
+          service_base_postcode: serviceArea.mode === "radius" ? serviceArea.basePostcode : null,
+          service_base_state: serviceArea.mode === "radius" ? serviceArea.baseState : null,
+          service_base_lat: serviceArea.mode === "radius" ? serviceArea.baseLat : null,
+          service_base_lng: serviceArea.mode === "radius" ? serviceArea.baseLng : null,
           service_radius_km: radiusToSave,
           system_types: profile.systemTypes,
           brands: toArray(profile.brands),
