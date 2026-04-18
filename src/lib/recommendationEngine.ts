@@ -21,6 +21,28 @@ export interface QuizAnswers {
   disclaimerAck: boolean;
 }
 
+export type FiredRule =
+  | "rule-1-whole-home"
+  | "rule-2-hard-water-wa-sa"
+  | "rule-3-ro-essential"
+  | "rule-4-drinking-only"
+  | "rule-5-renter-apartment"
+  | "rule-6-budget-under-1k"
+  | "default";
+
+export interface RuleExplanation {
+  /** Machine ID of the dominant rule that fired. */
+  rule: FiredRule;
+  /** Human-friendly rule number + name (e.g. "Rule 2 — Hard water in WA/SA"). */
+  ruleLabel: string;
+  /** All rules that influenced the result, in evaluation order. */
+  appliedRules: { rule: FiredRule; label: string }[];
+  /** Concern IDs from the quiz that triggered this rule. */
+  triggeringConcerns: string[];
+  /** Honest trade-off note for the Good (secondary) tier — what it does and doesn't solve. */
+  goodTierTradeoff: string;
+}
+
 export interface RecommendationResult {
   primary: Recommendation;
   secondary: Recommendation;
@@ -30,6 +52,7 @@ export interface RecommendationResult {
   premiumReason: string;
   summary: string;
   warnings: string[];
+  explanation: RuleExplanation;
 }
 
 /**
@@ -169,10 +192,23 @@ function getStateWarnings(answers: QuizAnswers, f: ReturnType<typeof getFlags>):
   return warnings;
 }
 
+// ─── Rule labels (single source of truth for the "why?" section) ─────────────
+const RULE_LABELS: Record<FiredRule, string> = {
+  "rule-1-whole-home": "Rule 1 — Whole-home intent",
+  "rule-2-hard-water-wa-sa": "Rule 2 — Hard water in WA or SA",
+  "rule-3-ro-essential": "Rule 3 — RO-essential contaminants (fluoride, PFAS, heavy metals, microplastics, bacteria)",
+  "rule-4-drinking-only": "Rule 4 — Drinking water / taste / chlorine only",
+  "rule-5-renter-apartment": "Rule 5 — Renter or apartment (no whole-home or softener)",
+  "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
+  "default": "Default — general drinking-water improvement",
+};
+
 // ─── Main recommendation function ───────────────────────────────────────────
 export function generateRecommendations(answers: QuizAnswers): RecommendationResult {
   const f = getFlags(answers);
   const warnings: string[] = [];
+  const appliedRules: { rule: FiredRule; label: string }[] = [];
+  const pushRule = (r: FiredRule) => appliedRules.push({ rule: r, label: RULE_LABELS[r] });
 
   let primaryId = "under-sink-carbon";
   let secondaryId = "under-sink-carbon";
@@ -185,6 +221,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // Never recommend whole-house or water softener as Best or Premium.
   // Default to Rule 3 (RO-essential) or Rule 4 (taste/chlorine).
   if (!f.canHaveWholeHome) {
+    pushRule("rule-5-renter-apartment");
     if (f.isRenter && (f.wholeHomeTrigger || f.hardWaterWASA)) {
       warnings.push(
         "As a renter, whole house filtration and water softener systems aren't practical — they require landlord approval and permanent plumbing changes. We've tailored your recommendations to the best options available for renters."
@@ -198,6 +235,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
     if (f.roTrigger) {
       // Rule 3 path
+      pushRule("rule-3-ro-essential");
       primaryId = "reverse-osmosis";
       primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, microplastics, and bacteria from drinking water. It installs neatly under your kitchen sink. $800–$1,600 installed.`;
       secondaryId = "under-sink-carbon";
@@ -206,6 +244,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       premiumReason = `For the ultimate drinking water experience, a premium reverse osmosis system with alkaline remineralisation adds beneficial minerals back after filtration — delivering purified, mineral-balanced water from your kitchen tap.`;
     } else {
       // Rule 4 path (taste/chlorine/drinking only)
+      pushRule("rule-4-drinking-only");
       primaryId = "under-sink-carbon";
       primaryReason = `An under-sink carbon and sediment filter is the ideal solution for renters and apartments — effectively removing chlorine, sediment, and improving taste at your kitchen tap. $300–$1,200 installed.`;
       secondaryId = "tap-filter";
@@ -219,6 +258,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // Checked BEFORE Rule 1 because hard-water/appliance concerns also trigger
   // Rule 1, and Rule 2 is the more specific, correct answer for WA/SA users.
   else if (f.hardWaterWASA) {
+    pushRule("rule-2-hard-water-wa-sa");
     primaryId = "water-softener";
     primaryReason = `A water softener is the proper solution for ${answers.state}'s hard water — it removes the calcium and magnesium that cause scale buildup, protecting your hot water system, dishwasher, washing machine, kettle, and shower screens. Soap also lathers properly and skin/hair feel noticeably better. $2,000–$6,000 installed.`;
     secondaryId = "whole-house-filtration";
@@ -227,6 +267,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     premiumReason = `The complete premium solution for ${answers.state}: water softener + whole house filtration + reverse osmosis combined — softened, chlorine-free water at every tap, plus ultra-pure drinking water at the kitchen. The most comprehensive setup possible. Typically $6,000–$12,000 installed.`;
 
     if (f.budgetUnder1k) {
+      pushRule("rule-6-budget-under-1k");
       warnings.push(
         "Important: Water softeners and whole house systems start from around $2,000–$2,500 installed — above your current budget. Your hard-water concerns can't be properly solved within budget; you may want to save toward a softener or start with an under-sink filter for drinking water in the meantime."
       );
@@ -235,8 +276,10 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   // ── RULE 1: Whole-home intent ─────────────────────────────────────────────
   else if (f.wholeHomeTrigger) {
+    pushRule("rule-1-whole-home");
     if (f.budgetUnder1k) {
       // RULE 6: Budget under $1k — move under-sink to Best, whole-house to Premium
+      pushRule("rule-6-budget-under-1k");
       primaryId = "under-sink-carbon";
       primaryReason = `Within your budget, an under-sink carbon and sediment filter is the best option — it effectively removes chlorine, sediment, and improves drinking water taste at your kitchen tap. Honest note: this only addresses drinking water, not your full whole-home concern (skin/hair, shower, appliances). $300–$1,200 installed.`;
       secondaryId = "tap-filter";
@@ -258,6 +301,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   // ── RULE 3: RO-essential concerns ─────────────────────────────────────────
   else if (f.roTrigger) {
+    pushRule("rule-3-ro-essential");
     primaryId = "reverse-osmosis";
     primaryReason = `A reverse osmosis system is essential for your concerns — it's the only household technology that effectively removes fluoride, PFAS, heavy metals, microplastics, and bacteria from drinking water. Installed under your kitchen sink. $800–$1,600 installed.`;
     secondaryId = "under-sink-carbon";
@@ -274,6 +318,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   // ── RULE 4: Drinking water / taste / chlorine only ───────────────────────
   else if (f.onlyTasteChlorine) {
+    pushRule("rule-4-drinking-only");
     primaryId = "under-sink-carbon";
     primaryReason = `An under-sink carbon and sediment filter is the ideal solution for your needs — effectively removing chlorine, sediment, and dramatically improving the taste of your drinking water. $300–$1,200 installed.`;
     secondaryId = "tap-filter";
@@ -284,6 +329,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   // ── DEFAULT: fall back to Rule 4-style under-sink path ────────────────────
   else {
+    pushRule("default");
     primaryId = "under-sink-carbon";
     primaryReason = `Based on your answers, an under-sink carbon and sediment filter is a solid all-round choice — it removes chlorine, sediment, and significantly improves drinking water taste at your kitchen tap. $300–$1,200 installed.`;
     secondaryId = "tap-filter";
@@ -294,6 +340,32 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   // ── State-specific warnings (VIC chlorine, WA hardness, SA hardness, QLD seasonal taste, NSW PFAS) ──
   warnings.push(...getStateWarnings(answers, f));
+
+  // ── Determine triggering concerns based on the dominant rule ──────────────
+  // The dominant rule is the LAST one pushed (most specific path taken).
+  const dominantRule: FiredRule = appliedRules[appliedRules.length - 1]?.rule ?? "default";
+
+  const RULE_TO_TRIGGERING_CONCERNS: Record<FiredRule, string[]> = {
+    "rule-1-whole-home": ["skin-hair", "skin-shower", "appliance", "whole-home", "hard-water", "chlorine"],
+    "rule-2-hard-water-wa-sa": ["hard-water", "appliance"],
+    "rule-3-ro-essential": ["fluoride", "pfas", "heavy-metals", "microplastics", "bacteria"],
+    "rule-4-drinking-only": ["taste", "chlorine", "drinking-quality"],
+    "rule-5-renter-apartment": [], // not concern-driven — driven by ownership/property type
+    "rule-6-budget-under-1k": [], // budget modifier, concerns inherited from base rule
+    "default": [],
+  };
+
+  // Triggering concerns = intersection of the user's concerns with the rule's trigger set.
+  // For Rule 5 (renter/apartment) we surface the concerns that drove the underlying base rule.
+  let triggeringSet = RULE_TO_TRIGGERING_CONCERNS[dominantRule];
+  if (dominantRule === "rule-5-renter-apartment" || dominantRule === "rule-6-budget-under-1k") {
+    triggeringSet = [
+      ...RULE_TO_TRIGGERING_CONCERNS["rule-3-ro-essential"],
+      ...RULE_TO_TRIGGERING_CONCERNS["rule-4-drinking-only"],
+      ...RULE_TO_TRIGGERING_CONCERNS["rule-1-whole-home"],
+    ];
+  }
+  const triggeringConcerns = answers.concerns.filter((c) => triggeringSet.includes(c));
 
   // ── Look up recommendation objects ────────────────────────────────────────
   const getRec = (id: string): Recommendation => {
@@ -314,5 +386,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     premiumReason,
     summary,
     warnings,
+    explanation: {
+      rule: dominantRule,
+      ruleLabel: RULE_LABELS[dominantRule],
+      appliedRules,
+      triggeringConcerns,
+      // The Good (secondary) tier reason already contains the honest trade-off
+      // wording for every branch — surface it verbatim so we never drift.
+      goodTierTradeoff: secondaryReason,
+    },
   };
 }
