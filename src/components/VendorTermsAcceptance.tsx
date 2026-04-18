@@ -123,7 +123,7 @@ export default function VendorTermsAcceptance({ providerId, onAccepted }: Vendor
 
           <p className="text-xs text-muted-foreground text-center">
             By accepting, you agree to these terms effective immediately. You can review the full{" "}
-            <a href="/disclaimer" target="_blank" className="text-primary hover:underline">platform disclaimer</a> at any time.
+            <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">platform disclaimer</a> at any time.
           </p>
         </CardContent>
       </Card>
