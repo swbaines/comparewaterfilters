@@ -261,8 +261,30 @@ export default function VendorBillingPage() {
     },
   });
 
+  const { data: pendingPriceChanges = [] } = useQuery({
+    queryKey: ["lead-price-changes-pending"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("lead_price_changes")
+        .select("system_type, old_price, new_price, effective_date")
+        .gt("effective_date", new Date().toISOString())
+        .order("effective_date", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
+
+  // For display purposes, when a change is pending we show the OLD (still-effective) price
+  const displayOwnerPrice = pendingPriceChanges.find((c) => c.system_type === "owner_lead")?.old_price ?? ownerLeadPrice;
+  const displayRentalPrice = pendingPriceChanges.find((c) => c.system_type === "rental_lead")?.old_price ?? rentalLeadPrice;
+
+  const livePriceRows = [
+    { type: "Owner lead", price: `$${Number(displayOwnerPrice)}`, description: "Customer owns their property" },
+    { type: "Rental lead", price: `$${Number(displayRentalPrice)}`, description: "Customer is renting" },
+  ];
 
   const livePriceRows = [
     { type: "Owner lead", price: `$${ownerLeadPrice}`, description: "Customer owns their property" },
