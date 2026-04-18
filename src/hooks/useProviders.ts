@@ -8,7 +8,7 @@ export function useProviders() {
     queryFn: async (): Promise<Provider[]> => {
       const { data, error } = await supabase
         .from("providers_public")
-        .select("id, name, slug, description, logo, states, postcode_ranges, service_base_suburb, service_base_postcode, service_base_state, service_base_lat, service_base_lng, service_radius_km, system_types, brands, price_range, rating, review_count, years_in_business, certifications, highlights, available_for_quote, response_time, warranty, website, phone, approval_status")
+        .select("id, name, slug, description, logo, states, service_base_suburb, service_base_postcode, service_base_state, service_base_lat, service_base_lng, service_radius_km, system_types, brands, price_range, rating, review_count, years_in_business, certifications, highlights, available_for_quote, response_time, warranty, website, phone, approval_status")
         .eq("available_for_quote", true)
         .eq("approval_status", "approved" as any);
 
@@ -22,7 +22,6 @@ export function useProviders() {
         logo: row.logo ?? undefined,
         location: {
           states: row.states,
-          postcodeRanges: row.postcode_ranges ?? undefined,
           serviceBase:
             row.service_base_lat != null && row.service_base_lng != null
               ? {

@@ -280,7 +280,6 @@ export type Database = {
           name: string
           phone: string | null
           plumber_licence_number: string | null
-          postcode_ranges: string[] | null
           price_range: Database["public"]["Enums"]["price_range"]
           rating: number
           response_time: string
@@ -320,7 +319,6 @@ export type Database = {
           name: string
           phone?: string | null
           plumber_licence_number?: string | null
-          postcode_ranges?: string[] | null
           price_range?: Database["public"]["Enums"]["price_range"]
           rating?: number
           response_time?: string
@@ -360,7 +358,6 @@ export type Database = {
           name?: string
           phone?: string | null
           plumber_licence_number?: string | null
-          postcode_ranges?: string[] | null
           price_range?: Database["public"]["Enums"]["price_range"]
           rating?: number
           response_time?: string
@@ -738,7 +735,6 @@ export type Database = {
           logo: string | null
           name: string | null
           phone: string | null
-          postcode_ranges: string[] | null
           price_range: Database["public"]["Enums"]["price_range"] | null
           rating: number | null
           response_time: string | null
@@ -771,7 +767,6 @@ export type Database = {
           logo?: string | null
           name?: string | null
           phone?: string | null
-          postcode_ranges?: string[] | null
           price_range?: Database["public"]["Enums"]["price_range"] | null
           rating?: number | null
           response_time?: string | null
@@ -804,7 +799,6 @@ export type Database = {
           logo?: string | null
           name?: string | null
           phone?: string | null
-          postcode_ranges?: string[] | null
           price_range?: Database["public"]["Enums"]["price_range"] | null
           rating?: number | null
           response_time?: string | null

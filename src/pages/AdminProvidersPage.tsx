@@ -33,7 +33,6 @@ const emptyForm: Omit<TablesInsert<"providers">, "id" | "created_at" | "updated_
   description: "",
   logo: null,
   states: [],
-  postcode_ranges: [],
   system_types: [],
   brands: [],
   price_range: "mid",
@@ -202,7 +201,6 @@ export default function AdminProvidersPage() {
       description: p.description,
       logo: p.logo,
       states: p.states,
-      postcode_ranges: p.postcode_ranges,
       system_types: p.system_types,
       brands: p.brands,
       price_range: p.price_range,
@@ -679,10 +677,6 @@ export default function AdminProvidersPage() {
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="space-y-1.5">
-                  <Label>Postcode ranges</Label>
-                  <Input value={arrayFieldToString(form.postcode_ranges)} onChange={(e) => updateField("postcode_ranges", stringToArray(e.target.value))} placeholder="2000-2999, 3000-3999" />
-                </div>
               </div>
 
               {/* Systems & brands */}
@@ -828,9 +822,6 @@ export default function AdminProvidersPage() {
                   <div className="flex flex-wrap gap-1 mb-1">
                     {reviewProvider.states.map((s) => <Badge key={s} variant="outline">{s}</Badge>)}
                   </div>
-                  {reviewProvider.postcode_ranges && reviewProvider.postcode_ranges.length > 0 && (
-                    <div className="text-sm text-muted-foreground">Postcodes: {reviewProvider.postcode_ranges.join(", ")}</div>
-                  )}
                 </div>
 
                 {/* Systems & Expertise */}
@@ -1011,7 +1002,6 @@ export default function AdminProvidersPage() {
                                     description: provider.description,
                                     logo: provider.logo,
                                     states: provider.states,
-                                    postcode_ranges: provider.postcode_ranges,
                                     system_types: provider.system_types,
                                     brands: provider.brands,
                                     price_range: provider.price_range,
