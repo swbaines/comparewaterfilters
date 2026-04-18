@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck } from "lucide-react";
@@ -65,6 +66,21 @@ export default function AdminProvidersPage() {
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
+
+  const updateApprovalStatus = async (id: string, value: ProviderRow["approval_status"]) => {
+    const { error } = await supabase
+      .from("providers")
+      .update({ approval_status: value })
+      .eq("id", id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success(`Status updated to ${value}`);
+    queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+    queryClient.invalidateQueries({ queryKey: ["providers"] });
+  };
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
@@ -350,18 +366,12 @@ export default function AdminProvidersPage() {
                     <TableCell>
                       <Select
                         value={p.approval_status}
-                        onValueChange={async (value) => {
-                          const { error } = await supabase
-                            .from("providers")
-                            .update({ approval_status: value as ProviderRow["approval_status"] })
-                            .eq("id", p.id);
-                          if (error) {
-                            toast.error(error.message);
+                        onValueChange={(value) => {
+                          if (value === "rejected" && p.approval_status !== "rejected") {
+                            setPendingReject({ id: p.id, name: p.name });
                             return;
                           }
-                          toast.success(`Status updated to ${value}`);
-                          queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
-                          queryClient.invalidateQueries({ queryKey: ["providers"] });
+                          updateApprovalStatus(p.id, value as ProviderRow["approval_status"]);
                         }}
                       >
                         <SelectTrigger
@@ -428,6 +438,32 @@ export default function AdminProvidersPage() {
             </Table>
           </Card>
         )}
+
+        {/* Reject confirmation */}
+        <AlertDialog open={pendingReject !== null} onOpenChange={(open) => { if (!open) setPendingReject(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reject {pendingReject?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove the provider from customer-facing results immediately. They will no longer appear in matches or quote requests. You can re-approve them later if needed.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (pendingReject) {
+                    updateApprovalStatus(pendingReject.id, "rejected");
+                    setPendingReject(null);
+                  }
+                }}
+              >
+                Reject provider
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Add/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); else setDialogOpen(true); }}>
