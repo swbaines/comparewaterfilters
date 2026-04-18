@@ -17,6 +17,8 @@ import { template as paymentConfirmation } from './payment-confirmation.tsx'
 import { template as vendorWelcome } from './vendor-welcome.tsx'
 import { template as adminVendorNotification } from './admin-vendor-notification.tsx'
 import { template as vendorPriceChangeNotice } from './vendor-price-change-notice.tsx'
+import { template as vendorApplicationApproved } from './vendor-application-approved.tsx'
+import { template as vendorApplicationRejected } from './vendor-application-rejected.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'vendor-lead-notification': vendorLeadNotification,
@@ -27,4 +29,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'vendor-welcome': vendorWelcome,
   'admin-vendor-notification': adminVendorNotification,
   'vendor-price-change-notice': vendorPriceChangeNotice,
+  'vendor-application-approved': vendorApplicationApproved,
+  'vendor-application-rejected': vendorApplicationRejected,
 }
