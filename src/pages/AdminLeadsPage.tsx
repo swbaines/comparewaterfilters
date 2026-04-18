@@ -45,6 +45,20 @@ export default function AdminLeadsPage() {
     },
   });
 
+  const { data: vendorEmailStats } = useQuery({
+    queryKey: ["approved-vendor-email-stats"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("providers")
+        .select("name, contact_email")
+        .eq("approval_status", "approved");
+      if (error) throw error;
+      const total = data?.length ?? 0;
+      const missing = (data ?? []).filter((v) => !v.contact_email || !v.contact_email.trim());
+      return { total, missing: missing.map((v) => v.name), missingCount: missing.length };
+    },
+  });
+
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? 85);
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 50);
 
@@ -440,6 +454,24 @@ export default function AdminLeadsPage() {
             <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
               <strong>30-day notice required (Terms 19.3).</strong> Saving will email all approved vendors immediately and the new pricing takes effect <strong>30 days from today</strong>. Until then, new leads continue to use the current rates.
             </div>
+            {vendorEmailStats && vendorEmailStats.missingCount > 0 && (
+              <div className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+                <strong>
+                  {vendorEmailStats.missingCount} of {vendorEmailStats.total} approved vendor
+                  {vendorEmailStats.total === 1 ? "" : "s"} won't be notified.
+                </strong>{" "}
+                The following are missing a contact email and will not receive the 30-day notice:
+                <ul className="mt-1 ml-4 list-disc">
+                  {vendorEmailStats.missing.slice(0, 8).map((n) => (
+                    <li key={n}>{n}</li>
+                  ))}
+                  {vendorEmailStats.missing.length > 8 && (
+                    <li>…and {vendorEmailStats.missing.length - 8} more</li>
+                  )}
+                </ul>
+                <p className="mt-2">Add a contact email on each vendor's profile to ensure compliance.</p>
+              </div>
+            )}
             <div className="space-y-3">
               <div>
                 <Label htmlFor="owner-price">Owner lead price (AUD)</Label>
