@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -63,6 +63,15 @@ export default function AdminProvidersPage() {
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
+  const [auditOpen, setAuditOpen] = useState(false);
+
+  const validSystemTypeIds = new Set(systemTypes.map((s) => s.id));
+  const auditResults = providers
+    .map((p) => {
+      const invalid = (p.system_types || []).filter((id) => !validSystemTypeIds.has(id));
+      return invalid.length > 0 ? { id: p.id, name: p.name, slug: p.slug, invalid } : null;
+    })
+    .filter((r): r is { id: string; name: string; slug: string; invalid: string[] } => r !== null);
 
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
@@ -197,9 +206,17 @@ export default function AdminProvidersPage() {
             <h1 className="text-2xl font-bold">Provider Management</h1>
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
-          <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
-            <Plus className="h-4 w-4" /> Add Provider
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setAuditOpen(true)} className="gap-2">
+              <ShieldCheck className="h-4 w-4" /> Audit System Types
+              {auditResults.length > 0 && (
+                <Badge variant="destructive" className="ml-1">{auditResults.length}</Badge>
+              )}
+            </Button>
+            <Button onClick={() => { setForm(emptyForm); setEditId(null); setDialogOpen(true); }} className="gap-2">
+              <Plus className="h-4 w-4" /> Add Provider
+            </Button>
+          </div>
         </div>
 
         {/* Pending Applications */}
