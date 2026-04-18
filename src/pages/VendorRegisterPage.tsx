@@ -348,7 +348,7 @@ export default function VendorRegisterPage() {
               businessName: profile.name,
               vendorEmail: email,
               abn: profile.abn.replace(/\s/g, ""),
-              states: profile.states,
+              states: derivedStates,
               systemTypes: profile.systemTypes,
               hasPublicLiability: profile.hasPublicLiability,
               registeredAt: new Date().toISOString(),
