@@ -53,6 +53,8 @@ export default function AdminLoginPage() {
 
   if (mode === "sent") {
     return (
+      <>
+      <NoIndex />
       <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
         <Card className="w-full max-w-sm text-center">
           <CardHeader>
@@ -80,11 +82,14 @@ export default function AdminLoginPage() {
           </CardContent>
         </Card>
       </div>
+      </>
     );
   }
 
   if (mode === "forgot") {
     return (
+      <>
+      <NoIndex />
       <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
@@ -124,10 +129,13 @@ export default function AdminLoginPage() {
           </CardContent>
         </Card>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    <NoIndex />
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
