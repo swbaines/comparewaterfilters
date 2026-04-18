@@ -105,14 +105,6 @@ export default function VendorProfilePage() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    states: [] as string[],
-    service_base_suburb: "",
-    service_base_postcode: "",
-    service_base_state: "",
-    service_base_lat: null as number | null,
-    service_base_lng: null as number | null,
-    service_radius_km: 50,
-    statewide: false,
     system_types: [] as string[],
     brands: "",
     price_range: "mid" as string,
@@ -124,6 +116,18 @@ export default function VendorProfilePage() {
     website: "",
     phone: "",
     contact_email: "",
+  });
+
+  const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
+    mode: "radius",
+    baseSuburb: "",
+    basePostcode: "",
+    baseState: "",
+    baseLat: null,
+    baseLng: null,
+    radiusKm: 50,
+    statewide: false,
+    regions: [],
   });
 
   useEffect(() => {
