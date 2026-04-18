@@ -16,6 +16,7 @@ import type { Provider } from "@/data/providers";
 import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 
 function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
   const colors = {
