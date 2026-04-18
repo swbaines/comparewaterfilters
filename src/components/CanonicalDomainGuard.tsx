@@ -16,10 +16,10 @@ const NON_CANONICAL_PATTERNS = [
   /\.lovableproject\.com$/i,
 ];
 
-// Don't redirect the in-editor preview iframe — only the public published staging URL.
+// Only redirect the published *.lovable.app staging URL.
+// *.lovableproject.com hosts are editor/sandbox previews — never redirect those.
 const isPublishedStagingHost = (host: string) =>
-  NON_CANONICAL_PATTERNS.some((p) => p.test(host)) &&
-  !host.startsWith("id-preview--");
+  /\.lovable\.app$/i.test(host) && !host.startsWith("id-preview--");
 
 export default function CanonicalDomainGuard() {
   useEffect(() => {
