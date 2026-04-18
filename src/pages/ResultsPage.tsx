@@ -9,6 +9,7 @@ import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Sta
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
+import { formatCoverageLabel } from "@/lib/serviceArea";
 import type { Recommendation } from "@/data/recommendations";
 import type { Provider } from "@/data/providers";
 import { useProviders } from "@/hooks/useProviders";
@@ -142,7 +143,10 @@ function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; r
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 shrink-0 text-primary" />
-            <span className="text-muted-foreground">{provider.location.states.join(", ")}</span>
+            <span className="text-muted-foreground">
+              {formatCoverageLabel(provider.location.regions, provider.location.states) ||
+                provider.location.states.join(", ")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 shrink-0 text-primary" />

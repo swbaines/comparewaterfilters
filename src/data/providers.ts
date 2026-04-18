@@ -5,7 +5,10 @@ export interface Provider {
   description: string;
   logo?: string;
   location: {
+    /** Effective state codes after expanding metro tokens (used for matching). */
     states: string[];
+    /** Raw saved coverage tokens (state codes + METRO_* tokens) for friendly labels. */
+    regions?: string[];
     /** @deprecated Use serviceBase + serviceRadiusKm instead */
     postcodeRanges?: string[];
     serviceBase?: {

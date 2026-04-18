@@ -23,6 +23,7 @@ export function useProviders() {
         logo: row.logo ?? undefined,
         location: {
           states: regionsToStates(row.states || []),
+          regions: row.states || [],
           serviceBase:
             row.service_base_lat != null && row.service_base_lng != null
               ? {
