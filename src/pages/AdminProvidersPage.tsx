@@ -718,6 +718,105 @@ export default function AdminProvidersPage() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* System Type Audit Dialog */}
+        <Dialog open={auditOpen} onOpenChange={setAuditOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5" /> System Types Audit
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Scans all providers for <code className="text-xs bg-muted px-1 rounded">system_types</code> values that don't match a known ID in the recommendation engine.
+              </p>
+              <div className="text-xs text-muted-foreground">
+                <strong>Valid IDs:</strong>{" "}
+                {systemTypes.map((s) => s.id).join(", ")}
+              </div>
+
+              {auditResults.length === 0 ? (
+                <div className="flex items-center gap-2 rounded-md border border-green-200 bg-green-50 p-4 text-green-800">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <div>
+                    <div className="font-medium">All clean</div>
+                    <div className="text-sm">All {providers.length} provider(s) use valid system type IDs.</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-900">
+                    <AlertTriangle className="h-5 w-5" />
+                    <span className="text-sm font-medium">
+                      {auditResults.length} provider(s) have invalid system type IDs
+                    </span>
+                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Provider</TableHead>
+                        <TableHead>Invalid IDs</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditResults.map((r) => (
+                        <TableRow key={r.id}>
+                          <TableCell className="font-medium">{r.name}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {r.invalid.map((id) => (
+                                <Badge key={id} variant="destructive" className="text-xs">{id}</Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const provider = providers.find((p) => p.id === r.id);
+                                if (provider) {
+                                  setEditId(provider.id);
+                                  setForm({
+                                    name: provider.name,
+                                    slug: provider.slug,
+                                    description: provider.description,
+                                    logo: provider.logo,
+                                    states: provider.states,
+                                    postcode_ranges: provider.postcode_ranges,
+                                    system_types: provider.system_types,
+                                    brands: provider.brands,
+                                    price_range: provider.price_range,
+                                    rating: provider.rating,
+                                    review_count: provider.review_count,
+                                    years_in_business: provider.years_in_business,
+                                    certifications: provider.certifications,
+                                    highlights: provider.highlights,
+                                    available_for_quote: provider.available_for_quote,
+                                    response_time: provider.response_time,
+                                    warranty: provider.warranty,
+                                    website: provider.website,
+                                    phone: provider.phone,
+                                  });
+                                  setAuditOpen(false);
+                                  setDialogOpen(true);
+                                }
+                              }}
+                            >
+                              <Pencil className="h-3 w-3 mr-1" /> Fix
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
