@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getEffectiveLeadPrices } from "@/lib/leadPricing";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,6 +17,11 @@ export default function VendorTermsAcceptance({ providerId, onAccepted }: Vendor
   const [agreeLicensedPlumber, setAgreeLicensedPlumber] = useState(false);
   const [agreeRemovalTerms, setAgreeRemovalTerms] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [prices, setPrices] = useState<{ owner_lead: number; rental_lead: number } | null>(null);
+
+  useEffect(() => {
+    getEffectiveLeadPrices().then(setPrices).catch(() => setPrices({ owner_lead: 85, rental_lead: 50 }));
+  }, []);
 
   const allAccepted = agreeLeadPricing && agreeLicensedPlumber && agreeRemovalTerms;
 
@@ -57,8 +63,8 @@ export default function VendorTermsAcceptance({ providerId, onAccepted }: Vendor
               Leads are priced based on the customer's property ownership status:
             </p>
             <ul className="text-sm text-muted-foreground space-y-1 mb-4 ml-4 list-disc">
-              <li><strong>Homeowner leads:</strong> $85 per qualified lead</li>
-              <li><strong>Rental property leads:</strong> $50 per qualified lead</li>
+              <li><strong>Homeowner leads:</strong> ${prices?.owner_lead ?? "—"} per qualified lead</li>
+              <li><strong>Rental property leads:</strong> ${prices?.rental_lead ?? "—"} per qualified lead</li>
             </ul>
             <p className="text-sm text-muted-foreground mb-4">
               You will be invoiced monthly for all qualified leads sent to your business during the billing period.
