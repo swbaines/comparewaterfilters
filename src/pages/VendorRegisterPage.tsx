@@ -105,6 +105,31 @@ export default function VendorRegisterPage() {
   const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  const handleResendVerification = async () => {
+    if (resending || resendCooldown > 0) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: `${window.location.origin.includes('lovableproject.com') ? 'https://comparewaterfilters.lovable.app' : window.location.origin}/vendor/register?step=profile` },
+    });
+    setResending(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Verification email resent — check your inbox.");
+      setResendCooldown(60);
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
