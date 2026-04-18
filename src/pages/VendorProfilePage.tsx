@@ -161,7 +161,7 @@ export default function VendorProfilePage() {
           highlights: form.highlights.split(",").map((s) => s.trim()).filter(Boolean),
           response_time: form.response_time,
           warranty: form.warranty,
-          website: form.website || null,
+          website: form.website ? (/^https?:\/\//i.test(form.website.trim()) ? form.website.trim() : `https://${form.website.trim()}`) : null,
           phone: form.phone || null,
           contact_email: form.contact_email || null,
         })
