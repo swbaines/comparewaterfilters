@@ -26,7 +26,7 @@ const statusColors: Record<string, string> = {
 const systemTypeLabels: Record<string, string> = {
   "under-sink-carbon": "Under-Sink Carbon Filter",
   "reverse-osmosis": "Reverse Osmosis",
-  "whole-house-carbon": "Whole House Filtration",
+  "whole-house-filtration": "Whole House Filtration",
   "whole-house-combo": "Whole House Combo",
   "water-softener": "Water Softener",
   "uv-system": "UV Disinfection System",

@@ -61,8 +61,8 @@ export const systemTypes: SystemType[] = [
     icon: "shield-check",
   },
   {
-    id: "whole-house-carbon",
-    slug: "whole-house-carbon-filtration",
+    id: "whole-house-filtration",
+    slug: "whole-house-filtration",
     name: "Whole House Filtration",
     whatItDoes: "Installed at the point of entry to your property, filtering all water before it reaches any tap, shower, or appliance. Removes chlorine, sediment, and improves water quality throughout the entire home.",
     whatItDoesNot: "Does not remove fluoride, heavy metals, or dissolved minerals. Does not produce ultra-pure drinking water. Not a substitute for UV treatment on untreated water sources.",

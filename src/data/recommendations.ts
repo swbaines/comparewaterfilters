@@ -96,8 +96,8 @@ export const recommendations: Recommendation[] = [
     sortOrder: 2,
   },
   {
-    id: "whole-house-carbon",
-    slug: "whole-house-carbon-filter",
+    id: "whole-house-filtration",
+    slug: "whole-house-filtration",
     title: "Whole House Filtration",
     category: "Whole House Filtration",
     description: "Installed at the point of entry to your home, filtering all water throughout the property. Removes chlorine, sediment, and improves water quality from every tap, shower, and appliance.",

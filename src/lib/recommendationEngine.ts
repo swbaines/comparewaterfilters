@@ -409,7 +409,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       primaryReason = `${stateChlorineNote}An under-sink carbon filter is the best option within your budget — it effectively removes chlorine, sediment, and improves taste at your kitchen tap. However, it only addresses drinking water, not your full concern for whole-home coverage.`;
       secondaryId = "under-sink-carbon";
       secondaryReason = `At this budget, an under-sink carbon filter is the most practical starting point — affordable and effective for drinking water quality.`;
-      premiumId = "whole-house-carbon";
+      premiumId = "whole-house-filtration";
       premiumReason = `A whole house filtration system is the proper solution for your concerns — filtering chlorine from every tap, shower, and appliance. Note: whole house systems start from $2,500 installed, above your current budget.`;
       warnings.push(
         "Important: Your concerns (skin/hair, whole home coverage, or appliance protection) are best addressed by a whole house filtration system, which starts from around $2,500 installed. We've recommended the best option within your budget, but a whole house system would be the proper long-term solution."
@@ -435,7 +435,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     primaryReason = `With your water source, a sediment pre-filter is the essential first step — removing dirt, rust, debris, and particles from your rainwater or tank water before it enters your home.`;
     secondaryId = "uv-system";
     secondaryReason = `Adding UV disinfection to your sediment filter is strongly recommended — it kills bacteria, viruses, and microorganisms in your tank water without chemicals, making it safe for your whole family.`;
-    premiumId = roTrigger ? "reverse-osmosis" : "whole-house-carbon";
+    premiumId = roTrigger ? "reverse-osmosis" : "whole-house-filtration";
     premiumReason = roTrigger
       ? `For the safest possible drinking water, combining your sediment pre-filter and UV system with a reverse osmosis unit at the kitchen delivers the complete three-stage solution — the approach recommended by water quality experts for tank and bore water.`
       : `For comprehensive whole-home protection, a whole house filtration system with sediment, carbon, and UV stages delivers clean, safe water from every tap and shower throughout your home.`;
@@ -453,7 +453,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryId = "reverse-osmosis";
       secondaryReason = `If the full combo is outside your budget, a reverse osmosis system on its own is the priority — it's the only household technology that removes fluoride, PFAS, heavy metals, and microplastics from your drinking water. $800–$1,600 installed. You can add whole house filtration later.`;
     } else {
-      secondaryId = "whole-house-carbon";
+      secondaryId = "whole-house-filtration";
       secondaryReason = `If the full combo is outside your budget, start with a whole house filtration system — it delivers chlorine-free water to every tap, shower, and appliance, addressing your skin, hair, and whole-home concerns. $2,000–$5,000 installed. You can add an RO drinking water unit later.`;
     }
     premiumId = "whole-house-combo";
@@ -462,7 +462,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   else if (wholeHomeTrigger && !roTrigger) {
     // Whole home + taste/chlorine only → WH primary, under-sink budget, combo premium
-    primaryId = "whole-house-carbon";
+    primaryId = "whole-house-filtration";
     primaryReason = `${stateChlorineNote}A whole house filtration system is the right choice — no other solution delivers filtered water to every tap, shower, and appliance in your home. ${f.isHighChlorineState ? `This removes chlorine from every water outlet, protecting your skin, hair, and appliances.` : "It removes chlorine, sediment, and chemicals from your entire water supply."} Typically $2,000–$5,000 installed.`;
     secondaryId = "under-sink-carbon";
     secondaryReason = `An under-sink carbon filter addresses drinking water only — it won't solve whole-home concerns like skin irritation, shower chlorine, or appliance protection. But it's an affordable starting point if a whole house system isn't in budget right now.`;
