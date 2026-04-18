@@ -37,6 +37,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-3 text-sm font-semibold">Support</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/about" className="hover:text-foreground">About Us</Link></li>
               <li><Link to="/how-it-works" className="hover:text-foreground">How Recommendations Work</Link></li>
               <li><Link to="/contact" className="hover:text-foreground">Contact Us</Link></li>
               <li><Link to="/provider-match" className="hover:text-foreground">Request Provider Match</Link></li>
