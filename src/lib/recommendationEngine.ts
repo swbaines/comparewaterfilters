@@ -386,5 +386,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     premiumReason,
     summary,
     warnings,
+    explanation: {
+      rule: dominantRule,
+      ruleLabel: RULE_LABELS[dominantRule],
+      appliedRules,
+      triggeringConcerns,
+      // The Good (secondary) tier reason already contains the honest trade-off
+      // wording for every branch — surface it verbatim so we never drift.
+      goodTierTradeoff: secondaryReason,
+    },
   };
 }
