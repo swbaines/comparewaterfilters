@@ -21,7 +21,7 @@ import {
 } from "@stripe/react-stripe-js";
 
 // ── Stripe publishable key ────────────────────────────────────────────────────
-const stripePromise = loadStripe("pk_live_51TGc4tFU68zxLrQXO6emd9pwIuhsswQvxP20juxUrRgoJEFfMy2ZFHjZR5bee7E5kt7WaAdlH8weeFtcv56UORqY00rUvp2yi0");
+const stripePromise = loadStripe("pk_live_51TGc4iFAFFjkrVg3A5F9bsS2XXQkwKVWE8wnnPcT8onOI4jeUt8Sjq0H71AAd15jCDm57kDwH0dOzVuojTq3DJqj006YmVTHZi");
 
 const LEAD_PRICES = [
   { type: "Owner lead", price: "$85", description: "Customer owns their property" },
