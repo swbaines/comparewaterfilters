@@ -98,8 +98,8 @@ Deno.serve(async (req) => {
     const extracted = data.data?.json || data.json || {};
     const systemTypeMap: Record<string, string> = {
       "reverse osmosis": "reverse-osmosis",
-      "whole house carbon": "whole-house-carbon",
-      "whole house": "whole-house-carbon",
+      "whole house carbon": "whole-house-filtration",
+      "whole house": "whole-house-filtration",
       "uv system": "uv-system",
       "uv filter": "uv-system",
       "water softener": "water-softener",

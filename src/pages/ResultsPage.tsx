@@ -520,9 +520,9 @@ export default function ResultsPage() {
               ? [{ label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }]
               : [{ label: "Budget alternative", rec: result.secondary, variant: "value" as const }, { label: "Our recommendation", rec: result.primary, variant: "allrounder" as const }, { label: "Premium", rec: result.premium, variant: "premium" as const }];
 
-            const chlorineIds = ["under-sink-carbon", "reverse-osmosis", "whole-house-carbon", "whole-house-combo"];
+            const chlorineIds = ["under-sink-carbon", "reverse-osmosis", "whole-house-filtration", "whole-house-combo"];
             const roIds = ["reverse-osmosis", "whole-house-combo"];
-            const wholeHomeIds = ["whole-house-carbon", "whole-house-combo"];
+            const wholeHomeIds = ["whole-house-filtration", "whole-house-combo"];
 
             const rows: { label: string; render: (rec: Recommendation) => React.ReactNode }[] = [
               { label: "System type", render: (r) => <span className="font-medium">{r.title}</span> },

@@ -38,7 +38,7 @@ describe("Water Softener filtering", () => {
       budget: "3000-5000",
     };
     const result = generateRecommendations(answersWithHardWater);
-    expect(result.primary.id).toBe("whole-house-carbon");
+    expect(result.primary.id).toBe("whole-house-filtration");
   });
 });
 
@@ -53,7 +53,7 @@ describe("Skin-hair concern scoring", () => {
     };
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    const hasSkinSystem = allIds.includes("shower-filter") || allIds.includes("whole-house-carbon");
+    const hasSkinSystem = allIds.includes("shower-filter") || allIds.includes("whole-house-filtration");
     expect(hasSkinSystem).toBe(true);
   });
 });
@@ -111,7 +111,7 @@ describe("Renter edge cases", () => {
     };
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).not.toContain("whole-house-carbon");
+    expect(allIds).not.toContain("whole-house-filtration");
     expect(allIds).not.toContain("water-softener");
   });
 
