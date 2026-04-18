@@ -67,6 +67,7 @@ export default function AdminProvidersPage() {
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
   const [auditOpen, setAuditOpen] = useState(false);
   const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
 
   const updateApprovalStatus = async (id: string, value: ProviderRow["approval_status"]) => {
     const { error } = await supabase
@@ -425,7 +426,7 @@ export default function AdminProvidersPage() {
                       <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => { if (confirm("Delete this provider?")) deleteMutation.mutate(p.id); }}>
+                      <Button variant="ghost" size="icon" onClick={() => setPendingDelete({ id: p.id, name: p.name })}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
                     </TableCell>
@@ -438,6 +439,32 @@ export default function AdminProvidersPage() {
             </Table>
           </Card>
         )}
+
+        {/* Delete confirmation */}
+        <AlertDialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {pendingDelete?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently removes the provider and all of their data. This action cannot be undone. Consider rejecting them instead if you might re-enable them later.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (pendingDelete) {
+                    deleteMutation.mutate(pendingDelete.id);
+                    setPendingDelete(null);
+                  }
+                }}
+              >
+                Delete permanently
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Reject confirmation */}
         <AlertDialog open={pendingReject !== null} onOpenChange={(open) => { if (!open) setPendingReject(null); }}>
