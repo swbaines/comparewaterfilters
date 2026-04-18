@@ -75,6 +75,11 @@ export default function AdminProvidersPage() {
 
   const upsertMutation = useMutation({
     mutationFn: async (provider: TablesInsert<"providers">) => {
+      const validIds = new Set(systemTypes.map((s) => s.id));
+      const invalid = (provider.system_types || []).filter((id) => !validIds.has(id));
+      if (invalid.length > 0) {
+        throw new Error(`Invalid system type ID(s): ${invalid.join(", ")}. Pick from the dropdown.`);
+      }
       if (editId) {
         const { error } = await supabase.from("providers").update(provider).eq("id", editId);
         if (error) throw error;
