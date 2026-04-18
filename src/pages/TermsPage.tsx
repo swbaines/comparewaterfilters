@@ -1,9 +1,17 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageMeta from "@/components/PageMeta";
+import { getEffectiveLeadPrices } from "@/lib/leadPricing";
 
 export default function TermsPage() {
+  const [prices, setPrices] = useState<{ owner_lead: number; rental_lead: number }>({ owner_lead: 85, rental_lead: 50 });
+
+  useEffect(() => {
+    getEffectiveLeadPrices().then(setPrices).catch(() => {});
+  }, []);
+
   return (
     <>
       <PageMeta
@@ -173,8 +181,8 @@ export default function TermsPage() {
           <p>19.1 You will be charged a lead fee for each valid quote request submitted by a Customer and matched to your profile ("Lead").</p>
           <p>19.2 The lead fee is determined by the Customer's ownership status as follows:</p>
           <ol type="a">
-            <li>Owner-occupier (Customer owns their property): <strong>AUD $85 per Lead</strong></li>
-            <li>Renter (Customer is renting): <strong>AUD $50 per Lead</strong></li>
+            <li>Owner-occupier (Customer owns their property): <strong>AUD ${prices.owner_lead} per Lead</strong></li>
+            <li>Renter (Customer is renting): <strong>AUD ${prices.rental_lead} per Lead</strong></li>
           </ol>
           <p>19.3 Lead fees are subject to change. We will provide at least 30 days written notice of any change to lead pricing.</p>
           <p>19.4 A Lead is deemed valid when it contains a Customer's verified name, email address, and mobile phone number submitted through the Platform.</p>
