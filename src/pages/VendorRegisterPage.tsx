@@ -105,6 +105,31 @@ export default function VendorRegisterPage() {
   const [certFiles, setCertFiles] = useState<Record<string, File | null>>({});
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
+
+  const handleResendVerification = async () => {
+    if (resending || resendCooldown > 0) return;
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: `${window.location.origin.includes('lovableproject.com') ? 'https://comparewaterfilters.lovable.app' : window.location.origin}/vendor/register?step=profile` },
+    });
+    setResending(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Verification email resent — check your inbox.");
+      setResendCooldown(60);
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -348,25 +373,25 @@ export default function VendorRegisterPage() {
             <p className="text-sm text-muted-foreground">
               Once verified, you'll be redirected to complete your provider profile.
             </p>
-            <div className="pt-2 space-y-2">
+            <div className="pt-2 space-y-3">
               <p className="text-xs text-muted-foreground">
-                Didn't receive the email? Check your spam folder or{" "}
-                <button
-                  type="button"
-                  className="text-primary hover:underline font-medium"
-                  onClick={async () => {
-                    const { error } = await supabase.auth.resend({ type: 'signup', email });
-                    if (error) {
-                      toast.error(error.message);
-                    } else {
-                      toast.success("Verification email resent!");
-                    }
-                  }}
-                >
-                  resend it
-                </button>
-                .
+                Didn't receive the email? Check your spam folder, then resend below.
               </p>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={handleResendVerification}
+                disabled={resending || resendCooldown > 0}
+              >
+                {resending ? (
+                  <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Resending…</>
+                ) : resendCooldown > 0 ? (
+                  `Resend confirmation email (${resendCooldown}s)`
+                ) : (
+                  "Resend confirmation email"
+                )}
+              </Button>
               <p className="text-sm text-muted-foreground">
                 Already verified?{" "}
                 <Link to="/vendor/login" className="text-primary hover:underline font-medium">Sign in</Link>
