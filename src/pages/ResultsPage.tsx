@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon, Share2, Check, Copy } from "lucide-react";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
+import { lookupPostcodeCoords } from "@/lib/geo";
 import type { Recommendation } from "@/data/recommendations";
 import type { Provider } from "@/data/providers";
 import { useProviders } from "@/hooks/useProviders";
@@ -227,7 +228,6 @@ export default function ResultsPage() {
     if (urlData) {
       try {
         parsed = JSON.parse(atob(urlData)) as QuizAnswers;
-        // Also store in sessionStorage so navigation within the page works
         sessionStorage.setItem("quizAnswers", JSON.stringify(parsed));
       } catch { /* invalid data, fall through */ }
     }
@@ -239,8 +239,20 @@ export default function ResultsPage() {
     setAnswers(parsed);
     const rec = generateRecommendations(parsed);
     setResult(rec);
+
     if (dbProviders.length > 0) {
-      setProviderMatches(matchProviders(parsed, rec, dbProviders));
+      // Look up customer coords for radius matching, then match
+      let cancelled = false;
+      (async () => {
+        const coords = await lookupPostcodeCoords(parsed!.postcode || parsed!.suburb);
+        if (cancelled) return;
+        setProviderMatches(
+          matchProviders(parsed!, rec, dbProviders, 3, {
+            customerCoords: coords ? { lat: coords.lat, lng: coords.lng } : undefined,
+          })
+        );
+      })();
+      return () => { cancelled = true; };
     }
   }, [navigate, dbProviders, searchParams]);
 

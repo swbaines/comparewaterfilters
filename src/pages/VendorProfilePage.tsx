@@ -13,6 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon, Mail } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -104,7 +106,13 @@ export default function VendorProfilePage() {
     name: "",
     description: "",
     states: [] as string[],
-    postcode_ranges: "",
+    service_base_suburb: "",
+    service_base_postcode: "",
+    service_base_state: "",
+    service_base_lat: null as number | null,
+    service_base_lng: null as number | null,
+    service_radius_km: 50,
+    statewide: false,
     system_types: [] as string[],
     brands: "",
     price_range: "mid" as string,
@@ -120,11 +128,18 @@ export default function VendorProfilePage() {
 
   useEffect(() => {
     if (provider) {
+      const radius = provider.service_radius_km ?? 50;
       setForm({
         name: provider.name || "",
         description: provider.description || "",
         states: provider.states || [],
-        postcode_ranges: (provider.postcode_ranges || []).join(", "),
+        service_base_suburb: provider.service_base_suburb || "",
+        service_base_postcode: provider.service_base_postcode || "",
+        service_base_state: provider.service_base_state || "",
+        service_base_lat: provider.service_base_lat != null ? Number(provider.service_base_lat) : null,
+        service_base_lng: provider.service_base_lng != null ? Number(provider.service_base_lng) : null,
+        service_radius_km: radius >= 2000 ? 500 : radius,
+        statewide: radius >= 2000,
         system_types: provider.system_types || [],
         brands: (provider.brands || []).join(", "),
         price_range: provider.price_range || "mid",
@@ -146,13 +161,22 @@ export default function VendorProfilePage() {
       if (invalid.length > 0) {
         throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
       }
+      if (!form.service_base_lat || !form.service_base_lng) {
+        throw new Error("Please select your base service location");
+      }
+      const radiusToSave = form.statewide ? 5000 : form.service_radius_km;
       const { error } = await supabase
         .from("providers")
         .update({
           name: form.name,
           description: form.description,
           states: form.states,
-          postcode_ranges: form.postcode_ranges.split(",").map((s) => s.trim()).filter(Boolean),
+          service_base_suburb: form.service_base_suburb,
+          service_base_postcode: form.service_base_postcode,
+          service_base_state: form.service_base_state,
+          service_base_lat: form.service_base_lat,
+          service_base_lng: form.service_base_lng,
+          service_radius_km: radiusToSave,
           system_types: form.system_types,
           brands: form.brands.split(",").map((s) => s.trim()).filter(Boolean),
           price_range: form.price_range as any,
@@ -323,8 +347,63 @@ export default function VendorProfilePage() {
               </Popover>
             </div>
             <div className="space-y-2">
-              <Label>Postcode Ranges</Label>
-              <Input value={form.postcode_ranges} onChange={(e) => setForm((p) => ({ ...p, postcode_ranges: e.target.value }))} placeholder="2000-2999, 3000-3999" />
+              <Label>Base Service Location</Label>
+              <ServiceBaseAutocomplete
+                value={
+                  form.service_base_suburb
+                    ? {
+                        suburb: form.service_base_suburb,
+                        postcode: form.service_base_postcode,
+                        state: form.service_base_state,
+                      }
+                    : null
+                }
+                onSelect={(s) =>
+                  setForm((p) => ({
+                    ...p,
+                    service_base_suburb: s.suburb,
+                    service_base_postcode: s.postcode,
+                    service_base_state: s.state,
+                    service_base_lat: s.lat,
+                    service_base_lng: s.lng,
+                    // Auto-add the state to the states list if missing
+                    states: p.states.includes(s.state) ? p.states : [...p.states, s.state],
+                  }))
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                The suburb you operate out of. We use this to match you with nearby customers.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Service Radius</Label>
+                <span className="text-sm font-medium tabular-nums">
+                  {form.statewide ? "Statewide+" : `${form.service_radius_km} km`}
+                </span>
+              </div>
+              <Slider
+                min={5}
+                max={500}
+                step={5}
+                value={[form.service_radius_km]}
+                onValueChange={(v) => setForm((p) => ({ ...p, service_radius_km: v[0], statewide: false }))}
+                disabled={form.statewide}
+              />
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="statewide"
+                  checked={form.statewide}
+                  onCheckedChange={(v) => setForm((p) => ({ ...p, statewide: !!v }))}
+                />
+                <Label htmlFor="statewide" className="text-sm font-normal cursor-pointer">
+                  I service this whole state (or further)
+                </Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
+              </p>
             </div>
           </CardContent>
         </Card>
