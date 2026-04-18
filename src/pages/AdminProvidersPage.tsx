@@ -603,7 +603,7 @@ export default function AdminProvidersPage() {
 
         {/* Add/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); else setDialogOpen(true); }}>
-          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogContent className="sm:max-w-4xl lg:max-w-5xl">
             <DialogHeader>
               <DialogTitle>{editId ? "Edit Provider" : "Add Provider"}</DialogTitle>
             </DialogHeader>
