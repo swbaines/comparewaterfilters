@@ -51,11 +51,10 @@ export default function RequestQuoteDialog({
     e.preventDefault();
     setSending(true);
     try {
-      // Fetch current lead prices from DB (admin-editable)
-      const { data: priceRows } = await supabase.from("lead_prices").select("system_type, price_per_lead");
-      const ownerPrice = Number(priceRows?.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? 85);
-      const rentalPrice = Number(priceRows?.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 50);
-      const leadPrice = answers.ownershipStatus === "Rent" ? rentalPrice : ownerPrice;
+      // Resolve effective prices honoring 30-day notice (Terms 19.3)
+      const { getEffectiveLeadPrices } = await import("@/lib/leadPricing");
+      const prices = await getEffectiveLeadPrices();
+      const leadPrice = answers.ownershipStatus === "Rent" ? prices.rental_lead : prices.owner_lead;
 
       const quoteId = crypto.randomUUID();
       const { error } = await supabase.from("quote_requests").insert({

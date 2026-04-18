@@ -261,13 +261,31 @@ export default function VendorBillingPage() {
     },
   });
 
+  const { data: pendingPriceChanges = [] } = useQuery({
+    queryKey: ["lead-price-changes-pending"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("lead_price_changes")
+        .select("system_type, old_price, new_price, effective_date")
+        .gt("effective_date", new Date().toISOString())
+        .order("effective_date", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
 
+  // For display purposes, when a change is pending we show the OLD (still-effective) price
+  const displayOwnerPrice = pendingPriceChanges.find((c) => c.system_type === "owner_lead")?.old_price ?? ownerLeadPrice;
+  const displayRentalPrice = pendingPriceChanges.find((c) => c.system_type === "rental_lead")?.old_price ?? rentalLeadPrice;
+
   const livePriceRows = [
-    { type: "Owner lead", price: `$${ownerLeadPrice}`, description: "Customer owns their property" },
-    { type: "Rental lead", price: `$${rentalLeadPrice}`, description: "Customer is renting" },
+    { type: "Owner lead", price: `$${Number(displayOwnerPrice)}`, description: "Customer owns their property" },
+    { type: "Rental lead", price: `$${Number(displayRentalPrice)}`, description: "Customer is renting" },
   ];
+
 
   const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
     if (l.lead_price) return sum + Number(l.lead_price);
@@ -313,6 +331,28 @@ export default function VendorBillingPage() {
             Back to Dashboard
           </Button>
         </div>
+
+        {/* 30-day pricing change notice (Terms 19.3) */}
+        {pendingPriceChanges.length > 0 && (
+          <Alert className="border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <div className="font-semibold mb-1">Upcoming lead pricing change (30-day notice)</div>
+              <ul className="space-y-1 text-sm">
+                {pendingPriceChanges.map((c: any, i: number) => {
+                  const label = c.system_type === "owner_lead" ? "Owner lead" : c.system_type === "rental_lead" ? "Rental lead" : c.system_type;
+                  const date = new Date(c.effective_date).toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
+                  return (
+                    <li key={i}>
+                      <strong>{label}</strong>: ${Number(c.old_price)} → <strong>${Number(c.new_price)}</strong> per lead, effective <strong>{date}</strong>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-2 text-xs">Per clause 19.3 of the Vendor Terms, you have 30 days written notice. Until the effective date, current rates apply.</p>
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Warning banners */}
         {provider?.stripe_customer_id && !cardSaved && (

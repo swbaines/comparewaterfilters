@@ -61,20 +61,70 @@ export default function AdminLeadsPage() {
       if (!Number.isFinite(owner) || owner < 0) throw new Error("Owner price must be a positive number");
       if (!Number.isFinite(rental) || rental < 0) throw new Error("Rental price must be a positive number");
 
-      const { error: e1 } = await supabase
-        .from("lead_prices")
-        .update({ price_per_lead: owner, updated_at: new Date().toISOString() })
-        .eq("system_type", "owner_lead");
-      if (e1) throw e1;
-      const { error: e2 } = await supabase
-        .from("lead_prices")
-        .update({ price_per_lead: rental, updated_at: new Date().toISOString() })
-        .eq("system_type", "rental_lead");
-      if (e2) throw e2;
+      const ownerChanged = owner !== ownerLeadPrice;
+      const rentalChanged = rental !== rentalLeadPrice;
+
+      if (ownerChanged) {
+        const { error } = await supabase
+          .from("lead_prices")
+          .update({ price_per_lead: owner, updated_at: new Date().toISOString() })
+          .eq("system_type", "owner_lead");
+        if (error) throw error;
+      }
+      if (rentalChanged) {
+        const { error } = await supabase
+          .from("lead_prices")
+          .update({ price_per_lead: rental, updated_at: new Date().toISOString() })
+          .eq("system_type", "rental_lead");
+        if (error) throw error;
+      }
+
+      // If anything actually changed, send 30-day notice emails to all approved vendors
+      if (ownerChanged || rentalChanged) {
+        const effectiveDateIso = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        const effectiveDateDisplay = new Date(effectiveDateIso).toLocaleDateString("en-AU", {
+          day: "numeric", month: "long", year: "numeric",
+        });
+        const changes = [
+          ownerChanged && { leadType: "Owner lead", oldPrice: ownerLeadPrice, newPrice: owner },
+          rentalChanged && { leadType: "Rental lead", oldPrice: rentalLeadPrice, newPrice: rental },
+        ].filter(Boolean);
+
+        const { data: vendors } = await supabase
+          .from("providers")
+          .select("id, name, contact_email")
+          .eq("approval_status", "approved")
+          .not("contact_email", "is", null);
+
+        const sends = (vendors || [])
+          .filter((v) => v.contact_email)
+          .map((v) =>
+            supabase.functions.invoke("send-transactional-email", {
+              body: {
+                templateName: "vendor-price-change-notice",
+                recipientEmail: v.contact_email,
+                idempotencyKey: `price-change-${v.id}-${effectiveDateIso}`,
+                templateData: {
+                  businessName: v.name,
+                  effectiveDate: effectiveDateDisplay,
+                  changes,
+                },
+              },
+            })
+          );
+        await Promise.allSettled(sends);
+        return { notified: vendors?.length || 0, effectiveDate: effectiveDateDisplay };
+      }
+      return { notified: 0, effectiveDate: null };
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["lead-prices"] });
-      toast.success("Lead prices updated");
+      queryClient.invalidateQueries({ queryKey: ["lead-price-changes"] });
+      if (res.notified > 0) {
+        toast.success(`Lead prices updated. ${res.notified} vendor${res.notified === 1 ? "" : "s"} notified — new pricing effective ${res.effectiveDate}.`);
+      } else {
+        toast.success("No changes to save");
+      }
       setPricesDialogOpen(false);
     },
     onError: (e: Error) => toast.error(e.message),
@@ -383,8 +433,11 @@ export default function AdminLeadsPage() {
           <DialogHeader><DialogTitle>Lead Pricing</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted. Changes apply to new leads going forward.
+              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted.
             </p>
+            <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+              <strong>30-day notice required (Terms 19.3).</strong> Saving will email all approved vendors immediately and the new pricing takes effect <strong>30 days from today</strong>. Until then, new leads continue to use the current rates.
+            </div>
             <div className="space-y-3">
               <div>
                 <Label htmlFor="owner-price">Owner lead price (AUD)</Label>
