@@ -150,7 +150,7 @@ export default function VendorProfilePage() {
       });
       const mode = detectCoverageMode(provider.service_base_lat, provider.service_base_lng);
       const savedStates: string[] = provider.states || [];
-      const metroValues = new Set(CAPITAL_METROS.map((m) => m.value));
+      const metroValues: Set<string> = new Set(CAPITAL_METROS.map((m) => m.value));
       setServiceArea({
         mode,
         baseSuburb: provider.service_base_suburb || "",
