@@ -13,11 +13,10 @@ import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
-import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
 import { systemTypes } from "@/data/systemTypes";
-import { deriveStatesFromBase } from "@/lib/deriveStates";
 import { Badge } from "@/components/ui/badge";
+import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
+import { computeCoverageStates } from "@/lib/serviceArea";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
