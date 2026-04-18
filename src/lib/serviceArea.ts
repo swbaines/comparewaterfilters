@@ -32,6 +32,55 @@ const METRO_VALUES: Set<string> = new Set(CAPITAL_METROS.map((m) => m.value));
 const METRO_TO_STATE: Record<string, string> = Object.fromEntries(
   CAPITAL_METROS.map((m) => [m.value, m.state])
 );
+const METRO_TO_LABEL: Record<string, string> = Object.fromEntries(
+  CAPITAL_METROS.map((m) => [m.value, m.label])
+);
+const STATE_TO_LABEL: Record<string, string> = Object.fromEntries(
+  AU_STATES.map((s) => [s.value, s.label])
+);
+
+/**
+ * Build a friendly coverage label from the raw saved tokens.
+ * - "VIC" -> "Servicing all of Victoria"
+ * - "METRO_MEL" -> "Servicing Greater Melbourne"
+ * - Mixed -> "Servicing Greater Adelaide, all of Victoria"
+ * Falls back to plain state-code list if no regions provided.
+ */
+export function formatCoverageLabel(
+  regions: string[] | undefined,
+  fallbackStates: string[]
+): string {
+  const tokens = regions && regions.length > 0 ? regions : fallbackStates;
+  if (!tokens || tokens.length === 0) return "";
+
+  // If a state is selected AND one of its metros is also selected, the state
+  // covers the metro — drop the redundant metro label.
+  const stateSet = new Set(tokens.filter((t) => !METRO_VALUES.has(t)));
+  const parts: string[] = [];
+  const seen = new Set<string>();
+
+  for (const t of tokens) {
+    if (METRO_VALUES.has(t)) {
+      const parentState = METRO_TO_STATE[t];
+      if (stateSet.has(parentState)) continue; // covered by whole-state entry
+      const label = METRO_TO_LABEL[t];
+      if (!seen.has(label)) {
+        parts.push(label);
+        seen.add(label);
+      }
+    } else {
+      const stateLabel = STATE_TO_LABEL[t] || t;
+      const phrase = `all of ${stateLabel}`;
+      if (!seen.has(phrase)) {
+        parts.push(phrase);
+        seen.add(phrase);
+      }
+    }
+  }
+
+  if (parts.length === 0) return "";
+  return `Servicing ${parts.join(", ")}`;
+}
 
 /**
  * Detect coverage mode from saved provider data.
