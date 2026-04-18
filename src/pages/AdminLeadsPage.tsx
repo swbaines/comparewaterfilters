@@ -33,6 +33,52 @@ export default function AdminLeadsPage() {
   const [invoiceProvider, setInvoiceProvider] = useState<string>("");
   const [invoicePeriod, setInvoicePeriod] = useState({ start: "", end: "" });
   const [pricesDialogOpen, setPricesDialogOpen] = useState(false);
+  const [ownerPrice, setOwnerPrice] = useState<string>("");
+  const [rentalPrice, setRentalPrice] = useState<string>("");
+
+  const { data: leadPrices = [] } = useQuery({
+    queryKey: ["lead-prices"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("lead_prices").select("*");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? 85);
+  const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 50);
+
+  const openPricesDialog = () => {
+    setOwnerPrice(String(ownerLeadPrice));
+    setRentalPrice(String(rentalLeadPrice));
+    setPricesDialogOpen(true);
+  };
+
+  const updatePricesMutation = useMutation({
+    mutationFn: async () => {
+      const owner = Number(ownerPrice);
+      const rental = Number(rentalPrice);
+      if (!Number.isFinite(owner) || owner < 0) throw new Error("Owner price must be a positive number");
+      if (!Number.isFinite(rental) || rental < 0) throw new Error("Rental price must be a positive number");
+
+      const { error: e1 } = await supabase
+        .from("lead_prices")
+        .update({ price_per_lead: owner, updated_at: new Date().toISOString() })
+        .eq("system_type", "owner_lead");
+      if (e1) throw e1;
+      const { error: e2 } = await supabase
+        .from("lead_prices")
+        .update({ price_per_lead: rental, updated_at: new Date().toISOString() })
+        .eq("system_type", "rental_lead");
+      if (e2) throw e2;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lead-prices"] });
+      toast.success("Lead prices updated");
+      setPricesDialogOpen(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ["admin-leads"],
@@ -100,7 +146,7 @@ export default function AdminLeadsPage() {
 
       let totalAmount = 0;
       for (const lead of providerLeads) {
-        const price = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? 50 : 85);
+        const price = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? rentalLeadPrice : ownerLeadPrice);
         totalAmount += price;
       }
 
@@ -121,7 +167,7 @@ export default function AdminLeadsPage() {
       if (invoiceError) throw invoiceError;
 
       for (const lead of providerLeads) {
-        const price = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? 50 : 85);
+        const price = Number(lead.lead_price) || (lead.ownership_status === "Rent" ? rentalLeadPrice : ownerLeadPrice);
         await supabase
           .from("quote_requests")
           .update({ invoice_id: invoice.id, lead_price: price })
@@ -162,7 +208,7 @@ export default function AdminLeadsPage() {
             <p className="text-muted-foreground">Track leads, manage status, and generate invoices</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setPricesDialogOpen(true)} className="gap-1">
+            <Button variant="outline" size="sm" onClick={openPricesDialog} className="gap-1">
               <Settings className="h-4 w-4" /> Lead Prices
             </Button>
           </div>
@@ -335,25 +381,49 @@ export default function AdminLeadsPage() {
       <Dialog open={pricesDialogOpen} onOpenChange={setPricesDialogOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle>Lead Pricing</DialogTitle></DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted.
+              Lead prices are determined by the customer's property ownership status, set automatically when a quote request is submitted. Changes apply to new leads going forward.
             </p>
-            <Table>
-              <TableHeader><TableRow><TableHead>Lead Type</TableHead><TableHead>Price</TableHead><TableHead>Criteria</TableHead></TableRow></TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Owner lead</TableCell>
-                  <TableCell>$85</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">Customer owns their property (Own)</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Rental lead</TableCell>
-                  <TableCell>$50</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">Customer is renting (Rent)</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="owner-price">Owner lead price (AUD)</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-muted-foreground">$</span>
+                  <Input
+                    id="owner-price"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={ownerPrice}
+                    onChange={(e) => setOwnerPrice(e.target.value)}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Customer owns their property (Own)</p>
+              </div>
+              <div>
+                <Label htmlFor="rental-price">Rental lead price (AUD)</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-muted-foreground">$</span>
+                  <Input
+                    id="rental-price"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={rentalPrice}
+                    onChange={(e) => setRentalPrice(e.target.value)}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">Customer is renting (Rent)</p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setPricesDialogOpen(false)}>Cancel</Button>
+              <Button onClick={() => updatePricesMutation.mutate()} disabled={updatePricesMutation.isPending}>
+                {updatePricesMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                Save Prices
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

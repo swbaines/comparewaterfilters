@@ -51,6 +51,12 @@ export default function RequestQuoteDialog({
     e.preventDefault();
     setSending(true);
     try {
+      // Fetch current lead prices from DB (admin-editable)
+      const { data: priceRows } = await supabase.from("lead_prices").select("system_type, price_per_lead");
+      const ownerPrice = Number(priceRows?.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? 85);
+      const rentalPrice = Number(priceRows?.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 50);
+      const leadPrice = answers.ownershipStatus === "Rent" ? rentalPrice : ownerPrice;
+
       const quoteId = crypto.randomUUID();
       const { error } = await supabase.from("quote_requests").insert({
         id: quoteId,
@@ -70,7 +76,7 @@ export default function RequestQuoteDialog({
         recommended_systems: [...new Set(recommendedSystems)],
         message: message || null,
         ownership_status: answers.ownershipStatus || null,
-        lead_price: answers.ownershipStatus === "Rent" ? 50 : 85,
+        lead_price: leadPrice,
       });
       if (error) throw error;
 
