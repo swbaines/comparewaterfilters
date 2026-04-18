@@ -45,6 +45,20 @@ export default function AdminLeadsPage() {
     },
   });
 
+  const { data: vendorEmailStats } = useQuery({
+    queryKey: ["approved-vendor-email-stats"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("providers")
+        .select("name, contact_email")
+        .eq("approval_status", "approved");
+      if (error) throw error;
+      const total = data?.length ?? 0;
+      const missing = (data ?? []).filter((v) => !v.contact_email || !v.contact_email.trim());
+      return { total, missing: missing.map((v) => v.name), missingCount: missing.length };
+    },
+  });
+
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? 85);
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 50);
 
