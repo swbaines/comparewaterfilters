@@ -439,6 +439,32 @@ export default function AdminProvidersPage() {
           </Card>
         )}
 
+        {/* Reject confirmation */}
+        <AlertDialog open={pendingReject !== null} onOpenChange={(open) => { if (!open) setPendingReject(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reject {pendingReject?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will remove the provider from customer-facing results immediately. They will no longer appear in matches or quote requests. You can re-approve them later if needed.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (pendingReject) {
+                    updateApprovalStatus(pendingReject.id, "rejected");
+                    setPendingReject(null);
+                  }
+                }}
+              >
+                Reject provider
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Add/Edit Dialog */}
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); else setDialogOpen(true); }}>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
