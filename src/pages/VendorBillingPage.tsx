@@ -286,10 +286,6 @@ export default function VendorBillingPage() {
     { type: "Rental lead", price: `$${Number(displayRentalPrice)}`, description: "Customer is renting" },
   ];
 
-  const livePriceRows = [
-    { type: "Owner lead", price: `$${ownerLeadPrice}`, description: "Customer owns their property" },
-    { type: "Rental lead", price: `$${rentalLeadPrice}`, description: "Customer is renting" },
-  ];
 
   const estimatedThisMonth = leadsThisMonth.reduce((sum: number, l: any) => {
     if (l.lead_price) return sum + Number(l.lead_price);
