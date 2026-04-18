@@ -65,14 +65,6 @@ export default function AdminProvidersPage() {
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
   const [auditOpen, setAuditOpen] = useState(false);
 
-  const validSystemTypeIds = new Set(systemTypes.map((s) => s.id));
-  const auditResults = providers
-    .map((p) => {
-      const invalid = (p.system_types || []).filter((id) => !validSystemTypeIds.has(id));
-      return invalid.length > 0 ? { id: p.id, name: p.name, slug: p.slug, invalid } : null;
-    })
-    .filter((r): r is { id: string; name: string; slug: string; invalid: string[] } => r !== null);
-
   const { data: providers = [], isLoading } = useQuery({
     queryKey: ["admin-providers"],
     queryFn: async () => {
@@ -81,6 +73,14 @@ export default function AdminProvidersPage() {
       return data as ProviderRow[];
     },
   });
+
+  const validSystemTypeIds = new Set(systemTypes.map((s) => s.id));
+  const auditResults = providers
+    .map((p) => {
+      const invalid = (p.system_types || []).filter((id) => !validSystemTypeIds.has(id));
+      return invalid.length > 0 ? { id: p.id, name: p.name, slug: p.slug, invalid } : null;
+    })
+    .filter((r): r is { id: string; name: string; slug: string; invalid: string[] } => r !== null);
 
   const upsertMutation = useMutation({
     mutationFn: async (provider: TablesInsert<"providers">) => {
