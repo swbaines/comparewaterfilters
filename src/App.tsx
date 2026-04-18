@@ -20,6 +20,7 @@ import AdminLeadsPage from "@/pages/AdminLeadsPage";
 import AdminAnalyticsPage from "@/pages/AdminAnalyticsPage";
 import AdminInvoicesPage from "@/pages/AdminInvoicesPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
+import AdminAccountPage from "@/pages/AdminAccountPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
 import VendorRegisterPage from "@/pages/VendorRegisterPage";
 import VendorForgotPasswordPage from "@/pages/VendorForgotPasswordPage";
@@ -72,6 +73,7 @@ const App = () => (
             <Route path="/admin/leads" element={<AdminRoute><AdminLeadsPage /></AdminRoute>} />
             <Route path="/admin/analytics" element={<AdminRoute><AdminAnalyticsPage /></AdminRoute>} />
             <Route path="/admin/invoices" element={<AdminRoute><AdminInvoicesPage /></AdminRoute>} />
+            <Route path="/admin/account" element={<AdminRoute><AdminAccountPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
             <Route path="/vendor/forgot-password" element={<VendorForgotPasswordPage />} />
             <Route path="/vendor/reset-password" element={<VendorResetPasswordPage />} />

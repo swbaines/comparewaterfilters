@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Save, Building2, CreditCard, User, ArrowLeft } from "lucide-react";
+import { Loader2, Save, Building2, CreditCard, User, ArrowLeft, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import AccountCredentials from "@/components/AccountCredentials";
 
 interface PaymentDetails {
   id?: string;
@@ -353,6 +354,19 @@ export default function VendorSettingsPage() {
           </Button>
         </div>
       </form>
+
+      {/* Account Credentials (login email & password) */}
+      <Separator />
+      <div className="space-y-2">
+        <h2 className="text-xl font-bold flex items-center gap-2">
+          <ShieldCheck className="h-5 w-5" />
+          Login &amp; Security
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Update the email and password you use to sign in to your vendor account.
+        </p>
+      </div>
+      <AccountCredentials />
     </div>
   );
 }
