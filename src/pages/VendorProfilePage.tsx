@@ -13,9 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon, Mail } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
-import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
-import { deriveStatesFromBase } from "@/lib/deriveStates";
+import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
+import { computeCoverageStates, detectCoverageMode, CAPITAL_METROS } from "@/lib/serviceArea";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -106,14 +105,6 @@ export default function VendorProfilePage() {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    states: [] as string[],
-    service_base_suburb: "",
-    service_base_postcode: "",
-    service_base_state: "",
-    service_base_lat: null as number | null,
-    service_base_lng: null as number | null,
-    service_radius_km: 50,
-    statewide: false,
     system_types: [] as string[],
     brands: "",
     price_range: "mid" as string,
@@ -127,20 +118,24 @@ export default function VendorProfilePage() {
     contact_email: "",
   });
 
+  const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
+    mode: "radius",
+    baseSuburb: "",
+    basePostcode: "",
+    baseState: "",
+    baseLat: null,
+    baseLng: null,
+    radiusKm: 50,
+    statewide: false,
+    regions: [],
+  });
+
   useEffect(() => {
     if (provider) {
       const radius = provider.service_radius_km ?? 50;
       setForm({
         name: provider.name || "",
         description: provider.description || "",
-        states: provider.states || [],
-        service_base_suburb: provider.service_base_suburb || "",
-        service_base_postcode: provider.service_base_postcode || "",
-        service_base_state: provider.service_base_state || "",
-        service_base_lat: provider.service_base_lat != null ? Number(provider.service_base_lat) : null,
-        service_base_lng: provider.service_base_lng != null ? Number(provider.service_base_lng) : null,
-        service_radius_km: radius >= 2000 ? 500 : radius,
-        statewide: radius >= 2000,
         system_types: provider.system_types || [],
         brands: (provider.brands || []).join(", "),
         price_range: provider.price_range || "mid",
@@ -153,6 +148,20 @@ export default function VendorProfilePage() {
         phone: provider.phone || "",
         contact_email: provider.contact_email || "",
       });
+      const mode = detectCoverageMode(provider.service_base_lat, provider.service_base_lng);
+      const savedStates: string[] = provider.states || [];
+      const metroValues: Set<string> = new Set(CAPITAL_METROS.map((m) => m.value));
+      setServiceArea({
+        mode,
+        baseSuburb: provider.service_base_suburb || "",
+        basePostcode: provider.service_base_postcode || "",
+        baseState: provider.service_base_state || "",
+        baseLat: provider.service_base_lat != null ? Number(provider.service_base_lat) : null,
+        baseLng: provider.service_base_lng != null ? Number(provider.service_base_lng) : null,
+        radiusKm: radius >= 2000 ? 500 : radius,
+        statewide: radius >= 2000,
+        regions: mode === "regions" ? savedStates.filter((s: string) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
+      });
     }
   }, [provider]);
 
@@ -162,27 +171,53 @@ export default function VendorProfilePage() {
       if (invalid.length > 0) {
         throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
       }
-      if (!form.service_base_lat || !form.service_base_lng) {
-        throw new Error("Please select your base service location");
+
+      let radiusToSave = 0;
+      let baseFields: Record<string, any> = {
+        service_base_suburb: null,
+        service_base_postcode: null,
+        service_base_state: null,
+        service_base_lat: null,
+        service_base_lng: null,
+      };
+      let statesToSave: string[] = [];
+
+      if (serviceArea.mode === "radius") {
+        if (!serviceArea.baseLat || !serviceArea.baseLng) {
+          throw new Error("Please select your base service location");
+        }
+        radiusToSave = serviceArea.statewide ? 5000 : serviceArea.radiusKm;
+        baseFields = {
+          service_base_suburb: serviceArea.baseSuburb,
+          service_base_postcode: serviceArea.basePostcode,
+          service_base_state: serviceArea.baseState,
+          service_base_lat: serviceArea.baseLat,
+          service_base_lng: serviceArea.baseLng,
+        };
+        statesToSave = computeCoverageStates({
+          mode: "radius",
+          baseLat: serviceArea.baseLat,
+          baseLng: serviceArea.baseLng,
+          baseState: serviceArea.baseState,
+          radiusKm: radiusToSave,
+          regionSelections: [],
+        });
+      } else {
+        if (serviceArea.regions.length === 0) {
+          throw new Error("Please select at least one state or metro region");
+        }
+        // Persist the raw selections so metros are preserved across edits.
+        // The matching engine maps metros → states via regionsToStates() at read time.
+        statesToSave = serviceArea.regions;
       }
-      const radiusToSave = form.statewide ? 5000 : form.service_radius_km;
-      const derivedStates = deriveStatesFromBase(
-        form.service_base_lat,
-        form.service_base_lng,
-        form.service_base_state,
-        radiusToSave
-      );
+
       const { error } = await supabase
         .from("providers")
         .update({
           name: form.name,
           description: form.description,
-          states: derivedStates,
-          service_base_suburb: form.service_base_suburb,
-          service_base_postcode: form.service_base_postcode,
-          service_base_state: form.service_base_state,
-          service_base_lat: form.service_base_lat,
-          service_base_lng: form.service_base_lng,
+          states: statesToSave,
+          ...baseFields,
           service_radius_km: radiusToSave,
           system_types: form.system_types,
           brands: form.brands.split(",").map((s) => s.trim()).filter(Boolean),
@@ -325,86 +360,8 @@ export default function VendorProfilePage() {
               <MapPin className="h-5 w-5" /> Service Area
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Base Service Location</Label>
-              <ServiceBaseAutocomplete
-                value={
-                  form.service_base_suburb
-                    ? {
-                        suburb: form.service_base_suburb,
-                        postcode: form.service_base_postcode,
-                        state: form.service_base_state,
-                      }
-                    : null
-                }
-                onSelect={(s) =>
-                  setForm((p) => ({
-                    ...p,
-                    service_base_suburb: s.suburb,
-                    service_base_postcode: s.postcode,
-                    service_base_state: s.state,
-                    service_base_lat: s.lat,
-                    service_base_lng: s.lng,
-                  }))
-                }
-              />
-              <p className="text-xs text-muted-foreground">
-                The suburb you operate out of. We use this to match you with nearby customers.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label>Service Radius</Label>
-                <span className="text-sm font-medium tabular-nums">
-                  {form.statewide ? "Statewide+" : `${form.service_radius_km} km`}
-                </span>
-              </div>
-              <Slider
-                min={5}
-                max={500}
-                step={5}
-                value={[form.service_radius_km]}
-                onValueChange={(v) => setForm((p) => ({ ...p, service_radius_km: v[0], statewide: false }))}
-                disabled={form.statewide}
-              />
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="statewide"
-                  checked={form.statewide}
-                  onCheckedChange={(v) => setForm((p) => ({ ...p, statewide: !!v }))}
-                />
-                <Label htmlFor="statewide" className="text-sm font-normal cursor-pointer">
-                  I service this whole state (or further)
-                </Label>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
-              </p>
-            </div>
-
-            {/* Auto-derived states preview */}
-            <div className="space-y-1.5 rounded-md border border-dashed border-border bg-muted/30 p-3">
-              <Label className="text-xs uppercase tracking-wide text-muted-foreground">States Covered (auto)</Label>
-              {(() => {
-                const derived = deriveStatesFromBase(
-                  form.service_base_lat,
-                  form.service_base_lng,
-                  form.service_base_state,
-                  form.statewide ? 5000 : form.service_radius_km
-                );
-                return derived.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {derived.map((s) => (
-                      <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">Pick a base location to see which states you'll cover.</p>
-                );
-              })()}
-            </div>
+          <CardContent>
+            <ServiceAreaPicker value={serviceArea} onChange={setServiceArea} idPrefix="profile" />
           </CardContent>
         </Card>
 

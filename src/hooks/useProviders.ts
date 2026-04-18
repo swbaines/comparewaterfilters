@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Provider } from "@/data/providers";
+import { regionsToStates } from "@/lib/serviceArea";
 
 export function useProviders() {
   return useQuery({
@@ -21,7 +22,7 @@ export function useProviders() {
         description: row.description,
         logo: row.logo ?? undefined,
         location: {
-          states: row.states,
+          states: regionsToStates(row.states || []),
           serviceBase:
             row.service_base_lat != null && row.service_base_lng != null
               ? {
