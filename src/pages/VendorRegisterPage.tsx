@@ -158,6 +158,26 @@ export default function VendorRegisterPage() {
       toast.error("ABN must be exactly 11 digits");
       return;
     }
+    // Website required + must be a valid URL
+    const websiteTrim = profile.website.trim();
+    if (!websiteTrim) {
+      toast.error("Website is required");
+      return;
+    }
+    try { new URL(websiteTrim); } catch {
+      toast.error("Website must be a valid URL (including https://)");
+      return;
+    }
+    // Google Business Profile required + must be a valid URL
+    const gbpTrim = profile.googleBusinessUrl.trim();
+    if (!gbpTrim) {
+      toast.error("Google Business Profile URL is required");
+      return;
+    }
+    try { new URL(gbpTrim); } catch {
+      toast.error("Google Business Profile must be a valid URL (including https://)");
+      return;
+    }
     // Plumber licence number is optional
 
     setLoading(true);
