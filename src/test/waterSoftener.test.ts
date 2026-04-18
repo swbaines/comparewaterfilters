@@ -22,43 +22,66 @@ const baseAnswers: QuizAnswers = {
   disclaimerAck: true,
 };
 
-describe("Water Softener filtering", () => {
+describe("Water Softener filtering (Rule 2: WA/SA only)", () => {
   it("should NOT recommend water softener when hard-water concern is not selected", () => {
     const result = generateRecommendations(baseAnswers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
     expect(allIds).not.toContain("water-softener");
   });
 
-  it("should recommend whole house when hard-water concern IS selected", () => {
-    const answersWithHardWater: QuizAnswers = {
+  it("should recommend water softener as Best for WA + hard-water", () => {
+    const answers: QuizAnswers = {
       ...baseAnswers,
       state: "WA",
       concerns: ["hard-water", "appliance"],
       coverage: "whole-house",
       budget: "3000-5000",
     };
-    const result = generateRecommendations(answersWithHardWater);
-    expect(result.primary.id).toBe("whole-house-filtration");
+    const result = generateRecommendations(answers);
+    expect(result.primary.id).toBe("water-softener");
+  });
+
+  it("should recommend water softener as Best for SA + hard-water", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      state: "SA",
+      concerns: ["hard-water"],
+      coverage: "whole-house",
+      budget: "3000-5000",
+    };
+    const result = generateRecommendations(answers);
+    expect(result.primary.id).toBe("water-softener");
+  });
+
+  it("should NOT recommend water softener for VIC even with hard-water concern (Rule 2 is WA/SA only)", () => {
+    const answers: QuizAnswers = {
+      ...baseAnswers,
+      state: "VIC",
+      concerns: ["hard-water", "appliance"],
+      coverage: "whole-house",
+      budget: "3000-5000",
+    };
+    const result = generateRecommendations(answers);
+    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+    expect(allIds).not.toContain("water-softener");
   });
 });
 
-describe("Skin-hair concern scoring", () => {
-  it("should recommend shower filter or whole house when skin-hair is selected", () => {
+describe("Skin-hair concern scoring (Rule 1: whole-home)", () => {
+  it("should recommend whole house filtration when skin-hair is selected with whole-house coverage", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
       concerns: ["skin-hair"],
       coverage: "whole-house",
-      budget: "not-sure",
+      budget: "3000-5000",
       priorities: [],
     };
     const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    const hasSkinSystem = allIds.includes("shower-filter") || allIds.includes("whole-house-filtration");
-    expect(hasSkinSystem).toBe(true);
+    expect(result.primary.id).toBe("whole-house-filtration");
   });
 });
 
-describe("PFAS concern scoring", () => {
+describe("PFAS concern scoring (Rule 3: RO-essential)", () => {
   it("should recommend reverse osmosis as primary when PFAS is the main concern", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
@@ -72,8 +95,8 @@ describe("PFAS concern scoring", () => {
   });
 });
 
-describe("Microplastics concern scoring", () => {
-  it("should recommend reverse osmosis or carbon filter when microplastics is selected", () => {
+describe("Microplastics concern scoring (Rule 3: RO-essential)", () => {
+  it("should recommend reverse osmosis as Best when microplastics is selected", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
       concerns: ["microplastics"],
@@ -82,12 +105,10 @@ describe("Microplastics concern scoring", () => {
       priorities: [],
     };
     const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    const hasRelevantSystem = allIds.includes("reverse-osmosis") || allIds.includes("under-sink-carbon");
-    expect(hasRelevantSystem).toBe(true);
+    expect(result.primary.id).toBe("reverse-osmosis");
   });
 
-  it("should rank RO higher than carbon for combined PFAS + microplastics concerns", () => {
+  it("should recommend RO as Best for combined PFAS + microplastics concerns", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
       concerns: ["pfas", "microplastics"],
@@ -97,10 +118,11 @@ describe("Microplastics concern scoring", () => {
     };
     const result = generateRecommendations(answers);
     expect(result.primary.id).toBe("reverse-osmosis");
+  });
 });
 
-describe("Renter edge cases", () => {
-  it("should recommend under-sink carbon (not whole house) for renters with skin-hair concern", () => {
+describe("Renter & apartment edge cases (Rule 5)", () => {
+  it("should never recommend whole house or softener for renters with skin-hair concern", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
       ownershipStatus: "Rent",
@@ -113,6 +135,7 @@ describe("Renter edge cases", () => {
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
     expect(allIds).not.toContain("whole-house-filtration");
     expect(allIds).not.toContain("water-softener");
+    expect(allIds).not.toContain("whole-house-combo");
   });
 
   it("should not recommend whole house or softener for apartment dwellers", () => {
@@ -127,8 +150,9 @@ describe("Renter edge cases", () => {
     };
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).not.toContain("whole-house");
+    expect(allIds).not.toContain("whole-house-filtration");
     expect(allIds).not.toContain("water-softener");
+    expect(allIds).not.toContain("whole-house-combo");
   });
 
   it("should recommend under-sink or tap filter for renters wanting drinking water quality", () => {
@@ -142,14 +166,14 @@ describe("Renter edge cases", () => {
       priorities: ["lowest-cost"],
     };
     const result = generateRecommendations(answers);
-    const primaryId = result.primary.id;
-    const validOptions = ["under-sink-carbon", "tap-filter", "alkaline-filter"];
-    expect(validOptions).toContain(primaryId);
+    const validBest = ["under-sink-carbon", "tap-filter"];
+    expect(validBest).toContain(result.primary.id);
   });
 
-  it("should not recommend water softener for renters even with hard-water concern", () => {
+  it("should not recommend water softener for WA renters even with hard-water concern", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
+      state: "WA",
       ownershipStatus: "Rent",
       concerns: ["hard-water"],
       coverage: "whole-house",
@@ -159,80 +183,59 @@ describe("Renter edge cases", () => {
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
     expect(allIds).not.toContain("water-softener");
-    expect(allIds).not.toContain("whole-house");
+    expect(allIds).not.toContain("whole-house-filtration");
   });
 });
-});
 
-describe("Bore water and rainwater source recommendations", () => {
-  it("should recommend UV system for bore water users concerned about bacteria", () => {
+describe("Budget under $1k override (Rule 6)", () => {
+  it("should move under-sink to Best and whole-house to Premium when whole-home triggers fire on a sub-$1k budget", () => {
     const answers: QuizAnswers = {
       ...baseAnswers,
-      waterSource: "bore-water",
-      concerns: ["bacteria", "drinking-quality"],
+      state: "VIC",
+      concerns: ["skin-hair"],
       coverage: "whole-house",
-      budget: "not-sure",
-      priorities: [],
-    };
-    const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).toContain("uv-system");
-  });
-
-  it("should recommend tank filter for rainwater users", () => {
-    const answers: QuizAnswers = {
-      ...baseAnswers,
-      waterSource: "rainwater",
-      concerns: ["drinking-quality", "taste"],
-      coverage: "whole-house",
-      budget: "not-sure",
-      priorities: [],
-    };
-    const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).toContain("tank-filter");
-  });
-
-  it("should recommend both UV and tank filter for tank water with bacteria concerns", () => {
-    const answers: QuizAnswers = {
-      ...baseAnswers,
-      waterSource: "tank-water",
-      concerns: ["bacteria", "taste", "drinking-quality"],
-      coverage: "whole-house",
-      budget: "3000-5000",
-      priorities: ["strongest-filtration"],
-    };
-    const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    const hasUvOrTank = allIds.includes("uv-system") || allIds.includes("tank-filter");
-    expect(hasUvOrTank).toBe(true);
-  });
-
-  it("should not recommend tank filter for town water users", () => {
-    const answers: QuizAnswers = {
-      ...baseAnswers,
-      waterSource: "town-water",
-      concerns: ["taste", "chlorine"],
-      coverage: "drinking-water",
       budget: "under-1000",
       priorities: [],
     };
     const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).not.toContain("tank-filter");
+    expect(result.primary.id).toBe("under-sink-carbon");
+    expect(result.premium.id).toBe("whole-house-filtration");
+    // Should include the $2,500 warning
+    const hasWarning = result.warnings.some((w) => w.includes("$2,500"));
+    expect(hasWarning).toBe(true);
   });
+});
 
-  it("should deprioritise UV system for town water without bacteria concerns", () => {
-    const answers: QuizAnswers = {
-      ...baseAnswers,
-      waterSource: "town-water",
-      concerns: ["taste", "chlorine"],
-      coverage: "drinking-water",
-      budget: "under-1000",
-      priorities: [],
-    };
-    const result = generateRecommendations(answers);
-    const allIds = [result.primary.id, result.secondary.id, result.premium.id];
-    expect(allIds).not.toContain("uv-system");
-  });
+describe("Allowed system universe", () => {
+  // Per spec, only these IDs may ever appear in any tier.
+  const ALLOWED = new Set([
+    "whole-house-filtration",
+    "reverse-osmosis",
+    "under-sink-carbon",
+    "water-softener",
+    "tap-filter",         // Good-tier alternative in Rule 4 / renter path
+    "whole-house-combo",  // Premium combined tier
+  ]);
+
+  const scenarios: Array<{ name: string; answers: Partial<QuizAnswers> }> = [
+    { name: "VIC owner, taste only", answers: { state: "VIC", concerns: ["taste"], coverage: "drinking-water", budget: "1000-3000" } },
+    { name: "NSW owner, PFAS", answers: { state: "NSW", concerns: ["pfas"], coverage: "drinking-water", budget: "1000-3000" } },
+    { name: "WA owner, hard-water", answers: { state: "WA", concerns: ["hard-water"], coverage: "whole-house", budget: "3000-5000" } },
+    { name: "SA owner, appliance", answers: { state: "SA", concerns: ["appliance"], coverage: "whole-house", budget: "5000-plus" } },
+    { name: "QLD owner, skin-hair", answers: { state: "QLD", concerns: ["skin-hair"], coverage: "whole-house", budget: "3000-5000" } },
+    { name: "NSW renter, taste", answers: { state: "NSW", ownershipStatus: "Rent", concerns: ["taste"], coverage: "drinking-water", budget: "under-1000" } },
+    { name: "VIC apartment, chlorine", answers: { state: "VIC", propertyType: "Apartment", concerns: ["chlorine"], coverage: "drinking-water", budget: "under-1000" } },
+    { name: "Bore water + bacteria (no longer a special path)", answers: { waterSource: "bore-water", concerns: ["bacteria"], coverage: "whole-house", budget: "3000-5000" } },
+    { name: "Rainwater tank", answers: { waterSource: "rainwater", concerns: ["taste"], coverage: "whole-house", budget: "3000-5000" } },
+  ];
+
+  for (const { name, answers } of scenarios) {
+    it(`only returns approved system IDs for: ${name}`, () => {
+      const result = generateRecommendations({ ...baseAnswers, ...answers });
+      const allIds = [result.primary.id, result.secondary.id, result.premium.id];
+      for (const id of allIds) {
+        expect(ALLOWED.has(id), `Disallowed system "${id}" returned for scenario "${name}"`).toBe(true);
+      }
+    });
+  }
 });
