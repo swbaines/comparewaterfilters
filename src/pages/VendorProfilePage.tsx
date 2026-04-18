@@ -15,6 +15,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon, Mail } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
+import { deriveStatesFromBase } from "@/lib/deriveStates";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -165,12 +166,18 @@ export default function VendorProfilePage() {
         throw new Error("Please select your base service location");
       }
       const radiusToSave = form.statewide ? 5000 : form.service_radius_km;
+      const derivedStates = deriveStatesFromBase(
+        form.service_base_lat,
+        form.service_base_lng,
+        form.service_base_state,
+        radiusToSave
+      );
       const { error } = await supabase
         .from("providers")
         .update({
           name: form.name,
           description: form.description,
-          states: form.states,
+          states: derivedStates,
           service_base_suburb: form.service_base_suburb,
           service_base_postcode: form.service_base_postcode,
           service_base_state: form.service_base_state,
