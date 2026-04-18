@@ -16,6 +16,8 @@ import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDow
 import { Slider } from "@/components/ui/slider";
 import ServiceBaseAutocomplete from "@/components/ServiceBaseAutocomplete";
 import { systemTypes } from "@/data/systemTypes";
+import { deriveStatesFromBase } from "@/lib/deriveStates";
+import { Badge } from "@/components/ui/badge";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -277,19 +279,27 @@ export default function VendorRegisterPage() {
         throw new Error(`Invalid system type(s): ${invalidSystemTypes.join(", ")}`);
       }
 
+      const radiusToSave = profile.statewide ? 5000 : profile.serviceRadiusKm;
+      const derivedStates = deriveStatesFromBase(
+        profile.serviceBaseLat,
+        profile.serviceBaseLng,
+        profile.serviceBaseState,
+        radiusToSave
+      );
+
       const { data: provider, error: providerError } = await supabase
         .from("providers")
         .insert({
           name: profile.name,
           slug,
           description: profile.description,
-          states: profile.states,
+          states: derivedStates,
           service_base_suburb: profile.serviceBaseSuburb,
           service_base_postcode: profile.serviceBasePostcode,
           service_base_state: profile.serviceBaseState,
           service_base_lat: profile.serviceBaseLat,
           service_base_lng: profile.serviceBaseLng,
-          service_radius_km: profile.statewide ? 5000 : profile.serviceRadiusKm,
+          service_radius_km: radiusToSave,
           system_types: profile.systemTypes,
           brands: toArray(profile.brands),
           price_range: profile.priceRange,
@@ -338,7 +348,7 @@ export default function VendorRegisterPage() {
               businessName: profile.name,
               vendorEmail: email,
               abn: profile.abn.replace(/\s/g, ""),
-              states: profile.states,
+              states: derivedStates,
               systemTypes: profile.systemTypes,
               hasPublicLiability: profile.hasPublicLiability,
               registeredAt: new Date().toISOString(),
@@ -591,36 +601,6 @@ export default function VendorRegisterPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>States Serviced *</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between font-normal">
-                        {profile.states.length > 0 ? profile.states.join(", ") : "Select states…"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-2">
-                      {AU_STATES.map((state) => (
-                        <label key={state.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-accent cursor-pointer text-sm">
-                          <Checkbox
-                            checked={profile.states.includes(state.value)}
-                            onCheckedChange={(checked) => {
-                              updateProfile(
-                                "states",
-                                checked
-                                  ? [...profile.states, state.value]
-                                  : profile.states.filter((s) => s !== state.value)
-                              );
-                            }}
-                          />
-                          {state.label}
-                        </label>
-                      ))}
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="space-y-1.5">
                   <Label>Base Service Location *</Label>
                   <ServiceBaseAutocomplete
                     value={
@@ -640,7 +620,6 @@ export default function VendorRegisterPage() {
                         serviceBaseState: s.state,
                         serviceBaseLat: s.lat,
                         serviceBaseLng: s.lng,
-                        states: p.states.includes(s.state) ? p.states : [...p.states, s.state],
                       }))
                     }
                   />
@@ -677,6 +656,28 @@ export default function VendorRegisterPage() {
                   <p className="text-xs text-muted-foreground">
                     Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
                   </p>
+                </div>
+
+                {/* Auto-derived states preview */}
+                <div className="space-y-1.5 rounded-md border border-dashed border-border bg-muted/30 p-3">
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">States Covered (auto)</Label>
+                  {(() => {
+                    const derived = deriveStatesFromBase(
+                      profile.serviceBaseLat,
+                      profile.serviceBaseLng,
+                      profile.serviceBaseState,
+                      profile.statewide ? 5000 : profile.serviceRadiusKm
+                    );
+                    return derived.length > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {derived.map((s) => (
+                          <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">Pick a base location to see which states you'll cover.</p>
+                    );
+                  })()}
                 </div>
               </CardContent>
             </Card>
