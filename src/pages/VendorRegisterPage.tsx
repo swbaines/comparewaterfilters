@@ -363,7 +363,7 @@ export default function VendorRegisterPage() {
               businessName: profile.name,
               vendorEmail: email,
               abn: profile.abn.replace(/\s/g, ""),
-              states: derivedStates,
+              states: statesToSave,
               systemTypes: profile.systemTypes,
               hasPublicLiability: profile.hasPublicLiability,
               registeredAt: new Date().toISOString(),
@@ -614,86 +614,8 @@ export default function VendorRegisterPage() {
                   <MapPin className="h-5 w-5 text-primary" /> Service Area
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label>Base Service Location *</Label>
-                  <ServiceBaseAutocomplete
-                    value={
-                      profile.serviceBaseSuburb
-                        ? {
-                            suburb: profile.serviceBaseSuburb,
-                            postcode: profile.serviceBasePostcode,
-                            state: profile.serviceBaseState,
-                          }
-                        : null
-                    }
-                    onSelect={(s) =>
-                      setProfile((p) => ({
-                        ...p,
-                        serviceBaseSuburb: s.suburb,
-                        serviceBasePostcode: s.postcode,
-                        serviceBaseState: s.state,
-                        serviceBaseLat: s.lat,
-                        serviceBaseLng: s.lng,
-                      }))
-                    }
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    The suburb you operate out of. We use this to match you with nearby customers.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Service Radius</Label>
-                    <span className="text-sm font-medium tabular-nums">
-                      {profile.statewide ? "Statewide+" : `${profile.serviceRadiusKm} km`}
-                    </span>
-                  </div>
-                  <Slider
-                    min={5}
-                    max={500}
-                    step={5}
-                    value={[profile.serviceRadiusKm]}
-                    onValueChange={(v) => setProfile((p) => ({ ...p, serviceRadiusKm: v[0], statewide: false }))}
-                    disabled={profile.statewide}
-                  />
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="statewide-register"
-                      checked={profile.statewide}
-                      onCheckedChange={(v) => setProfile((p) => ({ ...p, statewide: !!v }))}
-                    />
-                    <Label htmlFor="statewide-register" className="text-sm font-normal cursor-pointer">
-                      I service this whole state (or further)
-                    </Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
-                  </p>
-                </div>
-
-                {/* Auto-derived states preview */}
-                <div className="space-y-1.5 rounded-md border border-dashed border-border bg-muted/30 p-3">
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">States Covered (auto)</Label>
-                  {(() => {
-                    const derived = deriveStatesFromBase(
-                      profile.serviceBaseLat,
-                      profile.serviceBaseLng,
-                      profile.serviceBaseState,
-                      profile.statewide ? 5000 : profile.serviceRadiusKm
-                    );
-                    return derived.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {derived.map((s) => (
-                          <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">Pick a base location to see which states you'll cover.</p>
-                    );
-                  })()}
-                </div>
+              <CardContent>
+                <ServiceAreaPicker value={serviceArea} onChange={setServiceArea} idPrefix="reg" />
               </CardContent>
             </Card>
 
