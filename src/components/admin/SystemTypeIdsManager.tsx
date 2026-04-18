@@ -161,11 +161,34 @@ export default function SystemTypeIdsManager() {
                   }
                 >
                   {entry.id}
-                  {inUse && (
-                    <span className="rounded bg-muted px-1 text-[10px] font-sans text-muted-foreground">
-                      {totalRefs}
+                  <span className="flex items-center gap-1 font-sans text-[10px]">
+                    <span
+                      className={`rounded px-1.5 py-0.5 ${
+                        entry.providerNames.length > 0
+                          ? "bg-primary/10 text-primary"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                      title={
+                        entry.providerNames.length > 0
+                          ? `Providers: ${entry.providerNames.slice(0, 5).join(", ")}${
+                              entry.providerNames.length > 5 ? ` +${entry.providerNames.length - 5}` : ""
+                            }`
+                          : "No providers reference this ID"
+                      }
+                    >
+                      {entry.providerNames.length}P
                     </span>
-                  )}
+                    <span
+                      className={`rounded px-1.5 py-0.5 ${
+                        entry.quoteCount > 0
+                          ? "bg-primary/10 text-primary"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                      title={`${entry.quoteCount} quote request(s) reference this ID`}
+                    >
+                      {entry.quoteCount}Q
+                    </span>
+                  </span>
                   <Button
                     size="icon"
                     variant="ghost"
