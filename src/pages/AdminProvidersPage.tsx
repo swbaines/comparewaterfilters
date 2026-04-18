@@ -20,6 +20,7 @@ import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { systemTypes } from "@/data/systemTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
+import SystemTypeIdsManager from "@/components/admin/SystemTypeIdsManager";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
 
@@ -217,6 +218,10 @@ export default function AdminProvidersPage() {
               <Plus className="h-4 w-4" /> Add Provider
             </Button>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <SystemTypeIdsManager />
         </div>
 
         {/* Pending Applications */}
