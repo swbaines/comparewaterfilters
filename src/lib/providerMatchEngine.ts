@@ -40,9 +40,10 @@ export function matchProviders(
       if (provider.location.states.includes(answers.state)) {
         score += 20;
         reasons.push(`Services ${answers.state}`);
-        if (provider.location.postcodeRanges) {
+        const ranges = provider.location.postcodeRanges;
+        if (ranges && ranges.length > 0) {
           const pc = parseInt(answers.postcode, 10);
-          const inRange = provider.location.postcodeRanges.some((range) => {
+          const inRange = ranges.some((range) => {
             const [min, max] = range.split("-").map(Number);
             return pc >= min && pc <= max;
           });
@@ -51,7 +52,7 @@ export function matchProviders(
             reasons.push("Covers your postcode area");
           }
         } else {
-          score += 5; // national coverage bonus
+          score += 5; // statewide / no postcode restriction
         }
       } else {
         return null; // skip providers that don't service the state
