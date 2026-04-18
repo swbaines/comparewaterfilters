@@ -192,10 +192,23 @@ function getStateWarnings(answers: QuizAnswers, f: ReturnType<typeof getFlags>):
   return warnings;
 }
 
+// ─── Rule labels (single source of truth for the "why?" section) ─────────────
+const RULE_LABELS: Record<FiredRule, string> = {
+  "rule-1-whole-home": "Rule 1 — Whole-home intent",
+  "rule-2-hard-water-wa-sa": "Rule 2 — Hard water in WA or SA",
+  "rule-3-ro-essential": "Rule 3 — RO-essential contaminants (fluoride, PFAS, heavy metals, microplastics, bacteria)",
+  "rule-4-drinking-only": "Rule 4 — Drinking water / taste / chlorine only",
+  "rule-5-renter-apartment": "Rule 5 — Renter or apartment (no whole-home or softener)",
+  "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
+  "default": "Default — general drinking-water improvement",
+};
+
 // ─── Main recommendation function ───────────────────────────────────────────
 export function generateRecommendations(answers: QuizAnswers): RecommendationResult {
   const f = getFlags(answers);
   const warnings: string[] = [];
+  const appliedRules: { rule: FiredRule; label: string }[] = [];
+  const pushRule = (r: FiredRule) => appliedRules.push({ rule: r, label: RULE_LABELS[r] });
 
   let primaryId = "under-sink-carbon";
   let secondaryId = "under-sink-carbon";
