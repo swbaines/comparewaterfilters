@@ -1,19 +1,27 @@
 import type { Provider } from "@/data/providers";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import type { RecommendationResult } from "@/lib/recommendationEngine";
+import { haversineKm } from "@/lib/geo";
 
 export interface ProviderMatch {
   provider: Provider;
   matchScore: number;       // 0-100
   matchReasons: string[];
   systemsTheyInstall: string[]; // which of the recommended systems they cover
+  distanceKm?: number;
+}
+
+export interface MatchOptions {
+  /** Customer's lat/lng — when provided, enables radius-based scoring */
+  customerCoords?: { lat: number; lng: number };
 }
 
 export function matchProviders(
   answers: QuizAnswers,
   result: RecommendationResult,
   providersList: Provider[],
-  limit = 3
+  limit = 3,
+  options: MatchOptions = {}
 ): ProviderMatch[] {
   const recommendedIds = [
     result.primary.id,
@@ -35,27 +43,43 @@ export function matchProviders(
     .map((provider) => {
       let score = 0;
       const reasons: string[] = [];
+      let distanceKm: number | undefined;
 
-      // 1. Location match (0-30 points)
-      if (provider.location.states.includes(answers.state)) {
+      // 1. Location match (0-30 points) — radius-based with state fallback
+      const servicesState = provider.location.states.includes(answers.state);
+      const base = provider.location.serviceBase;
+      const radiusKm = provider.location.serviceRadiusKm ?? 50;
+
+      if (base && options.customerCoords) {
+        distanceKm = haversineKm(
+          options.customerCoords.lat,
+          options.customerCoords.lng,
+          base.lat,
+          base.lng
+        );
+        if (distanceKm <= radiusKm) {
+          // In-radius: strong match
+          score += 30;
+          const dispKm = Math.round(distanceKm);
+          reasons.push(
+            dispKm <= 5
+              ? `Based in your area (~${dispKm}km away)`
+              : `Services your area (${dispKm}km from their base in ${base.suburb})`
+          );
+        } else if (servicesState) {
+          // Out-of-radius but in-state — fallback with reduced points
+          score += 12;
+          reasons.push(`Services ${answers.state} (${Math.round(distanceKm)}km from base — outside their usual radius)`);
+        } else {
+          // Too far and not in state — exclude
+          return null;
+        }
+      } else if (servicesState) {
+        // No base location set yet OR no customer coords — fall back to state-only
         score += 20;
         reasons.push(`Services ${answers.state}`);
-        const ranges = provider.location.postcodeRanges;
-        if (ranges && ranges.length > 0) {
-          const pc = parseInt(answers.postcode, 10);
-          const inRange = ranges.some((range) => {
-            const [min, max] = range.split("-").map(Number);
-            return pc >= min && pc <= max;
-          });
-          if (inRange) {
-            score += 10;
-            reasons.push("Covers your postcode area");
-          }
-        } else {
-          score += 5; // statewide / no postcode restriction
-        }
       } else {
-        return null; // skip providers that don't service the state
+        return null;
       }
 
       // 2. System type match (0-30 points)
@@ -102,6 +126,7 @@ export function matchProviders(
         matchScore: Math.min(score, 100),
         matchReasons: reasons,
         systemsTheyInstall: matchingSystems,
+        distanceKm,
       };
     })
     .filter(Boolean) as ProviderMatch[];

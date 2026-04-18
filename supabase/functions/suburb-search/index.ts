@@ -38,6 +38,8 @@ Deno.serve(async (req) => {
       name: s.name as string,
       postcode: s.postcode as number,
       state: (s.state?.abbreviation || "") as string,
+      latitude: typeof s.latitude === "number" ? s.latitude : null,
+      longitude: typeof s.longitude === "number" ? s.longitude : null,
     }));
 
     slim.sort((a, b) => {

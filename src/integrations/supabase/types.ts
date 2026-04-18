@@ -285,6 +285,12 @@ export type Database = {
           rating: number
           response_time: string
           review_count: number
+          service_base_lat: number | null
+          service_base_lng: number | null
+          service_base_postcode: string | null
+          service_base_state: string | null
+          service_base_suburb: string | null
+          service_radius_km: number
           slug: string
           states: string[]
           submitted_by: string | null
@@ -319,6 +325,12 @@ export type Database = {
           rating?: number
           response_time?: string
           review_count?: number
+          service_base_lat?: number | null
+          service_base_lng?: number | null
+          service_base_postcode?: string | null
+          service_base_state?: string | null
+          service_base_suburb?: string | null
+          service_radius_km?: number
           slug: string
           states?: string[]
           submitted_by?: string | null
@@ -353,6 +365,12 @@ export type Database = {
           rating?: number
           response_time?: string
           review_count?: number
+          service_base_lat?: number | null
+          service_base_lng?: number | null
+          service_base_postcode?: string | null
+          service_base_state?: string | null
+          service_base_suburb?: string | null
+          service_radius_km?: number
           slug?: string
           states?: string[]
           submitted_by?: string | null
@@ -725,6 +743,12 @@ export type Database = {
           rating: number | null
           response_time: string | null
           review_count: number | null
+          service_base_lat: number | null
+          service_base_lng: number | null
+          service_base_postcode: string | null
+          service_base_state: string | null
+          service_base_suburb: string | null
+          service_radius_km: number | null
           slug: string | null
           states: string[] | null
           system_types: string[] | null
@@ -752,6 +776,12 @@ export type Database = {
           rating?: number | null
           response_time?: string | null
           review_count?: number | null
+          service_base_lat?: number | null
+          service_base_lng?: number | null
+          service_base_postcode?: string | null
+          service_base_state?: string | null
+          service_base_suburb?: string | null
+          service_radius_km?: number | null
           slug?: string | null
           states?: string[] | null
           system_types?: string[] | null
@@ -779,6 +809,12 @@ export type Database = {
           rating?: number | null
           response_time?: string | null
           review_count?: number | null
+          service_base_lat?: number | null
+          service_base_lng?: number | null
+          service_base_postcode?: string | null
+          service_base_state?: string | null
+          service_base_suburb?: string | null
+          service_radius_km?: number | null
           slug?: string | null
           states?: string[] | null
           system_types?: string[] | null
