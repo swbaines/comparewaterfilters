@@ -68,6 +68,26 @@ export default function AdminProvidersPage() {
   const [auditOpen, setAuditOpen] = useState(false);
   const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
+  const [pendingApprove, setPendingApprove] = useState<{ id: string; name: string } | null>(null);
+  const [pendingApplicationReject, setPendingApplicationReject] = useState<{ id: string; name: string } | null>(null);
+
+  const approveApplication = async (id: string, name: string) => {
+    const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`${name} approved!`);
+    queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+    supabase.functions.invoke('create-stripe-customer', { body: { provider_id: id } })
+      .then(({ error: stripeErr }) => {
+        if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
+        else toast.success('Stripe customer created');
+      });
+  };
+
+  const rejectApplication = async (id: string, name: string) => {
+    const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success(`${name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
+  };
 
   const updateApprovalStatus = async (id: string, value: ProviderRow["approval_status"]) => {
     const { error } = await supabase
@@ -304,25 +324,10 @@ export default function AdminProvidersPage() {
                             <Button size="sm" variant="outline" onClick={() => setReviewProvider(p)} className="gap-1">
                               <Eye className="h-3 w-3" /> Review
                             </Button>
-                            <Button size="sm" className="gap-1 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
-                              const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", p.id);
-                              if (error) { toast.error(error.message); return; }
-                              toast.success(`${p.name} approved!`);
-                              queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
-                              // Auto-create Stripe customer
-                              supabase.functions.invoke('create-stripe-customer', { body: { provider_id: p.id } })
-                                .then(({ error: stripeErr }) => {
-                                  if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
-                                  else toast.success('Stripe customer created');
-                                });
-                            }}>
+                            <Button size="sm" className="gap-1 bg-green-600 hover:bg-green-700 text-white" onClick={() => setPendingApprove({ id: p.id, name: p.name })}>
                               <CheckCircle2 className="h-3 w-3" /> Approve
                             </Button>
-                            <Button size="sm" variant="destructive" className="gap-1" onClick={async () => {
-                              const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", p.id);
-                              if (error) toast.error(error.message);
-                              else { toast.success(`${p.name} rejected`); queryClient.invalidateQueries({ queryKey: ["admin-providers"] }); }
-                            }}>
+                            <Button size="sm" variant="destructive" className="gap-1" onClick={() => setPendingApplicationReject({ id: p.id, name: p.name })}>
                               <XCircle className="h-3 w-3" /> Reject
                             </Button>
                           </div>
@@ -492,13 +497,39 @@ export default function AdminProvidersPage() {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Delete confirmation */}
-        <AlertDialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
+        {/* Pending application: Approve confirmation */}
+        <AlertDialog open={pendingApprove !== null} onOpenChange={(open) => { if (!open) setPendingApprove(null); }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete {pendingDelete?.name}?</AlertDialogTitle>
+              <AlertDialogTitle>Approve {pendingApprove?.name}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This permanently removes the provider and cannot be undone. Consider rejecting them instead if you may want to restore them later.
+                This will activate the provider and make them visible in customer-facing matches and quote requests. A Stripe customer will also be created for billing.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-green-600 text-white hover:bg-green-700"
+                onClick={() => {
+                  if (pendingApprove) {
+                    approveApplication(pendingApprove.id, pendingApprove.name);
+                    setPendingApprove(null);
+                  }
+                }}
+              >
+                Approve provider
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Pending application: Reject confirmation */}
+        <AlertDialog open={pendingApplicationReject !== null} onOpenChange={(open) => { if (!open) setPendingApplicationReject(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reject {pendingApplicationReject?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will mark the application as rejected. They will not appear in customer-facing results. You can re-approve them later if needed.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -506,13 +537,13 @@ export default function AdminProvidersPage() {
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => {
-                  if (pendingDelete) {
-                    deleteMutation.mutate(pendingDelete.id);
-                    setPendingDelete(null);
+                  if (pendingApplicationReject) {
+                    rejectApplication(pendingApplicationReject.id, pendingApplicationReject.name);
+                    setPendingApplicationReject(null);
                   }
                 }}
               >
-                Delete permanently
+                Reject application
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
