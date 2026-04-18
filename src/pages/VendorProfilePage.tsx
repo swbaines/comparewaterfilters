@@ -327,33 +327,6 @@ export default function VendorProfilePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>States</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between">
-                    {form.states.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {form.states.map((s) => (
-                          <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">Select states...</span>
-                    )}
-                    <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-56 p-2">
-                  {AU_STATES.map((s) => (
-                    <div key={s.value} className="flex items-center gap-2 p-1.5 rounded hover:bg-muted cursor-pointer" onClick={() => toggleArrayItem("states", s.value)}>
-                      <Checkbox checked={form.states.includes(s.value)} />
-                      <span className="text-sm">{s.label}</span>
-                    </div>
-                  ))}
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div className="space-y-2">
               <Label>Base Service Location</Label>
               <ServiceBaseAutocomplete
                 value={
@@ -373,8 +346,6 @@ export default function VendorProfilePage() {
                     service_base_state: s.state,
                     service_base_lat: s.lat,
                     service_base_lng: s.lng,
-                    // Auto-add the state to the states list if missing
-                    states: p.states.includes(s.state) ? p.states : [...p.states, s.state],
                   }))
                 }
               />
@@ -411,6 +382,28 @@ export default function VendorProfilePage() {
               <p className="text-xs text-muted-foreground">
                 Customers inside this radius from your base location are an exact match. Customers in your state but outside the radius will still see you ranked lower.
               </p>
+            </div>
+
+            {/* Auto-derived states preview */}
+            <div className="space-y-1.5 rounded-md border border-dashed border-border bg-muted/30 p-3">
+              <Label className="text-xs uppercase tracking-wide text-muted-foreground">States Covered (auto)</Label>
+              {(() => {
+                const derived = deriveStatesFromBase(
+                  form.service_base_lat,
+                  form.service_base_lng,
+                  form.service_base_state,
+                  form.statewide ? 5000 : form.service_radius_km
+                );
+                return derived.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {derived.map((s) => (
+                      <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Pick a base location to see which states you'll cover.</p>
+                );
+              })()}
             </div>
           </CardContent>
         </Card>
