@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HomePage from "@/pages/HomePage";
+import AboutPage from "@/pages/AboutPage";
 import QuizPage from "@/pages/QuizPage";
 import ResultsPage from "@/pages/ResultsPage";
 import SystemTypesPage from "@/pages/SystemTypesPage";
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="/learn/:slug" element={<ArticlePage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/provider-match" element={<ProviderMatchPage />} />
             <Route path="/water-quality" element={<WaterQualityPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />

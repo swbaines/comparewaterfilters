@@ -12,7 +12,7 @@ export default function AboutPage() {
       <PageMeta
         title="About Us — Compare Water Filters Australia"
         description="Compare Water Filters is an independent Australian platform helping households choose the right water filtration system and connect with trusted local providers."
-        canonical="https://www.comparewaterfilters.com.au/about"
+        path="/about"
       />
 
       <div className="container py-6">
@@ -73,7 +73,6 @@ export default function AboutPage() {
             <SectionHeading
               title="What we stand for"
               subtitle="Three principles that guide everything we publish"
-              align="center"
             />
           </div>
           <div className="mx-auto mt-10 grid max-w-5xl gap-6 md:grid-cols-3">
