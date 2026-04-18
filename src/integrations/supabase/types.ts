@@ -164,6 +164,36 @@ export type Database = {
           },
         ]
       }
+      lead_price_changes: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          effective_date: string
+          id: string
+          new_price: number
+          old_price: number
+          system_type: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          effective_date: string
+          id?: string
+          new_price: number
+          old_price: number
+          system_type: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          effective_date?: string
+          id?: string
+          new_price?: number
+          old_price?: number
+          system_type?: string
+        }
+        Relationships: []
+      }
       lead_prices: {
         Row: {
           created_at: string
