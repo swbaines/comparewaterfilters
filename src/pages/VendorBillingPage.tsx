@@ -412,7 +412,7 @@ export default function VendorBillingPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {LEAD_PRICES.map((lp) => (
+                  {livePriceRows.map((lp) => (
                     <TableRow key={lp.type}>
                       <TableCell className="font-medium">{lp.type}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{lp.description}</TableCell>
