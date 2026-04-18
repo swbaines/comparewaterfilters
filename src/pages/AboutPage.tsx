@@ -6,6 +6,83 @@ import PageMeta from "@/components/PageMeta";
 import SectionHeading from "@/components/SectionHeading";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
+const aboutSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "AboutPage",
+      "@id": "https://www.comparewaterfilters.com.au/about#aboutpage",
+      url: "https://www.comparewaterfilters.com.au/about",
+      name: "About Compare Water Filters",
+      description:
+        "Compare Water Filters is an independent Australian platform helping households choose the right water filtration system and connect with trusted local providers.",
+      inLanguage: "en-AU",
+      isPartOf: {
+        "@type": "WebSite",
+        "@id": "https://www.comparewaterfilters.com.au/#website",
+        name: "Compare Water Filters",
+        url: "https://www.comparewaterfilters.com.au",
+      },
+      about: { "@id": "https://www.comparewaterfilters.com.au/#organization" },
+      mainEntity: { "@id": "https://www.comparewaterfilters.com.au/#organization" },
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://www.comparewaterfilters.com.au/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "About",
+            item: "https://www.comparewaterfilters.com.au/about",
+          },
+        ],
+      },
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://www.comparewaterfilters.com.au/#organization",
+      name: "Compare Water Filters",
+      alternateName: "Compare Water Filters Australia",
+      url: "https://www.comparewaterfilters.com.au",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
+      },
+      email: "hello@comparewaterfilters.com.au",
+      description:
+        "Independent Australian platform that helps households compare water filtration systems and connect with trusted local providers.",
+      areaServed: { "@type": "Country", name: "Australia" },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Melbourne",
+        addressRegion: "VIC",
+        addressCountry: "AU",
+      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          email: "hello@comparewaterfilters.com.au",
+          availableLanguage: ["English"],
+          areaServed: "AU",
+        },
+      ],
+      knowsAbout: [
+        "Whole house water filtration",
+        "Reverse osmosis",
+        "Under-sink water filters",
+        "Water softeners",
+        "Australian tap water quality",
+      ],
+    },
+  ],
+};
+
 export default function AboutPage() {
   return (
     <div className="bg-background">
@@ -13,6 +90,11 @@ export default function AboutPage() {
         title="About Us — Compare Water Filters Australia"
         description="Compare Water Filters is an independent Australian platform helping households choose the right water filtration system and connect with trusted local providers."
         path="/about"
+      />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
       />
 
       <div className="container py-6">
