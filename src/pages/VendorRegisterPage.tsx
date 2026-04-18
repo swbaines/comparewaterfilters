@@ -195,6 +195,11 @@ export default function VendorRegisterPage() {
         }
       }
 
+      const invalidSystemTypes = profile.systemTypes.filter((id) => !VALID_SYSTEM_TYPE_IDS.has(id));
+      if (invalidSystemTypes.length > 0) {
+        throw new Error(`Invalid system type(s): ${invalidSystemTypes.join(", ")}`);
+      }
+
       const { data: provider, error: providerError } = await supabase
         .from("providers")
         .insert({

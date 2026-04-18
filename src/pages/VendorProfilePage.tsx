@@ -142,6 +142,10 @@ export default function VendorProfilePage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      const invalid = form.system_types.filter((id) => !VALID_SYSTEM_TYPE_IDS.has(id));
+      if (invalid.length > 0) {
+        throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
+      }
       const { error } = await supabase
         .from("providers")
         .update({
