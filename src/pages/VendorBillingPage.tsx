@@ -23,10 +23,9 @@ import {
 // ── Stripe publishable key ────────────────────────────────────────────────────
 const stripePromise = loadStripe("pk_live_51TGc4iFAFFjkrVg3A5F9bsS2XXQkwKVWE8wnnPcT8onOI4jeUt8Sjq0H71AAd15jCDm57kDwH0dOzVuojTq3DJqj006YmVTHZi");
 
-const LEAD_PRICES = [
-  { type: "Owner lead", price: "$85", description: "Customer owns their property" },
-  { type: "Rental lead", price: "$50", description: "Customer is renting" },
-];
+// Lead price defaults; live values are fetched from the lead_prices table (admin-editable)
+const DEFAULT_OWNER_PRICE = 85;
+const DEFAULT_RENTAL_PRICE = 50;
 
 // ── Card brand SVG icons ──────────────────────────────────────────────────────
 function CardBrandIcon({ brand }: { brand: string }) {
