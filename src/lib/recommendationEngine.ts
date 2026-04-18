@@ -114,10 +114,10 @@ function getFlags(answers: QuizAnswers) {
     (has("chlorine") && (coverage === "whole-house" || coverage === "whole-house-plus"));
 
   // RULE 2 trigger: hard water in WA/SA
-  // Only fires when the user explicitly flags scale build-up / hard water.
-  // 'appliance' alone is NOT enough — appliance concerns in WA/SA without
-  // hard-water selected fall through to Rule 1 (whole-home) instead.
-  const hardWaterWASA = isWAorSA && has("hard-water");
+  // Fires when the user is in WA/SA AND flags either scale build-up / hard
+  // water OR appliance & hot water system protection (both are caused by
+  // hardness in those states, so a softener is the proper fix).
+  const hardWaterWASA = isWAorSA && (has("hard-water") || has("appliance"));
 
   // RULE 3 trigger: RO-essential contaminants
   const roTrigger =
