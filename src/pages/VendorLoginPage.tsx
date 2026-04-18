@@ -54,14 +54,14 @@ export default function VendorLoginPage() {
           <CardDescription>Sign in to view your leads and invoices</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div><Label htmlFor="email">Email</Label><Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
+          <form onSubmit={handleSubmit} className="space-y-4" name="vendor-login" aria-label="Vendor sign in">
+            <div><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required /></div>
             <div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
                 <Link to="/vendor/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
               </div>
-              <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <Input id="password" name="password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Sign In"}

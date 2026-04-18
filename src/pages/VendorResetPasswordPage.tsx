@@ -110,7 +110,9 @@ export default function VendorResetPasswordPage() {
               <Label htmlFor="password">New Password</Label>
               <Input
                 id="password"
+                name="new-password"
                 type="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -135,7 +137,9 @@ export default function VendorResetPasswordPage() {
               <Label htmlFor="confirmPassword">Confirm New Password</Label>
               <Input
                 id="confirmPassword"
+                name="confirm-new-password"
                 type="password"
+                autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
