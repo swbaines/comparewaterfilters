@@ -496,7 +496,7 @@ export default function VendorRegisterPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label>Website *</Label>
-                    <Input value={profile.website} onChange={e => updateProfile("website", e.target.value)} required type="url" placeholder="https://yourbusiness.com.au" />
+                    <Input value={profile.website} onChange={e => updateProfile("website", e.target.value)} required placeholder="yourbusiness.com.au" />
                   </div>
                   <div className="space-y-1.5">
                     <Label>Phone</Label>
@@ -509,8 +509,7 @@ export default function VendorRegisterPage() {
                     value={profile.googleBusinessUrl}
                     onChange={e => updateProfile("googleBusinessUrl", e.target.value)}
                     required
-                    type="url"
-                    placeholder="https://g.page/your-business"
+                    placeholder="g.page/your-business"
                   />
                   <p className="text-xs text-muted-foreground">Used to verify your business reviews and reputation.</p>
                 </div>
