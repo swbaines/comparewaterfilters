@@ -318,6 +318,24 @@ export default function WaterQualityPage() {
               </Card>
             </div>
 
+            {/* Suburb-specific notices */}
+            {(result.hardness >= 180 || result.usesChloramine) && (
+              <div className="space-y-3">
+                {result.hardness >= 180 && (
+                  <WarningCallout
+                    variant="risk"
+                    message={`${result.matchedSuburb || result.region} has very hard water (${result.hardness} mg/L CaCO₃). Expect noticeable scale buildup on taps, kettles, shower screens, and inside your hot water system. A water softener or scale-reduction whole-house filter is the most effective fix.`}
+                  />
+                )}
+                {result.usesChloramine && (
+                  <WarningCallout
+                    variant="info"
+                    message={`${result.utilityName} uses chloramine as a secondary disinfectant in this area. Chloramine is harder to remove than chlorine — make sure any carbon filter you choose is rated for chloramine (catalytic carbon) rather than standard activated carbon.`}
+                  />
+                )}
+              </div>
+            )}
+
             {/* Utility info card */}
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="flex gap-3 pt-6">
