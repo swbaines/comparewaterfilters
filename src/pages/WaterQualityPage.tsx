@@ -319,12 +319,18 @@ export default function WaterQualityPage() {
             </div>
 
             {/* Suburb-specific notices */}
-            {(result.hardness >= 180 || result.usesChloramine) && (
+            {(result.hardness >= 180 || result.usesChloramine || result.pfasRisk === "elevated") && (
               <div className="space-y-3">
                 {result.hardness >= 180 && (
                   <WarningCallout
                     variant="risk"
                     message={`${result.matchedSuburb || result.region} has very hard water (${result.hardness} mg/L CaCO₃). Expect noticeable scale buildup on taps, kettles, shower screens, and inside your hot water system. A water softener or scale-reduction whole-house filter is the most effective fix.`}
+                  />
+                )}
+                {result.pfasRisk === "elevated" && (
+                  <WarningCallout
+                    variant="risk"
+                    message={`PFAS levels have been elevated in ${result.matchedSuburb || result.region}'s supply (${result.utilityName}). PFAS ("forever chemicals") are not removed by standard carbon filters — a reverse osmosis system at the kitchen tap provides the most reliable protection for drinking and cooking water.`}
                   />
                 )}
                 {result.usesChloramine && (
