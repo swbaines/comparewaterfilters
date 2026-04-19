@@ -9,6 +9,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { Search, Droplets, Thermometer, FlaskConical, AlertTriangle, CheckCircle2, ArrowRight, Info, Building2, MapPin, ExternalLink } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { findUtilityProfile, getSuburbSuggestions, type WaterUtilityProfile, type SuburbSuggestion } from "@/data/waterUtilities";
+import { WarningCallout } from "@/components/WarningCallout";
 
 function getHardnessLabel(h: number) {
   if (h < 60) return { label: "Soft", color: "text-green-800", bg: "bg-green-100" };
@@ -316,6 +317,24 @@ export default function WaterQualityPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Suburb-specific notices */}
+            {(result.hardness >= 180 || result.usesChloramine) && (
+              <div className="space-y-3">
+                {result.hardness >= 180 && (
+                  <WarningCallout
+                    variant="risk"
+                    message={`${result.matchedSuburb || result.region} has very hard water (${result.hardness} mg/L CaCO₃). Expect noticeable scale buildup on taps, kettles, shower screens, and inside your hot water system. A water softener or scale-reduction whole-house filter is the most effective fix.`}
+                  />
+                )}
+                {result.usesChloramine && (
+                  <WarningCallout
+                    variant="info"
+                    message={`${result.utilityName} uses chloramine as a secondary disinfectant in this area. Chloramine is harder to remove than chlorine — make sure any carbon filter you choose is rated for chloramine (catalytic carbon) rather than standard activated carbon.`}
+                  />
+                )}
+              </div>
+            )}
 
             {/* Utility info card */}
             <Card className="border-primary/20 bg-primary/5">
