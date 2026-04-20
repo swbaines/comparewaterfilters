@@ -78,10 +78,15 @@ function CardSetupForm({
   const stripe = useStripe();
   const elements = useElements();
   const [saving, setSaving] = useState(false);
+  const [authorised, setAuthorised] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stripe || !elements) return;
+    if (!authorised) {
+      toast.error("Please tick the direct debit authorisation to continue");
+      return;
+    }
 
     setSaving(true);
     try {
