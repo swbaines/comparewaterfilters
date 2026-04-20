@@ -121,16 +121,21 @@ Deno.serve(async (req) => {
 
         const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
 
+        const hasPaymentMethod = !!sd.stripe_payment_method_id;
+
         const stripeInvoice = await stripe.invoices.create({
           customer: sd.stripe_customer_id,
-          auto_advance: false,
-          collection_method: "charge_automatically",
-          default_payment_method: sd.stripe_payment_method_id,
+          auto_advance: !hasPaymentMethod, // hosted invoice path: let Stripe finalize + email
+          collection_method: hasPaymentMethod ? "charge_automatically" : "send_invoice",
+          ...(hasPaymentMethod
+            ? { default_payment_method: sd.stripe_payment_method_id }
+            : { days_until_due: 14 }),
           metadata: {
             provider_id: provider.id,
             period_start: periodStart,
             period_end: periodEnd,
             invoice_number: invoiceNumber,
+            billing_mode: hasPaymentMethod ? "auto_charge" : "manual_invoice",
           },
           description: `Compare Water Filters — leads for ${firstOfLastMonth.toLocaleString("en-AU", { month: "long", year: "numeric" })}`,
         });
@@ -144,7 +149,15 @@ Deno.serve(async (req) => {
         });
 
         await stripe.invoices.finalizeInvoice(stripeInvoice.id);
-        const paidInvoice = await stripe.invoices.pay(stripeInvoice.id);
+
+        let finalInvoice;
+        if (hasPaymentMethod) {
+          // Auto-charge the saved card
+          finalInvoice = await stripe.invoices.pay(stripeInvoice.id);
+        } else {
+          // Email the hosted invoice — provider pays via the Stripe-hosted link
+          finalInvoice = await stripe.invoices.sendInvoice(stripeInvoice.id);
+        }
 
         const { data: savedInvoice, error: saveErr } = await supabaseAdmin
           .from("invoices")
@@ -156,8 +169,8 @@ Deno.serve(async (req) => {
             period_end: periodEnd,
             total_amount: totalCents / 100,
             lead_count: leads.length,
-            status: paidInvoice.status === "paid" ? "paid" : "sent",
-            paid_at: paidInvoice.status === "paid" ? new Date().toISOString() : null,
+            status: finalInvoice.status === "paid" ? "paid" : "sent",
+            paid_at: finalInvoice.status === "paid" ? new Date().toISOString() : null,
           })
           .select()
           .single();
@@ -173,7 +186,8 @@ Deno.serve(async (req) => {
 
         results.push({
           provider: provider.name,
-          status: "charged",
+          status: hasPaymentMethod ? "charged" : "invoiced",
+          billing_mode: hasPaymentMethod ? "auto_charge" : "manual_invoice",
           leads: leads.length,
           amount: `$${(totalCents / 100).toFixed(2)}`,
           stripe_invoice: stripeInvoice.id,
