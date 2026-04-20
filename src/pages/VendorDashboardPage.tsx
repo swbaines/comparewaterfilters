@@ -422,10 +422,12 @@ export default function VendorDashboardPage() {
             <TableBody>
               {filteredLeads.length === 0 ? (
                 <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No leads {thisMonthOnly ? "this month" : "yet"}</TableCell></TableRow>
-              ) : filteredLeads.map((lead) => (
+              ) : filteredLeads.map((lead) => {
+                const isNew = lead.lead_status === "new" || lead.lead_status === "sent";
+                return (
                 <TableRow
                   key={lead.id}
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  className={`cursor-pointer hover:bg-muted/50 transition-colors ${isNew ? "font-bold" : ""}`}
                   onClick={() => { setSelectedLead(lead); setVendorNotes(lead.vendor_notes || ""); }}
                 >
                   <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
