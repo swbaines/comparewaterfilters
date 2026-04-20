@@ -52,16 +52,26 @@ export default function VendorDashboardPage() {
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("quote_requests")
-        .update({ lead_status: status, status_updated_at: new Date().toISOString() })
-        .eq("id", id);
+    mutationFn: async ({ id, status, currentLead }: { id: string; status: string; currentLead: any }) => {
+      const updates: Record<string, any> = {
+        lead_status: status,
+        status_updated_at: new Date().toISOString(),
+      };
+      // Stamp first_response_at the first time vendor moves a lead out of "new"
+      if (
+        currentLead?.lead_status === "new" &&
+        status !== "new" &&
+        !currentLead?.first_response_at
+      ) {
+        updates.first_response_at = new Date().toISOString();
+      }
+      const { error } = await supabase.from("quote_requests").update(updates).eq("id", id);
       if (error) throw error;
+      return updates;
     },
-    onSuccess: (_, { id, status }) => {
+    onSuccess: (updates, { id, status }) => {
       queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
-      setSelectedLead((prev: any) => prev ? { ...prev, lead_status: status } : null);
+      setSelectedLead((prev: any) => prev ? { ...prev, lead_status: status, ...updates } : null);
     },
   });
 
