@@ -391,7 +391,7 @@ export default function VendorBillingPage() {
                   variant="destructive"
                   size="sm"
                   className="ml-4 shrink-0 gap-2"
-                  disabled={!!payingInvoiceId}
+                  disabled={!!payingInvoiceId || payCooldownIds.size > 0}
                   onClick={() => {
                     const unpaid = invoices.find((inv: any) => inv.status === "sent" || inv.status === "overdue");
                     if (unpaid) handlePayNow(unpaid.id);
