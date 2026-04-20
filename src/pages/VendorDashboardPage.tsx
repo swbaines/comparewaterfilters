@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import VendorTermsAcceptance from "@/components/VendorTermsAcceptance";
+import LeadNotificationBell from "@/components/vendor/LeadNotificationBell";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -49,6 +50,11 @@ export default function VendorDashboardPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
   const [thisMonthOnly, setThisMonthOnly] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  // Snapshot of last_dashboard_visit captured on mount, used for new-lead comparison
+  // even after we update the DB timestamp.
+  const [visitSnapshot, setVisitSnapshot] = useState<string | null | undefined>(undefined);
+  const visitSnapshotSetRef = useRef(false);
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
@@ -132,6 +138,64 @@ export default function VendorDashboardPage() {
       return data;
     },
   });
+
+  // Capture snapshot of last_dashboard_visit ONCE when vendorAccount first loads
+  useEffect(() => {
+    if (vendorAccount && !visitSnapshotSetRef.current) {
+      setVisitSnapshot(vendorAccount.last_dashboard_visit ?? null);
+      visitSnapshotSetRef.current = true;
+    }
+  }, [vendorAccount]);
+
+  const updateLastVisit = useMutation({
+    mutationFn: async () => {
+      if (!vendorAccount?.id) return;
+      const { error } = await supabase
+        .from("vendor_accounts")
+        .update({ last_dashboard_visit: new Date().toISOString() } as any)
+        .eq("id", vendorAccount.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
+    },
+  });
+
+  // Compute new leads (created after the snapshot)
+  const newLeads = (() => {
+    if (visitSnapshot === undefined) return [];
+    if (visitSnapshot === null) return leads; // First visit ever: everything is new
+    const snap = new Date(visitSnapshot).getTime();
+    return leads.filter((l: any) => new Date(l.created_at).getTime() > snap);
+  })();
+  const hasUnseen = newLeads.length > 0 && !bannerDismissed;
+
+  // After 3s on page, mark visit (only if there were unseen leads)
+  useEffect(() => {
+    if (!vendorAccount?.id || visitSnapshot === undefined) return;
+    if (newLeads.length === 0) return;
+    const t = setTimeout(() => {
+      updateLastVisit.mutate();
+    }, 3000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendorAccount?.id, visitSnapshot, newLeads.length]);
+
+  const handleDismissBanner = () => {
+    setBannerDismissed(true);
+    updateLastVisit.mutate();
+  };
+
+  const scrollToLeads = () => {
+    document.getElementById("vendor-leads-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    handleDismissBanner();
+  };
+
+  const handleOpenLeadFromBell = (lead: any) => {
+    setSelectedLead(lead);
+    setVendorNotes(lead.vendor_notes || "");
+    handleDismissBanner();
+  };
 
   const isLoading = vaLoading || leadsLoading || invoicesLoading;
 
@@ -241,7 +305,13 @@ export default function VendorDashboardPage() {
             <h1 className="text-2xl font-bold">{provider?.name || "Vendor"} Dashboard</h1>
             <p className="text-muted-foreground">View your leads, track sales, and manage invoices</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <LeadNotificationBell
+              newLeads={newLeads}
+              hasUnseen={hasUnseen}
+              onOpenLead={handleOpenLeadFromBell}
+              onSeen={() => setBannerDismissed(true)}
+            />
             <Button variant="outline" size="sm" onClick={() => navigate("/vendor/profile")}>
               <Building2 className="h-4 w-4 mr-2" />
               Edit Profile
@@ -259,6 +329,24 @@ export default function VendorDashboardPage() {
             </Button>
           </div>
         </div>
+
+        {/* New leads banner */}
+        {hasUnseen && (
+          <div className="mb-6 -mx-4 md:mx-0 flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-none md:rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 animate-fade-in">
+            <p className="text-sm text-blue-900">
+              <span className="font-semibold">You have {newLeads.length} new lead{newLeads.length === 1 ? "" : "s"}</span>{" "}
+              since your last visit
+            </p>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="default" onClick={scrollToLeads}>
+                View leads
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleDismissBanner} aria-label="Dismiss">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
@@ -297,7 +385,7 @@ export default function VendorDashboardPage() {
         </div>
 
         {/* Leads */}
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div id="vendor-leads-section" className="mb-3 flex items-center justify-between gap-3 scroll-mt-4">
           <h2 className="text-lg font-semibold">Your Leads</h2>
           <div className="inline-flex rounded-md border bg-background p-0.5">
             <Button
