@@ -495,7 +495,9 @@ export default function VendorBillingPage() {
                 <div className="flex items-start gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
                   <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
                   <p>
-                    Your account is pending approval. Payment setup will be available once approved.
+                    {provider?.approval_status === "approved"
+                      ? "Setting up your billing account… please refresh in a moment. If this persists, ensure your provider profile has a contact email."
+                      : "Your account is pending approval. Payment setup will be available once approved."}
                   </p>
                 </div>
               ) : cardSaved && !showCardForm ? (
