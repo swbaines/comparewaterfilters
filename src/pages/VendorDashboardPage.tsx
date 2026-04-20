@@ -139,6 +139,64 @@ export default function VendorDashboardPage() {
     },
   });
 
+  // Capture snapshot of last_dashboard_visit ONCE when vendorAccount first loads
+  useEffect(() => {
+    if (vendorAccount && !visitSnapshotSetRef.current) {
+      setVisitSnapshot(vendorAccount.last_dashboard_visit ?? null);
+      visitSnapshotSetRef.current = true;
+    }
+  }, [vendorAccount]);
+
+  const updateLastVisit = useMutation({
+    mutationFn: async () => {
+      if (!vendorAccount?.id) return;
+      const { error } = await supabase
+        .from("vendor_accounts")
+        .update({ last_dashboard_visit: new Date().toISOString() } as any)
+        .eq("id", vendorAccount.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
+    },
+  });
+
+  // Compute new leads (created after the snapshot)
+  const newLeads = (() => {
+    if (visitSnapshot === undefined) return [];
+    if (visitSnapshot === null) return leads; // First visit ever: everything is new
+    const snap = new Date(visitSnapshot).getTime();
+    return leads.filter((l: any) => new Date(l.created_at).getTime() > snap);
+  })();
+  const hasUnseen = newLeads.length > 0 && !bannerDismissed;
+
+  // After 3s on page, mark visit (only if there were unseen leads)
+  useEffect(() => {
+    if (!vendorAccount?.id || visitSnapshot === undefined) return;
+    if (newLeads.length === 0) return;
+    const t = setTimeout(() => {
+      updateLastVisit.mutate();
+    }, 3000);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendorAccount?.id, visitSnapshot, newLeads.length]);
+
+  const handleDismissBanner = () => {
+    setBannerDismissed(true);
+    updateLastVisit.mutate();
+  };
+
+  const scrollToLeads = () => {
+    document.getElementById("vendor-leads-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    handleDismissBanner();
+  };
+
+  const handleOpenLeadFromBell = (lead: any) => {
+    setSelectedLead(lead);
+    setVendorNotes(lead.vendor_notes || "");
+    handleDismissBanner();
+  };
+
   const isLoading = vaLoading || leadsLoading || invoicesLoading;
 
   if (isLoading) {
