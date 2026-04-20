@@ -247,6 +247,8 @@ export default function VendorBillingPage() {
       if (error) throw error;
       return data;
     },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
   });
 
   // Fetch card brand/last4 from Stripe
