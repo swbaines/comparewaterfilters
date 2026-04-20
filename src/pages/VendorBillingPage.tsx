@@ -583,7 +583,7 @@ export default function VendorBillingPage() {
                             variant="default"
                             size="sm"
                             className="gap-1"
-                            disabled={payingInvoiceId === inv.id}
+                            disabled={payingInvoiceId === inv.id || payCooldownIds.has(inv.id)}
                             onClick={(e) => { e.stopPropagation(); handlePayNow(inv.id); }}
                           >
                             {payingInvoiceId === inv.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <DollarSign className="h-3 w-3" />}
