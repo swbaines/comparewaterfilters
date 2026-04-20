@@ -120,6 +120,46 @@ Deno.serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
+    // ============= DUPLICATE-CHARGE GUARDS =============
+    // 1) If this invoice already has a linked Stripe Invoice (email path), check its status first.
+    if (invoice.stripe_invoice_id && invoice.stripe_invoice_id.startsWith('in_')) {
+      try {
+        const existingInv = await stripe.invoices.retrieve(invoice.stripe_invoice_id)
+        if (existingInv.status === 'paid') {
+          await supabaseAdmin
+            .from('invoices')
+            .update({ status: 'paid', paid_at: new Date((existingInv.status_transitions?.paid_at ?? Date.now() / 1000) * 1000).toISOString() })
+            .eq('id', invoice.id)
+          return new Response(JSON.stringify({ success: true, status: 'paid', already_paid: true, source: 'stripe_invoice' }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          })
+        }
+      } catch (e) {
+        console.error('Failed to verify existing Stripe invoice:', e)
+      }
+    }
+
+    // 2) Search Stripe for any successful PaymentIntent already tagged with this invoice_id
+    try {
+      const search = await stripe.paymentIntents.search({
+        query: `metadata['invoice_id']:'${invoice.id}' AND status:'succeeded'`,
+        limit: 1,
+      })
+      if (search.data.length > 0) {
+        const existingPi = search.data[0]
+        await supabaseAdmin
+          .from('invoices')
+          .update({ status: 'paid', paid_at: new Date(existingPi.created * 1000).toISOString(), stripe_invoice_id: existingPi.id })
+          .eq('id', invoice.id)
+        return new Response(JSON.stringify({ success: true, status: 'paid', already_paid: true, source: 'payment_intent' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+    } catch (e) {
+      console.error('PaymentIntent search failed (non-fatal):', e)
+    }
+
+    // 3) Use a Stripe idempotency key so retries within 24h cannot double-charge.
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
       currency: 'aud',
@@ -132,6 +172,8 @@ Deno.serve(async (req) => {
         invoice_id: invoice.id,
         invoice_number: invoice.invoice_number,
       },
+    }, {
+      idempotencyKey: `pay-invoice-${invoice.id}`,
     })
 
     if (paymentIntent.status === 'succeeded') {
