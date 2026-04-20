@@ -307,6 +307,18 @@ export default function VendorBillingPage() {
   const lastMonthInvoice = invoices[0];
   const handlePayNow = async (invoiceId: string) => {
     setPayingInvoiceId(invoiceId);
+    setPayCooldownIds((prev) => {
+      const next = new Set(prev);
+      next.add(invoiceId);
+      return next;
+    });
+    setTimeout(() => {
+      setPayCooldownIds((prev) => {
+        const next = new Set(prev);
+        next.delete(invoiceId);
+        return next;
+      });
+    }, 5000);
     try {
       const { data, error } = await supabase.functions.invoke("pay-invoice-now", {
         body: { invoice_id: invoiceId },
