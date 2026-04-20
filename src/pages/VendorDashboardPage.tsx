@@ -434,32 +434,71 @@ export default function VendorDashboardPage() {
           </div>
         )}
 
+        {/* Time period filter */}
+        <div className="mb-4 -mx-4 md:mx-0 overflow-x-auto md:overflow-visible scrollbar-none">
+          <div className="inline-flex md:flex w-max md:w-auto gap-1 rounded-md border bg-background p-0.5 px-4 md:px-0.5">
+            {PERIOD_OPTIONS.map((opt) => (
+              <Button
+                key={opt.value}
+                size="sm"
+                variant={period === opt.value ? "default" : "ghost"}
+                className="h-8 px-3 text-xs whitespace-nowrap rounded-full md:rounded-md"
+                onClick={() => setPeriod(opt.value)}
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Stats */}
-        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <Users className="h-8 w-8 text-primary" />
-            <div><p className="text-sm text-muted-foreground">Total Leads</p><p className="text-2xl font-bold">{stats.total}</p></div>
+        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <Users className="h-8 w-8 text-primary shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Total Leads</p>
+              {renderValue(stats.total)}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.total, prevStats.total)} /></div>}
+            </div>
           </CardContent></Card>
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <TrendingUp className="h-8 w-8 text-blue-500" />
-            <div><p className="text-sm text-muted-foreground">New / Pending</p><p className="text-2xl font-bold">{stats.new}</p></div>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <TrendingUp className="h-8 w-8 text-blue-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">New / Pending</p>
+              {renderValue(stats.new)}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.new, prevStats.new)} /></div>}
+            </div>
           </CardContent></Card>
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <FileText className="h-8 w-8 text-green-500" />
-            <div><p className="text-sm text-muted-foreground">Won</p><p className="text-2xl font-bold">{stats.won}</p></div>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <FileText className="h-8 w-8 text-green-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Won</p>
+              {renderValue(stats.won)}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.won, prevStats.won)} /></div>}
+            </div>
           </CardContent></Card>
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <DollarSign className="h-8 w-8 text-amber-500" />
-            <div><p className="text-sm text-muted-foreground">Total Invoiced</p><p className="text-2xl font-bold">${stats.totalInvoiced.toFixed(0)}</p></div>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <DollarSign className="h-8 w-8 text-amber-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Total Invoiced</p>
+              {emptyToday ? (
+                <span className="text-sm font-medium text-muted-foreground">No leads today yet</span>
+              ) : (
+                <span className="text-2xl font-bold">${stats.totalInvoiced.toFixed(0)}</span>
+              )}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.totalInvoiced, prevStats.totalInvoiced)} /></div>}
+            </div>
           </CardContent></Card>
           <Card><CardContent className="flex items-start gap-3 p-4">
             <Clock className="h-8 w-8 text-primary shrink-0" />
             <div className="min-w-0">
               <p className="text-sm text-muted-foreground">Avg Response Time</p>
-              {respondedCount >= 3 ? (
+              {emptyToday ? (
+                <p className="text-sm font-medium text-muted-foreground mt-1">No leads today yet</p>
+              ) : stats.respondedCount >= 3 ? (
                 <>
-                  <p className={`text-2xl font-bold ${responseColorClass(avgResponseMs)}`}>
-                    {formatResponseTime(avgResponseMs)}
+                  <p className={`text-2xl font-bold ${responseColorClass(stats.avgResponseMs)}`}>
+                    {formatResponseTime(stats.avgResponseMs)}
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Faster responses win more leads</p>
                 </>
@@ -468,29 +507,30 @@ export default function VendorDashboardPage() {
               )}
             </div>
           </CardContent></Card>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Win Rate</p>
+              {emptyToday ? (
+                <span className="text-sm font-medium text-muted-foreground">No leads today yet</span>
+              ) : stats.hasClosed ? (
+                <span className="text-2xl font-bold">{Math.round(stats.winRate)}%</span>
+              ) : (
+                <span className="text-sm font-medium text-muted-foreground">No closed leads</span>
+              )}
+              {showCompare && !emptyToday && stats.hasClosed && prevStats.hasClosed && (
+                <div className="mt-0.5"><TrendBadge change={pctChange(stats.winRate, prevStats.winRate)} /></div>
+              )}
+            </div>
+          </CardContent></Card>
         </div>
 
         {/* Leads */}
         <div id="vendor-leads-section" className="mb-3 flex items-center justify-between gap-3 scroll-mt-4">
           <h2 className="text-lg font-semibold">Your Leads</h2>
-          <div className="inline-flex rounded-md border bg-background p-0.5">
-            <Button
-              size="sm"
-              variant={thisMonthOnly ? "ghost" : "default"}
-              className="h-7 px-3 text-xs"
-              onClick={() => setThisMonthOnly(false)}
-            >
-              All time
-            </Button>
-            <Button
-              size="sm"
-              variant={thisMonthOnly ? "default" : "ghost"}
-              className="h-7 px-3 text-xs"
-              onClick={() => setThisMonthOnly(true)}
-            >
-              This month
-            </Button>
-          </div>
+          <span className="text-xs text-muted-foreground">
+            {PERIOD_OPTIONS.find((o) => o.value === period)?.label}
+          </span>
         </div>
         <Card className="mb-8">
           <Table>
