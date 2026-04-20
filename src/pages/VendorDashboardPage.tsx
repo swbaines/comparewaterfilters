@@ -50,6 +50,11 @@ export default function VendorDashboardPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
   const [thisMonthOnly, setThisMonthOnly] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  // Snapshot of last_dashboard_visit captured on mount, used for new-lead comparison
+  // even after we update the DB timestamp.
+  const [visitSnapshot, setVisitSnapshot] = useState<string | null | undefined>(undefined);
+  const visitSnapshotSetRef = useRef(false);
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
