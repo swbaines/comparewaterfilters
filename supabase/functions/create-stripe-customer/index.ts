@@ -32,20 +32,29 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { data: isAdmin } = await supabaseAdmin.rpc('has_role', {
-      _user_id: user.id, _role: 'admin'
-    })
-    if (!isAdmin) {
-      return new Response(JSON.stringify({ error: 'Admin access required' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
     const { provider_id } = await req.json()
     if (!provider_id) {
       return new Response(JSON.stringify({ error: 'provider_id is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
+    }
+
+    // Authorize: must be an admin OR the vendor linked to this provider
+    const { data: isAdmin } = await supabaseAdmin.rpc('has_role', {
+      _user_id: user.id, _role: 'admin'
+    })
+    if (!isAdmin) {
+      const { data: va } = await supabaseAdmin
+        .from('vendor_accounts')
+        .select('provider_id')
+        .eq('user_id', user.id)
+        .eq('provider_id', provider_id)
+        .maybeSingle()
+      if (!va) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), {
+          status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
     }
 
     const { data: provider, error: providerError } = await supabaseAdmin

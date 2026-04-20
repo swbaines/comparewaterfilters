@@ -220,11 +220,24 @@ export default function VendorBillingPage() {
         .single();
 
       // Fetch Stripe details from dedicated table
-      const { data: stripeDetails } = await supabase
+      let { data: stripeDetails } = await supabase
         .from("provider_stripe_details")
         .select("stripe_customer_id, stripe_payment_method_id")
         .eq("provider_id", va.provider_id)
-        .single();
+        .maybeSingle();
+
+      // Auto-provision a Stripe customer for approved providers that don't have one yet
+      if (prov?.approval_status === "approved" && !stripeDetails?.stripe_customer_id) {
+        const { data: created, error: createErr } = await supabase.functions.invoke("create-stripe-customer", {
+          body: { provider_id: va.provider_id },
+        });
+        if (!createErr && created?.customer_id) {
+          stripeDetails = {
+            stripe_customer_id: created.customer_id,
+            stripe_payment_method_id: stripeDetails?.stripe_payment_method_id ?? null,
+          };
+        }
+      }
 
       setProvider({ ...prov, stripe_customer_id: stripeDetails?.stripe_customer_id, stripe_payment_method_id: stripeDetails?.stripe_payment_method_id });
       if (!showCardForm) {
