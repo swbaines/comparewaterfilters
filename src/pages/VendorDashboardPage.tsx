@@ -19,9 +19,14 @@ const statusColors: Record<string, string> = {
   new: "bg-blue-100 text-blue-800",
   sent: "bg-purple-100 text-purple-800",
   contacted: "bg-yellow-100 text-yellow-800",
+  quoted: "bg-indigo-100 text-indigo-800",
   won: "bg-green-100 text-green-800",
   lost: "bg-red-100 text-red-800",
 };
+
+function estimatedLeadFee(ownership?: string | null): number {
+  return ownership === "Rent" ? 50 : 85;
+}
 
 const systemTypeLabels: Record<string, string> = {
   "under-sink-carbon": "Under-Sink Carbon Filter",
