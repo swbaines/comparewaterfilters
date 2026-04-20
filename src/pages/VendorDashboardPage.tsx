@@ -385,7 +385,7 @@ export default function VendorDashboardPage() {
         </div>
 
         {/* Leads */}
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div id="vendor-leads-section" className="mb-3 flex items-center justify-between gap-3 scroll-mt-4">
           <h2 className="text-lg font-semibold">Your Leads</h2>
           <div className="inline-flex rounded-md border bg-background p-0.5">
             <Button
