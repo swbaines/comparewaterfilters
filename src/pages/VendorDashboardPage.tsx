@@ -241,7 +241,27 @@ export default function VendorDashboardPage() {
         </div>
 
         {/* Leads */}
-        <h2 className="mb-3 text-lg font-semibold">Your Leads</h2>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">Your Leads</h2>
+          <div className="inline-flex rounded-md border bg-background p-0.5">
+            <Button
+              size="sm"
+              variant={thisMonthOnly ? "ghost" : "default"}
+              className="h-7 px-3 text-xs"
+              onClick={() => setThisMonthOnly(false)}
+            >
+              All time
+            </Button>
+            <Button
+              size="sm"
+              variant={thisMonthOnly ? "default" : "ghost"}
+              className="h-7 px-3 text-xs"
+              onClick={() => setThisMonthOnly(true)}
+            >
+              This month
+            </Button>
+          </div>
+        </div>
         <Card className="mb-8">
           <Table>
             <TableHeader>
@@ -251,13 +271,14 @@ export default function VendorDashboardPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Systems</TableHead>
+                <TableHead className="text-right">Est. Fee</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leads.length === 0 ? (
-                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
-              ) : leads.map((lead) => (
+              {filteredLeads.length === 0 ? (
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No leads {thisMonthOnly ? "this month" : "yet"}</TableCell></TableRow>
+              ) : filteredLeads.map((lead) => (
                 <TableRow
                   key={lead.id}
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
@@ -286,6 +307,9 @@ export default function VendorDashboardPage() {
                         <Badge key={s} variant="outline" className="text-xs">{formatSystemType(s)}</Badge>
                       ))}
                     </div>
+                  </TableCell>
+                  <TableCell className="text-right text-sm font-semibold tabular-nums">
+                    ${estimatedLeadFee(lead.ownership_status)}
                   </TableCell>
                   <TableCell>
                     <Badge className={`${statusColors[lead.lead_status] || ""} text-xs`}>{lead.lead_status}</Badge>
