@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -43,13 +43,80 @@ function formatSystemType(type: string) {
   return systemTypeLabels[type] || type.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+type TimePeriod = "today" | "month" | "year" | "all";
+
+const PERIOD_STORAGE_KEY = "vendor-dashboard-period";
+
+const PERIOD_OPTIONS: { value: TimePeriod; label: string }[] = [
+  { value: "today", label: "Today" },
+  { value: "month", label: "This Month" },
+  { value: "year", label: "This Year" },
+  { value: "all", label: "All Time" },
+];
+
+function getPeriodRange(period: TimePeriod): { start: Date | null; prevStart: Date | null; prevEnd: Date | null } {
+  const now = new Date();
+  if (period === "today") {
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const prevStart = new Date(start);
+    prevStart.setDate(prevStart.getDate() - 1);
+    return { start, prevStart, prevEnd: start };
+  }
+  if (period === "month") {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return { start, prevStart, prevEnd: start };
+  }
+  if (period === "year") {
+    const start = new Date(now.getFullYear(), 0, 1);
+    const prevStart = new Date(now.getFullYear() - 1, 0, 1);
+    return { start, prevStart, prevEnd: start };
+  }
+  return { start: null, prevStart: null, prevEnd: null };
+}
+
+function filterByRange<T extends { created_at: string }>(items: T[], start: Date | null, end?: Date | null): T[] {
+  if (!start) return items;
+  return items.filter((i) => {
+    const t = new Date(i.created_at).getTime();
+    if (t < start.getTime()) return false;
+    if (end && t >= end.getTime()) return false;
+    return true;
+  });
+}
+
+function pctChange(current: number, previous: number): number | null {
+  if (previous === 0) return current === 0 ? 0 : null;
+  return ((current - previous) / previous) * 100;
+}
+
+function TrendBadge({ change }: { change: number | null }) {
+  if (change === null) return <span className="text-[11px] text-muted-foreground">vs prev: n/a</span>;
+  if (change === 0) return <span className="text-[11px] text-muted-foreground">No change</span>;
+  const up = change > 0;
+  const Icon = up ? ArrowUp : ArrowDown;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${up ? "text-green-600" : "text-red-600"}`}>
+      <Icon className="h-3 w-3" />
+      {up ? "+" : ""}{Math.round(change)}%
+    </span>
+  );
+}
+
 export default function VendorDashboardPage() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
-  const [thisMonthOnly, setThisMonthOnly] = useState(false);
+  const [period, setPeriod] = useState<TimePeriod>(() => {
+    if (typeof window === "undefined") return "month";
+    const saved = window.localStorage.getItem(PERIOD_STORAGE_KEY) as TimePeriod | null;
+    return saved && ["today", "month", "year", "all"].includes(saved) ? saved : "month";
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem(PERIOD_STORAGE_KEY, period); } catch { /* noop */ }
+  }, [period]);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   // Snapshot of last_dashboard_visit captured on mount, used for new-lead comparison
   // even after we update the DB timestamp.
@@ -260,12 +327,13 @@ export default function VendorDashboardPage() {
     );
   }
 
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const filteredLeads = (thisMonthOnly
-    ? leads.filter((l) => new Date(l.created_at) >= monthStart)
-    : leads
-  )
+  const { start: periodStart, prevStart, prevEnd } = getPeriodRange(period);
+  const periodLeads = filterByRange(leads as any[], periodStart);
+  const periodInvoices = filterByRange(invoices as any[], periodStart);
+  const prevLeads = period === "all" ? [] : filterByRange(leads as any[], prevStart, prevEnd);
+  const prevInvoices = period === "all" ? [] : filterByRange(invoices as any[], prevStart, prevEnd);
+
+  const filteredLeads = periodLeads
     .slice()
     .sort((a, b) => {
       const aNew = a.lead_status === "new" || a.lead_status === "sent" ? 1 : 0;
@@ -274,21 +342,31 @@ export default function VendorDashboardPage() {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-  const stats = {
-    total: leads.length,
-    new: leads.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
-    won: leads.filter((l) => l.lead_status === "won").length,
-    totalInvoiced: invoices.reduce((s, i) => s + Number(i.total_amount), 0),
+  const computeStats = (ls: any[], invs: any[]) => {
+    const responded = ls.filter((l) => l.first_response_at);
+    const avgMs = responded.length
+      ? responded.reduce((s, l) => s + (new Date(l.first_response_at).getTime() - new Date(l.created_at).getTime()), 0) / responded.length
+      : 0;
+    const won = ls.filter((l) => l.lead_status === "won").length;
+    const closed = ls.filter((l) => l.lead_status === "won" || l.lead_status === "lost").length;
+    return {
+      total: ls.length,
+      new: ls.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
+      won,
+      totalInvoiced: invs.reduce((s, i) => s + Number(i.total_amount), 0),
+      respondedCount: responded.length,
+      avgResponseMs: avgMs,
+      winRate: closed > 0 ? (won / closed) * 100 : 0,
+      hasClosed: closed > 0,
+    };
   };
 
-  // Avg response time: only leads where vendor has responded (first_response_at set)
-  const respondedLeads = leads.filter((l: any) => l.first_response_at);
-  const respondedCount = respondedLeads.length;
-  const avgResponseMs = respondedCount > 0
-    ? respondedLeads.reduce((sum: number, l: any) => {
-        return sum + (new Date(l.first_response_at).getTime() - new Date(l.created_at).getTime());
-      }, 0) / respondedCount
-    : 0;
+  const stats = computeStats(periodLeads, periodInvoices);
+  const prevStats = computeStats(prevLeads, prevInvoices);
+  const showCompare = period !== "all";
+  const isToday = period === "today";
+  const emptyToday = isToday && periodLeads.length === 0;
+  const renderValue = (value: string | number) => emptyToday ? <span className="text-sm font-medium text-muted-foreground">No leads today yet</span> : <span className="text-2xl font-bold">{value}</span>;
 
   const formatResponseTime = (ms: number): string => {
     const minutes = ms / 60000;
@@ -356,32 +434,71 @@ export default function VendorDashboardPage() {
           </div>
         )}
 
+        {/* Time period filter */}
+        <div className="mb-4 -mx-4 md:mx-0 overflow-x-auto md:overflow-visible scrollbar-none">
+          <div className="inline-flex md:flex w-max md:w-auto gap-1 rounded-md border bg-background p-0.5 px-4 md:px-0.5">
+            {PERIOD_OPTIONS.map((opt) => (
+              <Button
+                key={opt.value}
+                size="sm"
+                variant={period === opt.value ? "default" : "ghost"}
+                className="h-8 px-3 text-xs whitespace-nowrap rounded-full md:rounded-md"
+                onClick={() => setPeriod(opt.value)}
+              >
+                {opt.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Stats */}
-        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <Users className="h-8 w-8 text-primary" />
-            <div><p className="text-sm text-muted-foreground">Total Leads</p><p className="text-2xl font-bold">{stats.total}</p></div>
+        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <Users className="h-8 w-8 text-primary shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Total Leads</p>
+              {renderValue(stats.total)}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.total, prevStats.total)} /></div>}
+            </div>
           </CardContent></Card>
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <TrendingUp className="h-8 w-8 text-blue-500" />
-            <div><p className="text-sm text-muted-foreground">New / Pending</p><p className="text-2xl font-bold">{stats.new}</p></div>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <TrendingUp className="h-8 w-8 text-blue-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">New / Pending</p>
+              {renderValue(stats.new)}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.new, prevStats.new)} /></div>}
+            </div>
           </CardContent></Card>
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <FileText className="h-8 w-8 text-green-500" />
-            <div><p className="text-sm text-muted-foreground">Won</p><p className="text-2xl font-bold">{stats.won}</p></div>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <FileText className="h-8 w-8 text-green-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Won</p>
+              {renderValue(stats.won)}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.won, prevStats.won)} /></div>}
+            </div>
           </CardContent></Card>
-          <Card><CardContent className="flex items-center gap-3 p-4">
-            <DollarSign className="h-8 w-8 text-amber-500" />
-            <div><p className="text-sm text-muted-foreground">Total Invoiced</p><p className="text-2xl font-bold">${stats.totalInvoiced.toFixed(0)}</p></div>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <DollarSign className="h-8 w-8 text-amber-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Total Invoiced</p>
+              {emptyToday ? (
+                <span className="text-sm font-medium text-muted-foreground">No leads today yet</span>
+              ) : (
+                <span className="text-2xl font-bold">${stats.totalInvoiced.toFixed(0)}</span>
+              )}
+              {showCompare && !emptyToday && <div className="mt-0.5"><TrendBadge change={pctChange(stats.totalInvoiced, prevStats.totalInvoiced)} /></div>}
+            </div>
           </CardContent></Card>
           <Card><CardContent className="flex items-start gap-3 p-4">
             <Clock className="h-8 w-8 text-primary shrink-0" />
             <div className="min-w-0">
               <p className="text-sm text-muted-foreground">Avg Response Time</p>
-              {respondedCount >= 3 ? (
+              {emptyToday ? (
+                <p className="text-sm font-medium text-muted-foreground mt-1">No leads today yet</p>
+              ) : stats.respondedCount >= 3 ? (
                 <>
-                  <p className={`text-2xl font-bold ${responseColorClass(avgResponseMs)}`}>
-                    {formatResponseTime(avgResponseMs)}
+                  <p className={`text-2xl font-bold ${responseColorClass(stats.avgResponseMs)}`}>
+                    {formatResponseTime(stats.avgResponseMs)}
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Faster responses win more leads</p>
                 </>
@@ -390,29 +507,30 @@ export default function VendorDashboardPage() {
               )}
             </div>
           </CardContent></Card>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <CheckCircle2 className="h-8 w-8 text-emerald-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Win Rate</p>
+              {emptyToday ? (
+                <span className="text-sm font-medium text-muted-foreground">No leads today yet</span>
+              ) : stats.hasClosed ? (
+                <span className="text-2xl font-bold">{Math.round(stats.winRate)}%</span>
+              ) : (
+                <span className="text-sm font-medium text-muted-foreground">No closed leads</span>
+              )}
+              {showCompare && !emptyToday && stats.hasClosed && prevStats.hasClosed && (
+                <div className="mt-0.5"><TrendBadge change={pctChange(stats.winRate, prevStats.winRate)} /></div>
+              )}
+            </div>
+          </CardContent></Card>
         </div>
 
         {/* Leads */}
         <div id="vendor-leads-section" className="mb-3 flex items-center justify-between gap-3 scroll-mt-4">
           <h2 className="text-lg font-semibold">Your Leads</h2>
-          <div className="inline-flex rounded-md border bg-background p-0.5">
-            <Button
-              size="sm"
-              variant={thisMonthOnly ? "ghost" : "default"}
-              className="h-7 px-3 text-xs"
-              onClick={() => setThisMonthOnly(false)}
-            >
-              All time
-            </Button>
-            <Button
-              size="sm"
-              variant={thisMonthOnly ? "default" : "ghost"}
-              className="h-7 px-3 text-xs"
-              onClick={() => setThisMonthOnly(true)}
-            >
-              This month
-            </Button>
-          </div>
+          <span className="text-xs text-muted-foreground">
+            {PERIOD_OPTIONS.find((o) => o.value === period)?.label}
+          </span>
         </div>
         <Card className="mb-8">
           <Table>
@@ -429,7 +547,9 @@ export default function VendorDashboardPage() {
             </TableHeader>
             <TableBody>
               {filteredLeads.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No leads {thisMonthOnly ? "this month" : "yet"}</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  {period === "today" ? "No leads today yet" : period === "all" ? "No leads yet" : `No leads in ${PERIOD_OPTIONS.find((o) => o.value === period)?.label.toLowerCase()}`}
+                </TableCell></TableRow>
               ) : filteredLeads.map((lead) => {
                 const isNew = lead.lead_status === "new" || lead.lead_status === "sent";
                 return (
