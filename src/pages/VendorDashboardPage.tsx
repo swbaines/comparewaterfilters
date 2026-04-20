@@ -262,9 +262,17 @@ export default function VendorDashboardPage() {
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const filteredLeads = thisMonthOnly
+  const filteredLeads = (thisMonthOnly
     ? leads.filter((l) => new Date(l.created_at) >= monthStart)
-    : leads;
+    : leads
+  )
+    .slice()
+    .sort((a, b) => {
+      const aNew = a.lead_status === "new" || a.lead_status === "sent" ? 1 : 0;
+      const bNew = b.lead_status === "new" || b.lead_status === "sent" ? 1 : 0;
+      if (aNew !== bNew) return bNew - aNew;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   const stats = {
     total: leads.length,
