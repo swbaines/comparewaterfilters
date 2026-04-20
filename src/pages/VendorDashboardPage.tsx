@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2 } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -52,16 +52,26 @@ export default function VendorDashboardPage() {
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("quote_requests")
-        .update({ lead_status: status, status_updated_at: new Date().toISOString() })
-        .eq("id", id);
+    mutationFn: async ({ id, status, currentLead }: { id: string; status: string; currentLead: any }) => {
+      const updates: Record<string, any> = {
+        lead_status: status,
+        status_updated_at: new Date().toISOString(),
+      };
+      // Stamp first_response_at the first time vendor moves a lead out of "new"
+      if (
+        currentLead?.lead_status === "new" &&
+        status !== "new" &&
+        !currentLead?.first_response_at
+      ) {
+        updates.first_response_at = new Date().toISOString();
+      }
+      const { error } = await supabase.from("quote_requests").update(updates as any).eq("id", id);
       if (error) throw error;
+      return updates;
     },
-    onSuccess: (_, { id, status }) => {
+    onSuccess: (updates, { id, status }) => {
       queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
-      setSelectedLead((prev: any) => prev ? { ...prev, lead_status: status } : null);
+      setSelectedLead((prev: any) => prev ? { ...prev, lead_status: status, ...updates } : null);
     },
   });
 
@@ -199,6 +209,30 @@ export default function VendorDashboardPage() {
     totalInvoiced: invoices.reduce((s, i) => s + Number(i.total_amount), 0),
   };
 
+  // Avg response time: only leads where vendor has responded (first_response_at set)
+  const respondedLeads = leads.filter((l: any) => l.first_response_at);
+  const respondedCount = respondedLeads.length;
+  const avgResponseMs = respondedCount > 0
+    ? respondedLeads.reduce((sum: number, l: any) => {
+        return sum + (new Date(l.first_response_at).getTime() - new Date(l.created_at).getTime());
+      }, 0) / respondedCount
+    : 0;
+
+  const formatResponseTime = (ms: number): string => {
+    const minutes = ms / 60000;
+    if (minutes < 60) return `Avg ${Math.round(minutes)} min`;
+    const hours = minutes / 60;
+    if (hours < 24) return `Avg ${hours.toFixed(1)} hours`;
+    return `Avg ${(hours / 24).toFixed(1)} days`;
+  };
+
+  const responseColorClass = (ms: number): string => {
+    const hours = ms / 3600000;
+    if (hours < 2) return "text-green-600";
+    if (hours <= 24) return "text-amber-600";
+    return "text-red-600";
+  };
+
   return (
     <div className="min-h-screen bg-muted/30 py-8">
       <div className="container max-w-6xl">
@@ -227,7 +261,7 @@ export default function VendorDashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
           <Card><CardContent className="flex items-center gap-3 p-4">
             <Users className="h-8 w-8 text-primary" />
             <div><p className="text-sm text-muted-foreground">Total Leads</p><p className="text-2xl font-bold">{stats.total}</p></div>
@@ -243,6 +277,22 @@ export default function VendorDashboardPage() {
           <Card><CardContent className="flex items-center gap-3 p-4">
             <DollarSign className="h-8 w-8 text-amber-500" />
             <div><p className="text-sm text-muted-foreground">Total Invoiced</p><p className="text-2xl font-bold">${stats.totalInvoiced.toFixed(0)}</p></div>
+          </CardContent></Card>
+          <Card><CardContent className="flex items-start gap-3 p-4">
+            <Clock className="h-8 w-8 text-primary shrink-0" />
+            <div className="min-w-0">
+              <p className="text-sm text-muted-foreground">Avg Response Time</p>
+              {respondedCount >= 3 ? (
+                <>
+                  <p className={`text-2xl font-bold ${responseColorClass(avgResponseMs)}`}>
+                    {formatResponseTime(avgResponseMs)}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Faster responses win more leads</p>
+                </>
+              ) : (
+                <p className="text-sm font-medium text-muted-foreground mt-1">Not enough data yet</p>
+              )}
+            </div>
           </CardContent></Card>
         </div>
 
@@ -532,7 +582,7 @@ export default function VendorDashboardPage() {
                         variant={selectedLead.lead_status === value ? "default" : variant}
                         className={selectedLead.lead_status === value ? "" : ""}
                         disabled={updateLeadStatus.isPending || selectedLead.lead_status === value}
-                        onClick={() => updateLeadStatus.mutate({ id: selectedLead.id, status: value })}
+                        onClick={() => updateLeadStatus.mutate({ id: selectedLead.id, status: value, currentLead: selectedLead })}
                       >
                         <Icon className="h-4 w-4 mr-1.5" />
                         {label}

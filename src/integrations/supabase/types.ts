@@ -457,6 +457,7 @@ export type Database = {
           customer_postcode: string | null
           customer_state: string | null
           customer_suburb: string | null
+          first_response_at: string | null
           household_size: string | null
           id: string
           invoice_id: string | null
@@ -483,6 +484,7 @@ export type Database = {
           customer_postcode?: string | null
           customer_state?: string | null
           customer_suburb?: string | null
+          first_response_at?: string | null
           household_size?: string | null
           id?: string
           invoice_id?: string | null
@@ -509,6 +511,7 @@ export type Database = {
           customer_postcode?: string | null
           customer_state?: string | null
           customer_suburb?: string | null
+          first_response_at?: string | null
           household_size?: string | null
           id?: string
           invoice_id?: string | null
