@@ -26,6 +26,19 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-gray-100 text-gray-500",
 };
 
+function getBillingMode(inv: { stripe_invoice_id: string | null; invoice_number: string }) {
+  const sid = inv.stripe_invoice_id ?? "";
+  // Manual: Stripe-hosted invoice (in_...) or invoice number prefixed INV-M-
+  if (sid.startsWith("in_") || inv.invoice_number.startsWith("INV-M-")) {
+    return { label: "Manual invoice", className: "bg-amber-100 text-amber-800 border-amber-200" };
+  }
+  // Auto-charged: PaymentIntent (pi_...) means direct debit succeeded
+  if (sid.startsWith("pi_")) {
+    return { label: "Auto-charged", className: "bg-emerald-100 text-emerald-800 border-emerald-200" };
+  }
+  return { label: "Pending", className: "bg-slate-100 text-slate-600 border-slate-200" };
+}
+
 type InvoiceAction = {
   type: "mark_paid" | "mark_sent" | "mark_overdue" | "cancel";
   invoiceId: string;
@@ -240,6 +253,7 @@ export default function AdminInvoicesPage() {
                       <TableHead>Leads</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Billing</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead className="w-[60px]">Actions</TableHead>
                     </TableRow>
@@ -262,6 +276,16 @@ export default function AdminInvoicesPage() {
                             <Badge className={`${statusColors[inv.status] ?? ""} capitalize`}>
                               {inv.status}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {(() => {
+                              const mode = getBillingMode(inv);
+                              return (
+                                <Badge variant="outline" className={mode.className}>
+                                  {mode.label}
+                                </Badge>
+                              );
+                            })()}
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             {format(new Date(inv.created_at), "dd MMM yyyy")}
@@ -302,7 +326,7 @@ export default function AdminInvoicesPage() {
                     })}
                     {filtered.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           No invoices found
                         </TableCell>
                       </TableRow>
