@@ -277,6 +277,16 @@ export default function AdminInvoicesPage() {
                               {inv.status}
                             </Badge>
                           </TableCell>
+                          <TableCell>
+                            {(() => {
+                              const mode = getBillingMode(inv);
+                              return (
+                                <Badge variant="outline" className={mode.className}>
+                                  {mode.label}
+                                </Badge>
+                              );
+                            })()}
+                          </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             {format(new Date(inv.created_at), "dd MMM yyyy")}
                           </TableCell>
@@ -316,7 +326,7 @@ export default function AdminInvoicesPage() {
                     })}
                     {filtered.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           No invoices found
                         </TableCell>
                       </TableRow>
