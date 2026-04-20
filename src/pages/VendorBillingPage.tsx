@@ -182,6 +182,7 @@ export default function VendorBillingPage() {
   const [cardSaved, setCardSaved] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
+  const [payCooldownIds, setPayCooldownIds] = useState<Set<string>>(new Set());
 
   // Fetch leads assigned to this specific invoice
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
