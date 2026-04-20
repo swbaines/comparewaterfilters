@@ -547,7 +547,9 @@ export default function VendorDashboardPage() {
             </TableHeader>
             <TableBody>
               {filteredLeads.length === 0 ? (
-                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No leads {thisMonthOnly ? "this month" : "yet"}</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  {period === "today" ? "No leads today yet" : period === "all" ? "No leads yet" : `No leads in ${PERIOD_OPTIONS.find((o) => o.value === period)?.label.toLowerCase()}`}
+                </TableCell></TableRow>
               ) : filteredLeads.map((lead) => {
                 const isNew = lead.lead_status === "new" || lead.lead_status === "sent";
                 return (
