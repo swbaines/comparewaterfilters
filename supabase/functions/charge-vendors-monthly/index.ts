@@ -39,12 +39,12 @@ Deno.serve(async (req) => {
     const periodStart = firstOfLastMonth.toISOString();
     const periodEnd = firstOfThisMonth.toISOString();
 
-    // Get all provider Stripe details that have both customer ID and payment method
+    // Get all provider Stripe details that have a customer ID
+    // (payment method is optional — providers without one get a manual hosted invoice instead)
     const { data: stripeDetails, error: stripeErr } = await supabaseAdmin
       .from("provider_stripe_details")
       .select("provider_id, stripe_customer_id, stripe_payment_method_id")
-      .not("stripe_customer_id", "is", null)
-      .not("stripe_payment_method_id", "is", null);
+      .not("stripe_customer_id", "is", null);
 
     if (stripeErr) throw stripeErr;
 
