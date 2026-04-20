@@ -19,9 +19,14 @@ const statusColors: Record<string, string> = {
   new: "bg-blue-100 text-blue-800",
   sent: "bg-purple-100 text-purple-800",
   contacted: "bg-yellow-100 text-yellow-800",
+  quoted: "bg-indigo-100 text-indigo-800",
   won: "bg-green-100 text-green-800",
   lost: "bg-red-100 text-red-800",
 };
+
+function estimatedLeadFee(ownership?: string | null): number {
+  return ownership === "Rent" ? 50 : 85;
+}
 
 const systemTypeLabels: Record<string, string> = {
   "under-sink-carbon": "Under-Sink Carbon Filter",
@@ -43,6 +48,7 @@ export default function VendorDashboardPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
+  const [thisMonthOnly, setThisMonthOnly] = useState(false);
   const queryClient = useQueryClient();
 
   const updateLeadStatus = useMutation({
@@ -180,6 +186,12 @@ export default function VendorDashboardPage() {
     );
   }
 
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const filteredLeads = thisMonthOnly
+    ? leads.filter((l) => new Date(l.created_at) >= monthStart)
+    : leads;
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
@@ -235,7 +247,27 @@ export default function VendorDashboardPage() {
         </div>
 
         {/* Leads */}
-        <h2 className="mb-3 text-lg font-semibold">Your Leads</h2>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold">Your Leads</h2>
+          <div className="inline-flex rounded-md border bg-background p-0.5">
+            <Button
+              size="sm"
+              variant={thisMonthOnly ? "ghost" : "default"}
+              className="h-7 px-3 text-xs"
+              onClick={() => setThisMonthOnly(false)}
+            >
+              All time
+            </Button>
+            <Button
+              size="sm"
+              variant={thisMonthOnly ? "default" : "ghost"}
+              className="h-7 px-3 text-xs"
+              onClick={() => setThisMonthOnly(true)}
+            >
+              This month
+            </Button>
+          </div>
+        </div>
         <Card className="mb-8">
           <Table>
             <TableHeader>
@@ -245,13 +277,14 @@ export default function VendorDashboardPage() {
                 <TableHead>Type</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Systems</TableHead>
+                <TableHead className="text-right">Est. Fee</TableHead>
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leads.length === 0 ? (
-                <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No leads yet</TableCell></TableRow>
-              ) : leads.map((lead) => (
+              {filteredLeads.length === 0 ? (
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No leads {thisMonthOnly ? "this month" : "yet"}</TableCell></TableRow>
+              ) : filteredLeads.map((lead) => (
                 <TableRow
                   key={lead.id}
                   className="cursor-pointer hover:bg-muted/50 transition-colors"
@@ -280,6 +313,9 @@ export default function VendorDashboardPage() {
                         <Badge key={s} variant="outline" className="text-xs">{formatSystemType(s)}</Badge>
                       ))}
                     </div>
+                  </TableCell>
+                  <TableCell className="text-right text-sm font-semibold tabular-nums">
+                    ${estimatedLeadFee(lead.ownership_status)}
                   </TableCell>
                   <TableCell>
                     <Badge className={`${statusColors[lead.lead_status] || ""} text-xs`}>{lead.lead_status}</Badge>
@@ -486,6 +522,7 @@ export default function VendorDashboardPage() {
                     {[
                       { value: "new", label: "New", icon: ClipboardList, variant: "outline" as const },
                       { value: "contacted", label: "Contacted", icon: PhoneCall, variant: "outline" as const },
+                      { value: "quoted", label: "Quoted", icon: FileText, variant: "outline" as const },
                       { value: "won", label: "Won", icon: CheckCircle2, variant: "outline" as const },
                       { value: "lost", label: "Lost", icon: XCircle, variant: "outline" as const },
                     ].map(({ value, label, icon: Icon, variant }) => (
