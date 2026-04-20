@@ -763,7 +763,9 @@ export default function ResultsPage() {
           onOpenChange={(open) => { if (!open) setQuoteProvider(null); }}
           provider={quoteProvider}
           answers={answers}
-          recommendedSystems={[result.primary.title, result.secondary.title, result.premium.title]}
+          recommendedSystems={[result.primary, result.secondary, result.premium]
+            .map((r) => toCanonicalSystemType(r.id))
+            .filter((id): id is NonNullable<typeof id> => !!id)}
         />
       )}
 
