@@ -111,7 +111,10 @@ function CardSetupForm({
 
       // Save payment method via edge function (uses service role to bypass RLS)
       const { error: saveError } = await supabase.functions.invoke("save-payment-method", {
-        body: { payment_method_id: setupIntent.payment_method as string },
+        body: {
+          payment_method_id: setupIntent.payment_method as string,
+          direct_debit_authorised: true,
+        },
       });
 
       if (saveError) throw new Error(saveError.message || "Failed to save payment method");
