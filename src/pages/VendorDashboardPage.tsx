@@ -522,6 +522,7 @@ export default function VendorDashboardPage() {
                     {[
                       { value: "new", label: "New", icon: ClipboardList, variant: "outline" as const },
                       { value: "contacted", label: "Contacted", icon: PhoneCall, variant: "outline" as const },
+                      { value: "quoted", label: "Quoted", icon: FileText, variant: "outline" as const },
                       { value: "won", label: "Won", icon: CheckCircle2, variant: "outline" as const },
                       { value: "lost", label: "Lost", icon: XCircle, variant: "outline" as const },
                     ].map(({ value, label, icon: Icon, variant }) => (
