@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { payment_method_id } = await req.json()
+    const { payment_method_id, direct_debit_authorised } = await req.json()
     if (!payment_method_id) {
       return new Response(JSON.stringify({ error: 'payment_method_id is required' }), {
         status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -77,9 +77,23 @@ Deno.serve(async (req) => {
     })
 
     // Save to provider_stripe_details table
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || req.headers.get('cf-connecting-ip')
+      || null
+    const userAgent = req.headers.get('user-agent') || null
+
+    const updatePayload: Record<string, unknown> = {
+      stripe_payment_method_id: payment_method_id,
+    }
+    if (direct_debit_authorised) {
+      updatePayload.direct_debit_authorised_at = new Date().toISOString()
+      updatePayload.direct_debit_authorised_ip = ip
+      updatePayload.direct_debit_authorised_user_agent = userAgent
+    }
+
     const { error: updateError } = await supabaseAdmin
       .from('provider_stripe_details')
-      .update({ stripe_payment_method_id: payment_method_id })
+      .update(updatePayload)
       .eq('provider_id', vendorAccount.provider_id)
 
     if (updateError) {

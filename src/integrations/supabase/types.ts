@@ -221,6 +221,9 @@ export type Database = {
       provider_stripe_details: {
         Row: {
           created_at: string
+          direct_debit_authorised_at: string | null
+          direct_debit_authorised_ip: string | null
+          direct_debit_authorised_user_agent: string | null
           id: string
           provider_id: string
           stripe_customer_id: string | null
@@ -229,6 +232,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          direct_debit_authorised_at?: string | null
+          direct_debit_authorised_ip?: string | null
+          direct_debit_authorised_user_agent?: string | null
           id?: string
           provider_id: string
           stripe_customer_id?: string | null
@@ -237,6 +243,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          direct_debit_authorised_at?: string | null
+          direct_debit_authorised_ip?: string | null
+          direct_debit_authorised_user_agent?: string | null
           id?: string
           provider_id?: string
           stripe_customer_id?: string | null
