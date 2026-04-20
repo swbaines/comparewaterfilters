@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     const providerIds = (stripeDetails || []).map((s: any) => s.provider_id);
     if (providerIds.length === 0) {
       return new Response(
-        JSON.stringify({ success: true, results: [], errors: [], message: "No providers with payment methods" }),
+        JSON.stringify({ success: true, results: [], errors: [], message: "No providers with Stripe customers" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
       );
     }
