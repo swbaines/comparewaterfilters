@@ -327,12 +327,13 @@ export default function VendorDashboardPage() {
     );
   }
 
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const filteredLeads = (thisMonthOnly
-    ? leads.filter((l) => new Date(l.created_at) >= monthStart)
-    : leads
-  )
+  const { start: periodStart, prevStart, prevEnd } = getPeriodRange(period);
+  const periodLeads = filterByRange(leads as any[], periodStart);
+  const periodInvoices = filterByRange(invoices as any[], periodStart);
+  const prevLeads = period === "all" ? [] : filterByRange(leads as any[], prevStart, prevEnd);
+  const prevInvoices = period === "all" ? [] : filterByRange(invoices as any[], prevStart, prevEnd);
+
+  const filteredLeads = periodLeads
     .slice()
     .sort((a, b) => {
       const aNew = a.lead_status === "new" || a.lead_status === "sent" ? 1 : 0;
@@ -341,21 +342,31 @@ export default function VendorDashboardPage() {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-  const stats = {
-    total: leads.length,
-    new: leads.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
-    won: leads.filter((l) => l.lead_status === "won").length,
-    totalInvoiced: invoices.reduce((s, i) => s + Number(i.total_amount), 0),
+  const computeStats = (ls: any[], invs: any[]) => {
+    const responded = ls.filter((l) => l.first_response_at);
+    const avgMs = responded.length
+      ? responded.reduce((s, l) => s + (new Date(l.first_response_at).getTime() - new Date(l.created_at).getTime()), 0) / responded.length
+      : 0;
+    const won = ls.filter((l) => l.lead_status === "won").length;
+    const closed = ls.filter((l) => l.lead_status === "won" || l.lead_status === "lost").length;
+    return {
+      total: ls.length,
+      new: ls.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
+      won,
+      totalInvoiced: invs.reduce((s, i) => s + Number(i.total_amount), 0),
+      respondedCount: responded.length,
+      avgResponseMs: avgMs,
+      winRate: closed > 0 ? (won / closed) * 100 : 0,
+      hasClosed: closed > 0,
+    };
   };
 
-  // Avg response time: only leads where vendor has responded (first_response_at set)
-  const respondedLeads = leads.filter((l: any) => l.first_response_at);
-  const respondedCount = respondedLeads.length;
-  const avgResponseMs = respondedCount > 0
-    ? respondedLeads.reduce((sum: number, l: any) => {
-        return sum + (new Date(l.first_response_at).getTime() - new Date(l.created_at).getTime());
-      }, 0) / respondedCount
-    : 0;
+  const stats = computeStats(periodLeads, periodInvoices);
+  const prevStats = computeStats(prevLeads, prevInvoices);
+  const showCompare = period !== "all";
+  const isToday = period === "today";
+  const emptyToday = isToday && periodLeads.length === 0;
+  const renderValue = (value: string | number) => emptyToday ? <span className="text-sm font-medium text-muted-foreground">No leads today yet</span> : <span className="text-2xl font-bold">{value}</span>;
 
   const formatResponseTime = (ms: number): string => {
     const minutes = ms / 60000;
