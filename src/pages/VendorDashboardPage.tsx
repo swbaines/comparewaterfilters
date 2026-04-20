@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -43,13 +43,80 @@ function formatSystemType(type: string) {
   return systemTypeLabels[type] || type.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+type TimePeriod = "today" | "month" | "year" | "all";
+
+const PERIOD_STORAGE_KEY = "vendor-dashboard-period";
+
+const PERIOD_OPTIONS: { value: TimePeriod; label: string }[] = [
+  { value: "today", label: "Today" },
+  { value: "month", label: "This Month" },
+  { value: "year", label: "This Year" },
+  { value: "all", label: "All Time" },
+];
+
+function getPeriodRange(period: TimePeriod): { start: Date | null; prevStart: Date | null; prevEnd: Date | null } {
+  const now = new Date();
+  if (period === "today") {
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const prevStart = new Date(start);
+    prevStart.setDate(prevStart.getDate() - 1);
+    return { start, prevStart, prevEnd: start };
+  }
+  if (period === "month") {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return { start, prevStart, prevEnd: start };
+  }
+  if (period === "year") {
+    const start = new Date(now.getFullYear(), 0, 1);
+    const prevStart = new Date(now.getFullYear() - 1, 0, 1);
+    return { start, prevStart, prevEnd: start };
+  }
+  return { start: null, prevStart: null, prevEnd: null };
+}
+
+function filterByRange<T extends { created_at: string }>(items: T[], start: Date | null, end?: Date | null): T[] {
+  if (!start) return items;
+  return items.filter((i) => {
+    const t = new Date(i.created_at).getTime();
+    if (t < start.getTime()) return false;
+    if (end && t >= end.getTime()) return false;
+    return true;
+  });
+}
+
+function pctChange(current: number, previous: number): number | null {
+  if (previous === 0) return current === 0 ? 0 : null;
+  return ((current - previous) / previous) * 100;
+}
+
+function TrendBadge({ change }: { change: number | null }) {
+  if (change === null) return <span className="text-[11px] text-muted-foreground">vs prev: n/a</span>;
+  if (change === 0) return <span className="text-[11px] text-muted-foreground">No change</span>;
+  const up = change > 0;
+  const Icon = up ? ArrowUp : ArrowDown;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[11px] font-medium ${up ? "text-green-600" : "text-red-600"}`}>
+      <Icon className="h-3 w-3" />
+      {up ? "+" : ""}{Math.round(change)}%
+    </span>
+  );
+}
+
 export default function VendorDashboardPage() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
-  const [thisMonthOnly, setThisMonthOnly] = useState(false);
+  const [period, setPeriod] = useState<TimePeriod>(() => {
+    if (typeof window === "undefined") return "month";
+    const saved = window.localStorage.getItem(PERIOD_STORAGE_KEY) as TimePeriod | null;
+    return saved && ["today", "month", "year", "all"].includes(saved) ? saved : "month";
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem(PERIOD_STORAGE_KEY, period); } catch { /* noop */ }
+  }, [period]);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   // Snapshot of last_dashboard_visit captured on mount, used for new-lead comparison
   // even after we update the DB timestamp.
