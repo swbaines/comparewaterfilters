@@ -305,7 +305,13 @@ export default function VendorDashboardPage() {
             <h1 className="text-2xl font-bold">{provider?.name || "Vendor"} Dashboard</h1>
             <p className="text-muted-foreground">View your leads, track sales, and manage invoices</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <LeadNotificationBell
+              newLeads={newLeads}
+              hasUnseen={hasUnseen}
+              onOpenLead={handleOpenLeadFromBell}
+              onSeen={() => setBannerDismissed(true)}
+            />
             <Button variant="outline" size="sm" onClick={() => navigate("/vendor/profile")}>
               <Building2 className="h-4 w-4 mr-2" />
               Edit Profile
@@ -323,6 +329,24 @@ export default function VendorDashboardPage() {
             </Button>
           </div>
         </div>
+
+        {/* New leads banner */}
+        {hasUnseen && (
+          <div className="mb-6 -mx-4 md:mx-0 flex flex-col md:flex-row md:items-center md:justify-between gap-3 rounded-none md:rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 animate-fade-in">
+            <p className="text-sm text-blue-900">
+              <span className="font-semibold">You have {newLeads.length} new lead{newLeads.length === 1 ? "" : "s"}</span>{" "}
+              since your last visit
+            </p>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="default" onClick={scrollToLeads}>
+                View leads
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleDismissBanner} aria-label="Dismiss">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
