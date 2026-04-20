@@ -65,7 +65,7 @@ export default function VendorDashboardPage() {
       ) {
         updates.first_response_at = new Date().toISOString();
       }
-      const { error } = await supabase.from("quote_requests").update(updates).eq("id", id);
+      const { error } = await supabase.from("quote_requests").update(updates as any).eq("id", id);
       if (error) throw error;
       return updates;
     },
@@ -542,7 +542,7 @@ export default function VendorDashboardPage() {
                         variant={selectedLead.lead_status === value ? "default" : variant}
                         className={selectedLead.lead_status === value ? "" : ""}
                         disabled={updateLeadStatus.isPending || selectedLead.lead_status === value}
-                        onClick={() => updateLeadStatus.mutate({ id: selectedLead.id, status: value })}
+                        onClick={() => updateLeadStatus.mutate({ id: selectedLead.id, status: value, currentLead: selectedLead })}
                       >
                         <Icon className="h-4 w-4 mr-1.5" />
                         {label}
