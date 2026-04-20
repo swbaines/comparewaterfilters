@@ -12,6 +12,7 @@ import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText,
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -77,10 +78,15 @@ function CardSetupForm({
   const stripe = useStripe();
   const elements = useElements();
   const [saving, setSaving] = useState(false);
+  const [authorised, setAuthorised] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stripe || !elements) return;
+    if (!authorised) {
+      toast.error("Please tick the direct debit authorisation to continue");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -137,9 +143,24 @@ function CardSetupForm({
         />
       </div>
 
-      <Button type="submit" disabled={!stripe || saving} className="w-full gap-2">
+      <div className="flex items-start gap-3 rounded-lg border bg-muted/30 p-4">
+        <Checkbox
+          id="dd-authorisation"
+          checked={authorised}
+          onCheckedChange={(v) => setAuthorised(v === true)}
+          className="mt-0.5"
+        />
+        <label htmlFor="dd-authorisation" className="text-sm leading-relaxed cursor-pointer select-none">
+          <strong>Direct debit authorisation:</strong> I authorise Compare Water Filters to
+          automatically charge this payment method on the 1st of each month for leads received in the previous month,
+          in accordance with the lead pricing shown above. I understand I can update or remove this payment method at
+          any time, and I can dispute invalid leads within 14 days of invoicing.
+        </label>
+      </div>
+
+      <Button type="submit" disabled={!stripe || saving || !authorised} className="w-full gap-2">
         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-        Save card
+        {authorised ? "Save card & authorise direct debit" : "Tick authorisation to continue"}
       </Button>
 
       <p className="text-xs text-muted-foreground text-center">
