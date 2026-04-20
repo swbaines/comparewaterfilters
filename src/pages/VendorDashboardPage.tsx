@@ -186,6 +186,12 @@ export default function VendorDashboardPage() {
     );
   }
 
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const filteredLeads = thisMonthOnly
+    ? leads.filter((l) => new Date(l.created_at) >= monthStart)
+    : leads;
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
