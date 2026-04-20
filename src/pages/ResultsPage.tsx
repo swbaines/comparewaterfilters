@@ -17,6 +17,7 @@ import { useProviders } from "@/hooks/useProviders";
 import RequestQuoteDialog from "@/components/RequestQuoteDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
+import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 
 function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
   const colors = {
@@ -763,7 +764,9 @@ export default function ResultsPage() {
           onOpenChange={(open) => { if (!open) setQuoteProvider(null); }}
           provider={quoteProvider}
           answers={answers}
-          recommendedSystems={[result.primary.title, result.secondary.title, result.premium.title]}
+          recommendedSystems={[result.primary, result.secondary, result.premium]
+            .map((r) => toCanonicalSystemType(r.id))
+            .filter((id): id is NonNullable<typeof id> => !!id)}
         />
       )}
 
