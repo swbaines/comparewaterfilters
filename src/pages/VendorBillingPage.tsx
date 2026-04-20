@@ -182,6 +182,7 @@ export default function VendorBillingPage() {
   const [cardSaved, setCardSaved] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
+  const [payCooldownIds, setPayCooldownIds] = useState<Set<string>>(new Set());
 
   // Fetch leads assigned to this specific invoice
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
@@ -246,6 +247,8 @@ export default function VendorBillingPage() {
       if (error) throw error;
       return data;
     },
+    refetchInterval: 15000,
+    refetchIntervalInBackground: false,
   });
 
   // Fetch card brand/last4 from Stripe
@@ -304,6 +307,18 @@ export default function VendorBillingPage() {
   const lastMonthInvoice = invoices[0];
   const handlePayNow = async (invoiceId: string) => {
     setPayingInvoiceId(invoiceId);
+    setPayCooldownIds((prev) => {
+      const next = new Set(prev);
+      next.add(invoiceId);
+      return next;
+    });
+    setTimeout(() => {
+      setPayCooldownIds((prev) => {
+        const next = new Set(prev);
+        next.delete(invoiceId);
+        return next;
+      });
+    }, 5000);
     try {
       const { data, error } = await supabase.functions.invoke("pay-invoice-now", {
         body: { invoice_id: invoiceId },
@@ -376,7 +391,7 @@ export default function VendorBillingPage() {
                   variant="destructive"
                   size="sm"
                   className="ml-4 shrink-0 gap-2"
-                  disabled={!!payingInvoiceId}
+                  disabled={!!payingInvoiceId || payCooldownIds.size > 0}
                   onClick={() => {
                     const unpaid = invoices.find((inv: any) => inv.status === "sent" || inv.status === "overdue");
                     if (unpaid) handlePayNow(unpaid.id);
@@ -568,7 +583,7 @@ export default function VendorBillingPage() {
                             variant="default"
                             size="sm"
                             className="gap-1"
-                            disabled={payingInvoiceId === inv.id}
+                            disabled={payingInvoiceId === inv.id || payCooldownIds.has(inv.id)}
                             onClick={(e) => { e.stopPropagation(); handlePayNow(inv.id); }}
                           >
                             {payingInvoiceId === inv.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <DollarSign className="h-3 w-3" />}
