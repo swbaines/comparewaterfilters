@@ -22,6 +22,7 @@ import { systemTypes } from "@/data/systemTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import SystemTypeIdsManager from "@/components/admin/SystemTypeIdsManager";
+import ProviderBillingActivityLog from "@/components/admin/ProviderBillingActivityLog";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
 
