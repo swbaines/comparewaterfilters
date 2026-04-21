@@ -335,6 +335,23 @@ export default function VendorBillingPage() {
   });
 
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
+
+  // Apply event-type and date-range filters to the audit log
+  const filteredAuditLog = (auditLog as any[]).filter((entry) => {
+    if (auditEventFilter !== "all" && entry.event_type !== auditEventFilter) return false;
+    if (auditDateRange?.from) {
+      const from = new Date(auditDateRange.from);
+      from.setHours(0, 0, 0, 0);
+      if (new Date(entry.created_at) < from) return false;
+    }
+    if (auditDateRange?.to) {
+      const to = new Date(auditDateRange.to);
+      to.setHours(23, 59, 59, 999);
+      if (new Date(entry.created_at) > to) return false;
+    }
+    return true;
+  });
+  const auditFiltersActive = auditEventFilter !== "all" || !!auditDateRange?.from || !!auditDateRange?.to;
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
 
   const livePriceRows = [
