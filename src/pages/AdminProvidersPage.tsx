@@ -142,6 +142,18 @@ export default function AdminProvidersPage() {
     },
   });
 
+  // Deep-link: open Review dialog when ?review=<providerId> is present
+  useEffect(() => {
+    if (!providers.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const reviewId = params.get("review");
+    if (reviewId && !reviewProvider) {
+      const match = providers.find((p) => p.id === reviewId);
+      if (match) setReviewProvider(match);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providers]);
+
   const { data: stripeDetails = [] } = useQuery({
     queryKey: ["admin-provider-stripe-details"],
     queryFn: async () => {
