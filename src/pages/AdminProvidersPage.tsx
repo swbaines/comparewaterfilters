@@ -430,8 +430,16 @@ export default function AdminProvidersPage() {
                   .filter(p => p.approval_status !== "pending")
                   .filter(p => !showOnlyNotBillingReady || (p.approval_status === "approved" && !isBillingReady(p.id)))
                   .map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.name}</TableCell>
+                   <TableRow key={p.id}>
+                     <TableCell className="font-medium">
+                       <button
+                         type="button"
+                         onClick={() => setReviewProvider(p)}
+                         className="text-primary hover:underline text-left"
+                       >
+                         {p.name}
+                       </button>
+                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {p.states.map((s) => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>)}
