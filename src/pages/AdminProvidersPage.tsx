@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard, History as HistoryIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard, History as HistoryIcon, Link2 } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -141,6 +141,18 @@ export default function AdminProvidersPage() {
       return data as ProviderRow[];
     },
   });
+
+  // Deep-link: open Review dialog when ?review=<providerId> is present
+  useEffect(() => {
+    if (!providers.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const reviewId = params.get("review");
+    if (reviewId && !reviewProvider) {
+      const match = providers.find((p) => p.id === reviewId);
+      if (match) setReviewProvider(match);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [providers]);
 
   const { data: stripeDetails = [] } = useQuery({
     queryKey: ["admin-provider-stripe-details"],
@@ -861,8 +873,28 @@ export default function AdminProvidersPage() {
         <Dialog open={!!reviewProvider} onOpenChange={(open) => { if (!open) setReviewProvider(null); }}>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" /> Review Application: {reviewProvider?.name}
+              <DialogTitle className="flex items-center gap-2 flex-wrap">
+                <Eye className="h-5 w-5" />
+                <span>Review Application: {reviewProvider?.name}</span>
+                {reviewProvider && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto gap-1.5"
+                    onClick={async () => {
+                      const url = `${window.location.origin}/admin/providers?review=${reviewProvider.id}`;
+                      try {
+                        await navigator.clipboard.writeText(url);
+                        toast.success("Provider link copied", { description: url });
+                      } catch {
+                        toast.error("Could not copy link", { description: url });
+                      }
+                    }}
+                  >
+                    <Link2 className="h-3.5 w-3.5" /> Copy provider link
+                  </Button>
+                )}
               </DialogTitle>
             </DialogHeader>
             {reviewProvider && (
