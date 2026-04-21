@@ -282,12 +282,21 @@ export default function QuizPage() {
 
             {/* Step 2 */}
             {step === 2 && (
-              <div className="grid gap-2 sm:grid-cols-2">
-                {waterSources.map((w) => (
-                  <OptionButton key={w.value} selected={answers.waterSource === w.value} onClick={() => set("waterSource", w.value)}>
-                    {w.label}
-                  </OptionButton>
-                ))}
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Tell us where your water comes from. This determines whether we recommend UV disinfection
+                  (for untreated sources like rainwater, tank or bore) on top of filtration.
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {waterSources.map((w) => (
+                    <OptionButton key={w.value} selected={answers.waterSource === w.value} onClick={() => set("waterSource", w.value)}>
+                      <span className="flex flex-col items-start gap-0.5 text-left">
+                        <span className="font-medium">{w.label}</span>
+                        <span className="text-xs font-normal text-muted-foreground">{w.hint}</span>
+                      </span>
+                    </OptionButton>
+                  ))}
+                </div>
               </div>
             )}
 
