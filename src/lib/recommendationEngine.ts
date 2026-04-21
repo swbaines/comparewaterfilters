@@ -357,6 +357,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     "rule-4-drinking-only": ["taste", "chlorine", "drinking-quality"],
     "rule-5-renter-apartment": [], // not concern-driven — driven by ownership/property type
     "rule-6-budget-under-1k": [], // budget modifier, concerns inherited from base rule
+    "rule-7-untreated-water-uv": ["bacteria"], // driven by water source, not concerns; bacteria is the closest match
     "default": [],
   };
 
