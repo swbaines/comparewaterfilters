@@ -193,6 +193,22 @@ export default function VendorBillingPage() {
   const [auditEventFilter, setAuditEventFilter] = useState<string>("all");
   const [auditDateRange, setAuditDateRange] = useState<DateRange | undefined>(undefined);
 
+  // Admin-only flag — billing activity log is hidden from vendors
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      return !!data;
+    },
+  });
+
   // Fetch leads assigned to this specific invoice
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["invoice-leads", selectedInvoice?.id],
@@ -477,7 +493,7 @@ export default function VendorBillingPage() {
         )}
 
         {/* Billing audit log */}
-        {provider && (
+        {provider && isAdmin && (
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -485,7 +501,7 @@ export default function VendorBillingPage() {
                 Billing activity log
               </CardTitle>
               <CardDescription>
-                A timestamped record of every change to your payment method and direct debit authorisation.
+                Admin-only view. Timestamped record of every change to this provider's payment method and direct debit authorisation.
               </CardDescription>
             </CardHeader>
             <CardContent>
