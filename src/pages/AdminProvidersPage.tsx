@@ -141,6 +141,27 @@ export default function AdminProvidersPage() {
     },
   });
 
+  const { data: stripeDetails = [] } = useQuery({
+    queryKey: ["admin-provider-stripe-details"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_stripe_details")
+        .select("provider_id, stripe_payment_method_id, direct_debit_authorised_at");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const billingReadyMap = new Map(
+    stripeDetails.map((d) => [
+      d.provider_id,
+      Boolean(d.stripe_payment_method_id) && Boolean(d.direct_debit_authorised_at),
+    ]),
+  );
+  const isBillingReady = (id: string) => billingReadyMap.get(id) === true;
+
+  const [showOnlyNotBillingReady, setShowOnlyNotBillingReady] = useState(false);
+
   const validSystemTypeIds = new Set(systemTypes.map((s) => s.id));
   const auditResults = providers
     .map((p) => {
