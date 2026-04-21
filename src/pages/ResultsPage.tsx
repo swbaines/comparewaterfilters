@@ -542,21 +542,8 @@ export default function ResultsPage() {
         </Card>
       </div>
 
-      {/* Quote dialog */}
-      {quoteProvider && answers && result && (
-        <RequestQuoteDialog
-          open={!!quoteProvider}
-          onOpenChange={(open) => { if (!open) setQuoteProvider(null); }}
-          provider={quoteProvider}
-          answers={answers}
-          recommendedSystems={[result.primary, result.secondary, result.premium]
-            .map((r) => toCanonicalSystemType(r.id))
-            .filter((id): id is NonNullable<typeof id> => !!id)}
-        />
-      )}
-
       {/* Sticky mobile bar */}
-      {showStickyBar && providerMatches.length > 0 && (
+      {showStickyBar && (
         <a
           href="#matched-providers"
           className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-center gap-2 bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_-4px_20px_rgba(0,0,0,0.15)] sm:hidden"
