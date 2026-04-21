@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
