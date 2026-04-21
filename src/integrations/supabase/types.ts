@@ -850,6 +850,42 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_matched_vendors: {
+        Args: {
+          _customer_lat: number
+          _customer_lng: number
+          _customer_state: string
+          _limit?: number
+          _recommended_systems: string[]
+        }
+        Returns: {
+          avg_response_minutes: number
+          brands: string[]
+          cap_exceeded: boolean
+          certifications: string[]
+          description: string
+          distance_km: number
+          highlights: string[]
+          logo: string
+          matching_systems: string[]
+          name: string
+          phone: string
+          provider_id: string
+          rating: number
+          response_time: string
+          review_count: number
+          service_base_state: string
+          service_base_suburb: string
+          service_radius_km: number
+          slug: string
+          state_share_pct: number
+          system_types: string[]
+          warranty: string
+          website: string
+          win_rate: number
+          years_in_business: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
