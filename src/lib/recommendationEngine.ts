@@ -28,6 +28,7 @@ export type FiredRule =
   | "rule-4-drinking-only"
   | "rule-5-renter-apartment"
   | "rule-6-budget-under-1k"
+  | "rule-7-untreated-water-uv"
   | "default";
 
 export interface RuleExplanation {
