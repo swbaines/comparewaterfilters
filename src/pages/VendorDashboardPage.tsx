@@ -206,6 +206,20 @@ export default function VendorDashboardPage() {
     },
   });
 
+  const { data: stripeDetails } = useQuery({
+    queryKey: ["vendor-stripe-details", providerId],
+    enabled: !!providerId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_stripe_details")
+        .select("stripe_payment_method_id, direct_debit_authorised_at")
+        .eq("provider_id", providerId!)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   // Capture snapshot of last_dashboard_visit ONCE when vendorAccount first loads
   useEffect(() => {
     if (vendorAccount && !visitSnapshotSetRef.current) {
@@ -431,6 +445,31 @@ export default function VendorDashboardPage() {
                 <X className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Billing not ready banner */}
+        {(!stripeDetails?.stripe_payment_method_id || !stripeDetails?.direct_debit_authorised_at) && (
+          <div className="mb-6 -mx-4 md:mx-0 flex flex-col md:flex-row md:items-start md:justify-between gap-3 rounded-none md:rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
+            <div className="flex items-start gap-3">
+              <ShieldAlert className="h-5 w-5 shrink-0 text-amber-700 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-900">
+                  Billing setup required to receive matched leads
+                </p>
+                <p className="text-sm text-amber-800 mt-0.5">
+                  {!stripeDetails?.stripe_payment_method_id && !stripeDetails?.direct_debit_authorised_at
+                    ? "You haven't added a payment method or authorised direct debit yet."
+                    : !stripeDetails?.stripe_payment_method_id
+                      ? "You haven't added a payment method yet."
+                      : "You haven't authorised direct debit yet."}
+                  {" "}Until billing is complete, your profile won't appear in customer matches on the results page.
+                </p>
+              </div>
+            </div>
+            <Button size="sm" variant="default" className="md:self-center shrink-0" onClick={() => navigate("/vendor/billing")}>
+              Set up billing
+            </Button>
           </div>
         )}
 
