@@ -113,6 +113,15 @@ export default function SystemTypeIdsManager() {
           Source of truth for valid <code>system_types</code> on providers and{" "}
           <code>recommended_systems</code> on quote requests. Database triggers reject any value not listed here. Removal is blocked while an ID is in use.
         </p>
+        <div className="mt-3 rounded-md border border-border bg-muted/40 p-3 text-xs space-y-1.5">
+          <p className="font-medium text-foreground">When each ID is offered to customers</p>
+          <ul className="list-disc pl-4 text-muted-foreground space-y-0.5">
+            <li><code>whole-house-filtration</code>, <code>reverse-osmosis</code>, <code>under-sink-carbon</code> — the 3 core systems shown to all town-water customers.</li>
+            <li><code>water-softener</code> — only offered to customers in WA or SA (hard-water states).</li>
+            <li><code>uv</code> — only offered to customers on rainwater, tank water, or bore water (untreated supply).</li>
+            <li><code>hybrid</code> — represents combo setups (whole-house + RO, sometimes + UV). Used internally for the Premium tier; providers can flag it if they offer combo installs.</li>
+          </ul>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
