@@ -189,6 +189,10 @@ export default function VendorBillingPage() {
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
   const [payCooldownIds, setPayCooldownIds] = useState<Set<string>>(new Set());
 
+  // Audit log filters
+  const [auditEventFilter, setAuditEventFilter] = useState<string>("all");
+  const [auditDateRange, setAuditDateRange] = useState<DateRange | undefined>(undefined);
+
   // Fetch leads assigned to this specific invoice
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["invoice-leads", selectedInvoice?.id],
