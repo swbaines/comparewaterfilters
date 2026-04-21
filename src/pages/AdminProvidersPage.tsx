@@ -294,6 +294,22 @@ export default function AdminProvidersPage() {
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant={showOnlyNotBillingReady ? "default" : "outline"}
+              onClick={() => setShowOnlyNotBillingReady((v) => !v)}
+              className="gap-2"
+            >
+              <CreditCard className="h-4 w-4" />
+              {showOnlyNotBillingReady ? "Showing not billing-ready" : "Filter: not billing-ready"}
+              {(() => {
+                const count = providers.filter(
+                  (p) => p.approval_status === "approved" && !isBillingReady(p.id),
+                ).length;
+                return count > 0 ? (
+                  <Badge variant="destructive" className="ml-1">{count}</Badge>
+                ) : null;
+              })()}
+            </Button>
             <Button variant="outline" onClick={() => setAuditOpen(true)} className="gap-2">
               <ShieldCheck className="h-4 w-4" /> Audit System Types
               {auditResults.length > 0 && (
