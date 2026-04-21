@@ -222,10 +222,47 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   let secondaryReason = "";
   let premiumReason = "";
 
+  // ── RULE 7: Untreated water source (rainwater / tank / bore) ──────────────
+  // UV disinfection is the critical microbiological-safety step for any
+  // household not on treated town water. We surface UV here as the Premium
+  // tier and pair it with sediment + carbon pre-filtration.
+  const untreatedSource =
+    answers.waterSource === "rainwater" ||
+    answers.waterSource === "tank-water" ||
+    answers.waterSource === "bore-water";
+
+  if (untreatedSource) {
+    pushRule("rule-7-untreated-water-uv");
+    const sourceLabel =
+      answers.waterSource === "bore-water"
+        ? "bore water"
+        : answers.waterSource === "tank-water"
+          ? "tank water"
+          : "rainwater";
+
+    primaryId = "whole-house-filtration";
+    primaryReason = `Because you're on ${sourceLabel} (not treated town water), a whole house filtration system is the right starting point — it removes sediment, organic matter, and provides essential pre-filtration before water reaches your taps and any UV unit. $2,500–$5,000 installed.`;
+    secondaryId = "under-sink-carbon";
+    secondaryReason = `An under-sink carbon and sediment filter is a much cheaper drinking-water option, but it does NOT kill bacteria, viruses, or other microorganisms — which is the critical risk on ${sourceLabel}. Suitable only as a temporary or supplementary measure.`;
+    premiumId = "uv-system";
+    premiumReason = `A UV disinfection system is essential for ${sourceLabel} — it kills 99.99% of bacteria, viruses, and pathogens that filters cannot remove. Best installed downstream of a whole house filter for combined sediment, taste, and microbiological protection. $800–$2,500 installed.`;
+
+    warnings.push(
+      `Important: ${sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1)} is untreated and can carry bacteria, viruses, and protozoa. UV disinfection (paired with adequate pre-filtration) is the standard safety solution — please don't skip this step.`,
+    );
+
+    if (f.budgetUnder1k) {
+      pushRule("rule-6-budget-under-1k");
+      warnings.push(
+        "A complete UV + whole-house setup typically starts around $3,000 installed — above your current budget. Prioritise UV first for safety; whole-house filtration can be added later.",
+      );
+    }
+  }
+
   // ── RULE 5: Renters / apartments ──────────────────────────────────────────
   // Never recommend whole-house or water softener as Best or Premium.
   // Default to Rule 3 (RO-essential) or Rule 4 (taste/chlorine).
-  if (!f.canHaveWholeHome) {
+  else if (!f.canHaveWholeHome) {
     pushRule("rule-5-renter-apartment");
     if (f.isRenter && (f.wholeHomeTrigger || f.hardWaterWASA)) {
       warnings.push(
