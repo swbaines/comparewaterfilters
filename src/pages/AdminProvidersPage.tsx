@@ -460,6 +460,17 @@ export default function AdminProvidersPage() {
                       )}
                     </TableCell>
                     <TableCell>
+                      {isBillingReady(p.id) ? (
+                        <Badge variant="outline" className="text-xs border-green-300 text-green-700 gap-1">
+                          <CreditCard className="h-3 w-3" /> Ready
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 gap-1">
+                          <AlertTriangle className="h-3 w-3" /> Not ready
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <Switch
                         checked={p.available_for_quote}
                         onCheckedChange={async (checked) => {
