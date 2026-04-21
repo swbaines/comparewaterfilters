@@ -489,6 +489,76 @@ export default function VendorBillingPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Filters */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <Select value={auditEventFilter} onValueChange={setAuditEventFilter}>
+                  <SelectTrigger className="h-9 w-[220px]">
+                    <SelectValue placeholder="All event types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All event types</SelectItem>
+                    <SelectItem value="payment_method_saved">Payment method saved</SelectItem>
+                    <SelectItem value="payment_method_updated">Payment method updated</SelectItem>
+                    <SelectItem value="direct_debit_authorised">Direct debit authorised</SelectItem>
+                    <SelectItem value="direct_debit_reauthorised">Direct debit re-authorised</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "h-9 justify-start text-left font-normal",
+                        !auditDateRange?.from && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {auditDateRange?.from ? (
+                        auditDateRange.to ? (
+                          <>
+                            {format(auditDateRange.from, "d MMM yyyy")} – {format(auditDateRange.to, "d MMM yyyy")}
+                          </>
+                        ) : (
+                          format(auditDateRange.from, "d MMM yyyy")
+                        )
+                      ) : (
+                        <span>Pick a date range</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="range"
+                      selected={auditDateRange}
+                      onSelect={setAuditDateRange}
+                      numberOfMonths={2}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {auditFiltersActive && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9"
+                    onClick={() => {
+                      setAuditEventFilter("all");
+                      setAuditDateRange(undefined);
+                    }}
+                  >
+                    <FilterX className="mr-1.5 h-4 w-4" />
+                    Clear
+                  </Button>
+                )}
+
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {filteredAuditLog.length} of {auditLog.length} {auditLog.length === 1 ? "event" : "events"}
+                </span>
+              </div>
+
               {auditLoading ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
                   <Loader2 className="h-4 w-4 animate-spin" /> Loading activity…
@@ -497,9 +567,13 @@ export default function VendorBillingPage() {
                 <p className="text-sm text-muted-foreground py-2">
                   No billing changes recorded yet. Activity will appear here once you save a payment method or authorise direct debit.
                 </p>
+              ) : filteredAuditLog.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">
+                  No events match the current filters.
+                </p>
               ) : (
                 <ol className="relative border-l border-border ml-2 space-y-4">
-                  {auditLog.map((entry: any) => {
+                  {filteredAuditLog.map((entry: any) => {
                     const meta = (entry.metadata ?? {}) as Record<string, unknown>;
                     const evt = entry.event_type as string;
                     let icon = <History className="h-4 w-4" />;
