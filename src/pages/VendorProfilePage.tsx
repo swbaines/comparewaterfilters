@@ -30,6 +30,7 @@ const AU_STATES = [
 ];
 
 import { systemTypes } from "@/data/systemTypes";
+import { normalizeSystemTypeIds } from "@/lib/canonicalSystemTypes";
 
 const SYSTEM_TYPES = systemTypes.map((s) => ({ value: s.id, label: s.name }));
 const VALID_SYSTEM_TYPE_IDS = new Set(SYSTEM_TYPES.map((s) => s.value));
@@ -167,7 +168,11 @@ export default function VendorProfilePage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const invalid = form.system_types.filter((id) => !VALID_SYSTEM_TYPE_IDS.has(id));
+      // Normalise aliases (e.g. whole-home-filtration → whole-house-filtration)
+      // before validation and persistence so the canonical ID is the only
+      // value that ever reaches the database.
+      const normalizedSystemTypes = normalizeSystemTypeIds(form.system_types);
+      const invalid = normalizedSystemTypes.filter((id) => !VALID_SYSTEM_TYPE_IDS.has(id));
       if (invalid.length > 0) {
         throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
       }
@@ -219,7 +224,7 @@ export default function VendorProfilePage() {
           states: statesToSave,
           ...baseFields,
           service_radius_km: radiusToSave,
-          system_types: form.system_types,
+          system_types: normalizedSystemTypes,
           brands: form.brands.split(",").map((s) => s.trim()).filter(Boolean),
           price_range: form.price_range as any,
           years_in_business: form.years_in_business,
