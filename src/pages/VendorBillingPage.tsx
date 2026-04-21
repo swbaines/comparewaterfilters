@@ -8,7 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft, DollarSign, Receipt, History, ShieldCheck, RefreshCw } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft, DollarSign, Receipt, History, ShieldCheck, RefreshCw, CalendarIcon, FilterX } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -184,6 +189,10 @@ export default function VendorBillingPage() {
   const [payingInvoiceId, setPayingInvoiceId] = useState<string | null>(null);
   const [payCooldownIds, setPayCooldownIds] = useState<Set<string>>(new Set());
 
+  // Audit log filters
+  const [auditEventFilter, setAuditEventFilter] = useState<string>("all");
+  const [auditDateRange, setAuditDateRange] = useState<DateRange | undefined>(undefined);
+
   // Fetch leads assigned to this specific invoice
   const { data: invoiceLeads = [], isLoading: leadsLoading } = useQuery({
     queryKey: ["invoice-leads", selectedInvoice?.id],
@@ -326,6 +335,23 @@ export default function VendorBillingPage() {
   });
 
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
+
+  // Apply event-type and date-range filters to the audit log
+  const filteredAuditLog = (auditLog as any[]).filter((entry) => {
+    if (auditEventFilter !== "all" && entry.event_type !== auditEventFilter) return false;
+    if (auditDateRange?.from) {
+      const from = new Date(auditDateRange.from);
+      from.setHours(0, 0, 0, 0);
+      if (new Date(entry.created_at) < from) return false;
+    }
+    if (auditDateRange?.to) {
+      const to = new Date(auditDateRange.to);
+      to.setHours(23, 59, 59, 999);
+      if (new Date(entry.created_at) > to) return false;
+    }
+    return true;
+  });
+  const auditFiltersActive = auditEventFilter !== "all" || !!auditDateRange?.from || !!auditDateRange?.to;
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
 
   const livePriceRows = [
@@ -463,6 +489,76 @@ export default function VendorBillingPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Filters */}
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <Select value={auditEventFilter} onValueChange={setAuditEventFilter}>
+                  <SelectTrigger className="h-9 w-[220px]">
+                    <SelectValue placeholder="All event types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All event types</SelectItem>
+                    <SelectItem value="payment_method_saved">Payment method saved</SelectItem>
+                    <SelectItem value="payment_method_updated">Payment method updated</SelectItem>
+                    <SelectItem value="direct_debit_authorised">Direct debit authorised</SelectItem>
+                    <SelectItem value="direct_debit_reauthorised">Direct debit re-authorised</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "h-9 justify-start text-left font-normal",
+                        !auditDateRange?.from && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {auditDateRange?.from ? (
+                        auditDateRange.to ? (
+                          <>
+                            {format(auditDateRange.from, "d MMM yyyy")} – {format(auditDateRange.to, "d MMM yyyy")}
+                          </>
+                        ) : (
+                          format(auditDateRange.from, "d MMM yyyy")
+                        )
+                      ) : (
+                        <span>Pick a date range</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="range"
+                      selected={auditDateRange}
+                      onSelect={setAuditDateRange}
+                      numberOfMonths={2}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {auditFiltersActive && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9"
+                    onClick={() => {
+                      setAuditEventFilter("all");
+                      setAuditDateRange(undefined);
+                    }}
+                  >
+                    <FilterX className="mr-1.5 h-4 w-4" />
+                    Clear
+                  </Button>
+                )}
+
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {filteredAuditLog.length} of {auditLog.length} {auditLog.length === 1 ? "event" : "events"}
+                </span>
+              </div>
+
               {auditLoading ? (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
                   <Loader2 className="h-4 w-4 animate-spin" /> Loading activity…
@@ -471,9 +567,13 @@ export default function VendorBillingPage() {
                 <p className="text-sm text-muted-foreground py-2">
                   No billing changes recorded yet. Activity will appear here once you save a payment method or authorise direct debit.
                 </p>
+              ) : filteredAuditLog.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">
+                  No events match the current filters.
+                </p>
               ) : (
                 <ol className="relative border-l border-border ml-2 space-y-4">
-                  {auditLog.map((entry: any) => {
+                  {filteredAuditLog.map((entry: any) => {
                     const meta = (entry.metadata ?? {}) as Record<string, unknown>;
                     const evt = entry.event_type as string;
                     let icon = <History className="h-4 w-4" />;
