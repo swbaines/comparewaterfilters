@@ -958,6 +958,14 @@ export default function AdminProvidersPage() {
                   Submitted: {new Date(reviewProvider.created_at).toLocaleString()}
                 </div>
 
+                {/* Billing Activity Log — admin record for disputes */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2">
+                    <History className="h-4 w-4 text-primary" /> Billing Activity Log
+                  </h3>
+                  <ProviderBillingActivityLog providerId={reviewProvider.id} />
+                </div>
+
                 {/* Action Buttons */}
                 <div className="flex gap-2 pt-2">
                   <Button className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
