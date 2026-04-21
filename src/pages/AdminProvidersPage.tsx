@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard, History as HistoryIcon, Link2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard, History as HistoryIcon, Link2, Search } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -66,6 +66,8 @@ export default function AdminProvidersPage() {
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
   const [pendingApprove, setPendingApprove] = useState<{ id: string; name: string } | null>(null);
@@ -337,6 +339,84 @@ export default function AdminProvidersPage() {
 
         <div className="mb-6">
           <SystemTypeIdsManager />
+        </div>
+
+        {/* Quick search by provider name */}
+        <div className="mb-6">
+          <Popover open={searchOpen && searchQuery.trim().length > 0} onOpenChange={setSearchOpen}>
+            <PopoverTrigger asChild>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search providers by name… (press Enter to open the top match)"
+                  className="pl-9"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSearchOpen(true);
+                  }}
+                  onFocus={() => setSearchOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const q = searchQuery.trim().toLowerCase();
+                      if (!q) return;
+                      const match = providers.find((p) => p.name.toLowerCase().includes(q));
+                      if (match) {
+                        setReviewProvider(match);
+                        setSearchOpen(false);
+                        setSearchQuery("");
+                      } else {
+                        toast.error("No matching provider found");
+                      }
+                    } else if (e.key === "Escape") {
+                      setSearchOpen(false);
+                    }
+                  }}
+                />
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-[--radix-popover-trigger-width] p-0"
+              align="start"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+              {(() => {
+                const q = searchQuery.trim().toLowerCase();
+                const matches = q
+                  ? providers.filter((p) => p.name.toLowerCase().includes(q)).slice(0, 8)
+                  : [];
+                if (matches.length === 0) {
+                  return <div className="p-3 text-sm text-muted-foreground">No providers match “{searchQuery}”.</div>;
+                }
+                return (
+                  <ul className="max-h-72 overflow-y-auto py-1">
+                    {matches.map((p) => (
+                      <li key={p.id}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReviewProvider(p);
+                            setSearchOpen(false);
+                            setSearchQuery("");
+                          }}
+                          className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                        >
+                          <span className="font-medium">{p.name}</span>
+                          <Badge
+                            variant={p.approval_status === "approved" ? "default" : p.approval_status === "pending" ? "secondary" : "destructive"}
+                            className="capitalize"
+                          >
+                            {p.approval_status}
+                          </Badge>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              })()}
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Pending Applications */}
