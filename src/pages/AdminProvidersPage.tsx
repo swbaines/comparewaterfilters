@@ -357,7 +357,13 @@ export default function AdminProvidersPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <div>
-                              <div className="font-medium">{p.name}</div>
+                              <button
+                                type="button"
+                                onClick={() => setReviewProvider(p)}
+                                className="font-medium text-primary hover:underline text-left"
+                              >
+                                {p.name}
+                              </button>
                               <div className="text-xs text-muted-foreground truncate max-w-[200px]">{p.description}</div>
                             </div>
                             {p.certification_files && typeof p.certification_files === "object" && Object.keys(p.certification_files as Record<string, unknown>).length > 0 && (
