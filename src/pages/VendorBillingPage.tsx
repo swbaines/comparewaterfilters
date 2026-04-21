@@ -450,6 +450,87 @@ export default function VendorBillingPage() {
           </Card>
         )}
 
+        {/* Billing audit log */}
+        {provider && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <History className="h-5 w-5" />
+                Billing activity log
+              </CardTitle>
+              <CardDescription>
+                A timestamped record of every change to your payment method and direct debit authorisation.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {auditLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Loading activity…
+                </div>
+              ) : auditLog.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2">
+                  No billing changes recorded yet. Activity will appear here once you save a payment method or authorise direct debit.
+                </p>
+              ) : (
+                <ol className="relative border-l border-border ml-2 space-y-4">
+                  {auditLog.map((entry: any) => {
+                    const meta = (entry.metadata ?? {}) as Record<string, unknown>;
+                    const evt = entry.event_type as string;
+                    let icon = <History className="h-4 w-4" />;
+                    let label = evt;
+                    let tone = "border-border bg-muted text-muted-foreground";
+                    if (evt === "payment_method_saved") {
+                      icon = <CreditCard className="h-4 w-4" />;
+                      label = "Payment method saved";
+                      tone = "border-green-200 bg-green-50 text-green-700";
+                    } else if (evt === "payment_method_updated") {
+                      icon = <RefreshCw className="h-4 w-4" />;
+                      label = "Payment method updated";
+                      tone = "border-blue-200 bg-blue-50 text-blue-700";
+                    } else if (evt === "direct_debit_authorised") {
+                      icon = <ShieldCheck className="h-4 w-4" />;
+                      label = "Direct debit authorised";
+                      tone = "border-green-200 bg-green-50 text-green-700";
+                    } else if (evt === "direct_debit_reauthorised") {
+                      icon = <ShieldCheck className="h-4 w-4" />;
+                      label = "Direct debit re-authorised";
+                      tone = "border-blue-200 bg-blue-50 text-blue-700";
+                    }
+                    return (
+                      <li key={entry.id} className="ml-4">
+                        <span className="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-background border border-border">
+                          <span className="h-2 w-2 rounded-full bg-primary" />
+                        </span>
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <Badge variant="outline" className={tone}>
+                            <span className="mr-1.5 inline-flex">{icon}</span>
+                            {label}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {format(new Date(entry.created_at), "d MMM yyyy 'at' h:mm a")}
+                          </span>
+                        </div>
+                        {(entry.actor_ip || entry.actor_user_agent || Object.keys(meta).length > 0) && (
+                          <div className="text-xs text-muted-foreground space-y-0.5 pl-1">
+                            {entry.actor_ip && (
+                              <div>IP: <span className="font-mono">{entry.actor_ip}</span></div>
+                            )}
+                            {entry.actor_user_agent && (
+                              <div className="truncate" title={entry.actor_user_agent}>
+                                Device: {entry.actor_user_agent}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Warning banners */}
         {provider?.stripe_customer_id && !cardSaved && (
           <Alert variant="destructive" className="border-destructive/50 bg-destructive/5">
