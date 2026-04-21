@@ -873,8 +873,28 @@ export default function AdminProvidersPage() {
         <Dialog open={!!reviewProvider} onOpenChange={(open) => { if (!open) setReviewProvider(null); }}>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" /> Review Application: {reviewProvider?.name}
+              <DialogTitle className="flex items-center gap-2 flex-wrap">
+                <Eye className="h-5 w-5" />
+                <span>Review Application: {reviewProvider?.name}</span>
+                {reviewProvider && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto gap-1.5"
+                    onClick={async () => {
+                      const url = `${window.location.origin}/admin/providers?review=${reviewProvider.id}`;
+                      try {
+                        await navigator.clipboard.writeText(url);
+                        toast.success("Provider link copied", { description: url });
+                      } catch {
+                        toast.error("Could not copy link", { description: url });
+                      }
+                    }}
+                  >
+                    <Link2 className="h-3.5 w-3.5" /> Copy provider link
+                  </Button>
+                )}
               </DialogTitle>
             </DialogHeader>
             {reviewProvider && (
