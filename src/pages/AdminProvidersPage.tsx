@@ -961,7 +961,7 @@ export default function AdminProvidersPage() {
                 {/* Billing Activity Log — admin record for disputes */}
                 <div>
                   <h3 className="text-sm font-semibold flex items-center gap-2 mb-2">
-                    <History className="h-4 w-4 text-primary" /> Billing Activity Log
+                    <HistoryIcon className="h-4 w-4 text-primary" /> Billing Activity Log
                   </h3>
                   <ProviderBillingActivityLog providerId={reviewProvider.id} />
                 </div>
