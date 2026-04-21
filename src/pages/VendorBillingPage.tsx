@@ -222,7 +222,7 @@ export default function VendorBillingPage() {
       // Fetch Stripe details from dedicated table
       let { data: stripeDetails } = await supabase
         .from("provider_stripe_details")
-        .select("stripe_customer_id, stripe_payment_method_id")
+        .select("stripe_customer_id, stripe_payment_method_id, direct_debit_authorised_at, updated_at")
         .eq("provider_id", va.provider_id)
         .maybeSingle();
 
@@ -235,11 +235,19 @@ export default function VendorBillingPage() {
           stripeDetails = {
             stripe_customer_id: created.customer_id,
             stripe_payment_method_id: stripeDetails?.stripe_payment_method_id ?? null,
+            direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at ?? null,
+            updated_at: stripeDetails?.updated_at ?? null,
           };
         }
       }
 
-      setProvider({ ...prov, stripe_customer_id: stripeDetails?.stripe_customer_id, stripe_payment_method_id: stripeDetails?.stripe_payment_method_id });
+      setProvider({
+        ...prov,
+        stripe_customer_id: stripeDetails?.stripe_customer_id,
+        stripe_payment_method_id: stripeDetails?.stripe_payment_method_id,
+        direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at,
+        stripe_updated_at: stripeDetails?.updated_at,
+      });
       if (!showCardForm) {
         setCardSaved(!!stripeDetails?.stripe_payment_method_id);
       }
