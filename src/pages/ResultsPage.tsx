@@ -1,21 +1,15 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageMeta from "@/components/PageMeta";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon, Share2, Check, Copy, ChevronDown, Info } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
-import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
-import { formatCoverageLabel } from "@/lib/serviceArea";
 import type { Recommendation } from "@/data/recommendations";
-import type { Provider } from "@/data/providers";
-import { useProviders } from "@/hooks/useProviders";
-import RequestQuoteDialog from "@/components/RequestQuoteDialog";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import MatchedVendorsSection from "@/components/MatchedVendorsSection";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 
