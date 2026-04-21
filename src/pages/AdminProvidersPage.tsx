@@ -357,7 +357,13 @@ export default function AdminProvidersPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <div>
-                              <div className="font-medium">{p.name}</div>
+                              <button
+                                type="button"
+                                onClick={() => setReviewProvider(p)}
+                                className="font-medium text-primary hover:underline text-left"
+                              >
+                                {p.name}
+                              </button>
                               <div className="text-xs text-muted-foreground truncate max-w-[200px]">{p.description}</div>
                             </div>
                             {p.certification_files && typeof p.certification_files === "object" && Object.keys(p.certification_files as Record<string, unknown>).length > 0 && (
@@ -430,8 +436,16 @@ export default function AdminProvidersPage() {
                   .filter(p => p.approval_status !== "pending")
                   .filter(p => !showOnlyNotBillingReady || (p.approval_status === "approved" && !isBillingReady(p.id)))
                   .map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.name}</TableCell>
+                   <TableRow key={p.id}>
+                     <TableCell className="font-medium">
+                       <button
+                         type="button"
+                         onClick={() => setReviewProvider(p)}
+                         className="text-primary hover:underline text-left"
+                       >
+                         {p.name}
+                       </button>
+                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {p.states.map((s) => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>)}
