@@ -384,9 +384,9 @@ export default function AdminProvidersPage() {
                   onFocus={() => setSearchOpen(true)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      const q = searchQuery.trim().toLowerCase();
-                      if (!q) return;
-                      const match = providers.find((p) => p.name.toLowerCase().includes(q));
+                      if (!debouncedSearch) return;
+                      if (searchLoading) return;
+                      const match = searchResults[0];
                       if (match) {
                         setReviewProvider(match);
                         setSearchOpen(false);
@@ -407,10 +407,14 @@ export default function AdminProvidersPage() {
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
               {(() => {
-                const q = searchQuery.trim().toLowerCase();
-                const matches = q
-                  ? providers.filter((p) => p.name.toLowerCase().includes(q)).slice(0, 8)
-                  : [];
+                if (searchLoading && searchResults.length === 0) {
+                  return (
+                    <div className="flex items-center gap-2 p-3 text-sm text-muted-foreground">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Searching…
+                    </div>
+                  );
+                }
+                const matches = searchResults;
                 if (matches.length === 0) {
                   return <div className="p-3 text-sm text-muted-foreground">No providers match “{searchQuery}”.</div>;
                 }
