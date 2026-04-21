@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
@@ -140,6 +140,27 @@ export default function AdminProvidersPage() {
       return data as ProviderRow[];
     },
   });
+
+  const { data: stripeDetails = [] } = useQuery({
+    queryKey: ["admin-provider-stripe-details"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_stripe_details")
+        .select("provider_id, stripe_payment_method_id, direct_debit_authorised_at");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const billingReadyMap = new Map(
+    stripeDetails.map((d) => [
+      d.provider_id,
+      Boolean(d.stripe_payment_method_id) && Boolean(d.direct_debit_authorised_at),
+    ]),
+  );
+  const isBillingReady = (id: string) => billingReadyMap.get(id) === true;
+
+  const [showOnlyNotBillingReady, setShowOnlyNotBillingReady] = useState(false);
 
   const validSystemTypeIds = new Set(systemTypes.map((s) => s.id));
   const auditResults = providers
@@ -273,6 +294,22 @@ export default function AdminProvidersPage() {
             <p className="text-muted-foreground">Add, edit, and manage water filtration providers</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant={showOnlyNotBillingReady ? "default" : "outline"}
+              onClick={() => setShowOnlyNotBillingReady((v) => !v)}
+              className="gap-2"
+            >
+              <CreditCard className="h-4 w-4" />
+              {showOnlyNotBillingReady ? "Showing not billing-ready" : "Filter: not billing-ready"}
+              {(() => {
+                const count = providers.filter(
+                  (p) => p.approval_status === "approved" && !isBillingReady(p.id),
+                ).length;
+                return count > 0 ? (
+                  <Badge variant="destructive" className="ml-1">{count}</Badge>
+                ) : null;
+              })()}
+            </Button>
             <Button variant="outline" onClick={() => setAuditOpen(true)} className="gap-2">
               <ShieldCheck className="h-4 w-4" /> Audit System Types
               {auditResults.length > 0 && (
@@ -382,12 +419,16 @@ export default function AdminProvidersPage() {
                   <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Terms</TableHead>
+                  <TableHead>Billing</TableHead>
                   <TableHead>Active</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {providers.filter(p => p.approval_status !== "pending").map((p) => (
+                {providers
+                  .filter(p => p.approval_status !== "pending")
+                  .filter(p => !showOnlyNotBillingReady || (p.approval_status === "approved" && !isBillingReady(p.id)))
+                  .map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell>
@@ -438,6 +479,17 @@ export default function AdminProvidersPage() {
                       )}
                     </TableCell>
                     <TableCell>
+                      {isBillingReady(p.id) ? (
+                        <Badge variant="outline" className="text-xs border-green-300 text-green-700 gap-1">
+                          <CreditCard className="h-3 w-3" /> Ready
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 gap-1">
+                          <AlertTriangle className="h-3 w-3" /> Not ready
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
                       <Switch
                         checked={p.available_for_quote}
                         onCheckedChange={async (checked) => {
@@ -465,8 +517,11 @@ export default function AdminProvidersPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {providers.filter(p => (p as any).approval_status !== "pending").length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No providers yet</TableCell></TableRow>
+                {providers
+                  .filter(p => p.approval_status !== "pending")
+                  .filter(p => !showOnlyNotBillingReady || (p.approval_status === "approved" && !isBillingReady(p.id)))
+                  .length === 0 && (
+                  <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">{showOnlyNotBillingReady ? "All approved providers are billing-ready 🎉" : "No providers yet"}</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
