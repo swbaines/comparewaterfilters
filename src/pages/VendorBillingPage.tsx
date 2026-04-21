@@ -222,7 +222,7 @@ export default function VendorBillingPage() {
       // Fetch Stripe details from dedicated table
       let { data: stripeDetails } = await supabase
         .from("provider_stripe_details")
-        .select("stripe_customer_id, stripe_payment_method_id")
+        .select("stripe_customer_id, stripe_payment_method_id, direct_debit_authorised_at, updated_at")
         .eq("provider_id", va.provider_id)
         .maybeSingle();
 
@@ -235,11 +235,19 @@ export default function VendorBillingPage() {
           stripeDetails = {
             stripe_customer_id: created.customer_id,
             stripe_payment_method_id: stripeDetails?.stripe_payment_method_id ?? null,
+            direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at ?? null,
+            updated_at: stripeDetails?.updated_at ?? null,
           };
         }
       }
 
-      setProvider({ ...prov, stripe_customer_id: stripeDetails?.stripe_customer_id, stripe_payment_method_id: stripeDetails?.stripe_payment_method_id });
+      setProvider({
+        ...prov,
+        stripe_customer_id: stripeDetails?.stripe_customer_id,
+        stripe_payment_method_id: stripeDetails?.stripe_payment_method_id,
+        direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at,
+        stripe_updated_at: stripeDetails?.updated_at,
+      });
       if (!showCardForm) {
         setCardSaved(!!stripeDetails?.stripe_payment_method_id);
       }
@@ -367,7 +375,64 @@ export default function VendorBillingPage() {
           </Button>
         </div>
 
-
+        {/* Billing readiness checklist */}
+        {provider && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Billing setup checklist</CardTitle>
+              <CardDescription>
+                Both items must be complete for you to receive matched leads.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                {
+                  label: "Payment method on file",
+                  done: !!provider.stripe_payment_method_id,
+                  timestamp: provider.stripe_payment_method_id ? provider.stripe_updated_at : null,
+                  todoHint: "Add a card below to enable automatic billing.",
+                },
+                {
+                  label: "Direct debit authorisation",
+                  done: !!provider.direct_debit_authorised_at,
+                  timestamp: provider.direct_debit_authorised_at,
+                  todoHint: "Tick the authorisation when saving your card.",
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-start justify-between gap-4 rounded-lg border p-3"
+                >
+                  <div className="flex items-start gap-3">
+                    {item.done ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+                    )}
+                    <div>
+                      <p className="font-medium text-sm">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.done && item.timestamp
+                          ? `Last updated ${format(new Date(item.timestamp), "d MMM yyyy 'at' h:mm a")}`
+                          : item.todoHint}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      item.done
+                        ? "border-green-200 bg-green-50 text-green-700"
+                        : "border-amber-200 bg-amber-50 text-amber-700"
+                    }
+                  >
+                    {item.done ? "Complete" : "Incomplete"}
+                  </Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Warning banners */}
         {provider?.stripe_customer_id && !cardSaved && (
