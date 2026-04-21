@@ -194,13 +194,9 @@ export default function ResultsPage() {
   const [searchParams] = useSearchParams();
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
-  const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
-  const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
-  const [sortBy, setSortBy] = useState<string>("match");
-  const [filterPrice, setFilterPrice] = useState<string>("all");
   const [copied, setCopied] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
-  const { data: dbProviders = [] } = useProviders();
+  const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     // Try URL param first (shared link), then sessionStorage
@@ -221,21 +217,14 @@ export default function ResultsPage() {
     const rec = generateRecommendations(parsed);
     setResult(rec);
 
-    if (dbProviders.length > 0) {
-      // Look up customer coords for radius matching, then match
-      let cancelled = false;
-      (async () => {
-        const coords = await lookupPostcodeCoords(parsed!.postcode || parsed!.suburb);
-        if (cancelled) return;
-        setProviderMatches(
-          matchProviders(parsed!, rec, dbProviders, 3, {
-            customerCoords: coords ? { lat: coords.lat, lng: coords.lng } : undefined,
-          })
-        );
-      })();
-      return () => { cancelled = true; };
-    }
-  }, [navigate, dbProviders, searchParams]);
+    let cancelled = false;
+    (async () => {
+      const coords = await lookupPostcodeCoords(parsed!.postcode || parsed!.suburb);
+      if (cancelled) return;
+      if (coords) setCustomerCoords({ lat: coords.lat, lng: coords.lng });
+    })();
+    return () => { cancelled = true; };
+  }, [navigate, searchParams]);
 
   // Show sticky bar on mobile when provider section is below viewport
   useEffect(() => {
@@ -249,26 +238,14 @@ export default function ResultsPage() {
     return () => observer.disconnect();
   }, [result]);
 
-  const filteredAndSorted = useMemo(() => {
-    let list = [...providerMatches];
-    if (filterPrice !== "all") {
-      list = list.filter((m) => m.provider.priceRange === filterPrice);
-    }
-    switch (sortBy) {
-      case "rating":
-        list.sort((a, b) => b.provider.rating - a.provider.rating);
-        break;
-      case "experience":
-        list.sort((a, b) => b.provider.yearsInBusiness - a.provider.yearsInBusiness);
-        break;
-      case "reviews":
-        list.sort((a, b) => b.provider.reviewCount - a.provider.reviewCount);
-        break;
-      default:
-        list.sort((a, b) => b.matchScore - a.matchScore);
-    }
-    return list;
-  }, [providerMatches, sortBy, filterPrice]);
+  const recommendedSystemIds = useMemo(() => {
+    if (!result) return [] as string[];
+    return [...new Set(
+      [result.primary, result.secondary, result.premium]
+        .map((r) => toCanonicalSystemType(r.id))
+        .filter((id): id is NonNullable<typeof id> => !!id)
+    )];
+  }, [result]);
 
   if (!result || !answers) return null;
 
