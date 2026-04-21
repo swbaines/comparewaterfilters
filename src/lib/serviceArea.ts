@@ -1,17 +1,20 @@
 export type CoverageMode = "radius" | "regions";
 
-export const AU_STATES = [
-  { code: "NSW", name: "New South Wales" },
-  { code: "VIC", name: "Victoria" },
-  { code: "QLD", name: "Queensland" },
-  { code: "WA", name: "Western Australia" },
-  { code: "SA", name: "South Australia" },
-  { code: "TAS", name: "Tasmania" },
-  { code: "ACT", name: "Australian Capital Territory" },
-  { code: "NT", name: "Northern Territory" },
-] as const;
+export interface AuStateOption { code: string; name: string; value: string; label: string }
+export interface MetroOption { value: string; label: string; state: string }
 
-export const CAPITAL_METROS = [
+export const AU_STATES: AuStateOption[] = [
+  { code: "NSW", name: "New South Wales", value: "NSW", label: "New South Wales" },
+  { code: "VIC", name: "Victoria", value: "VIC", label: "Victoria" },
+  { code: "QLD", name: "Queensland", value: "QLD", label: "Queensland" },
+  { code: "WA", name: "Western Australia", value: "WA", label: "Western Australia" },
+  { code: "SA", name: "South Australia", value: "SA", label: "South Australia" },
+  { code: "TAS", name: "Tasmania", value: "TAS", label: "Tasmania" },
+  { code: "ACT", name: "Australian Capital Territory", value: "ACT", label: "ACT" },
+  { code: "NT", name: "Northern Territory", value: "NT", label: "Northern Territory" },
+];
+
+export const CAPITAL_METROS: MetroOption[] = [
   { value: "METRO_SYD", label: "Sydney Metro", state: "NSW" },
   { value: "METRO_MEL", label: "Melbourne Metro", state: "VIC" },
   { value: "METRO_BNE", label: "Brisbane Metro", state: "QLD" },
@@ -20,10 +23,10 @@ export const CAPITAL_METROS = [
   { value: "METRO_HOB", label: "Hobart Metro", state: "TAS" },
   { value: "METRO_CBR", label: "Canberra Metro", state: "ACT" },
   { value: "METRO_DAR", label: "Darwin Metro", state: "NT" },
-] as const;
+];
 
-const STATE_CODES = new Set(AU_STATES.map((s) => s.code));
-const METRO_TO_STATE = new Map(CAPITAL_METROS.map((m) => [m.value, m.state]));
+const STATE_CODES: Set<string> = new Set(AU_STATES.map((s) => s.code));
+const METRO_TO_STATE: Map<string, string> = new Map(CAPITAL_METROS.map((m) => [m.value, m.state]));
 
 export interface CoverageInput {
   mode: CoverageMode;
