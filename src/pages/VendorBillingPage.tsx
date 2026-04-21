@@ -493,7 +493,7 @@ export default function VendorBillingPage() {
         )}
 
         {/* Billing audit log */}
-        {provider && (
+        {provider && isAdmin && (
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -501,7 +501,7 @@ export default function VendorBillingPage() {
                 Billing activity log
               </CardTitle>
               <CardDescription>
-                A timestamped record of every change to your payment method and direct debit authorisation.
+                Admin-only view. Timestamped record of every change to this provider's payment method and direct debit authorisation.
               </CardDescription>
             </CardHeader>
             <CardContent>
