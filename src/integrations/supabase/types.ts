@@ -106,6 +106,7 @@ export type Database = {
           created_at: string
           id: string
           invoice_number: string
+          is_test: boolean
           lead_count: number
           notes: string | null
           paid_at: string | null
@@ -121,6 +122,7 @@ export type Database = {
           created_at?: string
           id?: string
           invoice_number: string
+          is_test?: boolean
           lead_count?: number
           notes?: string | null
           paid_at?: string | null
@@ -136,6 +138,7 @@ export type Database = {
           created_at?: string
           id?: string
           invoice_number?: string
+          is_test?: boolean
           lead_count?: number
           notes?: string | null
           paid_at?: string | null
@@ -470,6 +473,7 @@ export type Database = {
           household_size: string | null
           id: string
           invoice_id: string | null
+          is_test: boolean
           lead_price: number | null
           lead_status: string
           message: string | null
@@ -497,6 +501,7 @@ export type Database = {
           household_size?: string | null
           id?: string
           invoice_id?: string | null
+          is_test?: boolean
           lead_price?: number | null
           lead_status?: string
           message?: string | null
@@ -524,6 +529,7 @@ export type Database = {
           household_size?: string | null
           id?: string
           invoice_id?: string | null
+          is_test?: boolean
           lead_price?: number | null
           lead_status?: string
           message?: string | null
