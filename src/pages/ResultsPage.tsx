@@ -1,21 +1,15 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageMeta from "@/components/PageMeta";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Star, Shield, Phone, MapPin, Award, Users, Send, SlidersHorizontal, ImageIcon, Share2, Check, Copy, ChevronDown, Info } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
-import { matchProviders, type ProviderMatch } from "@/lib/providerMatchEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
-import { formatCoverageLabel } from "@/lib/serviceArea";
 import type { Recommendation } from "@/data/recommendations";
-import type { Provider } from "@/data/providers";
-import { useProviders } from "@/hooks/useProviders";
-import RequestQuoteDialog from "@/components/RequestQuoteDialog";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import MatchedVendorsSection from "@/components/MatchedVendorsSection";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 
@@ -90,125 +84,6 @@ function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; 
               </li>
             ))}
           </ul>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function MatchScoreBadge({ score }: { score: number }) {
-  const color = score >= 80 ? "bg-primary text-primary-foreground" : score >= 60 ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground";
-  return <Badge className={`${color} text-xs`}>{score}% match</Badge>;
-}
-
-function ProviderCard({ match, rank, onRequestQuote }: { match: ProviderMatch; rank: number; onRequestQuote: (provider: Provider) => void }) {
-  const { provider, matchScore, matchReasons, systemsTheyInstall } = match;
-  const rankLabels: Record<number, string> = { 0: "Top match", 1: "Strong match", 2: "Good match" };
-  const rankColors: Record<number, string> = { 0: "border-primary shadow-lg", 1: "border-primary/40" };
-
-  return (
-    <Card className={`overflow-hidden border-2 ${rankColors[rank] || ""}`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 border">
-              {provider.logo ? (
-                <AvatarImage src={provider.logo} alt={provider.name} />
-              ) : null}
-              <AvatarFallback className="text-xs">
-                <ImageIcon className="h-4 w-4 text-muted-foreground" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              {rankLabels[rank] && (
-                <Badge className={rank === 0 ? "mb-1 bg-primary text-primary-foreground" : "mb-1 bg-accent text-accent-foreground"}>
-                  {rankLabels[rank]}
-                </Badge>
-              )}
-              <CardTitle className="text-lg">{provider.name}</CardTitle>
-            </div>
-          </div>
-          <MatchScoreBadge score={matchScore} />
-        </div>
-        <p className="text-sm text-muted-foreground">{provider.description}</p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Key stats */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2">
-            <Star className="h-4 w-4 shrink-0 text-primary" />
-            <span className="font-medium">{provider.rating}/5</span>
-            <span className="text-muted-foreground">({provider.reviewCount} reviews)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 shrink-0 text-primary" />
-            <span className="text-muted-foreground">{provider.yearsInBusiness} years experience</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4 shrink-0 text-primary" />
-            <span className="text-muted-foreground">
-              {formatCoverageLabel(provider.location.regions, provider.location.states) ||
-                provider.location.states.join(", ")}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 shrink-0 text-primary" />
-            <span className="text-muted-foreground">{provider.responseTime}</span>
-          </div>
-        </div>
-
-        {/* Why they match */}
-        <div>
-          <p className="mb-2 text-sm font-medium">Why we matched you</p>
-          <ul className="space-y-1">
-            {matchReasons.slice(0, 4).map((r) => (
-              <li key={r} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" /> {r}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Certifications */}
-        <div className="flex flex-wrap gap-1.5">
-          {provider.certifications.slice(0, 3).map((c) => (
-            <Badge key={c} variant="outline" className="text-xs font-normal">
-              <Award className="mr-1 h-3 w-3" /> {c}
-            </Badge>
-          ))}
-        </div>
-
-        {/* Highlights */}
-        <div className="flex flex-wrap gap-1.5">
-          {provider.highlights.slice(0, 3).map((h) => (
-            <Badge key={h} variant="secondary" className="text-xs font-normal">
-              {h}
-            </Badge>
-          ))}
-        </div>
-
-        {/* Warranty */}
-        <p className="text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">Warranty:</span> {provider.warranty}
-        </p>
-
-        {/* Brands */}
-        <p className="text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">Brands:</span> {provider.brands.join(", ")}
-        </p>
-
-        {/* CTAs */}
-        <div className="mt-2 flex flex-col gap-2">
-          <Button className="w-full gap-2" onClick={() => onRequestQuote(provider)}>
-            <Send className="h-4 w-4" /> Request a quote
-          </Button>
-          {provider.phone && (
-            <a href={`tel:${provider.phone.replace(/\s/g, "")}`}>
-              <Button className="w-full gap-2" variant="outline">
-                <Phone className="h-4 w-4" /> Call {provider.phone}
-              </Button>
-            </a>
-          )}
         </div>
       </CardContent>
     </Card>
@@ -319,13 +194,9 @@ export default function ResultsPage() {
   const [searchParams] = useSearchParams();
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
-  const [providerMatches, setProviderMatches] = useState<ProviderMatch[]>([]);
-  const [quoteProvider, setQuoteProvider] = useState<Provider | null>(null);
-  const [sortBy, setSortBy] = useState<string>("match");
-  const [filterPrice, setFilterPrice] = useState<string>("all");
   const [copied, setCopied] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
-  const { data: dbProviders = [] } = useProviders();
+  const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     // Try URL param first (shared link), then sessionStorage
@@ -346,21 +217,14 @@ export default function ResultsPage() {
     const rec = generateRecommendations(parsed);
     setResult(rec);
 
-    if (dbProviders.length > 0) {
-      // Look up customer coords for radius matching, then match
-      let cancelled = false;
-      (async () => {
-        const coords = await lookupPostcodeCoords(parsed!.postcode || parsed!.suburb);
-        if (cancelled) return;
-        setProviderMatches(
-          matchProviders(parsed!, rec, dbProviders, 3, {
-            customerCoords: coords ? { lat: coords.lat, lng: coords.lng } : undefined,
-          })
-        );
-      })();
-      return () => { cancelled = true; };
-    }
-  }, [navigate, dbProviders, searchParams]);
+    let cancelled = false;
+    (async () => {
+      const coords = await lookupPostcodeCoords(parsed!.postcode || parsed!.suburb);
+      if (cancelled) return;
+      if (coords) setCustomerCoords({ lat: coords.lat, lng: coords.lng });
+    })();
+    return () => { cancelled = true; };
+  }, [navigate, searchParams]);
 
   // Show sticky bar on mobile when provider section is below viewport
   useEffect(() => {
@@ -374,26 +238,14 @@ export default function ResultsPage() {
     return () => observer.disconnect();
   }, [result]);
 
-  const filteredAndSorted = useMemo(() => {
-    let list = [...providerMatches];
-    if (filterPrice !== "all") {
-      list = list.filter((m) => m.provider.priceRange === filterPrice);
-    }
-    switch (sortBy) {
-      case "rating":
-        list.sort((a, b) => b.provider.rating - a.provider.rating);
-        break;
-      case "experience":
-        list.sort((a, b) => b.provider.yearsInBusiness - a.provider.yearsInBusiness);
-        break;
-      case "reviews":
-        list.sort((a, b) => b.provider.reviewCount - a.provider.reviewCount);
-        break;
-      default:
-        list.sort((a, b) => b.matchScore - a.matchScore);
-    }
-    return list;
-  }, [providerMatches, sortBy, filterPrice]);
+  const recommendedSystemIds = useMemo(() => {
+    if (!result) return [] as string[];
+    return [...new Set(
+      [result.primary, result.secondary, result.premium]
+        .map((r) => toCanonicalSystemType(r.id))
+        .filter((id): id is NonNullable<typeof id> => !!id)
+    )];
+  }, [result]);
 
   if (!result || !answers) return null;
 
@@ -545,84 +397,17 @@ export default function ResultsPage() {
               <Users className="mr-1 h-3 w-3" /> Matched providers
             </Badge>
             <h2 className="text-xl font-bold sm:text-2xl">Providers matched to your needs</h2>
-            {providerMatches.length > 0 ? (
-              <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-                We've found {providerMatches.length} qualified provider{providerMatches.length > 1 ? "s" : ""} in your area who install your recommended systems. Compare them side by side.
-              </p>
-            ) : (
-              <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-                We're still growing our network in your area.
-              </p>
-            )}
+            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+              Tick the providers you'd like a free quote from. They'll contact you directly — you're not committing to anything.
+            </p>
           </div>
 
-          {providerMatches.length > 0 ? (
-            <>
-              {/* Sort & filter controls */}
-              <div className="mb-6 flex flex-wrap items-center gap-3 rounded-lg border bg-background p-3">
-                <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[160px]">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="match">Best match</SelectItem>
-                    <SelectItem value="rating">Highest rated</SelectItem>
-                    <SelectItem value="reviews">Most reviews</SelectItem>
-                    <SelectItem value="experience">Most experience</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={filterPrice} onValueChange={setFilterPrice}>
-                  <SelectTrigger className="w-[160px]">
-                    <SelectValue placeholder="Price range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All price ranges</SelectItem>
-                    <SelectItem value="budget">Budget</SelectItem>
-                    <SelectItem value="mid">Mid-range</SelectItem>
-                    <SelectItem value="premium">Premium</SelectItem>
-                  </SelectContent>
-                </Select>
-                {(filterPrice !== "all" || sortBy !== "match") && (
-                  <Button variant="ghost" size="sm" onClick={() => { setSortBy("match"); setFilterPrice("all"); }}>
-                    Reset
-                  </Button>
-                )}
-              </div>
-
-              {filteredAndSorted.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-3">
-                  {filteredAndSorted.map((match, i) => (
-                    <ProviderCard key={match.provider.id} match={match} rank={sortBy === "match" ? i : -1} onRequestQuote={setQuoteProvider} />
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-0 bg-muted/50 shadow-none">
-                  <CardContent className="p-6 text-center">
-                    <p className="text-muted-foreground">No providers match your current filters.</p>
-                    <Button className="mt-4" variant="outline" onClick={() => { setFilterPrice("all"); }}>
-                      Clear filters
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </>
-          ) : (
-            <Card className="border border-dashed">
-              <CardContent className="flex flex-col items-center justify-center p-10 text-center">
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                  <Users className="h-7 w-7 text-muted-foreground" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold">No providers in your area yet</h3>
-                <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
-                  We don't have any matched providers in your area right now, but we're expanding fast. Your recommendations above are still tailored to your home — use them as a guide when shopping locally or requesting quotes.
-                </p>
-                <Button variant="outline" onClick={() => window.location.href = "/contact"}>
-                  Get in touch for help
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+          <MatchedVendorsSection
+            customerLat={customerCoords?.lat ?? null}
+            customerLng={customerCoords?.lng ?? null}
+            answers={answers}
+            recommendedSystems={recommendedSystemIds}
+          />
         </div>
 
         {/* Comparison table */}
@@ -757,21 +542,8 @@ export default function ResultsPage() {
         </Card>
       </div>
 
-      {/* Quote dialog */}
-      {quoteProvider && answers && result && (
-        <RequestQuoteDialog
-          open={!!quoteProvider}
-          onOpenChange={(open) => { if (!open) setQuoteProvider(null); }}
-          provider={quoteProvider}
-          answers={answers}
-          recommendedSystems={[result.primary, result.secondary, result.premium]
-            .map((r) => toCanonicalSystemType(r.id))
-            .filter((id): id is NonNullable<typeof id> => !!id)}
-        />
-      )}
-
       {/* Sticky mobile bar */}
-      {showStickyBar && providerMatches.length > 0 && (
+      {showStickyBar && (
         <a
           href="#matched-providers"
           className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-center gap-2 bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_-4px_20px_rgba(0,0,0,0.15)] sm:hidden"
