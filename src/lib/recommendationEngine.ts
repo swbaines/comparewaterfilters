@@ -204,6 +204,7 @@ const RULE_LABELS: Record<FiredRule, string> = {
   "rule-4-drinking-only": "Rule 4 — Drinking water / taste / chlorine only",
   "rule-5-renter-apartment": "Rule 5 — Renter or apartment (no whole-home or softener)",
   "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
+  "rule-7-untreated-water-uv": "Rule 7 — Untreated water source (rainwater, tank, or bore) — UV recommended",
   "default": "Default — general drinking-water improvement",
 };
 
