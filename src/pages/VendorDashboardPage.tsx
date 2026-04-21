@@ -206,6 +206,20 @@ export default function VendorDashboardPage() {
     },
   });
 
+  const { data: stripeDetails } = useQuery({
+    queryKey: ["vendor-stripe-details", providerId],
+    enabled: !!providerId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_stripe_details")
+        .select("stripe_payment_method_id, direct_debit_authorised_at")
+        .eq("provider_id", providerId!)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   // Capture snapshot of last_dashboard_visit ONCE when vendorAccount first loads
   useEffect(() => {
     if (vendorAccount && !visitSnapshotSetRef.current) {
