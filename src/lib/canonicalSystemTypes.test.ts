@@ -4,6 +4,8 @@ import {
   CANONICAL_SYSTEM_TYPES,
   RECOMMENDATION_TO_CANONICAL,
   toCanonicalSystemType,
+  normalizeSystemTypeId,
+  normalizeSystemTypeIds,
 } from "@/lib/canonicalSystemTypes";
 
 describe("recommendation taxonomy", () => {
@@ -50,5 +52,25 @@ describe("recommendation taxonomy", () => {
       "water-softener",
       "whole-house-filtration",
     ]);
+  });
+
+  it("whole-home-filtration is treated as an alias for whole-house-filtration", () => {
+    expect(normalizeSystemTypeId("whole-home-filtration")).toBe("whole-house-filtration");
+    expect(toCanonicalSystemType("whole-home-filtration")).toBe("whole-house-filtration");
+  });
+
+  it("normalizeSystemTypeIds dedupes after aliasing", () => {
+    expect(
+      normalizeSystemTypeIds([
+        "whole-home-filtration",
+        "whole-house-filtration",
+        "reverse-osmosis",
+      ]).sort()
+    ).toEqual(["reverse-osmosis", "whole-house-filtration"]);
+  });
+
+  it("normalizeSystemTypeId leaves unknown IDs unchanged", () => {
+    expect(normalizeSystemTypeId("reverse-osmosis")).toBe("reverse-osmosis");
+    expect(normalizeSystemTypeId("something-new")).toBe("something-new");
   });
 });

@@ -33,6 +33,10 @@ export const RECOMMENDATION_TO_CANONICAL: Record<string, CanonicalSystemType | n
   "whole-house-combo": "hybrid",
   "uv-system": "uv",
 
+  // "whole-home-filtration" is a common alternative phrasing used by some
+  // providers and customers — treat it as identical to whole-house-filtration.
+  "whole-home-filtration": "whole-house-filtration",
+
   // Point-of-use carbon-style filters → providers offering under-sink carbon
   // are the closest installable equivalent.
   "shower-filter": "under-sink-carbon",
@@ -63,4 +67,34 @@ export function toCanonicalSystemType(
     return RECOMMENDATION_TO_CANONICAL[recommendationId];
   }
   return undefined;
+}
+
+/**
+ * Map of non-canonical aliases → canonical IDs that should be treated as
+ * fully equivalent everywhere (display, matching, validation, search).
+ *
+ * Unlike `RECOMMENDATION_TO_CANONICAL` (which describes recommendation→
+ * provider-system mappings, including `null` sentinels), this map is purely
+ * about synonymous IDs that mean the same thing.
+ */
+export const SYSTEM_TYPE_ALIASES: Record<string, CanonicalSystemType> = {
+  "whole-home-filtration": "whole-house-filtration",
+};
+
+/**
+ * Normalise any system-type ID (canonical or alias) to its canonical form.
+ * Unknown IDs are returned unchanged so callers can decide how to handle them.
+ */
+export function normalizeSystemTypeId(id: string): string {
+  if (id in SYSTEM_TYPE_ALIASES) return SYSTEM_TYPE_ALIASES[id];
+  return id;
+}
+
+/**
+ * Normalise an array of system-type IDs and de-duplicate the result.
+ */
+export function normalizeSystemTypeIds(ids: readonly string[]): string[] {
+  const seen = new Set<string>();
+  for (const id of ids) seen.add(normalizeSystemTypeId(id));
+  return [...seen];
 }

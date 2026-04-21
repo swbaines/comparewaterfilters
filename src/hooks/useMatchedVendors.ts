@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeSystemTypeIds } from "@/lib/canonicalSystemTypes";
 
 export interface MatchedVendor {
   provider_id: string;
@@ -44,24 +45,25 @@ export function useMatchedVendors({
   recommendedSystems,
   enabled = true,
 }: Args) {
+  const normalizedRecommended = normalizeSystemTypeIds(recommendedSystems);
   return useQuery({
     queryKey: [
       "matched-vendors",
       customerLat,
       customerLng,
       customerState,
-      [...recommendedSystems].sort().join(","),
+      [...normalizedRecommended].sort().join(","),
     ],
     enabled:
       enabled &&
       !!customerState &&
-      recommendedSystems.length > 0,
+      normalizedRecommended.length > 0,
     queryFn: async (): Promise<MatchedVendor[]> => {
       const { data, error } = await supabase.rpc("get_matched_vendors" as any, {
         _customer_lat: customerLat,
         _customer_lng: customerLng,
         _customer_state: customerState,
-        _recommended_systems: recommendedSystems,
+        _recommended_systems: normalizedRecommended,
         _limit: 10,
       });
       if (error) throw error;

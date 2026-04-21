@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Globe, Loader2, Star, Eye, CheckCircle2, XCircle, Building2, MapPin, Wrench, Shield, Phone, ExternalLink, FileDown, FileCheck, AlertTriangle, ShieldCheck, CreditCard, History as HistoryIcon, Link2, Search } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { firecrawlApi } from "@/lib/api/firecrawl";
+import { normalizeSystemTypeIds } from "@/lib/canonicalSystemTypes";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 import { systemTypes } from "@/data/systemTypes";
@@ -212,11 +213,15 @@ export default function AdminProvidersPage() {
 
   const upsertMutation = useMutation({
     mutationFn: async (provider: TablesInsert<"providers">) => {
+      // Normalise alias IDs (e.g. whole-home-filtration → whole-house-filtration)
+      // before validating, so the canonical taxonomy stays the source of truth.
+      const normalizedSystemTypes = normalizeSystemTypeIds(provider.system_types || []);
       const validIds = new Set(systemTypes.map((s) => s.id));
-      const invalid = (provider.system_types || []).filter((id) => !validIds.has(id));
+      const invalid = normalizedSystemTypes.filter((id) => !validIds.has(id));
       if (invalid.length > 0) {
         throw new Error(`Invalid system type ID(s): ${invalid.join(", ")}. Pick from the dropdown.`);
       }
+      provider = { ...provider, system_types: normalizedSystemTypes };
       if (editId) {
         const { error } = await supabase.from("providers").update(provider).eq("id", editId);
         if (error) throw error;

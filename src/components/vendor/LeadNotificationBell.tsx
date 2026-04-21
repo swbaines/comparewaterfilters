@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { formatDistanceToNow } from "date-fns";
 
+import { normalizeSystemTypeId } from "@/lib/canonicalSystemTypes";
+
 const systemTypeLabels: Record<string, string> = {
   "under-sink-carbon": "Under-Sink Carbon",
   "reverse-osmosis": "Reverse Osmosis",
@@ -11,10 +13,13 @@ const systemTypeLabels: Record<string, string> = {
   "whole-house-combo": "Whole House Combo",
   "water-softener": "Water Softener",
   "uv-system": "UV",
+  uv: "UV",
+  hybrid: "Whole House Combo",
 };
 
 function shortSystem(s: string) {
-  return systemTypeLabels[s] || s.replace(/-/g, " ");
+  const normalized = normalizeSystemTypeId(s);
+  return systemTypeLabels[normalized] || systemTypeLabels[s] || normalized.replace(/-/g, " ");
 }
 
 export interface LeadNotificationBellProps {
