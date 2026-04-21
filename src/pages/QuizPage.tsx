@@ -21,11 +21,31 @@ const householdSizes = ["1", "2", "3", "4", "5+"];
 const bathroomCounts = ["1", "2", "3", "4+"];
 
 const waterSources = [
-  { value: "town-water", label: "Town water (mains)" },
-  { value: "rainwater", label: "Rainwater tank" },
-  { value: "tank-water", label: "Tank water" },
-  { value: "bore-water", label: "Bore water" },
-  { value: "not-sure", label: "Not sure" },
+  {
+    value: "town-water",
+    label: "Town water (mains)",
+    hint: "Chlorinated/chloraminated supply from your local utility — most Aussie homes.",
+  },
+  {
+    value: "rainwater",
+    label: "Rainwater tank",
+    hint: "Roof-collected rainwater. Untreated — UV disinfection will be recommended.",
+  },
+  {
+    value: "tank-water",
+    label: "Stored tank water (non-rain)",
+    hint: "Carted, dam or stored water (not rainwater). Untreated — UV will be recommended.",
+  },
+  {
+    value: "bore-water",
+    label: "Bore / well water",
+    hint: "Groundwater from a bore. Untreated — UV and sediment pre-filtration recommended.",
+  },
+  {
+    value: "not-sure",
+    label: "Not sure",
+    hint: "We'll assume town water (mains) — the most common setup in Australia.",
+  },
 ];
 
 const concernOptions = [
