@@ -403,6 +403,7 @@ export default function AdminProvidersPage() {
                   <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Terms</TableHead>
+                  <TableHead>Billing</TableHead>
                   <TableHead>Active</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
