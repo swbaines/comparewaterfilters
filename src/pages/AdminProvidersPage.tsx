@@ -409,7 +409,10 @@ export default function AdminProvidersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {providers.filter(p => p.approval_status !== "pending").map((p) => (
+                {providers
+                  .filter(p => p.approval_status !== "pending")
+                  .filter(p => !showOnlyNotBillingReady || (p.approval_status === "approved" && !isBillingReady(p.id)))
+                  .map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.name}</TableCell>
                     <TableCell>
@@ -498,8 +501,11 @@ export default function AdminProvidersPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {providers.filter(p => (p as any).approval_status !== "pending").length === 0 && (
-                  <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No providers yet</TableCell></TableRow>
+                {providers
+                  .filter(p => p.approval_status !== "pending")
+                  .filter(p => !showOnlyNotBillingReady || (p.approval_status === "approved" && !isBillingReady(p.id)))
+                  .length === 0 && (
+                  <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">{showOnlyNotBillingReady ? "All approved providers are billing-ready 🎉" : "No providers yet"}</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
