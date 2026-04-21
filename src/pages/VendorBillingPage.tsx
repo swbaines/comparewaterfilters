@@ -309,6 +309,22 @@ export default function VendorBillingPage() {
     },
   });
 
+  // Billing audit log — records every payment method save/update and direct debit auth event
+  const { data: auditLog = [], isLoading: auditLoading } = useQuery({
+    queryKey: ["billing-audit-log", provider?.id, cardSaved],
+    enabled: !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("billing_audit_log")
+        .select("id, event_type, created_at, actor_ip, actor_user_agent, metadata")
+        .eq("provider_id", provider.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? DEFAULT_OWNER_PRICE);
   const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? DEFAULT_RENTAL_PRICE);
 
