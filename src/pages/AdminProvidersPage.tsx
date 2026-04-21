@@ -68,6 +68,31 @@ export default function AdminProvidersPage() {
   const [auditOpen, setAuditOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input to limit DB hits
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 200);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Server-side provider search (ilike on name), limited to 8 results
+  const { data: searchResults = [], isFetching: searchLoading } = useQuery({
+    queryKey: ["admin-providers-search", debouncedSearch],
+    enabled: debouncedSearch.length > 0,
+    queryFn: async () => {
+      const term = debouncedSearch.replace(/[%_]/g, (c) => `\\${c}`);
+      const { data, error } = await supabase
+        .from("providers")
+        .select("*")
+        .ilike("name", `%${term}%`)
+        .order("name", { ascending: true })
+        .limit(8);
+      if (error) throw error;
+      return (data ?? []) as ProviderRow[];
+    },
+    staleTime: 30_000,
+  });
   const [pendingReject, setPendingReject] = useState<{ id: string; name: string } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; name: string } | null>(null);
   const [pendingApprove, setPendingApprove] = useState<{ id: string; name: string } | null>(null);
@@ -359,9 +384,9 @@ export default function AdminProvidersPage() {
                   onFocus={() => setSearchOpen(true)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      const q = searchQuery.trim().toLowerCase();
-                      if (!q) return;
-                      const match = providers.find((p) => p.name.toLowerCase().includes(q));
+                      if (!debouncedSearch) return;
+                      if (searchLoading) return;
+                      const match = searchResults[0];
                       if (match) {
                         setReviewProvider(match);
                         setSearchOpen(false);
@@ -382,10 +407,14 @@ export default function AdminProvidersPage() {
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
               {(() => {
-                const q = searchQuery.trim().toLowerCase();
-                const matches = q
-                  ? providers.filter((p) => p.name.toLowerCase().includes(q)).slice(0, 8)
-                  : [];
+                if (searchLoading && searchResults.length === 0) {
+                  return (
+                    <div className="flex items-center gap-2 p-3 text-sm text-muted-foreground">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Searching…
+                    </div>
+                  );
+                }
+                const matches = searchResults;
                 if (matches.length === 0) {
                   return <div className="p-3 text-sm text-muted-foreground">No providers match “{searchQuery}”.</div>;
                 }
