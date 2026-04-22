@@ -600,26 +600,30 @@ export default function HomePage() {
       </section>
 
       {/* ── Final CTA ── */}
-      <section className="py-16 sm:py-20">
+      <section className="bg-primary py-16 text-primary-foreground sm:py-20">
         <div className="container text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">Ready to find out what your water actually needs?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+          <p className="mx-auto mt-3 max-w-xl text-primary-foreground/90">
             Answer a few questions about your home. We'll match you to the right system, explain what it does, show real
             pricing, and connect you with licensed providers in your area.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
-              <Button size="lg" className="gap-2">
+              <Button size="lg" variant="secondary" className="gap-2">
                 Find My System <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/water-quality">
-              <Button variant="outline" size="lg" className="gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2 border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
                 <Search className="h-4 w-4" /> Check my water quality
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">Free for homeowners · No obligation · Takes 2 minutes</p>
+          <p className="mt-4 text-xs text-primary-foreground/80">Free for homeowners · No obligation · Takes 2 minutes</p>
         </div>
       </section>
     </div>
