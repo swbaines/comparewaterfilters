@@ -178,7 +178,7 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Whole House Water Filters Australia — Compare & Get Free Quotes"
+        title="Compare Whole House Water Filters AU"
         description="Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers."
         path="/"
       />
