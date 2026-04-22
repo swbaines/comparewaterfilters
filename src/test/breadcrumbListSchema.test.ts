@@ -62,6 +62,37 @@ function findMatching(src: string, openIdx: number, open: string, close: string)
   return -1;
 }
 
+const BASE_URL_LITERAL = "https://www.comparewaterfilters.com.au";
+
+/**
+ * Extract the `item:` value from a single ListItem object source.
+ * Supports:
+ *   - Plain string literals: `item: "https://..."`
+ *   - Identifier `BASE_URL` (substituted with the canonical site base)
+ *   - Template literals using `${BASE_URL}` and `${article.slug}` etc.
+ *     Dynamic substitutions become `<dynamic>` segments.
+ */
+function extractItemUrl(raw: string): { itemUrl: string | null; itemRaw: string | null } {
+  const m = raw.match(/\bitem\s*:\s*("([^"]*)"|`([^`]*)`|[A-Za-z_][A-Za-z0-9_]*)/);
+  if (!m) return { itemUrl: null, itemRaw: null };
+  const itemRaw = m[1];
+  // Plain double-quoted string.
+  if (m[2] !== undefined) return { itemUrl: m[2], itemRaw };
+  // Template literal.
+  if (m[3] !== undefined) {
+    const tmpl = m[3];
+    const resolved = tmpl.replace(/\$\{([^}]+)\}/g, (_match, expr) => {
+      const trimmed = expr.trim();
+      if (trimmed === "BASE_URL") return BASE_URL_LITERAL;
+      return "<dynamic>";
+    });
+    return { itemUrl: resolved, itemRaw };
+  }
+  // Bare identifier.
+  if (itemRaw === "BASE_URL") return { itemUrl: BASE_URL_LITERAL, itemRaw };
+  return { itemUrl: null, itemRaw };
+}
+
 interface RawListItem {
   raw: string;
   hasListItemType: boolean;
