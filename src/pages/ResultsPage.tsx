@@ -25,6 +25,32 @@ const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   premium: "Maximum protection across your whole home and drinking water. Best if you want the most comprehensive solution and are happy to invest more upfront.",
 };
 
+/**
+ * Fire a results-page conversion event into Meta Pixel and Google Analytics.
+ * Safe no-op if either pixel is not present (e.g., dev or with consent declined).
+ */
+function trackResultsEmailEvent(
+  event: "results_email_submitted" | "results_email_sent" | "results_email_failed",
+  data: Record<string, unknown> = {},
+) {
+  if (typeof window === "undefined") return;
+  const w = window as unknown as {
+    fbq?: (...args: unknown[]) => void;
+    gtag?: (...args: unknown[]) => void;
+  };
+  const payload = { content_name: "Quiz Results Email", ...data };
+  try {
+    w.fbq?.("trackCustom", event, payload);
+  } catch {
+    /* ignore pixel errors */
+  }
+  try {
+    w.gtag?.("event", event, payload);
+  } catch {
+    /* ignore analytics errors */
+  }
+}
+
 type ConfidenceLevel = "High" | "Medium" | "Low";
 
 const CONFIDENCE_STYLES: Record<ConfidenceLevel, string> = {
@@ -281,6 +307,7 @@ export default function ResultsPage() {
       return;
     }
 
+    trackResultsEmailEvent("results_email_submitted");
     setEmailSending(true);
     try {
       const encoded = btoa(JSON.stringify(answers));
@@ -304,6 +331,9 @@ export default function ResultsPage() {
 
       if (error) throw error;
 
+      trackResultsEmailEvent("results_email_sent", {
+        top_recommendation: result.primary?.title || "",
+      });
       setEmailSent(true);
       toast({ title: "Email sent!", description: `We've sent your results to ${trimmed}.` });
       setTimeout(() => {
@@ -312,6 +342,9 @@ export default function ResultsPage() {
         setEmailInput("");
       }, 1800);
     } catch (err) {
+      trackResultsEmailEvent("results_email_failed", {
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
       toast({
         title: "Couldn't send email",
         description: "Please try again in a moment, or use the Share link option instead.",
