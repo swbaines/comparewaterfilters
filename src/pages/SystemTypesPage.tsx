@@ -73,8 +73,8 @@ export default function SystemTypesPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Compare Whole House Water Filters — RO, Under-Sink & More"
-        description="Compare whole house water filters (also known as whole home filtration) side by side. Reverse osmosis, under-sink carbon, UV and water softener systems — pros, cons, pricing and who each system suits in Australia."
+        title="Whole House Water Filter Types Compared — RO, Carbon, UV"
+        description="Compare whole house water filter types: reverse osmosis, under-sink carbon, UV and water softeners. Pros, cons, pricing and who each suits in Australia."
         path="/system-types"
       />
       <div className="container max-w-4xl">

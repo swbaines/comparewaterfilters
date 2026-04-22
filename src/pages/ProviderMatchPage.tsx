@@ -49,8 +49,8 @@ export default function ProviderMatchPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Get Matched With Providers"
-        description="Request quotes from vetted water filter providers in your area. Free, no-obligation matching service."
+        title="Get Matched With Whole House Water Filter Providers"
+        description="Request free quotes from vetted whole house water filter providers in your area. Independent, no-obligation matching across Australia."
         path="/provider-match"
       />
       <div className="container max-w-2xl">
