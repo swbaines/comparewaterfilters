@@ -307,6 +307,7 @@ export default function ResultsPage() {
       return;
     }
 
+    trackResultsEmailEvent("results_email_submitted");
     setEmailSending(true);
     try {
       const encoded = btoa(JSON.stringify(answers));
@@ -330,6 +331,9 @@ export default function ResultsPage() {
 
       if (error) throw error;
 
+      trackResultsEmailEvent("results_email_sent", {
+        top_recommendation: result.primary?.title || "",
+      });
       setEmailSent(true);
       toast({ title: "Email sent!", description: `We've sent your results to ${trimmed}.` });
       setTimeout(() => {
@@ -338,6 +342,9 @@ export default function ResultsPage() {
         setEmailInput("");
       }, 1800);
     } catch (err) {
+      trackResultsEmailEvent("results_email_failed", {
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
       toast({
         title: "Couldn't send email",
         description: "Please try again in a moment, or use the Share link option instead.",
