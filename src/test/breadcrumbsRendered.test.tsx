@@ -137,7 +137,9 @@ describe("Breadcrumbs (rendered) parity at desktop + mobile", () => {
             const list = nav!.querySelector("ol");
             expect(list, "Breadcrumb ol must render").not.toBeNull();
 
-            const lis = Array.from(list!.querySelectorAll(":scope > li"));
+            const lis = Array.from(
+              list!.querySelectorAll(":scope > li"),
+            ) as HTMLLIElement[];
             // Visible <li> count == JSON-LD positions (Home + N).
             expect(lis.length).toBe(jsonLd.length);
 
