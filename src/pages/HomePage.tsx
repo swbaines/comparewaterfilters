@@ -431,7 +431,7 @@ export default function HomePage() {
               ))}
             </div>
             <div className="mt-8 text-center">
-              <Link to="/learn">
+              <Link to="/learn/is-australian-tap-water-getting-worse">
                 <Button variant="outline" className="gap-2">
                   Read the full research <ArrowRight className="h-4 w-4" />
                 </Button>
