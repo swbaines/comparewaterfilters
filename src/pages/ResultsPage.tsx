@@ -103,7 +103,7 @@ const CONCERN_LABELS: Record<string, string> = {
   pfas: "PFAS / forever chemicals",
   microplastics: "Microplastics",
   "hard-water": "Hard water / scale buildup",
-  "whole-home": "Whole home protection",
+  "whole-home": "Whole house protection",
   appliance: "Appliance & hot water system protection",
   bacteria: "Bacteria / microbiological safety",
   "not-sure": "Not sure — just want better water",
@@ -444,7 +444,7 @@ export default function ResultsPage() {
                   : <XCircle className="h-4 w-4 text-muted-foreground/50" />,
               },
               {
-                label: "Whole home protection",
+                label: "Whole house protection",
                 render: (r) => wholeHomeIds.includes(r.id)
                   ? <Check className="h-4 w-4 text-primary" />
                   : <XCircle className="h-4 w-4 text-muted-foreground/50" />,

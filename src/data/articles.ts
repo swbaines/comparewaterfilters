@@ -89,7 +89,7 @@ The best whole house water filter for your home depends on three things:
 
 **Our Recommendation**
 
-For most Australian households on town water, a mid-range whole house carbon filter ($2,500–$4,500 installed) paired with an under-sink reverse osmosis system for drinking water ($800–$1,600 installed) provides the best combination of whole-home quality and drinking water purity.
+For most Australian households on town water, a mid-range whole house carbon filter ($2,500–$4,500 installed) paired with an under-sink reverse osmosis system for drinking water ($800–$1,600 installed) provides the best combination of whole-house quality (sometimes called whole-home filtration) and drinking water purity.
 
 If you're in a hard water area (Perth, Adelaide, parts of Brisbane), add a water softener to protect your plumbing and appliances.
 
@@ -191,7 +191,7 @@ The specific risks vary significantly by location:
 
 Given the specific nature of the issues — chlorine taste and skin irritation, algal compounds, hard water scale, and PFAS — different filtration solutions address different problems:
 
-- **For chlorine taste, smell, and skin irritation:** A quality under-sink carbon block filter for drinking water, or a whole house filtration system for whole-home chlorine removal including showers. This is the most common and cost-effective upgrade for Australian households.
+- **For chlorine taste, smell, and skin irritation:** A quality under-sink carbon block filter for drinking water, or a whole house filtration system (also marketed as whole-home filtration) for chlorine removal across every tap and shower. This is the most common and cost-effective upgrade for Australian households.
 - **For hard water and scale:** A water softener (for severe hardness in Perth northern suburbs and parts of Adelaide) or a whole house system with a scale-reduction stage (for moderate hardness in Brisbane, Adelaide, and parts of Perth).
 - **For fluoride, PFAS, heavy metals, and microplastics:** A reverse osmosis system. Carbon filters reduce but do not eliminate these contaminants. RO is the only household technology that effectively removes PFAS.
 - **For bore water, rainwater, and tank water:** A sediment pre-filter combined with UV disinfection is the essential starting point. Adding an under-sink carbon or RO system for drinking water provides additional protection.
@@ -278,7 +278,7 @@ The good news is that effective solutions exist for every situation and budget. 
     seoTitle: "Best Water Filter for Melbourne — 2024 Guide",
     seoDescription: "Find the best water filtration system for Melbourne homes. Understand Melbourne's water quality and which filter type suits your needs.",
     publishedAt: "2024-09-05",
-    body: "Melbourne is known for having some of the best tap water in Australia, sourced primarily from protected mountain catchments. However, that doesn't mean filtration is unnecessary.\n\n**Why filter Melbourne water?**\n- Chlorine is added for disinfection and can affect taste\n- Older homes may have lead or copper plumbing\n- Some residents prefer to remove fluoride\n- Sediment can occasionally appear after maintenance works\n\n**Best options for Melbourne homes:**\n\n- **For taste improvement:** A quality under-sink carbon filter ($300–$800 installed) will handle chlorine and sediment effectively\n- **For fluoride removal:** A reverse osmosis system ($800–$1,600 installed) is the most practical option\n- **For whole home quality:** A whole house filtration ($2,000–$5,000 installed) removes chlorine from every tap and shower\n- **For complete coverage:** A whole house filter + under-sink RO combo ($4,000–$6,000 installed) gives you the best of both worlds\n\nMelbourne's water quality means you don't need the most aggressive filtration — a well-matched system will do the job without overspending.",
+    body: "Melbourne is known for having some of the best tap water in Australia, sourced primarily from protected mountain catchments. However, that doesn't mean filtration is unnecessary.\n\n**Why filter Melbourne water?**\n- Chlorine is added for disinfection and can affect taste\n- Older homes may have lead or copper plumbing\n- Some residents prefer to remove fluoride\n- Sediment can occasionally appear after maintenance works\n\n**Best options for Melbourne homes:**\n\n- **For taste improvement:** A quality under-sink carbon filter ($300–$800 installed) will handle chlorine and sediment effectively\n- **For fluoride removal:** A reverse osmosis system ($800–$1,600 installed) is the most practical option\n- **For whole house quality (also called whole home filtration):** A whole house filtration system ($2,000–$5,000 installed) removes chlorine from every tap and shower\n- **For complete coverage:** A whole house filter + under-sink RO combo ($4,000–$6,000 installed) gives you the best of both worlds\n\nMelbourne's water quality means you don't need the most aggressive filtration — a well-matched system will do the job without overspending.",
   },
   {
     id: "6",
