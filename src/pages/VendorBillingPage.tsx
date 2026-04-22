@@ -225,60 +225,59 @@ export default function VendorBillingPage() {
     },
   });
 
-  useEffect(() => {
-    const fetchProvider = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const fetchProvider = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-      const { data: va } = await supabase
-        .from("vendor_accounts")
-        .select("provider_id")
-        .eq("user_id", user.id)
-        .single();
+    const { data: va } = await supabase
+      .from("vendor_accounts")
+      .select("provider_id")
+      .eq("user_id", user.id)
+      .single();
 
-      if (!va) return;
+    if (!va) return;
 
-      const { data: prov } = await supabase
-        .from("providers")
-        .select("id, name, contact_email, approval_status")
-        .eq("id", va.provider_id)
-        .single();
+    const { data: prov } = await supabase
+      .from("providers")
+      .select("id, name, contact_email, approval_status")
+      .eq("id", va.provider_id)
+      .single();
 
-      // Fetch Stripe details from dedicated table
-      let { data: stripeDetails } = await supabase
-        .from("provider_stripe_details")
-        .select("stripe_customer_id, stripe_payment_method_id, direct_debit_authorised_at, updated_at")
-        .eq("provider_id", va.provider_id)
-        .maybeSingle();
+    // Fetch Stripe details from dedicated table
+    let { data: stripeDetails } = await supabase
+      .from("provider_stripe_details")
+      .select("stripe_customer_id, stripe_payment_method_id, direct_debit_authorised_at, updated_at")
+      .eq("provider_id", va.provider_id)
+      .maybeSingle();
 
-      // Auto-provision a Stripe customer for approved providers that don't have one yet
-      if (prov?.approval_status === "approved" && !stripeDetails?.stripe_customer_id) {
-        const { data: created, error: createErr } = await supabase.functions.invoke("create-stripe-customer", {
-          body: { provider_id: va.provider_id },
-        });
-        if (!createErr && created?.customer_id) {
-          stripeDetails = {
-            stripe_customer_id: created.customer_id,
-            stripe_payment_method_id: stripeDetails?.stripe_payment_method_id ?? null,
-            direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at ?? null,
-            updated_at: stripeDetails?.updated_at ?? null,
-          };
-        }
-      }
-
-      setProvider({
-        ...prov,
-        stripe_customer_id: stripeDetails?.stripe_customer_id,
-        stripe_payment_method_id: stripeDetails?.stripe_payment_method_id,
-        direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at,
-        stripe_updated_at: stripeDetails?.updated_at,
+    // Auto-provision a Stripe customer for approved providers that don't have one yet
+    if (prov?.approval_status === "approved" && !stripeDetails?.stripe_customer_id) {
+      const { data: created, error: createErr } = await supabase.functions.invoke("create-stripe-customer", {
+        body: { provider_id: va.provider_id },
       });
-      if (!showCardForm) {
-        setCardSaved(!!stripeDetails?.stripe_payment_method_id);
+      if (!createErr && created?.customer_id) {
+        stripeDetails = {
+          stripe_customer_id: created.customer_id,
+          stripe_payment_method_id: stripeDetails?.stripe_payment_method_id ?? null,
+          direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at ?? null,
+          updated_at: stripeDetails?.updated_at ?? null,
+        };
       }
-    };
+    }
 
+    setProvider({
+      ...prov,
+      stripe_customer_id: stripeDetails?.stripe_customer_id,
+      stripe_payment_method_id: stripeDetails?.stripe_payment_method_id,
+      direct_debit_authorised_at: stripeDetails?.direct_debit_authorised_at,
+      stripe_updated_at: stripeDetails?.updated_at,
+    });
+    setCardSaved(!!stripeDetails?.stripe_payment_method_id);
+  };
+
+  useEffect(() => {
     fetchProvider();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { data: invoices = [] } = useQuery({
