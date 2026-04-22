@@ -48,7 +48,7 @@ export default function HowItWorksPage() {
     <div className="py-12 sm:py-16">
       <PageMeta
         title="How It Works — Match With the Right Whole House Water Filter"
-        description="Three simple steps to find the right whole house water filter for your home. Take the quiz, get independent recommendations, and compare free quotes from licensed Australian installers."
+        description="Three simple steps to find the right whole house water filter: take the quiz, get independent recommendations, and compare free quotes from licensed installers."
         path="/how-it-works"
       />
       <div className="container max-w-3xl">

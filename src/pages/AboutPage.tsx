@@ -88,7 +88,7 @@ export default function AboutPage() {
     <div className="bg-background">
       <PageMeta
         title="About Compare Water Filters — Independent Australian Platform"
-        description="Compare Water Filters is an independent Australian platform helping households choose the right whole house water filter and connect with trusted local providers."
+        description="Independent Australian platform helping households choose the right whole house water filter and connect with trusted local providers."
         path="/about"
       />
       <script

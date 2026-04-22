@@ -74,7 +74,7 @@ export default function SystemTypesPage() {
     <div className="py-12 sm:py-16">
       <PageMeta
         title="Whole House Water Filter Types Compared — RO, Carbon, UV"
-        description="Compare whole house water filter types side by side: reverse osmosis, under-sink carbon, UV and water softeners. Pros, cons, pricing and who each suits in Australia."
+        description="Compare whole house water filter types: reverse osmosis, under-sink carbon, UV and water softeners. Pros, cons, pricing and who each suits in Australia."
         path="/system-types"
       />
       <div className="container max-w-4xl">
