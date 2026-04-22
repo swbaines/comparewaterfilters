@@ -215,8 +215,8 @@ export default function QuizPage() {
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
       <PageMeta
-        title="Water Filter Quiz"
-        description="Answer a few quick questions about your home and water concerns to get personalised water filter recommendations."
+        title="Whole House Water Filter Quiz — Find Your Match in 2 Minutes"
+        description="Answer a few quick questions about your home and water concerns to get personalised whole house water filter recommendations and free quotes."
         path="/quiz"
       />
       <div className="container max-w-2xl">
