@@ -461,16 +461,26 @@ export default function WaterQualityPage() {
 
             {/* CTA */}
             <Card className="border-0 bg-primary text-primary-foreground shadow-lg">
-              <CardContent className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
-                <div>
-                  <h3 className="text-lg font-semibold">See exactly which system fits your water — and what it should cost</h3>
-                  <p className="text-sm text-primary-foreground/90">In 2 minutes you'll get a matched system type, an honest installed price range for your home, and optional quotes from trusted local installers. No sales calls, no obligation.</p>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                  <div>
+                    <h3 className="text-lg font-semibold">See exactly which system fits your water — and what it should cost</h3>
+                    <p className="text-sm text-primary-foreground/90">In 2 minutes you'll get a matched system type, an honest installed price range for your home, and optional quotes from trusted local installers. No sales calls, no obligation.</p>
+                  </div>
+                  <Link to="/quiz" className="shrink-0">
+                    <Button variant="secondary" size="lg" className="gap-2 font-semibold shadow-md">
+                      Get my recommendation <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
-                <Link to="/quiz" className="shrink-0">
-                  <Button variant="secondary" size="lg" className="gap-2 font-semibold shadow-md">
-                    Get my recommendation <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-primary-foreground/20 pt-3 text-xs text-primary-foreground/80 sm:justify-start">
+                  <span className="inline-flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> No spam — matched to installers in your area
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Your details stay private — never sold
+                  </span>
+                </div>
               </CardContent>
             </Card>
           </div>
