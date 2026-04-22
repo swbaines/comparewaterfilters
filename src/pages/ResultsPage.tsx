@@ -224,6 +224,178 @@ const CONCERN_LABELS: Record<string, string> = {
   "not-sure": "Not sure — just want better water",
 };
 
+function PricingExplainer({ result, answers }: { result: RecommendationResult; answers: QuizAnswers }) {
+  const [open, setOpen] = useState(false);
+  const { primary } = result;
+
+  // Build personalised "drivers" — the things in the user's quiz that move price up or down.
+  const drivers: { label: string; detail: string; effect: "up" | "down" | "neutral" }[] = [];
+
+  const bathroomsNum = parseInt(answers.bathrooms || "", 10);
+  if (!Number.isNaN(bathroomsNum)) {
+    if (bathroomsNum >= 3) {
+      drivers.push({
+        label: `${answers.bathrooms} bathrooms`,
+        detail: "Larger flow rate needed — pushes you toward the higher end of the range.",
+        effect: "up",
+      });
+    } else if (bathroomsNum <= 1) {
+      drivers.push({
+        label: `${answers.bathrooms} bathroom`,
+        detail: "Smaller flow demand — typically the lower end of the range.",
+        effect: "down",
+      });
+    }
+  }
+
+  const householdNum = parseInt((answers.householdSize || "").replace("+", ""), 10);
+  if (!Number.isNaN(householdNum) && householdNum >= 5) {
+    drivers.push({
+      label: `${answers.householdSize} people`,
+      detail: "Higher daily water use means larger cartridges and more frequent service.",
+      effect: "up",
+    });
+  }
+
+  if (answers.propertyType === "Apartment") {
+    drivers.push({
+      label: "Apartment install",
+      detail: "Limited plumbing access — installers may charge more for tight or shared spaces.",
+      effect: "up",
+    });
+  }
+
+  if (answers.coverage === "whole-house-plus") {
+    drivers.push({
+      label: "Whole house + drinking water",
+      detail: "Two systems combined — adds to install time and parts.",
+      effect: "up",
+    });
+  } else if (answers.coverage === "drinking-water" || answers.coverage === "kitchen") {
+    drivers.push({
+      label: "Single-tap coverage",
+      detail: "Smaller scope keeps install short and parts minimal.",
+      effect: "down",
+    });
+  }
+
+  if (answers.waterSource && ["rainwater", "tank-water", "bore-water"].includes(answers.waterSource)) {
+    drivers.push({
+      label: "Untreated water source",
+      detail: "UV disinfection and pre-filtration usually add $400–$1,200 to the install.",
+      effect: "up",
+    });
+  }
+
+  if (answers.concerns.includes("hard-water")) {
+    drivers.push({
+      label: "Hard water",
+      detail: "Softening or scale-control adds parts and ongoing salt/media costs.",
+      effect: "up",
+    });
+  }
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} className="mt-8">
+      <div className="mx-auto max-w-3xl rounded-xl border border-primary/20 bg-background">
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <DollarSign className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold sm:text-base">
+                Why ${primary.priceMin.toLocaleString()}–${primary.priceMax.toLocaleString()}? And why quotes vary
+              </p>
+              <p className="text-xs text-muted-foreground">
+                See what in your answers drives the price — and what to ask installers.
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+            aria-hidden
+          />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="space-y-5 border-t border-primary/10 px-5 pb-5 pt-4 text-sm">
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Your range
+              </p>
+              <p className="text-foreground/90">
+                For <span className="font-medium">{primary.title}</span>, installed quotes in Australia
+                typically fall between{" "}
+                <span className="font-semibold">
+                  ${primary.priceMin.toLocaleString()}–${primary.priceMax.toLocaleString()}
+                </span>
+                . Annual maintenance averages{" "}
+                <span className="font-medium">
+                  ${primary.annualMaintenanceMin}–${primary.annualMaintenanceMax}/yr
+                </span>{" "}
+                for filter changes and servicing.
+              </p>
+            </div>
+
+            {drivers.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  What in your answers shifts the price
+                </p>
+                <ul className="space-y-2">
+                  {drivers.map((d) => (
+                    <li key={d.label} className="flex items-start gap-2.5">
+                      <span
+                        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                          d.effect === "up"
+                            ? "bg-warm-light text-warm-foreground"
+                            : d.effect === "down"
+                              ? "bg-sage-light text-sage-dark"
+                              : "bg-muted text-muted-foreground"
+                        }`}
+                        aria-hidden
+                      >
+                        {d.effect === "up" ? "↑" : d.effect === "down" ? "↓" : "•"}
+                      </span>
+                      <div>
+                        <p className="font-medium">{d.label}</p>
+                        <p className="text-muted-foreground">{d.detail}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Why two quotes for the same system can differ by $1,000+
+              </p>
+              <ul className="space-y-1.5 text-foreground/90">
+                <li className="flex gap-2"><span className="text-primary">•</span><span><span className="font-medium">Brand & build quality</span> — entry-level housings vs NSF-certified stainless components.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span><span className="font-medium">Plumbing complexity</span> — distance from main, pipe access, bypass loops, slab vs subfloor.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span><span className="font-medium">Pre-filtration & extras</span> — sediment pre-filter, UV, scale guard, pressure regulator.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span><span className="font-medium">Warranty & servicing</span> — 1-year vs 5–10 year warranties, included annual service visits.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span><span className="font-medium">Travel & region</span> — regional callouts and inner-city parking can add $100–$400.</span></li>
+              </ul>
+            </div>
+
+            <div className="rounded-lg border border-primary/20 bg-accent/30 p-3">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                Tip when comparing quotes
+              </p>
+              <p className="text-foreground/90">
+                Always ask for an itemised quote — system, install, pre-filter, warranty length, and
+                annual service cost — so you can compare like-for-like, not just the headline price.
+              </p>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
+  );
+}
+
 function WhyThisRecommendation({ result, answers }: { result: RecommendationResult; answers: QuizAnswers }) {
   const [open, setOpen] = useState(false);
   const { explanation, secondary } = result;
