@@ -291,10 +291,24 @@ export default function HomePage() {
                   Enter your suburb or postcode to see a breakdown of your local water — hardness, chlorine, fluoride,
                   PFAS risk, and personalised filter recommendations.
                 </p>
-                <Link to="/water-quality">
-                  <Button className="mt-6 gap-2">
-                    <MapPin className="h-4 w-4" /> Look up my suburb
+                <form onSubmit={handlePostcodeSubmit} className="mt-6 flex gap-2">
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]{4}"
+                    maxLength={4}
+                    placeholder="Enter postcode"
+                    value={lookupPostcode}
+                    onChange={(e) => setLookupPostcode(e.target.value.replace(/\D/g, ""))}
+                    aria-label="Postcode"
+                    className="max-w-[180px]"
+                  />
+                  <Button type="submit" className="gap-2">
+                    <Search className="h-4 w-4" /> Check
                   </Button>
+                </form>
+                <Link to="/water-quality" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                  <MapPin className="h-3 w-3" /> Or search by suburb
                 </Link>
               </div>
               <div className="space-y-3">
