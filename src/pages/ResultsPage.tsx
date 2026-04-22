@@ -4,8 +4,13 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
 import type { Recommendation } from "@/data/recommendations";
@@ -204,6 +209,60 @@ export default function ResultsPage() {
   const [copied, setCopied] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
+  const handleEmailResults = async () => {
+    if (!answers || !result) return;
+    const trimmed = emailInput.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed) || trimmed.length > 254) {
+      toast({ title: "Please enter a valid email address", variant: "destructive" });
+      return;
+    }
+
+    setEmailSending(true);
+    try {
+      const encoded = btoa(JSON.stringify(answers));
+      const url = `${window.location.origin}/results?d=${encoded}`;
+      const idempotencyKey = `quiz-results-${trimmed.toLowerCase()}-${encoded.slice(0, 24)}`;
+
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "quiz-results-summary",
+          recipientEmail: trimmed,
+          idempotencyKey,
+          templateData: {
+            customerName: answers.firstName || "there",
+            resultsUrl: url,
+            topRecommendation: result.primary?.title || "",
+            budgetOption: result.secondary?.title || "",
+            premiumOption: result.premium?.title || "",
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      setEmailSent(true);
+      toast({ title: "Email sent!", description: `We've sent your results to ${trimmed}.` });
+      setTimeout(() => {
+        setEmailDialogOpen(false);
+        setEmailSent(false);
+        setEmailInput("");
+      }, 1800);
+    } catch (err) {
+      toast({
+        title: "Couldn't send email",
+        description: "Please try again in a moment, or use the Share link option instead.",
+        variant: "destructive",
+      });
+    } finally {
+      setEmailSending(false);
+    }
+  };
 
   const handleShareResults = async () => {
     if (!answers) return;
@@ -332,6 +391,18 @@ export default function ResultsPage() {
             >
               {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
               {copied ? "Link copied!" : "Save or share results"}
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={() => {
+                if (answers?.email) setEmailInput(answers.email);
+                setEmailDialogOpen(true);
+              }}
+            >
+              <Mail className="h-4 w-4" />
+              Email me my results
             </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
@@ -580,6 +651,55 @@ export default function ResultsPage() {
           View matched providers ↓
         </a>
       )}
+
+      {/* Email results dialog */}
+      <Dialog open={emailDialogOpen} onOpenChange={(open) => {
+        setEmailDialogOpen(open);
+        if (!open) { setEmailSent(false); }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              Email me my results
+            </DialogTitle>
+            <DialogDescription>
+              We'll send a private link so you can revisit your personalised recommendations anytime — no need to retake the quiz.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="results-email">Your email address</Label>
+            <Input
+              id="results-email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={emailInput}
+              maxLength={254}
+              disabled={emailSending || emailSent}
+              onChange={(e) => setEmailInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !emailSending && !emailSent) handleEmailResults(); }}
+            />
+            <p className="text-xs text-muted-foreground">
+              We won't add you to a marketing list. Just one summary email with your results link.
+            </p>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setEmailDialogOpen(false)} disabled={emailSending}>
+              Cancel
+            </Button>
+            <Button onClick={handleEmailResults} disabled={emailSending || emailSent} className="gap-2">
+              {emailSending ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</>
+              ) : emailSent ? (
+                <><Check className="h-4 w-4" /> Sent!</>
+              ) : (
+                <><Mail className="h-4 w-4" /> Send my results</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
