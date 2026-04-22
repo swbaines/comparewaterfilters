@@ -5,9 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import SectionHeading from "@/components/SectionHeading";
 import {
-  Droplets, ShieldCheck, Sparkles, DollarSign, ArrowRight, CheckCircle2,
-  Waves, Zap, Home, FlaskConical, ShowerHead, HardDrive, MapPin, Search,
-  Star, Users, Award, ChevronRight
+  Droplets,
+  ShieldCheck,
+  Sparkles,
+  DollarSign,
+  ArrowRight,
+  CheckCircle2,
+  Waves,
+  Zap,
+  Home,
+  FlaskConical,
+  ShowerHead,
+  HardDrive,
+  MapPin,
+  Search,
+  Star,
+  Users,
+  Award,
+  ChevronRight,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -55,19 +70,22 @@ const concerns = [
 
 const testimonials = [
   {
-    quote: "I had no idea Perth water was so hard until I used the postcode lookup. Explains why our kettle was always scaled up. Got a whole house system installed — huge difference.",
+    quote:
+      "I had no idea Perth water was so hard until I used the postcode lookup. Explains why our kettle was always scaled up. Got a whole house system installed — huge difference.",
     name: "Sarah M.",
     location: "Wanneroo, WA",
     rating: 5,
   },
   {
-    quote: "My daughter had eczema for years and we tried everything. Turns out Melbourne's chlorine levels were the problem. The quiz pointed us straight to a whole house carbon filter. Her skin is so much better now.",
+    quote:
+      "My daughter had eczema for years and we tried everything. Turns out Melbourne's chlorine levels were the problem. The quiz pointed us straight to a whole house carbon filter. Her skin is so much better now.",
     name: "David K.",
     location: "Preston, VIC",
     rating: 5,
   },
   {
-    quote: "Adelaide water is genuinely terrible. The platform was the first place that actually explained why — Murray River minerals and high chlorine. We got three quotes and chose the best one. Couldn't be happier.",
+    quote:
+      "Adelaide water is genuinely terrible. The platform was the first place that actually explained why — Murray River minerals and high chlorine. We got three quotes and chose the best one. Couldn't be happier.",
     name: "Michelle T.",
     location: "Norwood, SA",
     rating: 5,
@@ -111,12 +129,30 @@ const coverageAreas = [
 ];
 
 const homeFaqs = [
-  { q: "How do I compare whole house water filters in Australia?", a: "Use our free quiz to answer a few questions about your property, water source, and concerns. We'll recommend the best system type — whole house (sometimes called whole home), reverse osmosis, under-sink, or UV — and connect you with trusted local installers for obligation-free quotes." },
-  { q: "What is the best whole house water filter in Australia?", a: "The best whole house water filter depends on your water supply. Carbon-based systems suit most mains-connected homes for chlorine and sediment removal. If you're on bore or tank water, a multi-stage system with UV is recommended. Our quiz matches you to the right option." },
-  { q: "How much does a water filter system cost in Australia?", a: "Whole house water filters cost $2,000–$5,000 installed. Reverse osmosis systems cost $800–$1,600. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber." },
-  { q: "Is Compare Water Filters free for homeowners?", a: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with trusted providers — with no obligation or sales calls." },
-  { q: "What contaminants does a water filter remove?", a: "Depending on the system type, water filters can remove chlorine, chloramine, sediment, heavy metals, fluoride, PFAS (forever chemicals), bacteria, and more. Reverse osmosis is the most thorough, while carbon filters handle taste and odour effectively." },
-  { q: "Whole house vs under-sink water filter — which should I choose?", a: "A whole house filter protects every tap, shower, and appliance from chlorine and sediment. An under-sink filter is more affordable and ideal if you only want purified drinking water. Many Australian homeowners combine both for complete coverage." },
+  {
+    q: "How do I compare whole house water filters in Australia?",
+    a: "Use our free quiz to answer a few questions about your property, water source, and concerns. We'll recommend the best system type — whole house (sometimes called whole home), reverse osmosis, under-sink, or UV — and connect you with trusted local installers for obligation-free quotes.",
+  },
+  {
+    q: "What is the best whole house water filter in Australia?",
+    a: "The best whole house water filter depends on your water supply. Carbon-based systems suit most mains-connected homes for chlorine and sediment removal. If you're on bore or tank water, a multi-stage system with UV is recommended. Our quiz matches you to the right option.",
+  },
+  {
+    q: "How much does a water filter system cost in Australia?",
+    a: "Whole house water filters cost $2,000–$5,000 installed. Reverse osmosis systems cost $800–$1,600. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber.",
+  },
+  {
+    q: "Is Compare Water Filters free for homeowners?",
+    a: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with trusted providers — with no obligation or sales calls.",
+  },
+  {
+    q: "What contaminants does a water filter remove?",
+    a: "Depending on the system type, water filters can remove chlorine, chloramine, sediment, heavy metals, fluoride, PFAS (forever chemicals), bacteria, and more. Reverse osmosis is the most thorough, while carbon filters handle taste and odour effectively.",
+  },
+  {
+    q: "Whole house vs under-sink water filter — which should I choose?",
+    a: "A whole house filter protects every tap, shower, and appliance from chlorine and sediment. An under-sink filter is more affordable and ideal if you only want purified drinking water. Many Australian homeowners combine both for complete coverage.",
+  },
 ];
 
 const jsonLdData = [
@@ -125,7 +161,8 @@ const jsonLdData = [
     "@type": "WebSite",
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
-    description: "Australia's independent water filter comparison platform. Compare the best water filtration systems — whole house water filters, reverse osmosis, under-sink — and get free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth and Adelaide.",
+    description:
+      "Australia's independent water filter comparison platform. Compare the best water filtration systems — whole house water filters, reverse osmosis, under-sink — and get free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth and Adelaide.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -141,7 +178,8 @@ const jsonLdData = [
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
     logo: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
-    description: "Independent water filtration comparison and recommendation platform for Australian homeowners. Compare the best water filtration systems and get free quotes from licensed installers.",
+    description:
+      "Independent water filtration comparison and recommendation platform for Australian homeowners. Compare the best water filtration systems and get free quotes from licensed installers.",
     areaServed: [
       { "@type": "Country", name: "Australia" },
       { "@type": "City", name: "Sydney" },
@@ -178,7 +216,7 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Compare Whole House Water Filters AU"
+        title="Whole House Water Filters — Compare & Get Free Quotes"
         description="Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers."
         path="/"
       />
@@ -193,7 +231,8 @@ export default function HomePage() {
             Compare Whole House Water Filters — Find the Right System for Your Home
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
+            Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
+            the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
           <div className="mt-8 flex flex-col items-center gap-4">
             <Link to="/quiz">
@@ -235,7 +274,8 @@ export default function HomePage() {
                 </span>
                 <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">What's actually in your water?</h2>
                 <p className="mt-3 text-muted-foreground">
-                  Enter your suburb or postcode to see a breakdown of your local water — hardness, chlorine, fluoride, PFAS risk, and personalised filter recommendations.
+                  Enter your suburb or postcode to see a breakdown of your local water — hardness, chlorine, fluoride,
+                  PFAS risk, and personalised filter recommendations.
                 </p>
                 <Link to="/water-quality">
                   <Button className="mt-6 gap-2">
@@ -408,10 +448,17 @@ export default function HomePage() {
       {/* ── Provider coverage ── */}
       <section className="py-16 sm:py-20">
         <div className="container">
-          <SectionHeading badge="Provider network" title="Trusted providers across Australia" subtitle="We only work with licensed, insured water filtration professionals." />
+          <SectionHeading
+            badge="Provider network"
+            title="Trusted providers across Australia"
+            subtitle="We only work with licensed, insured water filtration professionals."
+          />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
             {coverageAreas.map((v) => (
-              <div key={v.state} className="rounded-lg border p-4 text-center transition-all hover:border-primary/30 hover:shadow-sm">
+              <div
+                key={v.state}
+                className="rounded-lg border p-4 text-center transition-all hover:border-primary/30 hover:shadow-sm"
+              >
                 <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                   <span className="text-sm font-bold text-primary">{v.state}</span>
                 </div>
@@ -440,7 +487,8 @@ export default function HomePage() {
             <DollarSign className="mx-auto mb-4 h-10 w-10 text-primary" />
             <h2 className="text-2xl font-bold">Why are water filter quotes so different?</h2>
             <p className="mt-3 text-muted-foreground">
-              Prices range from $300 to $8,000+. System type, installation complexity, certifications, and ongoing filter costs all play a role. Here's what you actually need to know.
+              Prices range from $300 to $8,000+. System type, installation complexity, certifications, and ongoing
+              filter costs all play a role. Here's what you actually need to know.
             </p>
             <div className="mt-6 grid grid-cols-3 gap-4">
               {[
@@ -455,7 +503,9 @@ export default function HomePage() {
               ))}
             </div>
             <Link to="/pricing-guide">
-              <Button variant="outline" className="mt-6">Read our full pricing guide</Button>
+              <Button variant="outline" className="mt-6">
+                Read our full pricing guide
+              </Button>
             </Link>
           </div>
         </div>
@@ -464,7 +514,11 @@ export default function HomePage() {
       {/* ── Learn section ── */}
       <section className="py-16 sm:py-20">
         <div className="container">
-          <SectionHeading badge="Learn" title="Make a more informed decision" subtitle="Practical guides to help you understand your options." />
+          <SectionHeading
+            badge="Learn"
+            title="Make a more informed decision"
+            subtitle="Practical guides to help you understand your options."
+          />
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {articles.map((a) => (
               <Link to={a.href} key={a.title}>
@@ -501,7 +555,11 @@ export default function HomePage() {
       {/* ── FAQ ── */}
       <section className="py-16 sm:py-20 bg-accent/30">
         <div className="container max-w-3xl">
-          <SectionHeading badge="FAQ" title="Common questions about water filters" subtitle="Quick answers to help you make an informed decision." />
+          <SectionHeading
+            badge="FAQ"
+            title="Common questions about water filters"
+            subtitle="Quick answers to help you make an informed decision."
+          />
           <Accordion type="single" collapsible className="mt-10">
             {homeFaqs.map((faq, i) => (
               <AccordionItem key={i} value={`faq-${i}`}>
@@ -518,7 +576,8 @@ export default function HomePage() {
         <div className="container text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">Ready to find out what your water actually needs?</h2>
           <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-            Answer a few questions about your home. We'll match you to the right system, explain what it does, show real pricing, and connect you with licensed providers in your area.
+            Answer a few questions about your home. We'll match you to the right system, explain what it does, show real
+            pricing, and connect you with licensed providers in your area.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
@@ -532,9 +591,7 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Free for homeowners · No obligation · Takes 2 minutes
-          </p>
+          <p className="mt-4 text-xs text-muted-foreground">Free for homeowners · No obligation · Takes 2 minutes</p>
         </div>
       </section>
     </div>
