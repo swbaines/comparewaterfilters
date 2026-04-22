@@ -18,15 +18,30 @@ import { resolve } from "node:path";
  * directly from page source so no rendering / network is required.
  */
 
-const PAGES = [
-  "src/pages/AboutPage.tsx",
-  "src/pages/ArticlePage.tsx",
-  "src/pages/ContactPage.tsx",
-  "src/pages/HowItWorksPage.tsx",
-  "src/pages/LearnPage.tsx",
-  "src/pages/PricingGuidePage.tsx",
-  "src/pages/SystemTypesPage.tsx",
-  "src/pages/WaterQualityPage.tsx",
+const SITE_BASE = "https://www.comparewaterfilters.com.au";
+
+/**
+ * Expected absolute URL path for each ListItem position (1..N) per page.
+ * Position 1 is always "/" (Home). Dynamic segments use a `<dynamic>`
+ * placeholder that matches any non-empty path segment.
+ */
+interface PageSpec {
+  file: string;
+  expectedPaths: string[]; // index 0 = position 1, etc.
+}
+
+const PAGES: PageSpec[] = [
+  { file: "src/pages/AboutPage.tsx", expectedPaths: ["/", "/about"] },
+  {
+    file: "src/pages/ArticlePage.tsx",
+    expectedPaths: ["/", "/learn", "/learn/<dynamic>"],
+  },
+  { file: "src/pages/ContactPage.tsx", expectedPaths: ["/", "/contact"] },
+  { file: "src/pages/HowItWorksPage.tsx", expectedPaths: ["/", "/how-it-works"] },
+  { file: "src/pages/LearnPage.tsx", expectedPaths: ["/", "/learn"] },
+  { file: "src/pages/PricingGuidePage.tsx", expectedPaths: ["/", "/pricing-guide"] },
+  { file: "src/pages/SystemTypesPage.tsx", expectedPaths: ["/", "/system-types"] },
+  { file: "src/pages/WaterQualityPage.tsx", expectedPaths: ["/", "/water-quality"] },
 ];
 
 function read(file: string): string {
@@ -47,6 +62,37 @@ function findMatching(src: string, openIdx: number, open: string, close: string)
   return -1;
 }
 
+const BASE_URL_LITERAL = "https://www.comparewaterfilters.com.au";
+
+/**
+ * Extract the `item:` value from a single ListItem object source.
+ * Supports:
+ *   - Plain string literals: `item: "https://..."`
+ *   - Identifier `BASE_URL` (substituted with the canonical site base)
+ *   - Template literals using `${BASE_URL}` and `${article.slug}` etc.
+ *     Dynamic substitutions become `<dynamic>` segments.
+ */
+function extractItemUrl(raw: string): { itemUrl: string | null; itemRaw: string | null } {
+  const m = raw.match(/\bitem\s*:\s*("([^"]*)"|`([^`]*)`|[A-Za-z_][A-Za-z0-9_]*)/);
+  if (!m) return { itemUrl: null, itemRaw: null };
+  const itemRaw = m[1];
+  // Plain double-quoted string.
+  if (m[2] !== undefined) return { itemUrl: m[2], itemRaw };
+  // Template literal.
+  if (m[3] !== undefined) {
+    const tmpl = m[3];
+    const resolved = tmpl.replace(/\$\{([^}]+)\}/g, (_match, expr) => {
+      const trimmed = expr.trim();
+      if (trimmed === "BASE_URL") return BASE_URL_LITERAL;
+      return "<dynamic>";
+    });
+    return { itemUrl: resolved, itemRaw };
+  }
+  // Bare identifier.
+  if (itemRaw === "BASE_URL") return { itemUrl: BASE_URL_LITERAL, itemRaw };
+  return { itemUrl: null, itemRaw };
+}
+
 interface RawListItem {
   raw: string;
   hasListItemType: boolean;
@@ -54,6 +100,10 @@ interface RawListItem {
   positionRaw: string;
   name: string | null;
   hasItem: boolean;
+  /** Resolved absolute URL string with BASE_URL substituted, or null. */
+  itemUrl: string | null;
+  /** Raw item expression (for diagnostics). */
+  itemRaw: string | null;
 }
 
 interface BreadcrumbBlock {
@@ -117,6 +167,7 @@ function extractBreadcrumbBlock(src: string): BreadcrumbBlock | null {
       }
 
       const hasItem = /\bitem\s*:/.test(raw);
+      const { itemUrl, itemRaw } = extractItemUrl(raw);
 
       items.push({
         raw,
@@ -125,6 +176,8 @@ function extractBreadcrumbBlock(src: string): BreadcrumbBlock | null {
         positionRaw,
         name,
         hasItem,
+        itemUrl,
+        itemRaw,
       });
       i = end + 1;
     } else {
@@ -141,7 +194,8 @@ function extractBreadcrumbBlock(src: string): BreadcrumbBlock | null {
 }
 
 describe("BreadcrumbList JSON-LD schema conformance", () => {
-  for (const file of PAGES) {
+  for (const page of PAGES) {
+    const { file, expectedPaths } = page;
     describe(file, () => {
       const src = read(file);
       const block = extractBreadcrumbBlock(src);
@@ -209,6 +263,66 @@ describe("BreadcrumbList JSON-LD schema conformance", () => {
             item.hasItem,
             `Item at index ${idx} is missing 'item' (URL) in ${file}`,
           ).toBe(true);
+        }
+      });
+
+      it("item URL is parseable as an absolute HTTPS URL", () => {
+        for (const [idx, item] of (block?.items ?? []).entries()) {
+          expect(item.itemUrl, `Item ${idx} has unparseable item expression: ${item.itemRaw}`)
+            .not.toBeNull();
+          // Replace <dynamic> placeholders with a stub segment so URL() parses.
+          const candidate = (item.itemUrl ?? "").replace(/<dynamic>/g, "stub");
+          let parsed: URL | null = null;
+          try {
+            parsed = new URL(candidate);
+          } catch {
+            parsed = null;
+          }
+          expect(parsed, `Item ${idx} URL is not absolute: "${item.itemUrl}"`).not.toBeNull();
+          expect(parsed!.protocol, `Item ${idx} URL must use https:`).toBe("https:");
+        }
+      });
+
+      it("item URL host matches the canonical site base", () => {
+        const expectedHost = new URL(SITE_BASE).host;
+        for (const [idx, item] of (block?.items ?? []).entries()) {
+          const candidate = (item.itemUrl ?? "").replace(/<dynamic>/g, "stub");
+          const parsed = new URL(candidate);
+          expect(
+            parsed.host,
+            `Item ${idx} host "${parsed.host}" must equal "${expectedHost}" in ${file}`,
+          ).toBe(expectedHost);
+        }
+      });
+
+      it("item URL paths match the expected route hierarchy for this page", () => {
+        const items = block?.items ?? [];
+        expect(
+          items.length,
+          `Crumb count (${items.length}) doesn't match expected paths (${expectedPaths.length}) in ${file}`,
+        ).toBe(expectedPaths.length);
+
+        for (let idx = 0; idx < items.length; idx++) {
+          const item = items[idx];
+          const expectedPath = expectedPaths[idx];
+          // Normalise: strip trailing slash except for root.
+          const url = (item.itemUrl ?? "").replace(/<dynamic>/g, "<dynamic>");
+          let actualPath: string;
+          try {
+            const parsed = new URL(url.replace(/<dynamic>/g, "PLACEHOLDER"));
+            actualPath = parsed.pathname.replace(/PLACEHOLDER/g, "<dynamic>");
+          } catch {
+            throw new Error(`Item ${idx} URL unparseable: ${url}`);
+          }
+          if (actualPath.length > 1 && actualPath.endsWith("/")) {
+            actualPath = actualPath.slice(0, -1);
+          }
+          // Allow "" or "/" at root.
+          const normalisedActual = actualPath === "" ? "/" : actualPath;
+          expect(
+            normalisedActual,
+            `Item ${idx} path "${normalisedActual}" must equal "${expectedPath}" in ${file}`,
+          ).toBe(expectedPath);
         }
       });
     });
