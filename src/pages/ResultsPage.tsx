@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
@@ -24,7 +25,63 @@ const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   premium: "Maximum protection across your whole home and drinking water. Best if you want the most comprehensive solution and are happy to invest more upfront.",
 };
 
-function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
+type ConfidenceLevel = "High" | "Medium" | "Low";
+
+const CONFIDENCE_STYLES: Record<ConfidenceLevel, string> = {
+  High: "bg-sage-light text-sage-dark border-primary/30",
+  Medium: "bg-warm-light text-foreground border-warm/40",
+  Low: "bg-muted text-muted-foreground border-border",
+};
+
+const CONFIDENCE_TOOLTIPS: Record<ConfidenceLevel, string> = {
+  High: "You answered the key questions in detail (water source, concerns, coverage and budget), so this match is well-tailored to your home.",
+  Medium: "We have enough to suggest a sensible match, but a few answers were left general. Adding more detail (e.g. specific concerns or coverage) can sharpen the recommendation.",
+  Low: "Several key answers were skipped or left vague, so this is a best-guess starting point. Edit your answers to get a more accurate match.",
+};
+
+/**
+ * Computes a simple confidence score based on how specific the quiz answers are.
+ * Looks at: water source, concerns count, coverage, budget, household size, property type.
+ */
+export function computeConfidence(answers: QuizAnswers | null): ConfidenceLevel {
+  if (!answers) return "Low";
+  let score = 0;
+  if (answers.waterSource && answers.waterSource !== "unsure") score += 1;
+  const concernCount = Array.isArray(answers.concerns) ? answers.concerns.length : 0;
+  if (concernCount >= 3) score += 2;
+  else if (concernCount >= 1) score += 1;
+  if (answers.coverage) score += 1;
+  if (answers.budget && answers.budget !== "unsure") score += 1;
+  if (answers.householdSize) score += 1;
+  if (answers.propertyType) score += 1;
+  if (score >= 6) return "High";
+  if (score >= 3) return "Medium";
+  return "Low";
+}
+
+function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${CONFIDENCE_STYLES[level]}`}
+            aria-label={`Match confidence: ${level}`}
+          >
+            <Info className="h-3 w-3" />
+            {level} confidence
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+          {CONFIDENCE_TOOLTIPS[level]}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+function RecCard({ rec, label, reason, variant, badge, confidence }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string; confidence: ConfidenceLevel }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
     allrounder: "bg-accent text-accent-foreground border-primary/30",
@@ -37,6 +94,7 @@ function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; 
         <div className="flex flex-wrap items-center gap-2">
           <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
           {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+          <ConfidenceBadge level={confidence} />
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">{TIER_EXPLANATIONS[variant]}</p>
         <CardTitle className="text-lg">{rec.title}</CardTitle>
@@ -351,6 +409,8 @@ export default function ResultsPage() {
 
   if (!result || !answers) return null;
 
+  const confidence = computeConfidence(answers);
+
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
       <PageMeta
@@ -460,27 +520,27 @@ export default function ResultsPage() {
         {result.primary.id === result.premium.id ? (
           /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" />
-            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" confidence={confidence} />
+            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
           </div>
         ) : result.secondary.id === result.primary.id ? (
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" />
-            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" confidence={confidence} />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
           </div>
         ) : (
           <>
             {/* Mobile: recommendation first, then budget & premium */}
             <div className="flex flex-col gap-6 sm:hidden">
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} />
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
             </div>
             {/* Desktop: standard 3-column order */}
             <div className="hidden sm:grid gap-6 md:grid-cols-3">
-              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
             </div>
           </>
         )}
