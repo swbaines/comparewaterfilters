@@ -1,7 +1,8 @@
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import SectionHeading from "@/components/SectionHeading";
 import {
@@ -202,6 +203,19 @@ const jsonLdData = [
 ];
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const [lookupPostcode, setLookupPostcode] = useState("");
+
+  const handlePostcodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = lookupPostcode.trim();
+    if (/^\d{4}$/.test(trimmed)) {
+      navigate(`/water-quality?postcode=${trimmed}`);
+    } else {
+      navigate("/water-quality");
+    }
+  };
+
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "application/ld+json";
