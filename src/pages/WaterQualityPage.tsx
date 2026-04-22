@@ -462,13 +462,13 @@ export default function WaterQualityPage() {
             {/* CTA */}
             <Card className="border-0 bg-primary text-primary-foreground shadow-lg">
               <CardContent className="pt-6">
-                <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                  <div>
+                <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+                  <div className="flex-1">
                     <h3 className="text-lg font-semibold">See exactly which system fits your water — and what it should cost</h3>
-                    <p className="text-sm text-primary-foreground/90">In 2 minutes you'll get a matched system type, an honest installed price range for your home, and optional quotes from trusted local installers. No sales calls, no obligation.</p>
+                    <p className="mt-1 text-sm text-primary-foreground/90">In 2 minutes you'll get a matched system type, an honest installed price range for your home, and optional quotes from trusted local installers. No sales calls, no obligation.</p>
                   </div>
-                  <Link to="/quiz" className="shrink-0">
-                    <Button variant="secondary" size="lg" className="gap-2 font-semibold shadow-md">
+                  <Link to="/quiz" className="w-full shrink-0 sm:w-auto">
+                    <Button variant="secondary" size="lg" className="w-full gap-2 whitespace-nowrap font-semibold shadow-md sm:w-auto">
                       Get my recommendation <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
