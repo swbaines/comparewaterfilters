@@ -202,6 +202,60 @@ export default function ResultsPage() {
   const [copied, setCopied] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailInput, setEmailInput] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
+  const handleEmailResults = async () => {
+    if (!answers || !result) return;
+    const trimmed = emailInput.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed) || trimmed.length > 254) {
+      toast({ title: "Please enter a valid email address", variant: "destructive" });
+      return;
+    }
+
+    setEmailSending(true);
+    try {
+      const encoded = btoa(JSON.stringify(answers));
+      const url = `${window.location.origin}/results?d=${encoded}`;
+      const idempotencyKey = `quiz-results-${trimmed.toLowerCase()}-${encoded.slice(0, 24)}`;
+
+      const { error } = await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "quiz-results-summary",
+          recipientEmail: trimmed,
+          idempotencyKey,
+          templateData: {
+            customerName: answers.firstName || "there",
+            resultsUrl: url,
+            topRecommendation: result.primary?.title || "",
+            budgetOption: result.secondary?.title || "",
+            premiumOption: result.premium?.title || "",
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      setEmailSent(true);
+      toast({ title: "Email sent!", description: `We've sent your results to ${trimmed}.` });
+      setTimeout(() => {
+        setEmailDialogOpen(false);
+        setEmailSent(false);
+        setEmailInput("");
+      }, 1800);
+    } catch (err) {
+      toast({
+        title: "Couldn't send email",
+        description: "Please try again in a moment, or use the Share link option instead.",
+        variant: "destructive",
+      });
+    } finally {
+      setEmailSending(false);
+    }
+  };
 
   const handleShareResults = async () => {
     if (!answers) return;
