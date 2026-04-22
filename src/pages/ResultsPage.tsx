@@ -81,7 +81,7 @@ function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
   );
 }
 
-function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
+function RecCard({ rec, label, reason, variant, badge, confidence }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string; confidence: ConfidenceLevel }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
     allrounder: "bg-accent text-accent-foreground border-primary/30",
@@ -94,6 +94,7 @@ function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; 
         <div className="flex flex-wrap items-center gap-2">
           <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
           {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+          <ConfidenceBadge level={confidence} />
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">{TIER_EXPLANATIONS[variant]}</p>
         <CardTitle className="text-lg">{rec.title}</CardTitle>
