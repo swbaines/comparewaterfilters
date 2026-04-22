@@ -93,7 +93,7 @@ export const template = {
     vendorEmail: 'sam@example.com',
     abn: '12345678901',
     states: ['NSW', 'VIC'],
-    systemTypes: ['Whole Home Filtration'],
+    systemTypes: ['Whole House Filtration'],
     hasPublicLiability: true,
     registeredAt: '2026-04-06T10:00:00Z',
   },

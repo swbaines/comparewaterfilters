@@ -58,7 +58,7 @@ const concernOptions = [
   { value: "pfas", label: "PFAS / forever chemicals" },
   { value: "microplastics", label: "Microplastics" },
   { value: "hard-water", label: "Hard water / scale buildup" },
-  { value: "whole-home", label: "Whole home protection" },
+  { value: "whole-home", label: "Whole house protection (every tap & shower)" },
   { value: "appliance", label: "Appliance & hot water system protection" },
   { value: "bacteria", label: "Bacteria / microbiological safety" },
   { value: "not-sure", label: "Not sure, just want better water" },

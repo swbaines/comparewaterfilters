@@ -111,7 +111,7 @@ const coverageAreas = [
 ];
 
 const homeFaqs = [
-  { q: "How do I compare whole home water filters in Australia?", a: "Use our free quiz to answer a few questions about your property, water source, and concerns. We'll recommend the best system type — whole house, reverse osmosis, under-sink, or UV — and connect you with trusted local installers for obligation-free quotes." },
+  { q: "How do I compare whole house water filters in Australia?", a: "Use our free quiz to answer a few questions about your property, water source, and concerns. We'll recommend the best system type — whole house (sometimes called whole home), reverse osmosis, under-sink, or UV — and connect you with trusted local installers for obligation-free quotes." },
   { q: "What is the best whole house water filter in Australia?", a: "The best whole house water filter depends on your water supply. Carbon-based systems suit most mains-connected homes for chlorine and sediment removal. If you're on bore or tank water, a multi-stage system with UV is recommended. Our quiz matches you to the right option." },
   { q: "How much does a water filter system cost in Australia?", a: "Whole house water filters cost $2,000–$5,000 installed. Reverse osmosis systems cost $800–$1,600. Under-sink carbon filters start from $300. Prices include professional installation by a licensed plumber." },
   { q: "Is Compare Water Filters free for homeowners?", a: "Yes, Compare Water Filters is 100% free for homeowners. We provide independent recommendations, real Australian pricing, and connect you with trusted providers — with no obligation or sales calls." },
@@ -178,7 +178,7 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Compare Whole House & Whole Home Water Filters Australia — Free Quotes"
+        title="Compare Whole House Water Filters Australia — Free Quotes"
         description="Compare whole house water filters, reverse osmosis & under-sink systems in Australia. Free quotes from trusted local installers."
         path="/"
       />
@@ -190,7 +190,7 @@ export default function HomePage() {
             Australia's independent water filter comparison
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl">
-            Compare Whole Home Water Filters — Find the Right System for Your Home
+            Compare Whole House Water Filters — Find the Right System for Your Home
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
             Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
