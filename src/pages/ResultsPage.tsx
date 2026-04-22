@@ -13,6 +13,12 @@ import MatchedVendorsSection from "@/components/MatchedVendorsSection";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 
+const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
+  value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins on taste and drinking water without a big upfront spend.",
+  allrounder: "Our best-fit pick for your home, water source, and concerns — the strongest balance of coverage, running cost, and install effort.",
+  premium: "Maximum protection across your whole home and drinking water. Best if you want the most comprehensive solution and are happy to invest more upfront.",
+};
+
 function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
@@ -27,11 +33,12 @@ function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; 
           <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
           {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
         </div>
+        <p className="text-xs leading-relaxed text-muted-foreground">{TIER_EXPLANATIONS[variant]}</p>
         <CardTitle className="text-lg">{rec.title}</CardTitle>
         <p className="text-sm text-muted-foreground">{rec.category}</p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-sm text-muted-foreground">{reason}</p>
+        <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Why this fits you: </span>{reason}</p>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-start gap-2">
