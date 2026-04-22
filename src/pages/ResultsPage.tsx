@@ -385,6 +385,18 @@ export default function ResultsPage() {
               {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
               {copied ? "Link copied!" : "Save or share results"}
             </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={() => {
+                if (answers?.email) setEmailInput(answers.email);
+                setEmailDialogOpen(true);
+              }}
+            >
+              <Mail className="h-4 w-4" />
+              Email me my results
+            </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
             Free, no obligation • Your details are saved with your results link
