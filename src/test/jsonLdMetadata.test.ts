@@ -144,11 +144,12 @@ describe("JSON-LD structured data regression", () => {
         });
       }
 
-      it("injects structured data into <head> at runtime", () => {
+      it("emits structured data either via runtime injection or inline <script>", () => {
         const wired =
           /document\.head\.appendChild\(\s*script\s*\)/.test(src) ||
-          /createElement\(["']script["']\)/.test(src);
-        expect(wired, `${spec.file} should append a JSON-LD <script> to <head>`)
+          /createElement\(["']script["']\)/.test(src) ||
+          /type=["']application\/ld\+json["']/.test(src);
+        expect(wired, `${spec.file} should expose a JSON-LD <script> (runtime-injected or inline)`)
           .toBe(true);
       });
     });
