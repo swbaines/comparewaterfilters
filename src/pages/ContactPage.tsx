@@ -66,8 +66,8 @@ export default function ContactPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Contact Us — Compare Water Filters Australia"
-        description="Have a question about water filters or need help choosing the best water filtration system? Get in touch with our independent Australian team."
+        title="Contact Compare Water Filters — Whole House Filter Help"
+        description="Need help choosing a whole house water filter or comparing systems? Contact our independent Australian team for plain-English guidance."
         path="/contact"
       />
       <div className="container max-w-2xl">

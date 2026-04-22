@@ -70,8 +70,8 @@ export default function PricingGuidePage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Water Filter Prices Australia 2026 — Installation & Maintenance Costs"
-        description="How much does a whole house water filter cost in Australia? See installed prices from $300–$6,500+, annual maintenance costs, and what affects pricing for every system type."
+        title="Whole House Water Filter Prices Australia 2026 — Installed Costs"
+        description="How much does a whole house water filter cost in Australia? Installed prices from $300–$6,500+, annual maintenance, and what affects pricing for every system type."
         path="/pricing-guide"
       />
       <div className="container max-w-4xl">
