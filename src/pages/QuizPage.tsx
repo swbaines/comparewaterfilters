@@ -138,6 +138,21 @@ export default function QuizPage() {
     firstName: "", email: "", mobile: "", consent: false, disclaimerAck: false,
   });
 
+  // Prefill from sessionStorage when user clicks "Edit my answers" on results page
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!new URLSearchParams(window.location.search).has("edit")) return;
+    try {
+      const saved = sessionStorage.getItem("quizAnswers");
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<QuizAnswers>;
+        setAnswers((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch {
+      // ignore malformed storage
+    }
+  }, []);
+
   const set = (field: keyof QuizAnswers, value: string | string[] | boolean) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
   };

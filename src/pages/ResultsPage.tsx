@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -403,6 +403,24 @@ export default function ResultsPage() {
             >
               <Mail className="h-4 w-4" />
               Email me my results
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={() => {
+                if (answers) {
+                  try {
+                    sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
+                  } catch {
+                    // ignore storage failures
+                  }
+                }
+                navigate("/quiz?edit=1");
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit my answers
             </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
