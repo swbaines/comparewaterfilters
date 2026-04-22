@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 
 const TOTAL_STEPS = 8;
@@ -238,10 +238,52 @@ export default function QuizPage() {
         {/* Progress */}
         <div className="mb-6">
           <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
-            <span>Step {step} of {TOTAL_STEPS}</span>
+            <span className="font-medium text-foreground">
+              Step {step} of {TOTAL_STEPS}: <span className="text-muted-foreground font-normal">{stepTitles[step - 1]}</span>
+            </span>
             <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
           </div>
           <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
+
+          {/* Step checkpoints */}
+          <ol
+            className="mt-4 flex items-center justify-between gap-1 sm:gap-2"
+            aria-label="Quiz progress checkpoints"
+          >
+            {stepTitles.map((title, idx) => {
+              const stepNum = idx + 1;
+              const isComplete = stepNum < step;
+              const isCurrent = stepNum === step;
+              const canJump = isComplete; // only jump back to completed steps
+              return (
+                <li key={title} className="flex flex-1 flex-col items-center gap-1 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => canJump && setStep(stepNum)}
+                    disabled={!canJump}
+                    aria-label={`${title} — ${isComplete ? "complete" : isCurrent ? "current step" : "upcoming"}`}
+                    aria-current={isCurrent ? "step" : undefined}
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold transition ${
+                      isComplete
+                        ? "border-primary bg-primary text-primary-foreground hover:opacity-80 cursor-pointer"
+                        : isCurrent
+                          ? "border-primary bg-background text-primary ring-2 ring-primary/20"
+                          : "border-muted-foreground/30 bg-background text-muted-foreground cursor-not-allowed"
+                    }`}
+                  >
+                    {isComplete ? <Check className="h-3.5 w-3.5" /> : stepNum}
+                  </button>
+                  <span
+                    className={`hidden sm:block text-[10px] leading-tight text-center truncate w-full ${
+                      isCurrent ? "font-semibold text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {title}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
         </div>
 
         <Card className="shadow-sm">
