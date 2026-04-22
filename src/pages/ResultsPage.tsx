@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
@@ -23,6 +24,62 @@ const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   allrounder: "Our best-fit pick for your home, water source, and concerns — the strongest balance of coverage, running cost, and install effort.",
   premium: "Maximum protection across your whole home and drinking water. Best if you want the most comprehensive solution and are happy to invest more upfront.",
 };
+
+type ConfidenceLevel = "High" | "Medium" | "Low";
+
+const CONFIDENCE_STYLES: Record<ConfidenceLevel, string> = {
+  High: "bg-sage-light text-sage-dark border-primary/30",
+  Medium: "bg-warm-light text-foreground border-warm/40",
+  Low: "bg-muted text-muted-foreground border-border",
+};
+
+const CONFIDENCE_TOOLTIPS: Record<ConfidenceLevel, string> = {
+  High: "You answered the key questions in detail (water source, concerns, coverage and budget), so this match is well-tailored to your home.",
+  Medium: "We have enough to suggest a sensible match, but a few answers were left general. Adding more detail (e.g. specific concerns or coverage) can sharpen the recommendation.",
+  Low: "Several key answers were skipped or left vague, so this is a best-guess starting point. Edit your answers to get a more accurate match.",
+};
+
+/**
+ * Computes a simple confidence score based on how specific the quiz answers are.
+ * Looks at: water source, concerns count, coverage, budget, household size, property type.
+ */
+export function computeConfidence(answers: QuizAnswers | null): ConfidenceLevel {
+  if (!answers) return "Low";
+  let score = 0;
+  if (answers.waterSource && answers.waterSource !== "unsure") score += 1;
+  const concernCount = Array.isArray(answers.concerns) ? answers.concerns.length : 0;
+  if (concernCount >= 3) score += 2;
+  else if (concernCount >= 1) score += 1;
+  if (answers.coverage) score += 1;
+  if (answers.budget && answers.budget !== "unsure") score += 1;
+  if (answers.householdSize) score += 1;
+  if (answers.propertyType) score += 1;
+  if (score >= 6) return "High";
+  if (score >= 3) return "Medium";
+  return "Low";
+}
+
+function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${CONFIDENCE_STYLES[level]}`}
+            aria-label={`Match confidence: ${level}`}
+          >
+            <Info className="h-3 w-3" />
+            {level} confidence
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
+          {CONFIDENCE_TOOLTIPS[level]}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 function RecCard({ rec, label, reason, variant, badge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string }) {
   const colors = {
