@@ -571,14 +571,14 @@ export default function ResultsPage() {
         <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
         {result.primary.id === result.premium.id ? (
           /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
-          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" confidence={confidence} />
-            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
+          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto items-start">
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" confidence={confidence} labelAbove />
+            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} labelAbove />
           </div>
         ) : result.secondary.id === result.primary.id ? (
-          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" confidence={confidence} />
-            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
+          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto items-start">
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" confidence={confidence} labelAbove />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} labelAbove />
           </div>
         ) : (
           <>
