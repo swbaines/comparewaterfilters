@@ -198,6 +198,42 @@ export default function ResultsPage() {
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
 
+  const handleShareResults = async () => {
+    if (!answers) return;
+    const encoded = btoa(JSON.stringify(answers));
+    const url = `${window.location.origin}/results?d=${encoded}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "My Water Filter Recommendations",
+          text: "Hi, check out my personalised water filter recommendations from Compare Water Filters!",
+          url,
+        });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to clipboard
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
   useEffect(() => {
     // Try URL param first (shared link), then sessionStorage
     let parsed: QuizAnswers | null = null;
