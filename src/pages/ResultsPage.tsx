@@ -240,7 +240,7 @@ function WhyThisRecommendation({ result, answers }: { result: RecommendationResu
             <div>
               <p className="text-sm font-semibold sm:text-base">Why this recommendation?</p>
               <p className="text-xs text-muted-foreground">
-                See which rule fired and the trade-off behind the Good tier.
+                See the concerns behind your match and the Good tier trade-off.
               </p>
             </div>
           </div>
@@ -251,27 +251,10 @@ function WhyThisRecommendation({ result, answers }: { result: RecommendationResu
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="space-y-5 border-t border-primary/10 px-5 pb-5 pt-4 text-sm">
-            {/* Rule fired */}
-            <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Rule fired
-              </p>
-              <p className="font-medium">{explanation.ruleLabel}</p>
-              {explanation.appliedRules.length > 1 && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Also applied:{" "}
-                  {explanation.appliedRules
-                    .slice(0, -1)
-                    .map((r) => r.label.split(" — ")[0])
-                    .join(", ")}
-                </p>
-              )}
-            </div>
-
             {/* Triggering concerns */}
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Your concerns that triggered this rule
+                Your concerns behind this match
               </p>
               {labelledConcerns.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5">
@@ -284,7 +267,7 @@ function WhyThisRecommendation({ result, answers }: { result: RecommendationResu
               ) : (
                 <p className="text-muted-foreground">
                   {explanation.rule === "rule-5-renter-apartment"
-                    ? `This rule fired because you ${answers.propertyType === "Apartment" ? "live in an apartment" : "rent your home"} — whole-house and softener systems aren't practical, so we picked the best installable option for your concerns.`
+                    ? `Because you ${answers.propertyType === "Apartment" ? "live in an apartment" : "rent your home"} — whole-house and softener systems aren't practical, so we picked the best installable option for your concerns.`
                     : "No specific concerns triggered this — we used the default drinking-water improvement path."}
                 </p>
               )}
