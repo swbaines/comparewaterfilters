@@ -518,27 +518,27 @@ export default function ResultsPage() {
         {result.primary.id === result.premium.id ? (
           /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" />
-            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" confidence={confidence} />
+            <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
           </div>
         ) : result.secondary.id === result.primary.id ? (
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" />
-            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" confidence={confidence} />
+            <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
           </div>
         ) : (
           <>
             {/* Mobile: recommendation first, then budget & premium */}
             <div className="flex flex-col gap-6 sm:hidden">
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} />
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
             </div>
             {/* Desktop: standard 3-column order */}
             <div className="hidden sm:grid gap-6 md:grid-cols-3">
-              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" />
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" />
-              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" />
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
             </div>
           </>
         )}
