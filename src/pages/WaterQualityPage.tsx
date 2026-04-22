@@ -461,11 +461,11 @@ export default function WaterQualityPage() {
 
             {/* CTA */}
             <Card className="border-0 bg-primary text-primary-foreground shadow-lg">
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+              <CardContent className="p-6 sm:p-8">
+                <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:justify-between sm:gap-6 sm:text-left">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold">See exactly which system fits your water — and what it should cost</h3>
-                    <p className="mt-1 text-sm text-primary-foreground/90">In 2 minutes you'll get a matched system type, an honest installed price range for your home, and optional quotes from trusted local installers. No sales calls, no obligation.</p>
+                    <h3 className="text-base font-semibold leading-snug sm:text-lg">See exactly which system fits your water — and what it should cost</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-primary-foreground/90">In 2 minutes you'll get a matched system type, an honest installed price range for your home, and optional quotes from trusted local installers. No sales calls, no obligation.</p>
                   </div>
                   <Link to="/quiz" className="w-full shrink-0 sm:w-auto">
                     <Button variant="secondary" size="lg" className="w-full gap-2 whitespace-nowrap font-semibold shadow-md sm:w-auto">
@@ -473,7 +473,7 @@ export default function WaterQualityPage() {
                     </Button>
                   </Link>
                 </div>
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 border-t border-primary-foreground/20 pt-3 text-xs text-primary-foreground/80 sm:justify-start">
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t border-primary-foreground/20 pt-4 text-xs leading-relaxed text-primary-foreground/80 sm:justify-start">
                   <span className="inline-flex items-center gap-1.5">
                     <CheckCircle2 className="h-3.5 w-3.5" /> No spam — matched to installers in your area
                   </span>
