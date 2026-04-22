@@ -197,7 +197,7 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
 
   return (
     <div className="flex h-full flex-col">
-      <div className="mb-3 flex justify-center">
+      <div className="mb-3 flex h-8 items-center justify-center">
         <Badge className={`${colors[variant]} text-sm px-3 py-1`}>{label}</Badge>
       </div>
       <div className="flex-1">{card}</div>
