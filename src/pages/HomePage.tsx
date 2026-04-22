@@ -1,7 +1,8 @@
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import SectionHeading from "@/components/SectionHeading";
 import {
@@ -202,6 +203,19 @@ const jsonLdData = [
 ];
 
 export default function HomePage() {
+  const navigate = useNavigate();
+  const [lookupPostcode, setLookupPostcode] = useState("");
+
+  const handlePostcodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = lookupPostcode.trim();
+    if (/^\d{4}$/.test(trimmed)) {
+      navigate(`/water-quality?postcode=${trimmed}`);
+    } else {
+      navigate("/water-quality");
+    }
+  };
+
   useEffect(() => {
     const script = document.createElement("script");
     script.type = "application/ld+json";
@@ -277,10 +291,24 @@ export default function HomePage() {
                   Enter your suburb or postcode to see a breakdown of your local water — hardness, chlorine, fluoride,
                   PFAS risk, and personalised filter recommendations.
                 </p>
-                <Link to="/water-quality">
-                  <Button className="mt-6 gap-2">
-                    <MapPin className="h-4 w-4" /> Look up my suburb
+                <form onSubmit={handlePostcodeSubmit} className="mt-6 flex gap-2">
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]{4}"
+                    maxLength={4}
+                    placeholder="Enter postcode"
+                    value={lookupPostcode}
+                    onChange={(e) => setLookupPostcode(e.target.value.replace(/\D/g, ""))}
+                    aria-label="Postcode"
+                    className="max-w-[180px]"
+                  />
+                  <Button type="submit" className="gap-2">
+                    <Search className="h-4 w-4" /> Check
                   </Button>
+                </form>
+                <Link to="/water-quality" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                  <MapPin className="h-3 w-3" /> Or search by suburb
                 </Link>
               </div>
               <div className="space-y-3">
@@ -403,7 +431,7 @@ export default function HomePage() {
               ))}
             </div>
             <div className="mt-8 text-center">
-              <Link to="/learn">
+              <Link to="/learn/is-australian-tap-water-getting-worse">
                 <Button variant="outline" className="gap-2">
                   Read the full research <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -572,26 +600,30 @@ export default function HomePage() {
       </section>
 
       {/* ── Final CTA ── */}
-      <section className="py-16 sm:py-20">
+      <section className="bg-primary py-16 text-primary-foreground sm:py-20">
         <div className="container text-center">
           <h2 className="text-2xl font-bold sm:text-3xl">Ready to find out what your water actually needs?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+          <p className="mx-auto mt-3 max-w-xl text-primary-foreground/90">
             Answer a few questions about your home. We'll match you to the right system, explain what it does, show real
             pricing, and connect you with licensed providers in your area.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
-              <Button size="lg" className="gap-2">
+              <Button size="lg" variant="secondary" className="gap-2">
                 Find My System <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/water-quality">
-              <Button variant="outline" size="lg" className="gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2 border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
                 <Search className="h-4 w-4" /> Check my water quality
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-muted-foreground">Free for homeowners · No obligation · Takes 2 minutes</p>
+          <p className="mt-4 text-xs text-primary-foreground/80">Free for homeowners · No obligation · Takes 2 minutes</p>
         </div>
       </section>
     </div>
