@@ -565,6 +565,16 @@ export default function WaterQualityPage() {
           </CardContent>
         </Card>
       </div>
+      {/* Sticky mobile CTA */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:hidden">
+        <Link to="/quiz" className="block">
+          <Button className="w-full gap-2 whitespace-nowrap font-semibold">
+            Get my recommendation <ArrowRight className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+      {/* Spacer so sticky bar doesn't cover footer content on mobile */}
+      <div className="h-20 sm:hidden" aria-hidden="true" />
     </div>
   );
 }
