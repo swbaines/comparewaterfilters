@@ -644,6 +644,55 @@ export default function ResultsPage() {
           View matched providers ↓
         </a>
       )}
+
+      {/* Email results dialog */}
+      <Dialog open={emailDialogOpen} onOpenChange={(open) => {
+        setEmailDialogOpen(open);
+        if (!open) { setEmailSent(false); }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              Email me my results
+            </DialogTitle>
+            <DialogDescription>
+              We'll send a private link so you can revisit your personalised recommendations anytime — no need to retake the quiz.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            <Label htmlFor="results-email">Your email address</Label>
+            <Input
+              id="results-email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={emailInput}
+              maxLength={254}
+              disabled={emailSending || emailSent}
+              onChange={(e) => setEmailInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !emailSending && !emailSent) handleEmailResults(); }}
+            />
+            <p className="text-xs text-muted-foreground">
+              We won't add you to a marketing list. Just one summary email with your results link.
+            </p>
+          </div>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="ghost" onClick={() => setEmailDialogOpen(false)} disabled={emailSending}>
+              Cancel
+            </Button>
+            <Button onClick={handleEmailResults} disabled={emailSending || emailSent} className="gap-2">
+              {emailSending ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</>
+              ) : emailSent ? (
+                <><Check className="h-4 w-4" /> Sent!</>
+              ) : (
+                <><Mail className="h-4 w-4" /> Send my results</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
