@@ -409,6 +409,8 @@ export default function ResultsPage() {
 
   if (!result || !answers) return null;
 
+  const confidence = computeConfidence(answers);
+
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
       <PageMeta
