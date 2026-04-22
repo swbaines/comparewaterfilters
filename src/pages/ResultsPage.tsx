@@ -404,6 +404,24 @@ export default function ResultsPage() {
               <Mail className="h-4 w-4" />
               Email me my results
             </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={() => {
+                if (answers) {
+                  try {
+                    sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
+                  } catch {
+                    // ignore storage failures
+                  }
+                }
+                navigate("/quiz?edit=1");
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit my answers
+            </Button>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
             Free, no obligation • Your details are saved with your results link
