@@ -11,9 +11,13 @@ const staticPages = [
   { path: "/pricing-guide", changefreq: "monthly", priority: "0.8" },
   { path: "/how-it-works", changefreq: "monthly", priority: "0.7" },
   { path: "/learn", changefreq: "weekly", priority: "0.7" },
+  { path: "/about", changefreq: "monthly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/provider-match", changefreq: "monthly", priority: "0.6" },
   { path: "/water-quality", changefreq: "weekly", priority: "0.8" },
+  { path: "/disclaimer", changefreq: "yearly", priority: "0.3" },
+  { path: "/terms", changefreq: "yearly", priority: "0.3" },
+  { path: "/privacy", changefreq: "yearly", priority: "0.3" },
 ];
 
 const articleEntries = articles.map((a) => ({
