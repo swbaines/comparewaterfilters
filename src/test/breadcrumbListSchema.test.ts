@@ -69,6 +69,10 @@ interface RawListItem {
   positionRaw: string;
   name: string | null;
   hasItem: boolean;
+  /** Resolved absolute URL string with BASE_URL substituted, or null. */
+  itemUrl: string | null;
+  /** Raw item expression (for diagnostics). */
+  itemRaw: string | null;
 }
 
 interface BreadcrumbBlock {
@@ -132,6 +136,7 @@ function extractBreadcrumbBlock(src: string): BreadcrumbBlock | null {
       }
 
       const hasItem = /\bitem\s*:/.test(raw);
+      const { itemUrl, itemRaw } = extractItemUrl(raw);
 
       items.push({
         raw,
@@ -140,6 +145,8 @@ function extractBreadcrumbBlock(src: string): BreadcrumbBlock | null {
         positionRaw,
         name,
         hasItem,
+        itemUrl,
+        itemRaw,
       });
       i = end + 1;
     } else {
