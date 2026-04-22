@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { Building2, ClipboardList, BarChart3, FileText, LogOut, UserCog } from "lucide-react";
+import { Building2, ClipboardList, BarChart3, FileText, LogOut, UserCog, Search } from "lucide-react";
 
 const navItems = [
   { to: "/admin/providers", label: "Providers", icon: Building2 },
@@ -9,6 +9,7 @@ const navItems = [
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/admin/invoices", label: "Invoices", icon: FileText },
   { to: "/admin/account", label: "Account", icon: UserCog },
+  { to: "/admin/seo-preview", label: "SEO Preview", icon: Search },
 ];
 
 export default function AdminNav() {
