@@ -589,10 +589,10 @@ export default function ResultsPage() {
               <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
             </div>
             {/* Desktop: standard 3-column order */}
-            <div className="hidden sm:grid gap-6 md:grid-cols-3">
-              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} />
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} />
-              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} />
+            <div className="hidden sm:grid gap-6 md:[grid-template-columns:0.9fr_1.1fr_0.9fr] items-start">
+              <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} labelAbove />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} labelAbove />
+              <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} labelAbove />
             </div>
           </>
         )}
