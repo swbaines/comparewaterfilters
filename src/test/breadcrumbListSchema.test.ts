@@ -18,15 +18,30 @@ import { resolve } from "node:path";
  * directly from page source so no rendering / network is required.
  */
 
-const PAGES = [
-  "src/pages/AboutPage.tsx",
-  "src/pages/ArticlePage.tsx",
-  "src/pages/ContactPage.tsx",
-  "src/pages/HowItWorksPage.tsx",
-  "src/pages/LearnPage.tsx",
-  "src/pages/PricingGuidePage.tsx",
-  "src/pages/SystemTypesPage.tsx",
-  "src/pages/WaterQualityPage.tsx",
+const SITE_BASE = "https://www.comparewaterfilters.com.au";
+
+/**
+ * Expected absolute URL path for each ListItem position (1..N) per page.
+ * Position 1 is always "/" (Home). Dynamic segments use a `<dynamic>`
+ * placeholder that matches any non-empty path segment.
+ */
+interface PageSpec {
+  file: string;
+  expectedPaths: string[]; // index 0 = position 1, etc.
+}
+
+const PAGES: PageSpec[] = [
+  { file: "src/pages/AboutPage.tsx", expectedPaths: ["/", "/about"] },
+  {
+    file: "src/pages/ArticlePage.tsx",
+    expectedPaths: ["/", "/learn", "/learn/<dynamic>"],
+  },
+  { file: "src/pages/ContactPage.tsx", expectedPaths: ["/", "/contact"] },
+  { file: "src/pages/HowItWorksPage.tsx", expectedPaths: ["/", "/how-it-works"] },
+  { file: "src/pages/LearnPage.tsx", expectedPaths: ["/", "/learn"] },
+  { file: "src/pages/PricingGuidePage.tsx", expectedPaths: ["/", "/pricing-guide"] },
+  { file: "src/pages/SystemTypesPage.tsx", expectedPaths: ["/", "/system-types"] },
+  { file: "src/pages/WaterQualityPage.tsx", expectedPaths: ["/", "/water-quality"] },
 ];
 
 function read(file: string): string {
