@@ -597,6 +597,9 @@ export default function ResultsPage() {
           </>
         )}
 
+        {/* ── Pricing explainer ── */}
+        <PricingExplainer result={result} answers={answers} />
+
         {/* ── Why this recommendation? (rule-fired explainer) ── */}
         <WhyThisRecommendation result={result} answers={answers} />
 
