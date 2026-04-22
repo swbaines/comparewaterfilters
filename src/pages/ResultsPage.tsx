@@ -302,48 +302,34 @@ export default function ResultsPage() {
           <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
             Your tap water is treated to meet safety standards — but there's no upside to drinking chlorine, chloramine, and trace contaminants when you don't have to. Based on your home and water profile, here's how to upgrade.
           </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4 gap-2"
-            onClick={async () => {
-              const encoded = btoa(JSON.stringify(answers));
-              const url = `${window.location.origin}/results?d=${encoded}`;
-
-              // Use native share on mobile if available
-              if (navigator.share) {
-                try {
-                  await navigator.share({
-                    title: "My Water Filter Recommendations",
-                    text: `Hi, check out my personalised water filter recommendations from Compare Water Filters!`,
-                    url,
-                  });
-                  return;
-                } catch {
-                  // User cancelled or share failed — fall through to clipboard
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button
+              size="lg"
+              className="w-full gap-2 shadow-md sm:w-auto"
+              onClick={() => {
+                const el = document.getElementById("matched-providers");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                  window.location.hash = "#matched-providers";
                 }
-              }
-
-              navigator.clipboard.writeText(url).then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2500);
-              }).catch(() => {
-                const textarea = document.createElement("textarea");
-                textarea.value = url;
-                textarea.style.position = "fixed";
-                textarea.style.opacity = "0";
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand("copy");
-                document.body.removeChild(textarea);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2500);
-              });
-            }}
-          >
-            {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
-            {copied ? "Link copied!" : "Share these results"}
-          </Button>
+              }}
+            >
+              Request a free quote <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={handleShareResults}
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+              {copied ? "Link copied!" : "Save or share results"}
+            </Button>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Free, no obligation • Your details are saved with your results link
+          </p>
         </div>
 
         {/* Warnings */}
