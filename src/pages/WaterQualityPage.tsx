@@ -460,14 +460,14 @@ export default function WaterQualityPage() {
             </div>
 
             {/* CTA */}
-            <Card className="bg-primary/5 border-primary/20">
+            <Card className="border-0 bg-primary text-primary-foreground shadow-lg">
               <CardContent className="flex flex-col items-center justify-between gap-4 pt-6 sm:flex-row">
                 <div>
-                  <h3 className="font-semibold">Ready to improve your water?</h3>
-                  <p className="text-sm text-muted-foreground">Take our 2-minute quiz and we'll match you with trusted local installers who understand your area's water.</p>
+                  <h3 className="text-lg font-semibold">Ready to improve your water?</h3>
+                  <p className="text-sm text-primary-foreground/90">Take our 2-minute quiz and we'll match you with trusted local installers who understand your area's water.</p>
                 </div>
                 <Link to="/quiz" className="shrink-0">
-                  <Button>
+                  <Button variant="secondary" size="lg" className="gap-2 font-semibold shadow-md">
                     Start quiz <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
