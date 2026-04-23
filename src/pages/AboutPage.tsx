@@ -177,8 +177,9 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-semibold">Pro-filtration, pro-truth</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Australian tap water meets safety standards, but reducing chlorine,
-                  taste, sediment and emerging contaminants makes a real difference.
+                  Australian tap water may meet safety standards, but reducing chlorine,
+                  taste, sediment and emerging contaminants makes a real difference to
+                  long-term health and well-being.
                 </p>
               </CardContent>
             </Card>
