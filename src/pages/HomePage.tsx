@@ -241,7 +241,7 @@ export default function HomePage() {
           <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
             Australia's independent water filter comparison
           </span>
-          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl">
+          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-7xl">
             Compare Water Filters — Find the Right System for Your Home
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
