@@ -189,8 +189,8 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-semibold">Trusted local providers</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Every provider on the platform is vetted for ABN, public liability,
-                  and our terms before they can quote on a single lead.
+                  Every provider on the platform is vetted for ABN, customer reviews and
+                  our terms before they can quote on a single lead.
                 </p>
               </CardContent>
             </Card>
