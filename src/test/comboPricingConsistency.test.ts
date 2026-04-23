@@ -30,7 +30,7 @@ const ALLOWLIST: string[] = [
 ];
 
 // Canonical numeric bounds for any range associated with the combo.
-const MIN_ALLOWED = 3000;
+const MIN_ALLOWED = 4000;
 const MAX_ALLOWED = 6000;
 
 // Keywords that indicate the surrounding text is talking about the combo.
