@@ -912,7 +912,7 @@ export default function ResultsPage() {
             </Badge>
             <h2 className="text-2xl font-bold sm:text-3xl">Choose Your Provider</h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Tick the trusted local providers you'd like a free quote from. They'll contact you directly — you're not committing to anything, and your details are already saved.
+              Pick the providers you'd like to hear from. They'll contact you directly — no obligation.
             </p>
           </div>
 
