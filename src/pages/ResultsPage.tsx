@@ -519,6 +519,35 @@ function RuleDebugPanel({ result, answers }: { result: RecommendationResult; ans
                       </Badge>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">{ev.reason}</p>
+                    {ev.checks.length > 0 && (
+                      <ul className="mt-3 space-y-1.5">
+                        {ev.checks.map((c, i) => (
+                          <li
+                            key={i}
+                            className="rounded border border-border/60 bg-background/60 p-2 text-[11px]"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="font-semibold">{c.label}</span>
+                              <span
+                                className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
+                                  c.pass
+                                    ? "bg-sage-light text-sage-dark"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {c.pass ? "Pass" : "Fail"}
+                              </span>
+                            </div>
+                            <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 gap-y-0.5 text-muted-foreground">
+                              <span className="font-medium">Needs:</span>
+                              <span>{c.expected}</span>
+                              <span className="font-medium">You:</span>
+                              <span>{c.actual}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {ev.matchedConcerns.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {ev.matchedConcerns.map((c) => (

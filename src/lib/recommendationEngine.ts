@@ -217,6 +217,18 @@ export interface RuleEvaluation {
   fired: boolean;
   reason: string;
   matchedConcerns: string[];
+  checks: RuleCheck[];
+}
+
+export interface RuleCheck {
+  /** Human label of the condition (e.g. "Coverage = whole-home"). */
+  label: string;
+  /** What the rule needs (e.g. "whole-house OR whole-house-plus"). */
+  expected: string;
+  /** What the user selected/answered. */
+  actual: string;
+  /** Did this individual check pass? */
+  pass: boolean;
 }
 
 export function explainRuleEvaluations(
@@ -230,6 +242,18 @@ export function explainRuleEvaluations(
     answers.waterSource === "tank-water" ||
     answers.waterSource === "bore-water";
 
+  const concernsList = answers.concerns.length ? answers.concerns.join(", ") : "(none)";
+  const anyOf = (ids: string[]) => ids.some((id) => answers.concerns.includes(id));
+  const matchedStr = (ids: string[]) => {
+    const m = matched(ids);
+    return m.length ? m.join(", ") : "none selected";
+  };
+
+  const drinkingCoverage =
+    answers.coverage === "drinking-water" ||
+    answers.coverage === "kitchen" ||
+    answers.coverage === "one-tap";
+
   const evals: RuleEvaluation[] = [
     {
       rule: "rule-7-untreated-water-uv",
@@ -239,6 +263,14 @@ export function explainRuleEvaluations(
       reason: untreatedSource
         ? `Water source is "${answers.waterSource}" (untreated) — UV path triggered.`
         : `Water source is "${answers.waterSource || "town"}" — not rainwater/tank/bore.`,
+      checks: [
+        {
+          label: "Water source",
+          expected: "rainwater OR tank-water OR bore-water",
+          actual: answers.waterSource || "(not set)",
+          pass: untreatedSource,
+        },
+      ],
     },
     {
       rule: "rule-5-renter-apartment",
@@ -248,6 +280,14 @@ export function explainRuleEvaluations(
       reason: !f.canHaveWholeHome
         ? `Ownership="${answers.ownershipStatus}", property="${answers.propertyType}" — whole-home/softener not allowed.`
         : `Owner-occupier in a house — whole-home options remain available.`,
+      checks: [
+        {
+          label: "Ownership status",
+          expected: "Rent — OR — Property type = Apartment",
+          actual: `${answers.ownershipStatus || "(not set)"} / ${answers.propertyType || "(not set)"}`,
+          pass: !f.canHaveWholeHome,
+        },
+      ],
     },
     {
       rule: "rule-2-hard-water-wa-sa",
@@ -259,6 +299,20 @@ export function explainRuleEvaluations(
           ? `State=${answers.state} AND hard-water/appliance concern present.`
           : `State=${answers.state} but no hard-water or appliance concern selected.`
         : `State=${answers.state || "—"} is not WA or SA.`,
+      checks: [
+        {
+          label: "State",
+          expected: "WA OR SA",
+          actual: answers.state || "(not set)",
+          pass: f.isWAorSA,
+        },
+        {
+          label: "Concerns",
+          expected: "hard-water OR appliance",
+          actual: matchedStr(["hard-water", "appliance"]),
+          pass: anyOf(["hard-water", "appliance"]),
+        },
+      ],
     },
     {
       rule: "rule-1b-whole-home-plus-ro",
@@ -274,6 +328,32 @@ export function explainRuleEvaluations(
         "fluoride", "pfas", "heavy-metals", "microplastics", "bacteria",
       ]),
       reason: `wholeHomeTrigger=${f.wholeHomeTrigger} (coverage="${answers.coverage}"), roTrigger=${f.roTrigger}, budgetUnder1k=${f.budgetUnder1k}.`,
+      checks: [
+        {
+          label: "Coverage signals whole-home intent",
+          expected: "coverage = whole-house/whole-house-plus — OR — concern in (skin-hair, skin-shower, appliance, whole-home, hard-water)",
+          actual: `coverage="${answers.coverage || "(not set)"}", matching concerns: ${matchedStr(["skin-hair","skin-shower","appliance","whole-home","hard-water"])}`,
+          pass: f.wholeHomeTrigger,
+        },
+        {
+          label: "RO-essential concerns selected",
+          expected: "fluoride OR pfas OR heavy-metals OR microplastics OR bacteria",
+          actual: matchedStr(["fluoride","pfas","heavy-metals","microplastics","bacteria"]),
+          pass: f.roTrigger,
+        },
+        {
+          label: "Whole-home installable",
+          expected: "Owner-occupier AND not Apartment",
+          actual: `${answers.ownershipStatus || "(not set)"} / ${answers.propertyType || "(not set)"}`,
+          pass: f.canHaveWholeHome,
+        },
+        {
+          label: "Not blocked by higher-priority rules",
+          expected: "water source not untreated AND not WA/SA hard-water case",
+          actual: `source="${answers.waterSource || "(not set)"}", state=${answers.state || "—"}`,
+          pass: !untreatedSource && !f.hardWaterWASA,
+        },
+      ],
     },
     {
       rule: "rule-1-whole-home",
@@ -290,6 +370,20 @@ export function explainRuleEvaluations(
           ? `Whole-home intent present, but RO-essential concerns also present — Rule 1b takes priority.`
           : `Whole-home intent present and no RO-essential concerns — Rule 1 path.`
         : `No whole-home intent (coverage="${answers.coverage}", no skin/appliance/whole-home concerns).`,
+      checks: [
+        {
+          label: "Whole-home intent",
+          expected: "coverage = whole-house/whole-house-plus — OR — concern in (skin-hair, skin-shower, appliance, whole-home, hard-water)",
+          actual: `coverage="${answers.coverage || "(not set)"}", matching concerns: ${matchedStr(["skin-hair","skin-shower","appliance","whole-home","hard-water"])}`,
+          pass: f.wholeHomeTrigger,
+        },
+        {
+          label: "No RO-essential concerns",
+          expected: "none of (fluoride, pfas, heavy-metals, microplastics, bacteria)",
+          actual: matchedStr(["fluoride","pfas","heavy-metals","microplastics","bacteria"]),
+          pass: !f.roTrigger,
+        },
+      ],
     },
     {
       rule: "rule-3-ro-essential",
@@ -306,6 +400,20 @@ export function explainRuleEvaluations(
           ? `RO-essential concerns present, but whole-home intent also present — Rule 1b takes priority.`
           : `RO-essential concerns present without whole-home intent — Rule 3 path.`
         : `No RO-essential concerns (fluoride, PFAS, heavy metals, microplastics, bacteria).`,
+      checks: [
+        {
+          label: "RO-essential concerns",
+          expected: "fluoride OR pfas OR heavy-metals OR microplastics OR bacteria",
+          actual: matchedStr(["fluoride","pfas","heavy-metals","microplastics","bacteria"]),
+          pass: f.roTrigger,
+        },
+        {
+          label: "No whole-home intent (else Rule 1b wins)",
+          expected: "no whole-home coverage AND no skin/appliance/whole-home concerns",
+          actual: `coverage="${answers.coverage || "(not set)"}", matching concerns: ${matchedStr(["skin-hair","skin-shower","appliance","whole-home","hard-water"])}`,
+          pass: !f.wholeHomeTrigger,
+        },
+      ],
     },
     {
       rule: "rule-4-drinking-only",
@@ -321,6 +429,22 @@ export function explainRuleEvaluations(
       reason: f.onlyTasteChlorine
         ? `Only taste/chlorine/drinking-quality concerns + drinking-only coverage.`
         : `Other concerns or coverage broader than drinking-only.`,
+      checks: [
+        {
+          label: "Coverage = drinking-only",
+          expected: "drinking-water OR kitchen OR one-tap",
+          actual: answers.coverage || "(not set)",
+          pass: drinkingCoverage,
+        },
+        {
+          label: "Concerns limited to taste/chlorine/drinking-quality",
+          expected: "every concern in (taste, chlorine, drinking-quality)",
+          actual: concernsList,
+          pass:
+            answers.concerns.length > 0 &&
+            answers.concerns.every((c) => ["taste", "chlorine", "drinking-quality"].includes(c)),
+        },
+      ],
     },
     {
       rule: "rule-6-budget-under-1k",
@@ -330,6 +454,14 @@ export function explainRuleEvaluations(
       reason: f.budgetUnder1k
         ? `Budget="under-1000" — modifies the chosen rule (moves whole-house/combo to Premium).`
         : `Budget="${answers.budget}" — no budget modifier applied.`,
+      checks: [
+        {
+          label: "Budget",
+          expected: "under-1000",
+          actual: answers.budget || "(not set)",
+          pass: f.budgetUnder1k,
+        },
+      ],
     },
   ];
 
