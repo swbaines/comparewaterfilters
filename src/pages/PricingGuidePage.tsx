@@ -147,6 +147,7 @@ export default function PricingGuidePage() {
               </Card>
             ))}
           </div>
+          <PricingFootnote className="mt-4" />
         </section>
 
         {/* FAQ */}
