@@ -1024,6 +1024,7 @@ export default function ResultsPage() {
                             </div>
                           ))}
                         </dl>
+                        <PricingFootnote variant="compact" className="mt-3" />
                       </CardContent>
                     </Card>
                   ))}
