@@ -249,7 +249,6 @@ export function explainRuleEvaluations(
     return m.length ? m.join(", ") : "none selected";
   };
 
-  const wholeHomeCoverage = answers.coverage === "whole-house" || answers.coverage === "whole-house-plus";
   const drinkingCoverage =
     answers.coverage === "drinking-water" ||
     answers.coverage === "kitchen" ||
