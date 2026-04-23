@@ -102,7 +102,7 @@ export default function AboutPage() {
       </div>
 
       {/* Hero */}
-      <section className="container pb-10 pt-2 bg-secondary-foreground">
+      <section className="container pb-10 pt-2">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <Heart className="h-3.5 w-3.5" /> Australian-owned &amp; independent
