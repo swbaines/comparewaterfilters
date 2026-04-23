@@ -14,7 +14,11 @@ export default function Footer() {
             Helping Australian households choose the right water filtration system with clear, independent guidance.
             </p>
             <p className="mt-3 text-xs text-muted-foreground">
-              Australian-owned · Servicing all states &amp; territories
+              Australian-owned
+              <br />
+              Compare Water Filters Pty Ltd
+              <br />
+              ABN - 32 697 405 093
               <br />
               <a
                 href="mailto:hello@comparewaterfilters.com.au"
