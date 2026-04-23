@@ -21,9 +21,9 @@ import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 import { getSystemPricing, formatPriceRange, PRICING_DISCLAIMER } from "@/lib/systemPricing";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
-  value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins on taste and kitchen-tap filtration (under-sink carbon or reverse osmosis) without a big upfront spend.",
+  value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins from an under-sink carbon filter or reverse osmosis system at the kitchen tap without a big upfront spend.",
   allrounder: "Our best-fit pick for your home, water source, and concerns — the strongest balance of coverage, running cost, and install effort.",
-  premium: "Maximum protection across your whole home plus reverse osmosis at the kitchen tap. Best if you want the most comprehensive solution and are happy to invest more upfront.",
+  premium: "Maximum protection — whole house filtration across every tap and shower, plus a reverse osmosis system at the kitchen tap. Best if you want the most comprehensive solution and are happy to invest more upfront.",
 };
 
 /**
