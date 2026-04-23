@@ -15,6 +15,7 @@ import {
   Text,
   Hr,
 } from 'npm:@react-email/components@0.0.22'
+import { LegalFooter } from './legal-footer.tsx'
 
 const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-droplets.svg'
 
@@ -52,6 +53,7 @@ export const EmailChangeEmail = ({
         <Text style={footer}>
           If you didn't request this change, please secure your account immediately.
         </Text>
+        <LegalFooter />
       </Container>
     </Body>
   </Html>

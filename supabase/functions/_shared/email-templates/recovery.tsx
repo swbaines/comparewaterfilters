@@ -14,6 +14,7 @@ import {
   Text,
   Hr,
 } from 'npm:@react-email/components@0.0.22'
+import { LegalFooter } from './legal-footer.tsx'
 
 const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-droplets.svg'
 
@@ -46,6 +47,7 @@ export const RecoveryEmail = ({
           If you didn't request a password reset, you can safely ignore this
           email. Your password will not be changed.
         </Text>
+        <LegalFooter />
       </Container>
     </Body>
   </Html>
