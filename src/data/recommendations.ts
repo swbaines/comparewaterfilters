@@ -266,7 +266,7 @@ export const recommendations: Recommendation[] = [
       "Quick, affordable improvement",
     ],
     notFor: [
-      "Drinking water filtration",
+      "Kitchen-tap filtration (under-sink carbon or reverse osmosis)",
       "Fluoride or heavy metal removal",
       "Whole house coverage",
       "Bacteria or microbiological concerns",
