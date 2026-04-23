@@ -28,6 +28,7 @@ export interface MatchedVendor {
   win_rate: number | null;
   state_share_pct: number;
   cap_exceeded: boolean;
+  system_pricing: Record<string, { min: number; max: number }>;
 }
 
 interface Args {
@@ -67,7 +68,23 @@ export function useMatchedVendors({
         _limit: 10,
       });
       if (error) throw error;
-      return (data || []) as MatchedVendor[];
+      const rows = (data || []) as MatchedVendor[];
+      // The RPC doesn't return per-system pricing — fetch it in one round-trip
+      // and merge. Keeps the SQL function untouched & the UI budget-aware.
+      if (rows.length === 0) return rows;
+      const ids = rows.map((r) => r.provider_id);
+      const { data: pricingRows } = await supabase
+        .from("providers")
+        .select("id, system_pricing")
+        .in("id", ids);
+      const priceMap = new Map<string, Record<string, { min: number; max: number }>>();
+      (pricingRows || []).forEach((p: any) => {
+        priceMap.set(p.id, (p.system_pricing || {}) as Record<string, { min: number; max: number }>);
+      });
+      return rows.map((r) => ({
+        ...r,
+        system_pricing: priceMap.get(r.provider_id) || {},
+      }));
     },
   });
 }

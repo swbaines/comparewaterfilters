@@ -22,6 +22,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import { useMatchedVendors, type MatchedVendor } from "@/hooks/useMatchedVendors";
+import {
+  scoreVendorBudgetFit,
+  formatStartingFrom,
+  type BudgetBand,
+} from "@/lib/budgetMatching";
 
 interface Props {
   customerLat: number | null;
@@ -43,11 +48,15 @@ function VendorRow({
   selected,
   onToggle,
   rank,
+  budgetBadge,
+  startingFromLabel,
 }: {
   vendor: MatchedVendor;
   selected: boolean;
   onToggle: () => void;
   rank: number;
+  budgetBadge: "best-budget" | "within-budget" | null;
+  startingFromLabel: string | null;
 }) {
   const rankLabels: Record<number, string> = {
     0: "Top match",
@@ -91,6 +100,16 @@ function VendorRow({
                         {rankLabels[rank]}
                       </Badge>
                     )}
+                    {budgetBadge === "best-budget" && (
+                      <Badge className="bg-primary/10 text-primary border border-primary/30">
+                        Best for your budget
+                      </Badge>
+                    )}
+                    {budgetBadge === "within-budget" && (
+                      <Badge variant="outline" className="text-xs">
+                        Within your budget
+                      </Badge>
+                    )}
                     {vendor.cap_exceeded && (
                       <Badge variant="outline" className="gap-1 text-xs">
                         <AlertCircle className="h-3 w-3" /> High volume this month
@@ -98,6 +117,11 @@ function VendorRow({
                     )}
                   </div>
                   <h3 className="mt-1 truncate text-base font-semibold">{vendor.name}</h3>
+                  {startingFromLabel && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      Indicative pricing {startingFromLabel}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -171,8 +195,47 @@ export default function MatchedVendorsSection({
     recommendedSystems,
   });
 
-  // Show up to 3 — the SQL ranks them already
-  const topVendors = useMemo(() => vendors.slice(0, 3), [vendors]);
+  // Re-rank using the SQL ordering as a base, then bias toward vendors whose
+  // per-system pricing fits the customer's budget band. Higher composite score
+  // wins; ties fall back to the original (SQL) order.
+  const rankedVendors = useMemo(() => {
+    const band = (answers.budget || "") as BudgetBand;
+    return vendors
+      .map((v, idx) => {
+        const fit = scoreVendorBudgetFit(
+          v.system_pricing || {},
+          recommendedSystems,
+          band,
+        );
+        // SQL rank decays from 1.0 (top) → ~0 over 10 results.
+        const sqlScore = Math.max(0, 1 - idx / 10);
+        // Weight: 60% SQL relevance/performance, 40% budget fit when we have data.
+        const composite = fit.pricedSystems > 0
+          ? sqlScore * 0.6 + fit.score * 0.4
+          : sqlScore * 0.6;
+        return { vendor: v, fit, composite, idx };
+      })
+      .sort((a, b) => b.composite - a.composite || a.idx - b.idx);
+  }, [vendors, recommendedSystems, answers.budget]);
+
+  // Show up to 3 after re-ranking
+  const topVendors = useMemo(
+    () => rankedVendors.slice(0, 3).map((r) => r.vendor),
+    [rankedVendors],
+  );
+
+  // Decide which vendor (if any) earns the "Best for your budget" badge:
+  // the highest-scoring fit among the top 3 with a usable score.
+  const bestBudgetProviderId = useMemo(() => {
+    const top3 = rankedVendors.slice(0, 3);
+    const candidates = top3.filter((r) => r.fit.pricedSystems > 0 && r.fit.withinBudget);
+    if (candidates.length === 0) return null;
+    const winner = candidates.reduce((best, cur) =>
+      cur.fit.score > best.fit.score ? cur : best,
+    );
+    // Only show the highlight badge when there's a meaningful fit
+    return winner.fit.score >= 0.25 ? winner.vendor.provider_id : null;
+  }, [rankedVendors]);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
@@ -373,15 +436,26 @@ export default function MatchedVendorsSection({
       )}
 
       <div className="space-y-3">
-        {topVendors.map((v, i) => (
-          <VendorRow
-            key={v.provider_id}
-            vendor={v}
-            selected={selected.has(v.provider_id)}
-            onToggle={() => toggleVendor(v.provider_id)}
-            rank={i}
-          />
-        ))}
+        {topVendors.map((v, i) => {
+          const fit = rankedVendors.find((r) => r.vendor.provider_id === v.provider_id)?.fit;
+          const isBest = bestBudgetProviderId === v.provider_id;
+          const budgetBadge = isBest
+            ? "best-budget"
+            : fit && fit.withinBudget && fit.pricedSystems > 0
+              ? "within-budget"
+              : null;
+          return (
+            <VendorRow
+              key={v.provider_id}
+              vendor={v}
+              selected={selected.has(v.provider_id)}
+              onToggle={() => toggleVendor(v.provider_id)}
+              rank={i}
+              budgetBadge={budgetBadge}
+              startingFromLabel={formatStartingFrom(fit?.startingFrom ?? null)}
+            />
+          );
+        })}
       </div>
 
       <Card className="border-2 border-primary/20 bg-background">
