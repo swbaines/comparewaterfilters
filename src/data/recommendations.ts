@@ -153,7 +153,7 @@ export const recommendations: Recommendation[] = [
       "Simple single-tap needs",
     ],
     priceMin: 3000,
-    priceMax: 8000,
+    priceMax: 6000,
     annualMaintenanceMin: 300,
     annualMaintenanceMax: 700,
     benefits: [
