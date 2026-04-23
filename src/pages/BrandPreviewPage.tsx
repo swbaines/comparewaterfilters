@@ -1,22 +1,43 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import NoIndex from "@/components/NoIndex";
 
 const BRAND = "#0bb87a";
 
 export default function BrandPreviewPage() {
+  const [dark, setDark] = useState（false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    return () => {
+      document.documentElement.classList.remove("dark");
+    };
+  }, [dark]);
+
   return (
-    <div className="container py-12">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container py-12">
       <NoIndex />
       <div className="mx-auto max-w-5xl space-y-10">
-        <header className="space-y-2">
-          <h1 className="text-3xl font-bold">Brand Color Preview</h1>
-          <p className="text-muted-foreground">
-            Verify the brand color <code className="rounded bg-muted px-1.5 py-0.5">{BRAND}</code> across UI elements.
-          </p>
+        <header className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold">Brand Color Preview</h1>
+            <p className="text-muted-foreground">
+              Verify the brand color <code className="rounded bg-muted px-1.5 py-0.5">{BRAND}</code> across UI elements.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-2">
+            <Label htmlFor="dark-mode-toggle" className="text-sm font-medium">
+              Dark mode
+            </Label>
+            <Switch id="dark-mode-toggle" checked={dark} onCheckedChange={setDark} />
+          </div>
         </header>
 
         {/* Swatches */}
