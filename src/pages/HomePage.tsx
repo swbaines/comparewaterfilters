@@ -236,7 +236,7 @@ export default function HomePage() {
       />
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28 bg-primary-foreground">
+       <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28 bg-secondary-foreground">
         <div className="container relative z-10 text-center">
           <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
             Australia's independent water filter comparison
