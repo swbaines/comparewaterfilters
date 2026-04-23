@@ -247,7 +247,10 @@ export default function VendorProfilePage() {
           certifications: form.certifications,
           highlights: form.highlights.split(",").map((s) => s.trim()).filter(Boolean),
           response_time: form.response_time,
-          warranty: form.warranty,
+          warranty: [
+            form.warranty_product.trim() && `Product: ${form.warranty_product.trim()}`,
+            form.warranty_workmanship.trim() && `Installation: ${form.warranty_workmanship.trim()}`,
+          ].filter(Boolean).join(" | "),
           website: form.website ? (/^https?:\/\//i.test(form.website.trim()) ? form.website.trim() : `https://${form.website.trim()}`) : null,
           phone: form.phone || null,
           contact_email: form.contact_email || null,
