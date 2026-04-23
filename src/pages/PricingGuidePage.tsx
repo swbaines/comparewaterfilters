@@ -124,9 +124,7 @@ export default function PricingGuidePage() {
               </div>
             </CardContent>
           </Card>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Prices are indicative ranges based on typical Australian residential installations. Actual costs may vary by location, plumbing requirements, and provider.
-          </p>
+          <PricingFootnote />
         </section>
 
         {/* Budget vs Premium */}
