@@ -118,6 +118,7 @@ export default function VendorProfilePage() {
     website: "",
     phone: "",
     contact_email: "",
+    system_pricing: {} as Record<string, { min: string; max: string }>,
   });
 
   const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
