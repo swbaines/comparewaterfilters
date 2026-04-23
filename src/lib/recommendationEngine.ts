@@ -330,11 +330,11 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   else if (f.wholeHomeTrigger && f.roTrigger && !f.budgetUnder1k) {
     pushRule("rule-1b-whole-home-plus-ro");
     primaryId = "whole-house-combo";
-    primaryReason = `Your concerns need both layers of treatment: a whole house filtration system to remove chlorine and protect every tap, shower, and appliance, PLUS a reverse osmosis unit at the kitchen for fluoride, PFAS, heavy metals, microplastics, and bacteria. RO is the only household technology that effectively removes those contaminants — and it only treats one tap, so pairing it with whole-house coverage is the proper solution. $4,000–$8,000 installed together.`;
+    primaryReason = `Your concerns need both layers of treatment: a whole house filtration system to remove chlorine and protect every tap, shower, and appliance, PLUS a reverse osmosis unit at the kitchen for fluoride, PFAS, heavy metals, microplastics, and bacteria. RO is the only household technology that effectively removes those contaminants — and it only treats one tap, so pairing it with whole-house coverage is the proper solution. Entry-level combos start from around $4,000 installed together — well within most household budgets.`;
     secondaryId = "whole-house-filtration";
     secondaryReason = `A whole house filtration system on its own delivers chlorine-free water everywhere — but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only if RO at the kitchen tap is genuinely out of reach for now (it can be added later).`;
-    premiumId = "reverse-osmosis";
-    premiumReason = `For the highest drinking-water purity, a premium reverse osmosis system with alkaline remineralisation pairs perfectly with your whole-house filter — purified, mineral-balanced water at the kitchen plus chlorine-free water at every other tap.`;
+    premiumId = "whole-house-combo";
+    premiumReason = `The premium build of the same solution: a higher-spec whole house filtration system paired with a reverse osmosis unit featuring alkaline remineralisation — chlorine-free water at every tap and shower, plus purified, mineral-balanced drinking water at the kitchen. Typically $6,000–$8,000 installed together.`;
   }
 
   // ── RULE 1b (budget): under-1k user but still has whole-home + RO needs ─────
