@@ -21,9 +21,9 @@ import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 import { getSystemPricing, formatPriceRange, PRICING_DISCLAIMER } from "@/lib/systemPricing";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
-  value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins on taste and drinking water without a big upfront spend.",
+  value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins on taste and kitchen-tap filtration (under-sink carbon or reverse osmosis) without a big upfront spend.",
   allrounder: "Our best-fit pick for your home, water source, and concerns — the strongest balance of coverage, running cost, and install effort.",
-  premium: "Maximum protection across your whole home and drinking water. Best if you want the most comprehensive solution and are happy to invest more upfront.",
+  premium: "Maximum protection across your whole home plus reverse osmosis at the kitchen tap. Best if you want the most comprehensive solution and are happy to invest more upfront.",
 };
 
 /**
@@ -284,7 +284,7 @@ function PricingExplainer({ result, answers }: { result: RecommendationResult; a
 
   if (answers.coverage === "whole-house-plus") {
     drivers.push({
-      label: "Whole house + drinking water",
+      label: "Whole house + reverse osmosis",
       detail: "Two systems combined — adds to install time and parts.",
       effect: "up",
     });
@@ -457,7 +457,7 @@ function WhyThisRecommendation({ result, answers }: { result: RecommendationResu
                 <p className="text-muted-foreground">
                   {explanation.rule === "rule-5-renter-apartment"
                     ? `Because you ${answers.propertyType === "Apartment" ? "live in an apartment" : "rent your home"} — whole-house and softener systems aren't practical, so we picked the best installable option for your concerns.`
-                    : "No specific concerns triggered this — we used the default drinking-water improvement path."}
+                    : "No specific concerns triggered this — we used the default reverse osmosis / under-sink carbon kitchen-tap improvement path."}
                 </p>
               )}
             </div>
