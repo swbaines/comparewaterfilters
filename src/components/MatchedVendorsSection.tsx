@@ -195,8 +195,47 @@ export default function MatchedVendorsSection({
     recommendedSystems,
   });
 
-  // Show up to 3 — the SQL ranks them already
-  const topVendors = useMemo(() => vendors.slice(0, 3), [vendors]);
+  // Re-rank using the SQL ordering as a base, then bias toward vendors whose
+  // per-system pricing fits the customer's budget band. Higher composite score
+  // wins; ties fall back to the original (SQL) order.
+  const rankedVendors = useMemo(() => {
+    const band = (answers.budget || "") as BudgetBand;
+    return vendors
+      .map((v, idx) => {
+        const fit = scoreVendorBudgetFit(
+          v.system_pricing || {},
+          recommendedSystems,
+          band,
+        );
+        // SQL rank decays from 1.0 (top) → ~0 over 10 results.
+        const sqlScore = Math.max(0, 1 - idx / 10);
+        // Weight: 60% SQL relevance/performance, 40% budget fit when we have data.
+        const composite = fit.pricedSystems > 0
+          ? sqlScore * 0.6 + fit.score * 0.4
+          : sqlScore * 0.6;
+        return { vendor: v, fit, composite, idx };
+      })
+      .sort((a, b) => b.composite - a.composite || a.idx - b.idx);
+  }, [vendors, recommendedSystems, answers.budget]);
+
+  // Show up to 3 after re-ranking
+  const topVendors = useMemo(
+    () => rankedVendors.slice(0, 3).map((r) => r.vendor),
+    [rankedVendors],
+  );
+
+  // Decide which vendor (if any) earns the "Best for your budget" badge:
+  // the highest-scoring fit among the top 3 with a usable score.
+  const bestBudgetProviderId = useMemo(() => {
+    const top3 = rankedVendors.slice(0, 3);
+    const candidates = top3.filter((r) => r.fit.pricedSystems > 0 && r.fit.withinBudget);
+    if (candidates.length === 0) return null;
+    const winner = candidates.reduce((best, cur) =>
+      cur.fit.score > best.fit.score ? cur : best,
+    );
+    // Only show the highlight badge when there's a meaningful fit
+    return winner.fit.score >= 0.25 ? winner.vendor.provider_id : null;
+  }, [rankedVendors]);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
