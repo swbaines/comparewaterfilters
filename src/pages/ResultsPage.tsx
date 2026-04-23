@@ -18,7 +18,6 @@ import type { Recommendation } from "@/data/recommendations";
 import MatchedVendorsSection from "@/components/MatchedVendorsSection";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
-import { PricingFootnote } from "@/components/PricingFootnote";
 import { getSystemPricing, formatPriceRange, PRICING_DISCLAIMER } from "@/lib/systemPricing";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
@@ -185,8 +184,6 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
             </div>
           </div>
         </div>
-
-        <PricingFootnote variant="compact" />
 
         <div>
           <p className="mb-2 text-sm font-medium">What it helps with</p>
@@ -409,8 +406,6 @@ function PricingExplainer({ result, answers }: { result: RecommendationResult; a
                 annual service cost — so you can compare like-for-like, not just the headline price.
               </p>
             </div>
-
-            <PricingFootnote />
           </div>
         </CollapsibleContent>
       </div>
@@ -1043,7 +1038,6 @@ export default function ResultsPage() {
                             </div>
                           ))}
                         </dl>
-                        <PricingFootnote variant="compact" className="mt-3" />
                       </CardContent>
                     </Card>
                   ))}
@@ -1052,8 +1046,6 @@ export default function ResultsPage() {
             );
           })()}
         </div>
-
-        <PricingFootnote className="mt-6" />
 
         {/* CTAs */}
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
