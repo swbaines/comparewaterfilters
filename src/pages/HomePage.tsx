@@ -626,7 +626,6 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-primary-foreground/80">Free for homeowners · No obligation · Takes 2 minutes</p>
         </div>
       </section>
     </div>
