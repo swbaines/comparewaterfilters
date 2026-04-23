@@ -324,6 +324,9 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // metals / microplastics / bacteria concerns, neither a whole-house filter
   // alone nor an RO unit alone is the correct answer — they need BOTH.
   // The combo becomes the primary recommendation.
+  // Note: we still apply Rule 1b for budget-under-1k users — their concerns
+  // genuinely require both layers of treatment, and we surface the combo as
+  // Premium with an honest budget warning rather than hiding it entirely.
   else if (f.wholeHomeTrigger && f.roTrigger && !f.budgetUnder1k) {
     pushRule("rule-1b-whole-home-plus-ro");
     primaryId = "whole-house-combo";
@@ -332,6 +335,24 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     secondaryReason = `A whole house filtration system on its own delivers chlorine-free water everywhere — but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only if RO at the kitchen tap is genuinely out of reach for now (it can be added later).`;
     premiumId = "reverse-osmosis";
     premiumReason = `For the highest drinking-water purity, a premium reverse osmosis system with alkaline remineralisation pairs perfectly with your whole-house filter — purified, mineral-balanced water at the kitchen plus chlorine-free water at every other tap.`;
+  }
+
+  // ── RULE 1b (budget): under-1k user but still has whole-home + RO needs ─────
+  // Honest budget-aware path: Best is the affordable RO (covers the most
+  // critical contaminants), Good is under-sink carbon, Premium remains the
+  // whole-house+RO combo so they can plan for the proper solution.
+  else if (f.wholeHomeTrigger && f.roTrigger && f.budgetUnder1k) {
+    pushRule("rule-1b-whole-home-plus-ro");
+    pushRule("rule-6-budget-under-1k");
+    primaryId = "reverse-osmosis";
+    primaryReason = `Within your budget, an entry-level reverse osmosis system at the kitchen tap is the most important step — it's the only household technology that removes fluoride, PFAS, heavy metals, microplastics, and bacteria. Around $800 installed. Whole-house coverage can be added later.`;
+    secondaryId = "under-sink-carbon";
+    secondaryReason = `An under-sink carbon and sediment filter is cheaper, but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only as a short-term measure given your concerns.`;
+    premiumId = "whole-house-combo";
+    premiumReason = `The proper long-term solution for your concerns: a whole house filtration system combined with a reverse osmosis unit — chlorine-free water at every tap and shower, plus ultra-pure drinking water at the kitchen. $4,000–$8,000 installed together.`;
+    warnings.push(
+      "Important: Your concerns genuinely call for both whole-house filtration and reverse osmosis. The combo is shown as Premium so you can plan toward it — within your current budget, prioritise the RO unit first.",
+    );
   }
 
   else if (f.wholeHomeTrigger) {

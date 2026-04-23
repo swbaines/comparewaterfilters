@@ -39,6 +39,40 @@ export function budgetBandToRange(band: BudgetBand): BudgetRange | null {
 }
 
 /**
+ * Hard floor pricing per system type ID. Vendors sometimes enter unrealistically
+ * low values; we enforce category minimums so the UI never shows misleading
+ * "from $X" copy or skews budget matching downward.
+ */
+export const SYSTEM_PRICE_FLOORS: Record<string, number> = {
+  "whole-house-filtration": 3000,
+  "whole-house-combo": 4000,
+};
+
+/** Apply the per-system floor to a (min, max) entry. */
+export function applyPriceFloor(
+  systemId: string,
+  entry: { min: number; max: number },
+): { min: number; max: number } {
+  const floor = SYSTEM_PRICE_FLOORS[systemId];
+  if (!floor) return entry;
+  const min = Math.max(entry.min, floor);
+  const max = Math.max(entry.max, min);
+  return { min, max };
+}
+
+/** Floor an entire system_pricing map. */
+export function applyPriceFloors(
+  pricing: Record<string, { min: number; max: number }>,
+): Record<string, { min: number; max: number }> {
+  const out: Record<string, { min: number; max: number }> = {};
+  for (const [id, entry] of Object.entries(pricing || {})) {
+    if (!entry || !isFinite(entry.min) || !isFinite(entry.max)) continue;
+    out[id] = applyPriceFloor(id, entry);
+  }
+  return out;
+}
+
+/**
  * Overlap ratio between [aMin,aMax] and [bMin,bMax], normalised by the
  * smaller of the two ranges. Returns a value in [0, 1].
  */

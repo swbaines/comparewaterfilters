@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeSystemTypeIds } from "@/lib/canonicalSystemTypes";
+import { applyPriceFloors } from "@/lib/budgetMatching";
 
 export interface MatchedVendor {
   provider_id: string;
@@ -83,7 +84,7 @@ export function useMatchedVendors({
       });
       return rows.map((r) => ({
         ...r,
-        system_pricing: priceMap.get(r.provider_id) || {},
+        system_pricing: applyPriceFloors(priceMap.get(r.provider_id) || {}),
       }));
     },
   });
