@@ -7,6 +7,7 @@ import SectionHeading from "@/components/SectionHeading";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { DollarSign, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PricingFootnote } from "@/components/PricingFootnote";
 
 const priceTable = [
   { system: "Under sink carbon filter", installed: "$300 – $1,200", maintenance: "$80 – $200/yr" },
