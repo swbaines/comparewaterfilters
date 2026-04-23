@@ -319,6 +319,21 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   }
 
   // ── RULE 1: Whole-home intent ─────────────────────────────────────────────
+  // ── RULE 1b: Whole-home intent + RO-essential contaminants ────────────────
+  // When the user wants whole-home coverage AND has fluoride / PFAS / heavy
+  // metals / microplastics / bacteria concerns, neither a whole-house filter
+  // alone nor an RO unit alone is the correct answer — they need BOTH.
+  // The combo becomes the primary recommendation.
+  else if (f.wholeHomeTrigger && f.roTrigger && !f.budgetUnder1k) {
+    pushRule("rule-1b-whole-home-plus-ro");
+    primaryId = "whole-house-combo";
+    primaryReason = `Your concerns need both layers of treatment: a whole house filtration system to remove chlorine and protect every tap, shower, and appliance, PLUS a reverse osmosis unit at the kitchen for fluoride, PFAS, heavy metals, microplastics, and bacteria. RO is the only household technology that effectively removes those contaminants — and it only treats one tap, so pairing it with whole-house coverage is the proper solution. $4,000–$8,000 installed together.`;
+    secondaryId = "whole-house-filtration";
+    secondaryReason = `A whole house filtration system on its own delivers chlorine-free water everywhere — but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only if RO at the kitchen tap is genuinely out of reach for now (it can be added later).`;
+    premiumId = "reverse-osmosis";
+    premiumReason = `For the highest drinking-water purity, a premium reverse osmosis system with alkaline remineralisation pairs perfectly with your whole-house filter — purified, mineral-balanced water at the kitchen plus chlorine-free water at every other tap.`;
+  }
+
   else if (f.wholeHomeTrigger) {
     pushRule("rule-1-whole-home");
     if (f.budgetUnder1k) {
