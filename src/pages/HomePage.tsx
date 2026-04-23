@@ -238,7 +238,7 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28 bg-muted-foreground">
         <div className="container relative z-10 text-center">
-          <span className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary">
+          <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold text-primary-foreground bg-primary-foreground">
             Australia's independent water filter comparison
           </span>
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl">
