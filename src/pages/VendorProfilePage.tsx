@@ -453,9 +453,25 @@ export default function VendorProfilePage() {
                 </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Warranty</Label>
-              <Input value={form.warranty} onChange={(e) => setForm((p) => ({ ...p, warranty: e.target.value }))} placeholder="5 year warranty on all installations" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Product Warranty</Label>
+                <Input
+                  value={form.warranty_product}
+                  onChange={(e) => setForm((p) => ({ ...p, warranty_product: e.target.value }))}
+                  placeholder="e.g. 5 years (manufacturer)"
+                />
+                <p className="text-xs text-muted-foreground">Cover provided by the system manufacturer.</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Installation / Workmanship Warranty</Label>
+                <Input
+                  value={form.warranty_workmanship}
+                  onChange={(e) => setForm((p) => ({ ...p, warranty_workmanship: e.target.value }))}
+                  placeholder="e.g. 2 years on installation"
+                />
+                <p className="text-xs text-muted-foreground">Your guarantee on the install and labour.</p>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Highlights (comma-separated)</Label>
