@@ -28,7 +28,7 @@ export default function TermsPage() {
           <h1>COMPARE WATER FILTERS — PLATFORM TERMS AND CONDITIONS</h1>
           <p><strong>Last updated: April 2026</strong><br /><strong>Version: 1.0</strong></p>
 
-          <p>These Terms and Conditions ("Terms") govern your use of the Compare Water Filters platform, website, and services operated by Compare Water Filters Pty Ltd (ACN: [INSERT ACN]) ("Compare Water Filters", "we", "us", "our"), accessible at comparewaterfilters.com.au ("Platform").</p>
+          <p>These Terms and Conditions ("Terms") govern your use of the Compare Water Filters platform, website, and services operated by Compare Water Filters Pty Ltd (ACN: 697 405 093 | ABN: 32 697 405 093) ("Compare Water Filters", "we", "us", "our"), accessible at comparewaterfilters.com.au ("Platform").</p>
           <p>By accessing or using the Platform, you agree to be bound by these Terms. If you do not agree, you must not use the Platform.</p>
 
           <hr />

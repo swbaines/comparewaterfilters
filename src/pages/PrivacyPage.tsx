@@ -20,7 +20,7 @@ export default function PrivacyPage() {
           <h1>COMPARE WATER FILTERS — PRIVACY POLICY</h1>
           <p><strong>Last updated: April 2026</strong><br /><strong>Version: 1.0</strong></p>
 
-          <p>Compare Water Filters Pty Ltd (ACN: [INSERT ACN]) ("Compare Water Filters", "we", "us", "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and disclose your personal information when you use our platform at comparewaterfilters.com.au ("Platform").</p>
+          <p>Compare Water Filters Pty Ltd (ACN: 697 405 093 | ABN: 32 697 405 093) ("Compare Water Filters", "we", "us", "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and disclose your personal information when you use our platform at comparewaterfilters.com.au ("Platform").</p>
           <p>We are bound by the Privacy Act 1988 (Cth) and the Australian Privacy Principles ("APPs") contained in that Act. This Privacy Policy is written in accordance with those obligations.</p>
           <p>By using the Platform, you consent to the collection, use, and disclosure of your personal information as described in this Privacy Policy.</p>
 
@@ -292,8 +292,8 @@ export default function PrivacyPage() {
             <strong>Compare Water Filters Pty Ltd</strong><br />
             <strong>Email:</strong> hello@comparewaterfilters.com.au<br />
             <strong>Website:</strong> comparewaterfilters.com.au<br />
-            <strong>ABN:</strong> [INSERT ABN]<br />
-            <strong>ACN:</strong> [INSERT ACN]
+            <strong>ABN:</strong> 32 697 405 093<br />
+            <strong>ACN:</strong> 697 405 093
           </p>
 
           <hr />
