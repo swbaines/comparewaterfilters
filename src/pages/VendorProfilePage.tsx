@@ -266,6 +266,19 @@ export default function VendorProfilePage() {
           website: form.website ? (/^https?:\/\//i.test(form.website.trim()) ? form.website.trim() : `https://${form.website.trim()}`) : null,
           phone: form.phone || null,
           contact_email: form.contact_email || null,
+            system_pricing: (() => {
+              const out: Record<string, { min: number; max: number }> = {};
+              for (const id of normalizedSystemTypes) {
+                const entry = form.system_pricing[id];
+                if (!entry) continue;
+                const min = Number(entry.min);
+                const max = Number(entry.max);
+                if (!isFinite(min) || !isFinite(max) || min <= 0 || max <= 0) continue;
+                if (max < min) continue;
+                out[id] = { min: Math.round(min), max: Math.round(max) };
+              }
+              return out as any;
+            })(),
         })
         .eq("id", vendorAccount!.provider_id);
       if (error) throw error;
