@@ -758,6 +758,9 @@ export default function ResultsPage() {
         {/* ── Why this recommendation? (rule-fired explainer) ── */}
         <WhyThisRecommendation result={result} answers={answers} />
 
+        {/* ── Debug: full rule-evaluation trace ── */}
+        <RuleDebugPanel result={result} answers={answers} />
+
         {/* ── Now choose who installs it ── */}
         <div className="mt-16 mb-2">
           <div className="flex items-center gap-4">
