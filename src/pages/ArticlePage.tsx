@@ -43,9 +43,10 @@ export default function ArticlePage() {
     ];
     const script = document.createElement("script");
     script.type = "application/ld+json";
+    script.id = "article-jsonld";
     script.text = JSON.stringify(jsonLd);
     document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
+    return () => { document.getElementById("article-jsonld")?.remove(); };
   }, [article]);
 
   if (!article) {
