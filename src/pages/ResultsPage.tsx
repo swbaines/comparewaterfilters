@@ -897,11 +897,6 @@ export default function ResultsPage() {
         )}
 
         {/* ── Pricing explainer ── */}
-        <PricingExplainer result={result} answers={answers} />
-
-        {/* ── Why this recommendation? (rule-fired explainer) ── */}
-        <WhyThisRecommendation result={result} answers={answers} />
-
         {/* ── Debug: full rule-evaluation trace (only with ?debug=1) ── */}
         {searchParams.get("debug") === "1" && (
           <RuleDebugPanel result={result} answers={answers} />
@@ -1077,6 +1072,12 @@ export default function ResultsPage() {
             </p>
           </CardContent>
         </Card>
+
+        {/* ── Pricing explainer (moved to bottom) ── */}
+        <PricingExplainer result={result} answers={answers} />
+
+        {/* ── Why this recommendation? (rule-fired explainer, moved to bottom) ── */}
+        <WhyThisRecommendation result={result} answers={answers} />
       </div>
 
       {/* Sticky mobile bar */}
