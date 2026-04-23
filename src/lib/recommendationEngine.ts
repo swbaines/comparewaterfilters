@@ -210,6 +210,136 @@ const RULE_LABELS: Record<FiredRule, string> = {
   "default": "Default — general drinking-water improvement",
 };
 
+// ─── Debug helper: explain why each rule did/didn't fire ────────────────────
+export interface RuleEvaluation {
+  rule: FiredRule;
+  label: string;
+  fired: boolean;
+  reason: string;
+  matchedConcerns: string[];
+}
+
+export function explainRuleEvaluations(
+  answers: QuizAnswers,
+  dominantRule: FiredRule,
+): RuleEvaluation[] {
+  const f = getFlags(answers);
+  const matched = (ids: string[]) => answers.concerns.filter((c) => ids.includes(c));
+  const untreatedSource =
+    answers.waterSource === "rainwater" ||
+    answers.waterSource === "tank-water" ||
+    answers.waterSource === "bore-water";
+
+  const evals: RuleEvaluation[] = [
+    {
+      rule: "rule-7-untreated-water-uv",
+      label: RULE_LABELS["rule-7-untreated-water-uv"],
+      fired: untreatedSource,
+      matchedConcerns: [],
+      reason: untreatedSource
+        ? `Water source is "${answers.waterSource}" (untreated) — UV path triggered.`
+        : `Water source is "${answers.waterSource || "town"}" — not rainwater/tank/bore.`,
+    },
+    {
+      rule: "rule-5-renter-apartment",
+      label: RULE_LABELS["rule-5-renter-apartment"],
+      fired: !untreatedSource && !f.canHaveWholeHome,
+      matchedConcerns: [],
+      reason: !f.canHaveWholeHome
+        ? `Ownership="${answers.ownershipStatus}", property="${answers.propertyType}" — whole-home/softener not allowed.`
+        : `Owner-occupier in a house — whole-home options remain available.`,
+    },
+    {
+      rule: "rule-2-hard-water-wa-sa",
+      label: RULE_LABELS["rule-2-hard-water-wa-sa"],
+      fired: !untreatedSource && f.canHaveWholeHome && f.hardWaterWASA,
+      matchedConcerns: matched(["hard-water", "appliance"]),
+      reason: f.isWAorSA
+        ? f.hardWaterWASA
+          ? `State=${answers.state} AND hard-water/appliance concern present.`
+          : `State=${answers.state} but no hard-water or appliance concern selected.`
+        : `State=${answers.state || "—"} is not WA or SA.`,
+    },
+    {
+      rule: "rule-1b-whole-home-plus-ro",
+      label: RULE_LABELS["rule-1b-whole-home-plus-ro"],
+      fired:
+        !untreatedSource &&
+        f.canHaveWholeHome &&
+        !f.hardWaterWASA &&
+        f.wholeHomeTrigger &&
+        f.roTrigger,
+      matchedConcerns: matched([
+        "skin-hair", "skin-shower", "appliance", "whole-home", "hard-water", "chlorine",
+        "fluoride", "pfas", "heavy-metals", "microplastics", "bacteria",
+      ]),
+      reason: `wholeHomeTrigger=${f.wholeHomeTrigger} (coverage="${answers.coverage}"), roTrigger=${f.roTrigger}, budgetUnder1k=${f.budgetUnder1k}.`,
+    },
+    {
+      rule: "rule-1-whole-home",
+      label: RULE_LABELS["rule-1-whole-home"],
+      fired:
+        !untreatedSource &&
+        f.canHaveWholeHome &&
+        !f.hardWaterWASA &&
+        f.wholeHomeTrigger &&
+        !f.roTrigger,
+      matchedConcerns: matched(["skin-hair", "skin-shower", "appliance", "whole-home", "hard-water", "chlorine"]),
+      reason: f.wholeHomeTrigger
+        ? f.roTrigger
+          ? `Whole-home intent present, but RO-essential concerns also present — Rule 1b takes priority.`
+          : `Whole-home intent present and no RO-essential concerns — Rule 1 path.`
+        : `No whole-home intent (coverage="${answers.coverage}", no skin/appliance/whole-home concerns).`,
+    },
+    {
+      rule: "rule-3-ro-essential",
+      label: RULE_LABELS["rule-3-ro-essential"],
+      fired:
+        !untreatedSource &&
+        f.canHaveWholeHome &&
+        !f.hardWaterWASA &&
+        !f.wholeHomeTrigger &&
+        f.roTrigger,
+      matchedConcerns: matched(["fluoride", "pfas", "heavy-metals", "microplastics", "bacteria"]),
+      reason: f.roTrigger
+        ? f.wholeHomeTrigger
+          ? `RO-essential concerns present, but whole-home intent also present — Rule 1b takes priority.`
+          : `RO-essential concerns present without whole-home intent — Rule 3 path.`
+        : `No RO-essential concerns (fluoride, PFAS, heavy metals, microplastics, bacteria).`,
+    },
+    {
+      rule: "rule-4-drinking-only",
+      label: RULE_LABELS["rule-4-drinking-only"],
+      fired:
+        !untreatedSource &&
+        f.canHaveWholeHome &&
+        !f.hardWaterWASA &&
+        !f.wholeHomeTrigger &&
+        !f.roTrigger &&
+        f.onlyTasteChlorine,
+      matchedConcerns: matched(["taste", "chlorine", "drinking-quality"]),
+      reason: f.onlyTasteChlorine
+        ? `Only taste/chlorine/drinking-quality concerns + drinking-only coverage.`
+        : `Other concerns or coverage broader than drinking-only.`,
+    },
+    {
+      rule: "rule-6-budget-under-1k",
+      label: RULE_LABELS["rule-6-budget-under-1k"],
+      fired: f.budgetUnder1k,
+      matchedConcerns: [],
+      reason: f.budgetUnder1k
+        ? `Budget="under-1000" — modifies the chosen rule (moves whole-house/combo to Premium).`
+        : `Budget="${answers.budget}" — no budget modifier applied.`,
+    },
+  ];
+
+  // Mark the dominant rule explicitly so the UI can highlight it.
+  return evals.map((e) => ({
+    ...e,
+    fired: e.rule === dominantRule ? true : e.fired,
+  }));
+}
+
 // ─── Main recommendation function ───────────────────────────────────────────
 export function generateRecommendations(answers: QuizAnswers): RecommendationResult {
   const f = getFlags(answers);

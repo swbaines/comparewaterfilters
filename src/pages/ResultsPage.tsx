@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { generateRecommendations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
+import { generateRecommendations, explainRuleEvaluations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
 import type { Recommendation } from "@/data/recommendations";
 import MatchedVendorsSection from "@/components/MatchedVendorsSection";
@@ -459,6 +459,104 @@ function WhyThisRecommendation({ result, answers }: { result: RecommendationResu
   );
 }
 
+function RuleDebugPanel({ result, answers }: { result: RecommendationResult; answers: QuizAnswers }) {
+  const [open, setOpen] = useState(false);
+  const evaluations = useMemo(
+    () => explainRuleEvaluations(answers, result.explanation.rule),
+    [answers, result.explanation.rule],
+  );
+  const dominant = result.explanation.rule;
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} className="mt-4">
+      <div className="mx-auto max-w-3xl rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30">
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
+              <Info className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold sm:text-base">Debug: rule-engine trace</p>
+              <p className="text-xs text-muted-foreground">
+                See which rules fired, which were skipped, and why.
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+            aria-hidden
+          />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="space-y-3 border-t border-muted-foreground/20 px-5 pb-5 pt-4 text-sm">
+            <div className="rounded-md border border-primary/30 bg-accent/30 p-3 text-xs">
+              <p className="font-semibold text-primary">Dominant rule: {dominant}</p>
+              <p className="text-muted-foreground">{result.explanation.ruleLabel}</p>
+            </div>
+            <ul className="space-y-2">
+              {evaluations.map((ev) => {
+                const isDominant = ev.rule === dominant;
+                return (
+                  <li
+                    key={ev.rule}
+                    className={`rounded-md border p-3 ${
+                      isDominant
+                        ? "border-primary/40 bg-primary/5"
+                        : ev.fired
+                          ? "border-sage/40 bg-sage-light/30"
+                          : "border-border bg-background"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-xs font-semibold">
+                        {ev.label}
+                      </p>
+                      <Badge
+                        variant={isDominant ? "default" : ev.fired ? "secondary" : "outline"}
+                        className="shrink-0 text-[10px] uppercase"
+                      >
+                        {isDominant ? "Selected" : ev.fired ? "Eligible" : "Skipped"}
+                      </Badge>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{ev.reason}</p>
+                    {ev.matchedConcerns.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {ev.matchedConcerns.map((c) => (
+                          <Badge key={c} variant="outline" className="text-[10px] font-normal">
+                            {CONCERN_LABELS[c] ?? c}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+            <details className="rounded-md border border-border bg-background p-3 text-xs">
+              <summary className="cursor-pointer font-semibold">Raw quiz inputs</summary>
+              <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-words text-[11px] text-muted-foreground">
+{JSON.stringify(
+  {
+    state: answers.state,
+    waterSource: answers.waterSource,
+    propertyType: answers.propertyType,
+    ownershipStatus: answers.ownershipStatus,
+    coverage: answers.coverage,
+    budget: answers.budget,
+    concerns: answers.concerns,
+  },
+  null,
+  2,
+)}
+              </pre>
+            </details>
+          </div>
+        </CollapsibleContent>
+      </div>
+    </Collapsible>
+  );
+}
+
 export default function ResultsPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -757,6 +855,9 @@ export default function ResultsPage() {
 
         {/* ── Why this recommendation? (rule-fired explainer) ── */}
         <WhyThisRecommendation result={result} answers={answers} />
+
+        {/* ── Debug: full rule-evaluation trace ── */}
+        <RuleDebugPanel result={result} answers={answers} />
 
         {/* ── Now choose who installs it ── */}
         <div className="mt-16 mb-2">
