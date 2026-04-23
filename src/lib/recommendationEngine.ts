@@ -243,7 +243,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
           : "rainwater";
 
     primaryId = "whole-house-filtration";
-    primaryReason = `Because you're on ${sourceLabel} (not treated town water), a whole house filtration system is the right starting point — it removes sediment, organic matter, and provides essential pre-filtration before water reaches your taps and any UV unit. $2,500–$5,000 installed.`;
+    primaryReason = `Because you're on ${sourceLabel} (not treated town water), a whole house filtration system is the right starting point — it removes sediment, organic matter, and provides essential pre-filtration before water reaches your taps and any UV unit. $3,000–$5,000 installed.`;
     secondaryId = "under-sink-carbon";
     secondaryReason = `An under-sink carbon and sediment filter is a much cheaper drinking-water option, but it does NOT kill bacteria, viruses, or other microorganisms — which is the critical risk on ${sourceLabel}. Suitable only as a temporary or supplementary measure.`;
     premiumId = "uv-system";
@@ -344,13 +344,13 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryId = "tap-filter";
       secondaryReason = `A tap-mounted filter is the cheapest entry point — quick to install with no plumbing work, but with limited flow and shorter cartridge life. A reasonable starting point only.`;
       premiumId = "whole-house-filtration";
-      premiumReason = `A whole house filtration system is the proper solution for your concerns — filtering chlorine and sediment from every tap, shower, and appliance throughout your home. $2,500–$5,000 installed.`;
+      premiumReason = `A whole house filtration system is the proper solution for your concerns — filtering chlorine and sediment from every tap, shower, and appliance throughout your home. $3,000–$5,000 installed.`;
       warnings.push(
-        "Important: Whole house filtration systems start from around $2,500 installed — above your current budget. Your concerns (skin/hair, shower, appliances, whole-home coverage) are best addressed by a whole house system, so the under-sink option is a partial solution only."
+        "Important: Whole house filtration systems start from around $3,000 installed — above your current budget. Your concerns (skin/hair, shower, appliances, whole-home coverage) are best addressed by a whole system, so the under-sink option is a partial solution only."
       );
     } else {
       primaryId = "whole-house-filtration";
-      primaryReason = `A whole house filtration system is the right choice for your concerns — it's the only solution that delivers filtered, chlorine-free water to every tap, shower, and appliance in your home. This is what genuinely solves skin/hair irritation, shower-water concerns, and protects your appliances. $2,500–$5,000 installed.`;
+      primaryReason = `A whole house filtration system is the right choice for your concerns — it's the only solution that delivers filtered, chlorine-free water to every tap, shower, and appliance in your home. This is what genuinely solves skin/hair irritation, shower-water concerns, and protects your appliances. $3,000–$5,000 installed.`;
       secondaryId = "under-sink-carbon";
       secondaryReason = `An under-sink carbon and sediment filter is a much cheaper alternative — but it only addresses drinking water at one tap. It will NOT solve skin/hair, shower, or appliance concerns. Suitable only if a whole house system is genuinely out of reach.`;
       premiumId = "whole-house-combo";
