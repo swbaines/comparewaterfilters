@@ -1031,6 +1031,8 @@ export default function ResultsPage() {
           })()}
         </div>
 
+        <PricingFootnote className="mt-6" />
+
         {/* CTAs */}
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link to="/contact">

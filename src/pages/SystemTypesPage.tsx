@@ -8,6 +8,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { systemTypes } from "@/data/systemTypes";
 import { CheckCircle2, XCircle, Droplets, ShieldCheck, Home, Zap, Waves, Layers, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PricingFootnote } from "@/components/PricingFootnote";
 
 const iconMap: Record<string, React.ElementType> = {
   droplets: Droplets,
@@ -147,6 +148,8 @@ export default function SystemTypesPage() {
             );
           })}
         </div>
+
+        <PricingFootnote className="mt-8" />
 
         {/* FAQ */}
         <section className="mt-12">
