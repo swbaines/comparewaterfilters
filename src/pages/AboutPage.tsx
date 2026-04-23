@@ -165,8 +165,9 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-semibold">Independent &amp; transparent</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  We don't sell systems. Our recommendations are based on your water and
-                  your home — not advertiser priority.
+                  We don't sell systems. We don't have affiliates. Our
+                  recommendations are based on your water and your home — not
+                  advertiser priority.
                 </p>
               </CardContent>
             </Card>
