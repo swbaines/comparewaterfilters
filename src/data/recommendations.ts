@@ -114,7 +114,7 @@ export const recommendations: Recommendation[] = [
       "Renters (requires plumbing modification)",
       "Producing ultra-pure drinking water",
     ],
-    priceMin: 1500,
+    priceMin: 3000,
     priceMax: 5000,
     annualMaintenanceMin: 200,
     annualMaintenanceMax: 500,
