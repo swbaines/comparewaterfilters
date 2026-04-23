@@ -136,7 +136,7 @@ export default function PricingGuidePage() {
             {[
               { tier: "Budget", price: "Under $1,000", desc: "Basic under-sink carbon filter. Good for renters, apartments, or anyone wanting improved drinking water taste without a large investment. Effective for chlorine and sediment." },
               { tier: "Mid-range", price: "$1,000 – $3,000", desc: "Quality under-sink RO, or a whole house filtration. Better filtration, longer warranties, and certified performance. Suits most Australian households." },
-              { tier: "Premium", price: "$3,000+", desc: "Whole house filtration, combo systems, premium brands, and comprehensive coverage. Best warranties, top-tier components, and complete peace of mind." },
+              { tier: "Premium", price: "$4,000+", desc: "Whole house filtration, combo systems, premium brands, and comprehensive coverage. Best warranties, top-tier components, and complete peace of mind." },
             ].map((t) => (
               <Card key={t.tier}>
                 <CardContent className="p-5">
