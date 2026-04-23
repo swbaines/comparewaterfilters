@@ -436,15 +436,26 @@ export default function MatchedVendorsSection({
       )}
 
       <div className="space-y-3">
-        {topVendors.map((v, i) => (
-          <VendorRow
-            key={v.provider_id}
-            vendor={v}
-            selected={selected.has(v.provider_id)}
-            onToggle={() => toggleVendor(v.provider_id)}
-            rank={i}
-          />
-        ))}
+        {topVendors.map((v, i) => {
+          const fit = rankedVendors.find((r) => r.vendor.provider_id === v.provider_id)?.fit;
+          const isBest = bestBudgetProviderId === v.provider_id;
+          const budgetBadge = isBest
+            ? "best-budget"
+            : fit && fit.withinBudget && fit.pricedSystems > 0
+              ? "within-budget"
+              : null;
+          return (
+            <VendorRow
+              key={v.provider_id}
+              vendor={v}
+              selected={selected.has(v.provider_id)}
+              onToggle={() => toggleVendor(v.provider_id)}
+              rank={i}
+              budgetBadge={budgetBadge}
+              startingFromLabel={formatStartingFrom(fit?.startingFrom ?? null)}
+            />
+          );
+        })}
       </div>
 
       <Card className="border-2 border-primary/20 bg-background">
