@@ -169,6 +169,8 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
           </div>
         </div>
 
+        <PricingFootnote variant="compact" />
+
         <div>
           <p className="mb-2 text-sm font-medium">What it helps with</p>
           <ul className="space-y-1">
@@ -1022,6 +1024,7 @@ export default function ResultsPage() {
                             </div>
                           ))}
                         </dl>
+                        <PricingFootnote variant="compact" className="mt-3" />
                       </CardContent>
                     </Card>
                   ))}
