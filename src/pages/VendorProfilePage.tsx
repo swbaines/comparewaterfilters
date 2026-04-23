@@ -135,6 +135,20 @@ export default function VendorProfilePage() {
   useEffect(() => {
     if (provider) {
       const radius = provider.service_radius_km ?? 50;
+      // Parse stored warranty string into product / workmanship parts.
+      // Format on save: "Product: X | Installation: Y" (either side optional)
+      const rawWarranty: string = provider.warranty || "";
+      let warrantyProduct = "";
+      let warrantyWorkmanship = "";
+      const productMatch = rawWarranty.match(/Product:\s*([^|]*)/i);
+      const installMatch = rawWarranty.match(/Installation:\s*([^|]*)/i);
+      if (productMatch || installMatch) {
+        warrantyProduct = productMatch?.[1].trim() || "";
+        warrantyWorkmanship = installMatch?.[1].trim() || "";
+      } else {
+        // Legacy single-value warranty — surface it under Product as the default.
+        warrantyProduct = rawWarranty;
+      }
       setForm({
         name: provider.name || "",
         description: provider.description || "",
@@ -145,7 +159,8 @@ export default function VendorProfilePage() {
         certifications: provider.certifications || [],
         highlights: (provider.highlights || []).join(", "),
         response_time: provider.response_time || "Within 48 hours",
-        warranty: provider.warranty || "",
+        warranty_product: warrantyProduct,
+        warranty_workmanship: warrantyWorkmanship,
         website: provider.website || "",
         phone: provider.phone || "",
         contact_email: provider.contact_email || "",
