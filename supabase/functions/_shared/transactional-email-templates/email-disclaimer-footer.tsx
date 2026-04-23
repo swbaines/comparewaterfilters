@@ -22,7 +22,7 @@ export const EmailDisclaimerFooter = () => (
       Compare Water Filters | {CONTACT_EMAIL} | comparewaterfilters.com.au
     </Text>
     <Text style={disclaimerSmall}>
-      ABN: 12345678999
+      Compare Water Filters Pty Ltd | ABN: 32 697 405 093
     </Text>
   </>
 )
