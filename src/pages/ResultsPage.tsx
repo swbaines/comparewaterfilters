@@ -284,7 +284,7 @@ function PricingExplainer({ result, answers }: { result: RecommendationResult; a
 
   if (answers.coverage === "whole-house-plus") {
     drivers.push({
-      label: "Whole house + drinking water",
+      label: "Whole house + reverse osmosis",
       detail: "Two systems combined — adds to install time and parts.",
       effect: "up",
     });
