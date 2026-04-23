@@ -389,6 +389,8 @@ function PricingExplainer({ result, answers }: { result: RecommendationResult; a
                 annual service cost — so you can compare like-for-like, not just the headline price.
               </p>
             </div>
+
+            <PricingFootnote />
           </div>
         </CollapsibleContent>
       </div>
