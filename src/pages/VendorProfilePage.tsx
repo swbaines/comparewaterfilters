@@ -165,6 +165,17 @@ export default function VendorProfilePage() {
         website: provider.website || "",
         phone: provider.phone || "",
         contact_email: provider.contact_email || "",
+        system_pricing: (() => {
+          const raw = (provider.system_pricing || {}) as Record<string, { min?: number | string; max?: number | string }>;
+          const out: Record<string, { min: string; max: string }> = {};
+          for (const [key, val] of Object.entries(raw)) {
+            out[key] = {
+              min: val?.min != null ? String(val.min) : "",
+              max: val?.max != null ? String(val.max) : "",
+            };
+          }
+          return out;
+        })(),
       });
       const mode = detectCoverageMode(provider.service_base_lat, provider.service_base_lng);
       const savedStates: string[] = provider.states || [];
