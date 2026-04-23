@@ -456,7 +456,7 @@ export default function VendorProfilePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Price Range</Label>
+                <Label>Overall Price Tier</Label>
                 <Select value={form.price_range} onValueChange={(v) => setForm((p) => ({ ...p, price_range: v }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -465,6 +465,7 @@ export default function VendorProfilePage() {
                     <SelectItem value="premium">Premium</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">Used as a fallback when per-system pricing isn't set.</p>
               </div>
               <div className="space-y-2">
                 <Label>Response Time</Label>
@@ -478,6 +479,68 @@ export default function VendorProfilePage() {
                 </Select>
               </div>
             </div>
+            {/* Per-system pricing — appears once vendor has selected at least one system type */}
+            {form.system_types.length > 0 && (
+              <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
+                <div>
+                  <Label className="text-base">Indicative Price Range per System</Label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Give a typical installed price (AUD) for each system you offer. We use this to better match customers based on their budget.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  {form.system_types.map((id) => {
+                    const label = SYSTEM_TYPES.find((s) => s.value === id)?.label || id;
+                    const entry = form.system_pricing[id] || { min: "", max: "" };
+                    return (
+                      <div key={id} className="grid grid-cols-1 sm:grid-cols-[1fr_auto_auto] gap-2 sm:gap-3 sm:items-center">
+                        <Label className="text-sm font-medium sm:pr-2">{label}</Label>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Min $</span>
+                          <Input
+                            type="number"
+                            min={0}
+                            inputMode="numeric"
+                            placeholder="800"
+                            value={entry.min}
+                            onChange={(e) =>
+                              setForm((p) => ({
+                                ...p,
+                                system_pricing: {
+                                  ...p.system_pricing,
+                                  [id]: { min: e.target.value, max: p.system_pricing[id]?.max ?? "" },
+                                },
+                              }))
+                            }
+                            className="w-28"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Max $</span>
+                          <Input
+                            type="number"
+                            min={0}
+                            inputMode="numeric"
+                            placeholder="1600"
+                            value={entry.max}
+                            onChange={(e) =>
+                              setForm((p) => ({
+                                ...p,
+                                system_pricing: {
+                                  ...p.system_pricing,
+                                  [id]: { min: p.system_pricing[id]?.min ?? "", max: e.target.value },
+                                },
+                              }))
+                            }
+                            className="w-28"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Product Warranty</Label>
