@@ -251,7 +251,7 @@ export default function HomePage() {
           <div className="mt-8 flex flex-col items-center gap-4">
             <Link to="/quiz">
               <Button size="lg" className="gap-2 px-10 py-6 text-lg font-bold shadow-lg">
-                Find My System <ArrowRight className="h-5 w-5" />
+                Get Free Quotes in 2 Minutes <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
             <Link to="/water-quality">
@@ -259,6 +259,9 @@ export default function HomePage() {
                 <Search className="h-3 w-3" /> Check my water quality
               </Button>
             </Link>
+            <p className="mt-1 max-w-md text-xs text-muted-foreground">
+              We'll match you with licensed water filtration providers servicing your area.
+            </p>
           </div>
         </div>
       </section>
@@ -623,7 +626,6 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <p className="mt-4 text-xs text-primary-foreground/80">Free for homeowners · No obligation · Takes 2 minutes</p>
         </div>
       </section>
     </div>
