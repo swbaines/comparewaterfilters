@@ -338,6 +338,7 @@ export type Database = {
           slug: string
           states: string[]
           submitted_by: string | null
+          system_pricing: Json
           system_types: string[]
           terms_accepted_at: string | null
           updated_at: string
@@ -377,6 +378,7 @@ export type Database = {
           slug: string
           states?: string[]
           submitted_by?: string | null
+          system_pricing?: Json
           system_types?: string[]
           terms_accepted_at?: string | null
           updated_at?: string
@@ -416,6 +418,7 @@ export type Database = {
           slug?: string
           states?: string[]
           submitted_by?: string | null
+          system_pricing?: Json
           system_types?: string[]
           terms_accepted_at?: string | null
           updated_at?: string
