@@ -113,7 +113,8 @@ export default function VendorProfilePage() {
     certifications: [] as string[],
     highlights: "",
     response_time: "Within 48 hours",
-    warranty: "",
+    warranty_product: "",
+    warranty_workmanship: "",
     website: "",
     phone: "",
     contact_email: "",
@@ -134,6 +135,20 @@ export default function VendorProfilePage() {
   useEffect(() => {
     if (provider) {
       const radius = provider.service_radius_km ?? 50;
+      // Parse stored warranty string into product / workmanship parts.
+      // Format on save: "Product: X | Installation: Y" (either side optional)
+      const rawWarranty: string = provider.warranty || "";
+      let warrantyProduct = "";
+      let warrantyWorkmanship = "";
+      const productMatch = rawWarranty.match(/Product:\s*([^|]*)/i);
+      const installMatch = rawWarranty.match(/Installation:\s*([^|]*)/i);
+      if (productMatch || installMatch) {
+        warrantyProduct = productMatch?.[1].trim() || "";
+        warrantyWorkmanship = installMatch?.[1].trim() || "";
+      } else {
+        // Legacy single-value warranty — surface it under Product as the default.
+        warrantyProduct = rawWarranty;
+      }
       setForm({
         name: provider.name || "",
         description: provider.description || "",
@@ -144,7 +159,8 @@ export default function VendorProfilePage() {
         certifications: provider.certifications || [],
         highlights: (provider.highlights || []).join(", "),
         response_time: provider.response_time || "Within 48 hours",
-        warranty: provider.warranty || "",
+        warranty_product: warrantyProduct,
+        warranty_workmanship: warrantyWorkmanship,
         website: provider.website || "",
         phone: provider.phone || "",
         contact_email: provider.contact_email || "",
@@ -231,7 +247,10 @@ export default function VendorProfilePage() {
           certifications: form.certifications,
           highlights: form.highlights.split(",").map((s) => s.trim()).filter(Boolean),
           response_time: form.response_time,
-          warranty: form.warranty,
+          warranty: [
+            form.warranty_product.trim() && `Product: ${form.warranty_product.trim()}`,
+            form.warranty_workmanship.trim() && `Installation: ${form.warranty_workmanship.trim()}`,
+          ].filter(Boolean).join(" | "),
           website: form.website ? (/^https?:\/\//i.test(form.website.trim()) ? form.website.trim() : `https://${form.website.trim()}`) : null,
           phone: form.phone || null,
           contact_email: form.contact_email || null,
@@ -434,9 +453,25 @@ export default function VendorProfilePage() {
                 </Select>
               </div>
             </div>
-            <div className="space-y-2">
-              <Label>Warranty</Label>
-              <Input value={form.warranty} onChange={(e) => setForm((p) => ({ ...p, warranty: e.target.value }))} placeholder="5 year warranty on all installations" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Product Warranty</Label>
+                <Input
+                  value={form.warranty_product}
+                  onChange={(e) => setForm((p) => ({ ...p, warranty_product: e.target.value }))}
+                  placeholder="e.g. 5 years (manufacturer)"
+                />
+                <p className="text-xs text-muted-foreground">Cover provided by the system manufacturer.</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Installation / Workmanship Warranty</Label>
+                <Input
+                  value={form.warranty_workmanship}
+                  onChange={(e) => setForm((p) => ({ ...p, warranty_workmanship: e.target.value }))}
+                  placeholder="e.g. 2 years on installation"
+                />
+                <p className="text-xs text-muted-foreground">Your guarantee on the install and labour.</p>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Highlights (comma-separated)</Label>
