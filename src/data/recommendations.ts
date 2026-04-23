@@ -138,7 +138,7 @@ export const recommendations: Recommendation[] = [
   {
     id: "whole-house-combo",
     slug: "whole-house-plus-drinking-water",
-    title: "Whole House + Drinking Water Combo",
+    title: "Whole House + Reverse Osmosis Combo",
     category: "Hybrid System",
     description: "The best of both worlds — a whole house filter for general water quality, combined with a dedicated drinking water system (carbon or RO) at the kitchen for the highest purity.",
     bestFor: [
