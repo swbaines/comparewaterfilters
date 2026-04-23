@@ -22,6 +22,11 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import { useMatchedVendors, type MatchedVendor } from "@/hooks/useMatchedVendors";
+import {
+  scoreVendorBudgetFit,
+  formatStartingFrom,
+  type BudgetBand,
+} from "@/lib/budgetMatching";
 
 interface Props {
   customerLat: number | null;
@@ -43,11 +48,15 @@ function VendorRow({
   selected,
   onToggle,
   rank,
+  budgetBadge,
+  startingFromLabel,
 }: {
   vendor: MatchedVendor;
   selected: boolean;
   onToggle: () => void;
   rank: number;
+  budgetBadge: "best-budget" | "within-budget" | null;
+  startingFromLabel: string | null;
 }) {
   const rankLabels: Record<number, string> = {
     0: "Top match",
@@ -91,6 +100,16 @@ function VendorRow({
                         {rankLabels[rank]}
                       </Badge>
                     )}
+                    {budgetBadge === "best-budget" && (
+                      <Badge className="bg-primary/10 text-primary border border-primary/30">
+                        Best for your budget
+                      </Badge>
+                    )}
+                    {budgetBadge === "within-budget" && (
+                      <Badge variant="outline" className="text-xs">
+                        Within your budget
+                      </Badge>
+                    )}
                     {vendor.cap_exceeded && (
                       <Badge variant="outline" className="gap-1 text-xs">
                         <AlertCircle className="h-3 w-3" /> High volume this month
@@ -98,6 +117,11 @@ function VendorRow({
                     )}
                   </div>
                   <h3 className="mt-1 truncate text-base font-semibold">{vendor.name}</h3>
+                  {startingFromLabel && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      Indicative pricing {startingFromLabel}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
