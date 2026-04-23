@@ -66,7 +66,7 @@ const ROUTES: RouteMeta[] = [
     title:
       "Whole House Water Filter Prices Australia 2026 — Installed Costs",
     description:
-      "How much does a whole house water filter cost in Australia? Installed prices from $300–$6,500+, maintenance costs and what affects pricing per system type.",
+      "How much does a whole house water filter cost in Australia? Installed prices from $300–$6,000, maintenance costs and what affects pricing per system type.",
     canonical: `${BASE_URL}/pricing-guide`,
     ogImage: DEFAULT_OG,
   },

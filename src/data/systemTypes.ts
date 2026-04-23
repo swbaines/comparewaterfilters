@@ -140,7 +140,7 @@ export const systemTypes: SystemType[] = [
     whatItDoes: "Not a single product — a 'combo' or 'hybrid' setup is two or more systems installed together. Most commonly a whole house filter paired with an under-sink reverse osmosis unit (and sometimes a UV stage for non-town water). Provides general filtration for the whole property plus high-purity drinking water at the kitchen.",
     whatItDoesNot: "No single hybrid system does everything perfectly. Each component addresses specific concerns, and the overall system is only as good as its individual parts.",
     whoItSuits: "Families wanting the best overall water quality. Homeowners renovating and willing to invest in a complete solution. Properties with multiple bathrooms and a desire for both whole house and premium drinking water.",
-    priceRange: "$4,000 – $6,500+ installed",
+    priceRange: "$3,000 – $6,000 installed",
     maintenance: "Multiple filter sets to maintain. Annual cost typically $350–$700 depending on system components.",
     pros: [
       "Most comprehensive water quality solution",
