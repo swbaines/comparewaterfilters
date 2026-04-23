@@ -7,6 +7,7 @@ import SectionHeading from "@/components/SectionHeading";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { DollarSign, ArrowRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { PricingFootnote } from "@/components/PricingFootnote";
 
 const priceTable = [
   { system: "Under sink carbon filter", installed: "$300 – $1,200", maintenance: "$80 – $200/yr" },
@@ -124,9 +125,7 @@ export default function PricingGuidePage() {
               </div>
             </CardContent>
           </Card>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Prices are indicative ranges based on typical Australian residential installations. Actual costs may vary by location, plumbing requirements, and provider.
-          </p>
+          <PricingFootnote />
         </section>
 
         {/* Budget vs Premium */}
