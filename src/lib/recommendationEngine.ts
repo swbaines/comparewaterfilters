@@ -596,7 +596,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     secondaryId = "whole-house-filtration";
     secondaryReason = `A whole house filtration system on its own delivers chlorine-free water everywhere — but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only if RO at the kitchen tap is genuinely out of reach for now (it can be added later).`;
     premiumId = "whole-house-combo";
-    premiumReason = `The premium build of the same solution: a higher-spec whole house filtration system paired with a reverse osmosis unit featuring alkaline remineralisation — chlorine-free water at every tap and shower, plus purified, mineral-balanced drinking water at the kitchen. Typically $6,000–$8,000 installed together.`;
+    premiumReason = `The premium build of the same solution: a higher-spec whole house filtration system paired with a reverse osmosis unit featuring alkaline remineralisation — chlorine-free water at every tap and shower, plus purified, mineral-balanced drinking water at the kitchen. Typically $5,000–$6,000 installed together.`;
   }
 
   // ── RULE 1b (budget): under-1k user but still has whole-home + RO needs ─────
@@ -611,7 +611,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     secondaryId = "under-sink-carbon";
     secondaryReason = `An under-sink carbon and sediment filter is cheaper, but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only as a short-term measure given your concerns.`;
     premiumId = "whole-house-combo";
-    premiumReason = `The proper long-term solution for your concerns: a whole house filtration system combined with a reverse osmosis unit — chlorine-free water at every tap and shower, plus ultra-pure drinking water at the kitchen. $4,000–$8,000 installed together.`;
+    premiumReason = `The proper long-term solution for your concerns: a whole house filtration system combined with a reverse osmosis unit — chlorine-free water at every tap and shower, plus ultra-pure drinking water at the kitchen. $4,000–$6,000 installed together.`;
     warnings.push(
       "Important: Your concerns genuinely call for both whole-house filtration and reverse osmosis. The combo is shown as Premium so you can plan toward it — within your current budget, prioritise the RO unit first.",
     );
@@ -637,7 +637,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       secondaryId = "under-sink-carbon";
       secondaryReason = `An under-sink carbon and sediment filter is a much cheaper alternative — but it only addresses drinking water at one tap. It will NOT solve skin/hair, shower, or appliance concerns. Suitable only if a whole house system is genuinely out of reach.`;
       premiumId = "whole-house-combo";
-      premiumReason = `The complete premium solution: a whole house filtration system combined with a reverse osmosis drinking water unit — chlorine-free water everywhere, plus ultra-pure drinking water at the kitchen. The best of both worlds at $4,000–$8,000 installed.`;
+      premiumReason = `The complete premium solution: a whole house filtration system combined with a reverse osmosis drinking water unit — chlorine-free water everywhere, plus ultra-pure drinking water at the kitchen. The best of both worlds at $4,000–$6,000 installed.`;
     }
   }
 
@@ -649,7 +649,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     secondaryId = "under-sink-carbon";
     secondaryReason = `An under-sink carbon and sediment filter is a more affordable alternative — but be aware: carbon filters reduce but do not eliminate fluoride, PFAS, heavy metals, or microplastics. RO is the proper solution for these contaminants.`;
     premiumId = "whole-house-combo";
-    premiumReason = `For the complete solution, combine a whole house filtration system with reverse osmosis — chlorine-free water at every tap and shower, plus ultra-pure drinking water at the kitchen. $4,000–$8,000 installed together.`;
+    premiumReason = `For the complete solution, combine a whole house filtration system with reverse osmosis — chlorine-free water at every tap and shower, plus ultra-pure drinking water at the kitchen. $4,000–$6,000 installed together.`;
 
     if (f.budgetUnder1k) {
       warnings.push(
