@@ -29,6 +29,7 @@ export type FiredRule =
   | "rule-5-renter-apartment"
   | "rule-6-budget-under-1k"
   | "rule-7-untreated-water-uv"
+  | "rule-1b-whole-home-plus-ro"
   | "default";
 
 export interface RuleExplanation {
@@ -205,6 +206,7 @@ const RULE_LABELS: Record<FiredRule, string> = {
   "rule-5-renter-apartment": "Rule 5 — Renter or apartment (no whole-home or softener)",
   "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
   "rule-7-untreated-water-uv": "Rule 7 — Untreated water source (rainwater, tank, or bore) — UV recommended",
+  "rule-1b-whole-home-plus-ro": "Rule 1b — Whole-home intent + RO-essential contaminants (combo recommended)",
   "default": "Default — general drinking-water improvement",
 };
 
@@ -317,6 +319,21 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   }
 
   // ── RULE 1: Whole-home intent ─────────────────────────────────────────────
+  // ── RULE 1b: Whole-home intent + RO-essential contaminants ────────────────
+  // When the user wants whole-home coverage AND has fluoride / PFAS / heavy
+  // metals / microplastics / bacteria concerns, neither a whole-house filter
+  // alone nor an RO unit alone is the correct answer — they need BOTH.
+  // The combo becomes the primary recommendation.
+  else if (f.wholeHomeTrigger && f.roTrigger && !f.budgetUnder1k) {
+    pushRule("rule-1b-whole-home-plus-ro");
+    primaryId = "whole-house-combo";
+    primaryReason = `Your concerns need both layers of treatment: a whole house filtration system to remove chlorine and protect every tap, shower, and appliance, PLUS a reverse osmosis unit at the kitchen for fluoride, PFAS, heavy metals, microplastics, and bacteria. RO is the only household technology that effectively removes those contaminants — and it only treats one tap, so pairing it with whole-house coverage is the proper solution. $4,000–$8,000 installed together.`;
+    secondaryId = "whole-house-filtration";
+    secondaryReason = `A whole house filtration system on its own delivers chlorine-free water everywhere — but it does NOT remove fluoride, PFAS, heavy metals, or microplastics. Suitable only if RO at the kitchen tap is genuinely out of reach for now (it can be added later).`;
+    premiumId = "reverse-osmosis";
+    premiumReason = `For the highest drinking-water purity, a premium reverse osmosis system with alkaline remineralisation pairs perfectly with your whole-house filter — purified, mineral-balanced water at the kitchen plus chlorine-free water at every other tap.`;
+  }
+
   else if (f.wholeHomeTrigger) {
     pushRule("rule-1-whole-home");
     if (f.budgetUnder1k) {
@@ -389,6 +406,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   const RULE_TO_TRIGGERING_CONCERNS: Record<FiredRule, string[]> = {
     "rule-1-whole-home": ["skin-hair", "skin-shower", "appliance", "whole-home", "hard-water", "chlorine"],
+    "rule-1b-whole-home-plus-ro": ["skin-hair", "skin-shower", "appliance", "whole-home", "hard-water", "chlorine", "fluoride", "pfas", "heavy-metals", "microplastics", "bacteria"],
     "rule-2-hard-water-wa-sa": ["hard-water", "appliance"],
     "rule-3-ro-essential": ["fluoride", "pfas", "heavy-metals", "microplastics", "bacteria"],
     "rule-4-drinking-only": ["taste", "chlorine", "drinking-quality"],
