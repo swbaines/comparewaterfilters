@@ -896,21 +896,23 @@ export default function ResultsPage() {
           </>
         )}
 
-        {/* ── Pricing explainer ── */}
         {/* ── Debug: full rule-evaluation trace (only with ?debug=1) ── */}
         {searchParams.get("debug") === "1" && (
           <RuleDebugPanel result={result} answers={answers} />
         )}
 
-        {/* ── Now choose who installs it ── */}
-        <div className="mt-12" id="matched-providers">
-          <div className="mb-6 text-center">
+        {/* ── Matched providers (next step) ── */}
+        <div className="mt-16 scroll-mt-24" id="matched-providers">
+          <div className="mb-8 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <Users className="h-6 w-6 text-primary" />
+            </div>
             <Badge className="mb-3" variant="secondary">
-              <Users className="mr-1 h-3 w-3" /> Matched providers
+              Next step
             </Badge>
-            <h2 className="text-xl font-bold sm:text-2xl">Providers matched to your needs</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
-              Tick the providers you'd like a free quote from. They'll contact you directly — you're not committing to anything.
+            <h2 className="text-2xl font-bold sm:text-3xl">Choose who installs it</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+              Tick the trusted local providers you'd like a free quote from. They'll contact you directly — you're not committing to anything, and your details are already saved.
             </p>
           </div>
 
