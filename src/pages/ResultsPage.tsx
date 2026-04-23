@@ -116,6 +116,16 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
     premium: "bg-warm-light text-foreground border-warm/30",
   };
 
+  // Dynamic pricing from the canonical system pricing table. Falls back to
+  // the recommendation's own min/max if the system isn't in the pricing table.
+  const dynamicPricing = getSystemPricing(rec.id);
+  const installRange = dynamicPricing
+    ? formatPriceRange(dynamicPricing.installMin, dynamicPricing.installMax)
+    : formatPriceRange(rec.priceMin, rec.priceMax);
+  const annualRange = dynamicPricing
+    ? formatPriceRange(dynamicPricing.annualMin, dynamicPricing.annualMax)
+    : formatPriceRange(rec.annualMaintenanceMin, rec.annualMaintenanceMax);
+
   const card = (
     <Card className={`overflow-hidden border-2 ${variant === "allrounder" ? "border-primary shadow-lg" : ""}`}>
       <CardHeader className="pb-3">
