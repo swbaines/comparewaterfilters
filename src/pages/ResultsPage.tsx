@@ -19,6 +19,7 @@ import MatchedVendorsSection from "@/components/MatchedVendorsSection";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 import { PricingFootnote } from "@/components/PricingFootnote";
+import { getSystemPricing, formatPriceRange, PRICING_DISCLAIMER } from "@/lib/systemPricing";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins on taste and drinking water without a big upfront spend.",
@@ -115,6 +116,16 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
     premium: "bg-warm-light text-foreground border-warm/30",
   };
 
+  // Dynamic pricing from the canonical system pricing table. Falls back to
+  // the recommendation's own min/max if the system isn't in the pricing table.
+  const dynamicPricing = getSystemPricing(rec.id);
+  const installRange = dynamicPricing
+    ? formatPriceRange(dynamicPricing.installMin, dynamicPricing.installMax)
+    : formatPriceRange(rec.priceMin, rec.priceMax);
+  const annualRange = dynamicPricing
+    ? formatPriceRange(dynamicPricing.annualMin, dynamicPricing.annualMax)
+    : formatPriceRange(rec.annualMaintenanceMin, rec.annualMaintenanceMax);
+
   const card = (
     <Card className={`overflow-hidden border-2 ${variant === "allrounder" ? "border-primary shadow-lg" : ""}`}>
       <CardHeader className="pb-3">
@@ -138,21 +149,27 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">Why this fits you: </span>{reason}</p>
 
+        <div className="rounded-lg border border-border/60 bg-muted/40 p-3">
+          <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+            <div className="flex items-start gap-2">
+              <DollarSign className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <div>
+                <p className="font-medium">Installed price</p>
+                <p className="text-muted-foreground">{installRange}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <div>
+                <p className="font-medium">Annual maintenance</p>
+                <p className="text-muted-foreground">{annualRange}</p>
+              </div>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{PRICING_DISCLAIMER}</p>
+        </div>
+
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-start gap-2">
-            <DollarSign className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <div>
-              <p className="font-medium">Installed price</p>
-              <p className="text-muted-foreground">${rec.priceMin.toLocaleString()} – ${rec.priceMax.toLocaleString()}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Wrench className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <div>
-              <p className="font-medium">Annual maintenance</p>
-              <p className="text-muted-foreground">${rec.annualMaintenanceMin} – ${rec.annualMaintenanceMax}/yr</p>
-            </div>
-          </div>
           <div className="flex items-start gap-2">
             <Home className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div>
