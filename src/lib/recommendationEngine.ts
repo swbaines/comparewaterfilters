@@ -206,6 +206,7 @@ const RULE_LABELS: Record<FiredRule, string> = {
   "rule-5-renter-apartment": "Rule 5 — Renter or apartment (no whole-home or softener)",
   "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
   "rule-7-untreated-water-uv": "Rule 7 — Untreated water source (rainwater, tank, or bore) — UV recommended",
+  "rule-1b-whole-home-plus-ro": "Rule 1b — Whole-home intent + RO-essential contaminants (combo recommended)",
   "default": "Default — general drinking-water improvement",
 };
 
