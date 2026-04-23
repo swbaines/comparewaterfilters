@@ -200,44 +200,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Business details */}
-      <section className="container py-16">
-        <div className="mx-auto max-w-3xl">
-          <SectionHeading title="Business details" subtitle="Where to find us" />
-          <Card className="mt-6">
-            <CardContent className="grid gap-6 p-6 md:grid-cols-2">
-              <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-sm font-semibold">Based in</p>
-                  <p className="text-sm text-muted-foreground">
-                    Melbourne, Victoria, Australia
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Servicing all states &amp; territories
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 h-5 w-5 text-primary" />
-                <div>
-                  <p className="text-sm font-semibold">Get in touch</p>
-                  <a
-                    href="mailto:hello@comparewaterfilters.com.au"
-                    className="text-sm text-primary hover:underline"
-                  >
-                    hello@comparewaterfilters.com.au
-                  </a>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    We typically respond within 1 business day.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="bg-primary/5 py-16">
         <div className="container text-center">
