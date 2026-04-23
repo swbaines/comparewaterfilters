@@ -11,7 +11,7 @@ import NoIndex from "@/components/NoIndex";
 const BRAND = "#0bb87a";
 
 export default function BrandPreviewPage() {
-  const [dark, setDark] = useState（false);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -179,6 +179,7 @@ export default function BrandPreviewPage() {
           </div>
         </section>
       </div>
+    </div>
     </div>
   );
 }
