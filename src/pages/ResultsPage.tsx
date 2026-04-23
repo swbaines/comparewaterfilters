@@ -457,7 +457,7 @@ function WhyThisRecommendation({ result, answers }: { result: RecommendationResu
                 <p className="text-muted-foreground">
                   {explanation.rule === "rule-5-renter-apartment"
                     ? `Because you ${answers.propertyType === "Apartment" ? "live in an apartment" : "rent your home"} — whole-house and softener systems aren't practical, so we picked the best installable option for your concerns.`
-                    : "No specific concerns triggered this — we used the default drinking-water improvement path."}
+                    : "No specific concerns triggered this — we used the default reverse osmosis / under-sink carbon kitchen-tap improvement path."}
                 </p>
               )}
             </div>
