@@ -1242,33 +1242,97 @@ export default function AdminProvidersPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
-                  <Button className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white" onClick={async () => {
-                    const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", reviewProvider.id);
-                    if (error) { toast.error(error.message); return; }
-                    toast.success(`${reviewProvider.name} approved!`);
-                    queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
-                    setReviewProvider(null);
-                    // Auto-create Stripe customer
-                    supabase.functions.invoke('create-stripe-customer', { body: { provider_id: reviewProvider.id } })
-                      .then(({ error: stripeErr }) => {
-                        if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
-                        else toast.success('Stripe customer created');
-                      });
-                  }}>
-                    <CheckCircle2 className="h-4 w-4" /> Approve
-                  </Button>
-                  <Button variant="destructive" className="flex-1 gap-2" onClick={async () => {
-                    const { error } = await supabase.from("providers").update({ approval_status: "rejected" as any }).eq("id", reviewProvider.id);
-                    if (error) toast.error(error.message);
-                    else {
-                      toast.success(`${reviewProvider.name} rejected`);
-                      queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
-                      setReviewProvider(null);
-                    }
-                  }}>
-                    <XCircle className="h-4 w-4" /> Reject
-                  </Button>
+                <div className="space-y-3 pt-2 border-t">
+                  {/* Status + visibility controls */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">Approval status</Label>
+                      <Select
+                        value={reviewProvider.approval_status}
+                        onValueChange={async (value) => {
+                          await updateApprovalStatus(reviewProvider.id, value as ProviderRow["approval_status"]);
+                          const { data } = await supabase.from("providers").select("*").eq("id", reviewProvider.id).maybeSingle();
+                          if (data) setReviewProvider(data as ProviderRow);
+                        }}
+                      >
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">Available for quote</Label>
+                      <div className="flex items-center gap-2 h-10 px-3 rounded-md border">
+                        <Switch
+                          checked={reviewProvider.available_for_quote}
+                          onCheckedChange={async (checked) => {
+                            const { error } = await supabase
+                              .from("providers")
+                              .update({ available_for_quote: checked })
+                              .eq("id", reviewProvider.id);
+                            if (error) { toast.error(error.message); return; }
+                            toast.success(checked ? "Provider is now visible to customers" : "Provider hidden from customers");
+                            queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                            queryClient.invalidateQueries({ queryKey: ["providers"] });
+                            setReviewProvider({ ...reviewProvider, available_for_quote: checked });
+                          }}
+                        />
+                        <span className="text-sm">{reviewProvider.available_for_quote ? "Visible" : "Hidden"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick actions */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      className="flex-1 min-w-[140px] gap-2 bg-green-600 hover:bg-green-700 text-white"
+                      disabled={reviewProvider.approval_status === "approved"}
+                      onClick={async () => {
+                        const { error } = await supabase.from("providers").update({ approval_status: "approved" as any, available_for_quote: true }).eq("id", reviewProvider.id);
+                        if (error) { toast.error(error.message); return; }
+                        toast.success(`${reviewProvider.name} approved!`);
+                        queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                        setReviewProvider(null);
+                        supabase.functions.invoke('create-stripe-customer', { body: { provider_id: reviewProvider.id } })
+                          .then(({ error: stripeErr }) => {
+                            if (stripeErr) console.error('Stripe customer creation failed:', stripeErr);
+                            else toast.success('Stripe customer created');
+                          });
+                        sendApplicationDecisionEmail(reviewProvider.id, "approved");
+                      }}
+                    >
+                      <CheckCircle2 className="h-4 w-4" /> Approve
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="flex-1 min-w-[140px] gap-2"
+                      disabled={reviewProvider.approval_status === "rejected"}
+                      onClick={() => setPendingApplicationReject({ id: reviewProvider.id, name: reviewProvider.name })}
+                    >
+                      <XCircle className="h-4 w-4" /> Reject
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => {
+                        const p = reviewProvider;
+                        setReviewProvider(null);
+                        openEdit(p);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" /> Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="gap-2 text-destructive hover:text-destructive"
+                      onClick={() => setPendingDelete({ id: reviewProvider.id, name: reviewProvider.name })}
+                    >
+                      <Trash2 className="h-4 w-4" /> Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
