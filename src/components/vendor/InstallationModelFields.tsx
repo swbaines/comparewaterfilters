@@ -2,7 +2,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,15 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
 
 export type InstallationModel = "in_house_licensed" | "sub_contracted";
-
-export interface InstallationPartner {
-  business_name: string;
-  licence_number: string;
-  state: string;
-}
 
 export interface InstallationModelValue {
   installation_model: InstallationModel | null;
@@ -27,7 +19,6 @@ export interface InstallationModelValue {
   has_public_liability: boolean;
   insurer_name: string;
   public_liability_insurance_amount: string; // string in form, parsed on save
-  installation_partners: InstallationPartner[];
   sub_contractor_confirmed: boolean;
 }
 
@@ -43,11 +34,7 @@ export const AU_STATE_OPTIONS = [
 ] as const;
 
 export const SUB_CONTRACTOR_DECLARATION =
-  "I confirm that all installations performed via this platform will be carried out by appropriately licensed plumbers in compliance with the relevant state plumbing regulations. I take full responsibility for ensuring my installation partners hold current licences and insurance.";
-
-export function emptyPartner(): InstallationPartner {
-  return { business_name: "", licence_number: "", state: "" };
-}
+  "I confirm that all water filtration installations performed via Compare Water Filters will be carried out by appropriately licensed plumbers in compliance with the relevant state plumbing regulations (Plumbing and Drainage Act, AS/NZS 3500, and applicable state codes). I take full legal responsibility for ensuring my installation partners hold current plumbing licences and public liability insurance at all times. I acknowledge that engaging unlicensed installers will result in immediate termination from the platform and potential legal action.";
 
 interface Props {
   value: InstallationModelValue;
@@ -59,29 +46,6 @@ export default function InstallationModelFields({ value, onChange }: Props) {
     key: K,
     v: InstallationModelValue[K],
   ) => onChange({ ...value, [key]: v });
-
-  const updatePartner = (
-    idx: number,
-    field: keyof InstallationPartner,
-    v: string,
-  ) => {
-    const next = value.installation_partners.map((p, i) =>
-      i === idx ? { ...p, [field]: v } : p,
-    );
-    update("installation_partners", next);
-  };
-
-  const addPartner = () =>
-    update("installation_partners", [
-      ...value.installation_partners,
-      emptyPartner(),
-    ]);
-
-  const removePartner = (idx: number) =>
-    update(
-      "installation_partners",
-      value.installation_partners.filter((_, i) => i !== idx),
-    );
 
   return (
     <div className="space-y-5">
