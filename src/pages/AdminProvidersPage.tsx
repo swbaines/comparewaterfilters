@@ -48,6 +48,17 @@ const emptyForm: Omit<TablesInsert<"providers">, "id" | "created_at" | "updated_
   warranty: "",
   website: null,
   phone: null,
+  trading_name: null,
+  abn: "",
+  contact_email: null,
+  google_business_url: "",
+  plumber_licence_number: "",
+  has_public_liability: false,
+  insurer_name: "",
+  service_base_suburb: null,
+  service_base_postcode: null,
+  service_base_state: null,
+  service_radius_km: 50,
 };
 
 function arrayFieldToString(arr: string[] | null | undefined): string {
