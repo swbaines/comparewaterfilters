@@ -207,6 +207,38 @@ export default function VendorProfilePage() {
         statewide: radius >= 2000,
         regions: mode === "regions" ? savedStates.filter((s: string) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
       });
+
+      const partnersRaw = (provider as any).installation_partners as
+        | InstallationPartner[]
+        | null
+        | undefined;
+      const partners =
+        Array.isArray(partnersRaw) && partnersRaw.length > 0
+          ? partnersRaw.map((p) => ({
+              business_name: p?.business_name ?? "",
+              licence_number: p?.licence_number ?? "",
+              state: p?.state ?? "",
+            }))
+          : [{ business_name: "", licence_number: "", state: "" }];
+      setInstallation({
+        installation_model:
+          ((provider as any).installation_model as
+            | "in_house_licensed"
+            | "sub_contracted"
+            | null) ?? null,
+        plumber_licence_number: provider.plumber_licence_number ?? "",
+        plumbing_licence_state:
+          ((provider as any).plumbing_licence_state as string | null) ?? "",
+        has_public_liability: provider.has_public_liability ?? false,
+        insurer_name: provider.insurer_name ?? "",
+        public_liability_insurance_amount:
+          (provider as any).public_liability_insurance_amount != null
+            ? String((provider as any).public_liability_insurance_amount)
+            : "",
+        installation_partners: partners,
+        sub_contractor_confirmed: !!(provider as any)
+          .sub_contractor_confirmation_at,
+      });
     }
   }, [provider]);
 
