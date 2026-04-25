@@ -1162,20 +1162,15 @@ export default function AdminProvidersPage() {
                 <Input type="number" value={form.service_radius_km ?? 0} onChange={(e) => updateField("service_radius_km", parseInt(e.target.value) || 0)} />
               </div>
 
-              {/* Compliance */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label>Plumber licence #</Label>
-                  <Input value={form.plumber_licence_number ?? ""} onChange={(e) => updateField("plumber_licence_number", e.target.value)} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Insurer name</Label>
-                  <Input value={form.insurer_name ?? ""} onChange={(e) => updateField("insurer_name", e.target.value)} />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={!!form.has_public_liability} onCheckedChange={(v) => updateField("has_public_liability", v)} />
-                <Label>Has public liability insurance</Label>
+              {/* Installation model & compliance */}
+              <div className="rounded-md border border-border p-3">
+                <h4 className="mb-3 text-sm font-semibold flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-primary" /> Installation & Compliance
+                </h4>
+                <InstallationModelFields
+                  value={installation}
+                  onChange={setInstallation}
+                />
               </div>
 
               <div className="space-y-1.5">
