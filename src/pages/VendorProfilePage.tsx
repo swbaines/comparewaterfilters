@@ -252,6 +252,8 @@ export default function VendorProfilePage() {
         .from("providers")
         .update({
           name: form.name,
+          trading_name: form.trading_name.trim() || null,
+          abn: form.abn.replace(/\s/g, "") || null,
           description: form.description,
           states: statesToSave,
           ...baseFields,
