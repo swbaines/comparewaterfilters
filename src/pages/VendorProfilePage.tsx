@@ -209,6 +209,12 @@ export default function VendorProfilePage() {
         throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
       }
 
+      // Validate ABN (11 digits, optional spaces)
+      const abnClean = form.abn.replace(/\s/g, "");
+      if (abnClean && !/^\d{11}$/.test(abnClean)) {
+        throw new Error("ABN must be exactly 11 digits");
+      }
+
       let radiusToSave = 0;
       let baseFields: Record<string, any> = {
         service_base_suburb: null,
