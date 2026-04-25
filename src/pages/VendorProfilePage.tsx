@@ -347,12 +347,13 @@ export default function VendorProfilePage() {
             installation.public_liability_insurance_amount.trim()
               ? Number(installation.public_liability_insurance_amount)
               : null,
-          installation_partners:
+          installation_partners: (
             installation.installation_model === "sub_contracted"
               ? installation.installation_partners.filter(
                   (p) => p.business_name.trim() && p.licence_number.trim(),
                 )
-              : [],
+              : []
+          ) as any,
           sub_contractor_confirmation_at:
             installation.installation_model === "sub_contracted" &&
             installation.sub_contractor_confirmed
