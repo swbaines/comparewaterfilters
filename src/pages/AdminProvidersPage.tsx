@@ -671,6 +671,7 @@ export default function AdminProvidersPage() {
                   <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>ABN</TableHead>
+                  <TableHead>Model</TableHead>
                   <TableHead>Terms</TableHead>
                   <TableHead>Billing</TableHead>
                   <TableHead>Active</TableHead>
