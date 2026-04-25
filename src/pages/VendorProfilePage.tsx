@@ -570,6 +570,24 @@ export default function VendorProfilePage() {
           </CardContent>
         </Card>
 
+        {/* Installation Model & Compliance */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Shield className="h-5 w-5" /> Installation & Compliance
+            </CardTitle>
+            <CardDescription>
+              How installations are carried out, plus licence and insurance details.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <InstallationModelFields
+              value={installation}
+              onChange={setInstallation}
+            />
+          </CardContent>
+        </Card>
+
         {/* Systems & Services */}
         <Card>
           <CardHeader>
