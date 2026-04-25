@@ -354,6 +354,14 @@ export default function VendorRegisterPage() {
 
       if (providerError) throw providerError;
 
+      // Kick off live ABN verification (checksum-only fallback if ABR_API_GUID
+      // isn't configured). Non-blocking — the application is already submitted.
+      supabase.functions
+        .invoke('verify-abn', {
+          body: { provider_id: provider.id, abn: abnClean, business_name: profile.name },
+        })
+        .catch((e) => console.error('verify-abn failed:', e));
+
       // Vendor account will be auto-linked when admin approves the provider
 
       // Send vendor welcome email and admin notification in parallel
