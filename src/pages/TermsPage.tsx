@@ -189,7 +189,7 @@ export default function TermsPage() {
             <li>you will not represent that you personally hold a plumbing licence if you operate under the sub-contracted model.</li>
           </ol>
 
-          <p>18.2 You must not:</p>
+          <p>18.5 You must not:</p>
           <ol type="a">
             <li>use Customer contact details obtained through the Platform for any purpose other than responding to quote requests;</li>
             <li>contact Customers through channels other than those provided through the Platform without their explicit consent;</li>
