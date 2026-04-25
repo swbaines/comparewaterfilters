@@ -551,6 +551,7 @@ export default function AdminProvidersPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>ABN</TableHead>
                   <TableHead>Terms</TableHead>
                   <TableHead>Billing</TableHead>
                   <TableHead>Active</TableHead>
@@ -607,6 +608,41 @@ export default function AdminProvidersPage() {
                           <SelectItem value="rejected">Rejected</SelectItem>
                         </SelectContent>
                       </Select>
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const flag = (p as any).abn_review_flag as string | null;
+                        const verified = (p as any).abn_verified as boolean;
+                        if (flag) {
+                          const label =
+                            flag === "name_mismatch"
+                              ? "Name mismatch"
+                              : flag === "abn_cancelled"
+                                ? "Cancelled"
+                                : flag === "abr_lookup_failed"
+                                  ? "Lookup failed"
+                                  : flag === "checksum_failed"
+                                    ? "Invalid"
+                                    : "Review";
+                          return (
+                            <Badge variant="outline" className="text-xs border-red-300 text-red-700 gap-1">
+                              <AlertTriangle className="h-3 w-3" /> {label}
+                            </Badge>
+                          );
+                        }
+                        if (verified) {
+                          return (
+                            <Badge variant="outline" className="text-xs border-green-300 text-green-700 gap-1">
+                              <ShieldCheck className="h-3 w-3" /> Verified
+                            </Badge>
+                          );
+                        }
+                        return (
+                          <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 gap-1">
+                            <Shield className="h-3 w-3" /> Unverified
+                          </Badge>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell>
                       {(p as any).terms_accepted_at ? (

@@ -301,10 +301,35 @@ export default function VendorProfilePage() {
         .eq("id", vendorAccount!.provider_id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
       queryClient.invalidateQueries({ queryKey: ["providers"] });
       toast.success("Profile updated successfully");
+      // Live ABN verification (uses ABR API when ABR_API_GUID is configured,
+      // otherwise falls back to checksum-only). Errors surface as soft warnings.
+      const abnClean = form.abn.replace(/\s/g, "");
+      if (vendorAccount?.provider_id && /^\d{11}$/.test(abnClean)) {
+        try {
+          const { data, error } = await supabase.functions.invoke("verify-abn", {
+            body: {
+              provider_id: vendorAccount.provider_id,
+              abn: abnClean,
+              business_name: form.name,
+            },
+          });
+          if (error) throw error;
+          if (data?.review_flag === "name_mismatch") {
+            toast.warning("ABN found, but the registered name doesn't match — flagged for admin review.");
+          } else if (data?.reason === "abn_cancelled") {
+            toast.error("This ABN is marked Cancelled by the ABR. Lead delivery has been paused.");
+          } else if (data?.verified) {
+            toast.success("ABN verified");
+          }
+          queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
+        } catch (e) {
+          console.error("verify-abn failed", e);
+        }
+      }
     },
     onError: (err: any) => toast.error("Failed to save: " + err.message),
   });
