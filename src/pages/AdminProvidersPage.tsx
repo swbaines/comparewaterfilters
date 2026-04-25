@@ -48,6 +48,17 @@ const emptyForm: Omit<TablesInsert<"providers">, "id" | "created_at" | "updated_
   warranty: "",
   website: null,
   phone: null,
+  trading_name: null,
+  abn: "",
+  contact_email: null,
+  google_business_url: "",
+  plumber_licence_number: "",
+  has_public_liability: false,
+  insurer_name: "",
+  service_base_suburb: null,
+  service_base_postcode: null,
+  service_base_state: null,
+  service_radius_km: 50,
 };
 
 function arrayFieldToString(arr: string[] | null | undefined): string {
@@ -280,6 +291,17 @@ export default function AdminProvidersPage() {
       warranty: p.warranty,
       website: p.website,
       phone: p.phone,
+      trading_name: p.trading_name ?? null,
+      abn: p.abn ?? "",
+      contact_email: p.contact_email ?? null,
+      google_business_url: p.google_business_url ?? "",
+      plumber_licence_number: p.plumber_licence_number ?? "",
+      has_public_liability: p.has_public_liability ?? false,
+      insurer_name: p.insurer_name ?? "",
+      service_base_suburb: p.service_base_suburb ?? null,
+      service_base_postcode: p.service_base_postcode ?? null,
+      service_base_state: p.service_base_state ?? null,
+      service_radius_km: p.service_radius_km ?? 50,
     });
     setDialogOpen(true);
   };
@@ -876,6 +898,17 @@ export default function AdminProvidersPage() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Trading name</Label>
+                  <Input value={form.trading_name ?? ""} onChange={(e) => updateField("trading_name", e.target.value || null)} placeholder="If different from business name" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>ABN</Label>
+                  <Input value={form.abn ?? ""} onChange={(e) => updateField("abn", e.target.value)} placeholder="11-digit ABN" />
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <Label>Description</Label>
                 <Textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} rows={3} />
@@ -999,6 +1032,53 @@ export default function AdminProvidersPage() {
                   <Label>Phone</Label>
                   <Input value={form.phone || ""} onChange={(e) => updateField("phone", e.target.value || null)} />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Contact email</Label>
+                  <Input type="email" value={form.contact_email || ""} onChange={(e) => updateField("contact_email", e.target.value || null)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Google Business URL</Label>
+                  <Input value={form.google_business_url ?? ""} onChange={(e) => updateField("google_business_url", e.target.value)} />
+                </div>
+              </div>
+
+              {/* Service base location */}
+              <div className="grid grid-cols-4 gap-3">
+                <div className="space-y-1.5 col-span-2">
+                  <Label>Base suburb</Label>
+                  <Input value={form.service_base_suburb ?? ""} onChange={(e) => updateField("service_base_suburb", e.target.value || null)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Postcode</Label>
+                  <Input value={form.service_base_postcode ?? ""} onChange={(e) => updateField("service_base_postcode", e.target.value || null)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>State</Label>
+                  <Input value={form.service_base_state ?? ""} onChange={(e) => updateField("service_base_state", e.target.value || null)} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Service radius (km)</Label>
+                <Input type="number" value={form.service_radius_km ?? 0} onChange={(e) => updateField("service_radius_km", parseInt(e.target.value) || 0)} />
+              </div>
+
+              {/* Compliance */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>Plumber licence #</Label>
+                  <Input value={form.plumber_licence_number ?? ""} onChange={(e) => updateField("plumber_licence_number", e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Insurer name</Label>
+                  <Input value={form.insurer_name ?? ""} onChange={(e) => updateField("insurer_name", e.target.value)} />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={!!form.has_public_liability} onCheckedChange={(v) => updateField("has_public_liability", v)} />
+                <Label>Has public liability insurance</Label>
               </div>
 
               <div className="space-y-1.5">
