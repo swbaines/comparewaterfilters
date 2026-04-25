@@ -1,0 +1,1 @@
+ALTER TABLE public.providers DROP COLUMN IF EXISTS installation_partners;

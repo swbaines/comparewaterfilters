@@ -327,7 +327,6 @@ export type Database = {
           installation_model:
             | Database["public"]["Enums"]["installation_model"]
             | null
-          installation_partners: Json
           insurer_name: string | null
           logo: string | null
           name: string
@@ -379,7 +378,6 @@ export type Database = {
           installation_model?:
             | Database["public"]["Enums"]["installation_model"]
             | null
-          installation_partners?: Json
           insurer_name?: string | null
           logo?: string | null
           name: string
@@ -431,7 +429,6 @@ export type Database = {
           installation_model?:
             | Database["public"]["Enums"]["installation_model"]
             | null
-          installation_partners?: Json
           insurer_name?: string | null
           logo?: string | null
           name?: string
