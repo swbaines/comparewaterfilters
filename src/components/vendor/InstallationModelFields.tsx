@@ -141,87 +141,25 @@ export default function InstallationModelFields({ value, onChange }: Props) {
       )}
 
       {value.installation_model === "sub_contracted" && (
-        <div className="space-y-3 rounded-md border border-border bg-muted/30 p-3">
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">
-              Primary installation partners{" "}
+        <label className="flex cursor-pointer items-start gap-3 rounded-md border-2 border-primary/40 bg-primary/5 p-4 text-sm">
+          <Checkbox
+            checked={value.sub_contractor_confirmed}
+            onCheckedChange={(v) =>
+              update("sub_contractor_confirmed", v === true)
+            }
+            className="mt-0.5"
+            required
+          />
+          <span className="leading-relaxed">
+            <span className="block mb-1 font-medium">
+              Sub-contractor compliance declaration{" "}
               <span className="text-destructive">*</span>
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              List the licensed plumbing businesses you engage to perform installations. At least one entry is required.
-            </p>
-            <div className="space-y-2">
-              {value.installation_partners.map((p, idx) => (
-                <div
-                  key={idx}
-                  className="grid gap-2 rounded-md border border-border bg-background p-2 sm:grid-cols-[1fr,1fr,90px,auto]"
-                >
-                  <Input
-                    value={p.business_name}
-                    onChange={(e) =>
-                      updatePartner(idx, "business_name", e.target.value)
-                    }
-                    placeholder="Business name"
-                  />
-                  <Input
-                    value={p.licence_number}
-                    onChange={(e) =>
-                      updatePartner(idx, "licence_number", e.target.value)
-                    }
-                    placeholder="Licence #"
-                  />
-                  <Select
-                    value={p.state}
-                    onValueChange={(v) => updatePartner(idx, "state", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="State" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {AU_STATE_OPTIONS.map((s) => (
-                        <SelectItem key={s} value={s}>
-                          {s}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removePartner(idx)}
-                    aria-label="Remove partner"
-                    disabled={value.installation_partners.length <= 1}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addPartner}
-              className="gap-1"
-            >
-              <Plus className="h-4 w-4" /> Add partner
-            </Button>
-          </div>
-
-          <label className="flex cursor-pointer items-start gap-2 rounded-md border border-border bg-background p-3 text-xs">
-            <Checkbox
-              checked={value.sub_contractor_confirmed}
-              onCheckedChange={(v) =>
-                update("sub_contractor_confirmed", v === true)
-              }
-              className="mt-0.5"
-            />
-            <span className="leading-relaxed">
+            </span>
+            <span className="block text-xs text-muted-foreground">
               {SUB_CONTRACTOR_DECLARATION}
             </span>
-          </label>
-        </div>
+          </span>
+        </label>
       )}
 
       {/* Public liability — required for both models */}
@@ -292,13 +230,8 @@ export function validateInstallationModel(
       return "Plumbing licence state is required";
   }
   if (v.installation_model === "sub_contracted") {
-    const partners = v.installation_partners.filter(
-      (p) => p.business_name.trim() && p.licence_number.trim(),
-    );
-    if (partners.length === 0)
-      return "Add at least one installation partner with a business name and licence number";
     if (!v.sub_contractor_confirmed)
-      return "Please confirm the installation responsibility declaration";
+      return "Please confirm the sub-contractor compliance declaration";
   }
   return null;
 }
@@ -311,7 +244,6 @@ export function emptyInstallationModelValue(): InstallationModelValue {
     has_public_liability: false,
     insurer_name: "",
     public_liability_insurance_amount: "",
-    installation_partners: [emptyPartner()],
     sub_contractor_confirmed: false,
   };
 }
