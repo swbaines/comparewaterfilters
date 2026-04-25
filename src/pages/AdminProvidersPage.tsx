@@ -291,6 +291,17 @@ export default function AdminProvidersPage() {
       warranty: p.warranty,
       website: p.website,
       phone: p.phone,
+      trading_name: p.trading_name ?? null,
+      abn: p.abn ?? "",
+      contact_email: p.contact_email ?? null,
+      google_business_url: p.google_business_url ?? "",
+      plumber_licence_number: p.plumber_licence_number ?? "",
+      has_public_liability: p.has_public_liability ?? false,
+      insurer_name: p.insurer_name ?? "",
+      service_base_suburb: p.service_base_suburb ?? null,
+      service_base_postcode: p.service_base_postcode ?? null,
+      service_base_state: p.service_base_state ?? null,
+      service_radius_km: p.service_radius_km ?? 50,
     });
     setDialogOpen(true);
   };
