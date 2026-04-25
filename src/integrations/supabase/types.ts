@@ -308,6 +308,8 @@ export type Database = {
       providers: {
         Row: {
           abn: string | null
+          abn_verified: boolean
+          abn_verified_at: string | null
           approval_status: Database["public"]["Enums"]["approval_status"]
           available_for_quote: boolean
           brands: string[]
@@ -349,6 +351,8 @@ export type Database = {
         }
         Insert: {
           abn?: string | null
+          abn_verified?: boolean
+          abn_verified_at?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
@@ -390,6 +394,8 @@ export type Database = {
         }
         Update: {
           abn?: string | null
+          abn_verified?: boolean
+          abn_verified_at?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
           available_for_quote?: boolean
           brands?: string[]
