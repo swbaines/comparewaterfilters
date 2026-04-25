@@ -381,6 +381,28 @@ export default function VendorProfilePage() {
               <div className="space-y-2">
                 <Label>Business Name</Label>
                 <Input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+                <p className="text-xs text-muted-foreground">Registered legal name (as on your ABN).</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Trading Name</Label>
+                <Input
+                  value={form.trading_name}
+                  onChange={(e) => setForm((p) => ({ ...p, trading_name: e.target.value }))}
+                  placeholder="If different from business name"
+                />
+                <p className="text-xs text-muted-foreground">Optional — the name customers know you by.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>ABN</Label>
+                <Input
+                  value={form.abn}
+                  onChange={(e) => setForm((p) => ({ ...p, abn: e.target.value }))}
+                  placeholder="12 345 678 901"
+                  maxLength={14}
+                />
+                <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits.</p>
               </div>
               <div className="space-y-2">
                 <Label>Years in Business</Label>
