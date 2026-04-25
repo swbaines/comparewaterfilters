@@ -765,6 +765,20 @@ export default function AdminProvidersPage() {
                       })()}
                     </TableCell>
                     <TableCell>
+                      {(() => {
+                        const m = modelBadgeMeta((p as any).installation_model);
+                        return (
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${m.cls}`}
+                            title={m.title}
+                          >
+                            {m.label}
+                          </Badge>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
                       {(p as any).terms_accepted_at ? (
                         <Badge variant="outline" className="text-xs border-green-300 text-green-700 gap-1">
                           <CheckCircle2 className="h-3 w-3" /> Accepted
