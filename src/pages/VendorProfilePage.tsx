@@ -401,14 +401,29 @@ export default function VendorProfilePage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>ABN</Label>
+                <Label className="flex items-center gap-2">
+                  ABN
+                  {cleanAbn(form.abn).length === 11 && (
+                    isValidAbn(form.abn) ? (
+                      <Badge variant="secondary" className="gap-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-100">
+                        <ShieldCheck className="h-3 w-3" /> Verified
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="gap-1 bg-amber-100 text-amber-800 hover:bg-amber-100">
+                        <ShieldAlert className="h-3 w-3" /> Unverified
+                      </Badge>
+                    )
+                  )}
+                </Label>
                 <Input
                   value={form.abn}
                   onChange={(e) => setForm((p) => ({ ...p, abn: e.target.value }))}
                   placeholder="12 345 678 901"
                   maxLength={14}
                 />
-                <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits.</p>
+                <p className="text-xs text-muted-foreground">
+                  Australian Business Number — 11 digits. Verified ABNs display a trust badge on your public listing.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>Years in Business</Label>
