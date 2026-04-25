@@ -17,6 +17,11 @@ import { systemTypes } from "@/data/systemTypes";
 import { Badge } from "@/components/ui/badge";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
 import { computeCoverageStates } from "@/lib/serviceArea";
+import InstallationModelFields, {
+  emptyInstallationModelValue,
+  validateInstallationModel,
+  type InstallationModelValue,
+} from "@/components/vendor/InstallationModelFields";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -98,11 +103,12 @@ export default function VendorRegisterPage() {
     website: "",
     phone: "",
     abn: "",
-    plumberLicenceNumber: "",
-    hasPublicLiability: false,
-    insurerName: "",
     googleBusinessUrl: "",
   });
+
+  const [installation, setInstallation] = useState<InstallationModelValue>(
+    emptyInstallationModelValue(),
+  );
 
   const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
     mode: "radius",
