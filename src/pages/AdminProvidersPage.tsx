@@ -1446,12 +1446,62 @@ export default function AdminProvidersPage() {
                 {/* Compliance & Insurance */}
                 <div>
                   <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Shield className="h-4 w-4 text-primary" /> Compliance & Insurance</h3>
+                  {(() => {
+                    const m = modelBadgeMeta(
+                      (reviewProvider as any).installation_model,
+                    );
+                    return (
+                      <div className="mb-2 flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">Installation model:</span>
+                        <Badge variant="outline" className={`text-xs ${m.cls}`}>
+                          {m.label}
+                        </Badge>
+                      </div>
+                    );
+                  })()}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                     <div><span className="text-muted-foreground">Plumber licence #:</span> <span className="font-medium">{reviewProvider.plumber_licence_number || "—"}</span></div>
+                    <div><span className="text-muted-foreground">Licence state:</span> <span className="font-medium">{(reviewProvider as any).plumbing_licence_state || "—"}</span></div>
                     <div><span className="text-muted-foreground">Public liability:</span> <span className="font-medium">{reviewProvider.has_public_liability ? "Yes" : "No"}</span></div>
+                    <div><span className="text-muted-foreground">Cover amount:</span> <span className="font-medium">{(reviewProvider as any).public_liability_insurance_amount ? `A$${Number((reviewProvider as any).public_liability_insurance_amount).toLocaleString()}` : "—"}</span></div>
                     <div className="col-span-2"><span className="text-muted-foreground">Insurer:</span> <span className="font-medium">{reviewProvider.insurer_name || "—"}</span></div>
                     <div className="col-span-2"><span className="text-muted-foreground">Terms accepted:</span> <span className="font-medium">{reviewProvider.terms_accepted_at ? new Date(reviewProvider.terms_accepted_at).toLocaleString() : "—"}</span></div>
+                    {(reviewProvider as any).sub_contractor_confirmation_at && (
+                      <div className="col-span-2"><span className="text-muted-foreground">Sub-contractor declaration accepted:</span> <span className="font-medium">{new Date((reviewProvider as any).sub_contractor_confirmation_at).toLocaleString()}</span></div>
+                    )}
                   </div>
+                  {(() => {
+                    const partners = ((reviewProvider as any)
+                      .installation_partners as InstallationPartner[] | null) || [];
+                    if (
+                      (reviewProvider as any).installation_model !==
+                        "sub_contracted" ||
+                      partners.length === 0
+                    )
+                      return null;
+                    return (
+                      <div className="mt-3">
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Installation partners
+                        </div>
+                        <ul className="space-y-1 text-sm">
+                          {partners.map((p, i) => (
+                            <li
+                              key={i}
+                              className="rounded border border-border bg-muted/30 px-2 py-1"
+                            >
+                              <span className="font-medium">
+                                {p.business_name || "—"}
+                              </span>{" "}
+                              <span className="text-muted-foreground">
+                                · Licence {p.licence_number || "—"} · {p.state || "—"}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Additional Details */}
