@@ -77,6 +77,7 @@ export default function AdminProvidersPage() {
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
+  const [verifyingAbn, setVerifyingAbn] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -1163,6 +1164,60 @@ export default function AdminProvidersPage() {
                       )}
                       {(reviewProvider as any).abn_review_flag && (
                         <Badge variant="destructive" className="ml-2">{((reviewProvider as any).abn_review_flag as string).replace(/_/g, " ")}</Badge>
+                      )}
+                      {reviewProvider.abn && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="ml-2 h-7 gap-1 text-xs"
+                          disabled={verifyingAbn}
+                          onClick={async () => {
+                            setVerifyingAbn(true);
+                            try {
+                              const { data, error } = await supabase.functions.invoke("verify-abn", {
+                                body: {
+                                  provider_id: reviewProvider.id,
+                                  abn: reviewProvider.abn,
+                                  business_name: reviewProvider.name,
+                                },
+                              });
+                              if (error) throw error;
+                              if (data?.verified) {
+                                toast.success(
+                                  data.mode === "checksum-only"
+                                    ? "ABN passed checksum (live ABR lookup not configured)"
+                                    : "ABN verified against the ABR",
+                                );
+                              } else if (data?.reason === "abn_cancelled") {
+                                toast.error("ABN is Cancelled — provider hidden from quotes");
+                              } else if (data?.review_flag === "name_mismatch") {
+                                toast.warning(`Name mismatch — ABR has “${data.entityName ?? "different entity"}”`);
+                              } else if (data?.reason) {
+                                toast.error(`Verification failed: ${data.error || data.reason}`);
+                              }
+                              const { data: refreshed } = await supabase
+                                .from("providers")
+                                .select("*")
+                                .eq("id", reviewProvider.id)
+                                .maybeSingle();
+                              if (refreshed) setReviewProvider(refreshed as ProviderRow);
+                              queryClient.invalidateQueries({ queryKey: ["admin-providers"] });
+                            } catch (e: any) {
+                              toast.error(e.message || "Verification failed");
+                            } finally {
+                              setVerifyingAbn(false);
+                            }
+                          }}
+                        >
+                          {verifyingAbn ? <Loader2 className="h-3 w-3 animate-spin" /> : <ShieldCheck className="h-3 w-3" />}
+                          {verifyingAbn ? "Verifying…" : "Verify ABN"}
+                        </Button>
+                      )}
+                      {(reviewProvider as any).abn_verified_at && (
+                        <div className="text-xs text-muted-foreground mt-0.5">
+                          Last verified {new Date((reviewProvider as any).abn_verified_at).toLocaleString()}
+                        </div>
                       )}
                     </div>
                     <div><span className="text-muted-foreground">Slug:</span> <span className="font-medium font-mono">{reviewProvider.slug}</span></div>
