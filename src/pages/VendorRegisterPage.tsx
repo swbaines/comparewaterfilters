@@ -496,6 +496,12 @@ export default function VendorRegisterPage() {
                 <div className="space-y-1.5">
                   <Label>Business Name *</Label>
                   <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="e.g. Sam's Water Filtration" />
+                  <p className="text-xs text-muted-foreground">Your registered legal business name (as shown on your ABN).</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Trading Name (if different)</Label>
+                  <Input value={profile.tradingName} onChange={e => updateProfile("tradingName", e.target.value)} placeholder="e.g. Sam's Filters" />
+                  <p className="text-xs text-muted-foreground">Optional — the name customers know your business by, if different from your registered name.</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>ABN *</Label>
