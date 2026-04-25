@@ -168,7 +168,7 @@ export default function WaterQualityPage() {
       />
 
       {/* Hero */}
-      <section className="bg-gradient-to-b from-primary/5 to-background py-12 md:py-16">
+      <section className="bg-gradient-to-b from-primary/5 to-background py-12 md:py-16 bg-secondary-foreground">
         <div className="container max-w-2xl text-center">
           <Badge variant="secondary" className="mb-4">Free water quality lookup</Badge>
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">What's in my water?</h1>
