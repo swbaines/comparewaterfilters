@@ -13,6 +13,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2, Save, ArrowLeft, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Globe, Phone, Upload, ImageIcon, Mail } from "lucide-react";
+import { ShieldCheck, ShieldAlert } from "lucide-react";
+import { isValidAbn, cleanAbn } from "@/lib/abn";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
 import { computeCoverageStates, detectCoverageMode, CAPITAL_METROS } from "@/lib/serviceArea";
 import { toast } from "sonner";
@@ -214,6 +216,8 @@ export default function VendorProfilePage() {
       if (abnClean && !/^\d{11}$/.test(abnClean)) {
         throw new Error("ABN must be exactly 11 digits");
       }
+      // Recompute verification each save so a corrected ABN flips status correctly.
+      const abnVerified = abnClean ? isValidAbn(abnClean) : false;
 
       let radiusToSave = 0;
       let baseFields: Record<string, any> = {
@@ -260,6 +264,8 @@ export default function VendorProfilePage() {
           name: form.name,
           trading_name: form.trading_name.trim() || null,
           abn: form.abn.replace(/\s/g, "") || null,
+          abn_verified: abnVerified,
+          abn_verified_at: abnVerified ? new Date().toISOString() : null,
           description: form.description,
           states: statesToSave,
           ...baseFields,
