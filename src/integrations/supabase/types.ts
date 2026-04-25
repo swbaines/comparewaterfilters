@@ -308,6 +308,8 @@ export type Database = {
       providers: {
         Row: {
           abn: string | null
+          abn_review_flag: string | null
+          abn_verification_response: Json | null
           abn_verified: boolean
           abn_verified_at: string | null
           approval_status: Database["public"]["Enums"]["approval_status"]
@@ -351,6 +353,8 @@ export type Database = {
         }
         Insert: {
           abn?: string | null
+          abn_review_flag?: string | null
+          abn_verification_response?: Json | null
           abn_verified?: boolean
           abn_verified_at?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
@@ -394,6 +398,8 @@ export type Database = {
         }
         Update: {
           abn?: string | null
+          abn_review_flag?: string | null
+          abn_verification_response?: Json | null
           abn_verified?: boolean
           abn_verified_at?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
