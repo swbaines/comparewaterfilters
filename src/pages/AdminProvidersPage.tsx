@@ -132,6 +132,9 @@ export default function AdminProvidersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [installation, setInstallation] = useState<InstallationModelValue>(
+    emptyInstallationModelValue(),
+  );
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
@@ -326,6 +329,7 @@ export default function AdminProvidersPage() {
     setDialogOpen(false);
     setEditId(null);
     setForm(emptyForm);
+    setInstallation(emptyInstallationModelValue());
     setScrapeUrl("");
   };
 
@@ -362,6 +366,7 @@ export default function AdminProvidersPage() {
       service_base_state: p.service_base_state ?? null,
       service_radius_km: p.service_radius_km ?? 50,
     });
+    setInstallation(installationFromProvider(p));
     setDialogOpen(true);
   };
 
@@ -403,7 +408,40 @@ export default function AdminProvidersPage() {
       toast.error("Name and slug are required");
       return;
     }
-    upsertMutation.mutate(form);
+    const partners =
+      installation.installation_model === "sub_contracted"
+        ? installation.installation_partners.filter(
+            (p) => p.business_name.trim() && p.licence_number.trim(),
+          )
+        : [];
+    const payload: any = {
+      ...form,
+      installation_model: installation.installation_model,
+      plumber_licence_number:
+        installation.installation_model === "in_house_licensed"
+          ? installation.plumber_licence_number.trim()
+          : "",
+      plumbing_licence_state:
+        installation.installation_model === "in_house_licensed"
+          ? installation.plumbing_licence_state || null
+          : null,
+      has_public_liability: installation.has_public_liability,
+      insurer_name: installation.has_public_liability
+        ? installation.insurer_name.trim()
+        : "",
+      public_liability_insurance_amount:
+        installation.has_public_liability &&
+        installation.public_liability_insurance_amount.trim()
+          ? Number(installation.public_liability_insurance_amount)
+          : null,
+      installation_partners: partners,
+      sub_contractor_confirmation_at:
+        installation.installation_model === "sub_contracted" &&
+        installation.sub_contractor_confirmed
+          ? new Date().toISOString()
+          : null,
+    };
+    upsertMutation.mutate(payload);
   };
 
   const updateField = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
