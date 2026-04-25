@@ -105,6 +105,8 @@ export default function VendorProfilePage() {
 
   const [form, setForm] = useState({
     name: "",
+    trading_name: "",
+    abn: "",
     description: "",
     system_types: [] as string[],
     brands: "",
@@ -152,6 +154,8 @@ export default function VendorProfilePage() {
       }
       setForm({
         name: provider.name || "",
+        trading_name: provider.trading_name || "",
+        abn: provider.abn || "",
         description: provider.description || "",
         system_types: provider.system_types || [],
         brands: (provider.brands || []).join(", "),
@@ -205,6 +209,12 @@ export default function VendorProfilePage() {
         throw new Error(`Invalid system type(s): ${invalid.join(", ")}`);
       }
 
+      // Validate ABN (11 digits, optional spaces)
+      const abnClean = form.abn.replace(/\s/g, "");
+      if (abnClean && !/^\d{11}$/.test(abnClean)) {
+        throw new Error("ABN must be exactly 11 digits");
+      }
+
       let radiusToSave = 0;
       let baseFields: Record<string, any> = {
         service_base_suburb: null,
@@ -248,6 +258,8 @@ export default function VendorProfilePage() {
         .from("providers")
         .update({
           name: form.name,
+          trading_name: form.trading_name.trim() || null,
+          abn: form.abn.replace(/\s/g, "") || null,
           description: form.description,
           states: statesToSave,
           ...baseFields,
@@ -369,6 +381,28 @@ export default function VendorProfilePage() {
               <div className="space-y-2">
                 <Label>Business Name</Label>
                 <Input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+                <p className="text-xs text-muted-foreground">Registered legal name (as on your ABN).</p>
+              </div>
+              <div className="space-y-2">
+                <Label>Trading Name</Label>
+                <Input
+                  value={form.trading_name}
+                  onChange={(e) => setForm((p) => ({ ...p, trading_name: e.target.value }))}
+                  placeholder="If different from business name"
+                />
+                <p className="text-xs text-muted-foreground">Optional — the name customers know you by.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>ABN</Label>
+                <Input
+                  value={form.abn}
+                  onChange={(e) => setForm((p) => ({ ...p, abn: e.target.value }))}
+                  placeholder="12 345 678 901"
+                  maxLength={14}
+                />
+                <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits.</p>
               </div>
               <div className="space-y-2">
                 <Label>Years in Business</Label>

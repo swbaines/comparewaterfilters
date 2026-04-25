@@ -341,6 +341,7 @@ export type Database = {
           system_pricing: Json
           system_types: string[]
           terms_accepted_at: string | null
+          trading_name: string | null
           updated_at: string
           warranty: string
           website: string | null
@@ -381,6 +382,7 @@ export type Database = {
           system_pricing?: Json
           system_types?: string[]
           terms_accepted_at?: string | null
+          trading_name?: string | null
           updated_at?: string
           warranty?: string
           website?: string | null
@@ -421,6 +423,7 @@ export type Database = {
           system_pricing?: Json
           system_types?: string[]
           terms_accepted_at?: string | null
+          trading_name?: string | null
           updated_at?: string
           warranty?: string
           website?: string | null
