@@ -1450,38 +1450,6 @@ export default function AdminProvidersPage() {
                       <div className="col-span-2"><span className="text-muted-foreground">Sub-contractor declaration accepted:</span> <span className="font-medium">{new Date((reviewProvider as any).sub_contractor_confirmation_at).toLocaleString()}</span></div>
                     )}
                   </div>
-                  {(() => {
-                    const partners = ((reviewProvider as any)
-                      .installation_partners as InstallationPartner[] | null) || [];
-                    if (
-                      (reviewProvider as any).installation_model !==
-                        "sub_contracted" ||
-                      partners.length === 0
-                    )
-                      return null;
-                    return (
-                      <div className="mt-3">
-                        <div className="text-sm text-muted-foreground mb-1">
-                          Installation partners
-                        </div>
-                        <ul className="space-y-1 text-sm">
-                          {partners.map((p, i) => (
-                            <li
-                              key={i}
-                              className="rounded border border-border bg-muted/30 px-2 py-1"
-                            >
-                              <span className="font-medium">
-                                {p.business_name || "—"}
-                              </span>{" "}
-                              <span className="text-muted-foreground">
-                                · Licence {p.licence_number || "—"} · {p.state || "—"}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    );
-                  })()}
                 </div>
 
                 {/* Additional Details */}
