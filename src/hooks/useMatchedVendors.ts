@@ -31,6 +31,7 @@ export interface MatchedVendor {
   cap_exceeded: boolean;
   system_pricing: Record<string, { min: number; max: number }>;
   abn_verified: boolean;
+  installation_model: "in_house_licensed" | "sub_contracted" | null;
 }
 
 interface Args {
@@ -77,18 +78,24 @@ export function useMatchedVendors({
       const ids = rows.map((r) => r.provider_id);
       const { data: pricingRows } = await supabase
         .from("providers")
-        .select("id, system_pricing, abn_verified")
+        .select("id, system_pricing, abn_verified, installation_model")
         .in("id", ids);
       const priceMap = new Map<string, Record<string, { min: number; max: number }>>();
       const verifiedMap = new Map<string, boolean>();
+      const modelMap = new Map<
+        string,
+        "in_house_licensed" | "sub_contracted" | null
+      >();
       (pricingRows || []).forEach((p: any) => {
         priceMap.set(p.id, (p.system_pricing || {}) as Record<string, { min: number; max: number }>);
         verifiedMap.set(p.id, !!p.abn_verified);
+        modelMap.set(p.id, p.installation_model ?? null);
       });
       return rows.map((r) => ({
         ...r,
         system_pricing: applyPriceFloors(priceMap.get(r.provider_id) || {}),
         abn_verified: verifiedMap.get(r.provider_id) ?? false,
+        installation_model: modelMap.get(r.provider_id) ?? null,
       }));
     },
   });
