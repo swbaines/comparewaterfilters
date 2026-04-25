@@ -210,6 +210,14 @@ export default function VendorRegisterPage() {
       toast.error("ABN must be exactly 11 digits");
       return;
     }
+    // Verify ABN against the official ABR checksum algorithm.
+    // Storing the verified flag lets us show a trust badge on the public listing.
+    const { isValidAbn } = await import("@/lib/abn");
+    const abnVerified = isValidAbn(abnClean);
+    if (!abnVerified) {
+      toast.error("That ABN doesn't pass validation. Please double-check the 11 digits.");
+      return;
+    }
     // Auto-prepend https:// if user omitted protocol
     const normalizeUrl = (val: string) => {
       const t = val.trim();
@@ -334,6 +342,8 @@ export default function VendorRegisterPage() {
           certification_files: certFilePaths,
           logo: logoUrl,
           abn: abnClean,
+          abn_verified: abnVerified,
+          abn_verified_at: abnVerified ? new Date().toISOString() : null,
           plumber_licence_number: profile.plumberLicenceNumber.trim(),
           has_public_liability: profile.hasPublicLiability,
           insurer_name: profile.hasPublicLiability ? profile.insurerName.trim() : "",
