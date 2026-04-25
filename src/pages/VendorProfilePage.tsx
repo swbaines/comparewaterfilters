@@ -261,6 +261,9 @@ export default function VendorProfilePage() {
       // Recompute verification each save so a corrected ABN flips status correctly.
       const abnVerified = abnClean ? isValidAbn(abnClean) : false;
 
+      const installationError = validateInstallationModel(installation);
+      if (installationError) throw new Error(installationError);
+
       let radiusToSave = 0;
       let baseFields: Record<string, any> = {
         service_base_suburb: null,
@@ -326,6 +329,36 @@ export default function VendorProfilePage() {
           website: form.website ? (/^https?:\/\//i.test(form.website.trim()) ? form.website.trim() : `https://${form.website.trim()}`) : null,
           phone: form.phone || null,
           contact_email: form.contact_email || null,
+          installation_model: installation.installation_model,
+          plumber_licence_number:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumber_licence_number.trim()
+              : "",
+          plumbing_licence_state:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumbing_licence_state || null
+              : null,
+          has_public_liability: installation.has_public_liability,
+          insurer_name: installation.has_public_liability
+            ? installation.insurer_name.trim()
+            : "",
+          public_liability_insurance_amount:
+            installation.has_public_liability &&
+            installation.public_liability_insurance_amount.trim()
+              ? Number(installation.public_liability_insurance_amount)
+              : null,
+          installation_partners:
+            installation.installation_model === "sub_contracted"
+              ? installation.installation_partners.filter(
+                  (p) => p.business_name.trim() && p.licence_number.trim(),
+                )
+              : [],
+          sub_contractor_confirmation_at:
+            installation.installation_model === "sub_contracted" &&
+            installation.sub_contractor_confirmed
+              ? (provider as any)?.sub_contractor_confirmation_at ||
+                new Date().toISOString()
+              : null,
             system_pricing: (() => {
               const out: Record<string, { min: number; max: number }> = {};
               for (const id of normalizedSystemTypes) {
