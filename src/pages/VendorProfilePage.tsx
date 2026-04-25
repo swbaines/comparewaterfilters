@@ -105,6 +105,8 @@ export default function VendorProfilePage() {
 
   const [form, setForm] = useState({
     name: "",
+    trading_name: "",
+    abn: "",
     description: "",
     system_types: [] as string[],
     brands: "",
@@ -152,6 +154,8 @@ export default function VendorProfilePage() {
       }
       setForm({
         name: provider.name || "",
+        trading_name: provider.trading_name || "",
+        abn: provider.abn || "",
         description: provider.description || "",
         system_types: provider.system_types || [],
         brands: (provider.brands || []).join(", "),
