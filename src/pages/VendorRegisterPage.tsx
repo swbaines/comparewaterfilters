@@ -250,7 +250,12 @@ export default function VendorRegisterPage() {
       toast.error("Google Business Profile must be a valid URL");
       return;
     }
-    // Plumber licence number is optional
+    // Validate installation model fieldset (licence/insurance/partners)
+    const installationError = validateInstallationModel(installation);
+    if (installationError) {
+      toast.error(installationError);
+      return;
+    }
 
     if (serviceArea.mode === "radius") {
       if (!serviceArea.baseLat || !serviceArea.baseLng || !serviceArea.baseSuburb) {
@@ -350,9 +355,36 @@ export default function VendorRegisterPage() {
           abn: abnClean,
           abn_verified: abnVerified,
           abn_verified_at: abnVerified ? new Date().toISOString() : null,
-          plumber_licence_number: profile.plumberLicenceNumber.trim(),
-          has_public_liability: profile.hasPublicLiability,
-          insurer_name: profile.hasPublicLiability ? profile.insurerName.trim() : "",
+          plumber_licence_number:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumber_licence_number.trim()
+              : "",
+          plumbing_licence_state:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumbing_licence_state || null
+              : null,
+          has_public_liability: installation.has_public_liability,
+          insurer_name: installation.has_public_liability
+            ? installation.insurer_name.trim()
+            : "",
+          public_liability_insurance_amount:
+            installation.has_public_liability &&
+            installation.public_liability_insurance_amount.trim()
+              ? Number(installation.public_liability_insurance_amount)
+              : null,
+          installation_model: installation.installation_model,
+          installation_partners:
+            installation.installation_model === "sub_contracted"
+              ? installation.installation_partners.filter(
+                  (p) =>
+                    p.business_name.trim() && p.licence_number.trim(),
+                )
+              : [],
+          sub_contractor_confirmation_at:
+            installation.installation_model === "sub_contracted" &&
+            installation.sub_contractor_confirmed
+              ? new Date().toISOString()
+              : null,
           google_business_url: gbpTrim,
         } as any)
         .select("id")
