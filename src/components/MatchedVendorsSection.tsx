@@ -184,7 +184,39 @@ function VendorRow({
                     <Award className="mr-1 h-3 w-3" /> {c}
                   </Badge>
                 ))}
+                {vendor.installation_model === "in_house_licensed" && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs font-normal border-emerald-300 text-emerald-700"
+                  >
+                    <ShieldCheck className="mr-1 h-3 w-3" /> Licensed Plumber
+                  </Badge>
+                )}
+                {vendor.installation_model === "sub_contracted" && (
+                  <>
+                    <Badge
+                      variant="outline"
+                      className="text-xs font-normal border-sky-300 text-sky-700"
+                    >
+                      <Shield className="mr-1 h-3 w-3" /> Trusted Retailer
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="text-xs font-normal border-sky-300 text-sky-700"
+                    >
+                      <ShieldCheck className="mr-1 h-3 w-3" /> Licensed Installation Network
+                    </Badge>
+                  </>
+                )}
               </div>
+            )}
+
+            {vendor.installation_model && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                {vendor.installation_model === "in_house_licensed"
+                  ? "Licensed plumbing team"
+                  : "Licensed plumbing partners"}
+              </p>
             )}
           </div>
         </div>

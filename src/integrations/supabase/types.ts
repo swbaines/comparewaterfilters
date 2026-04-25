@@ -324,12 +324,18 @@ export type Database = {
           has_public_liability: boolean | null
           highlights: string[]
           id: string
+          installation_model:
+            | Database["public"]["Enums"]["installation_model"]
+            | null
+          installation_partners: Json
           insurer_name: string | null
           logo: string | null
           name: string
           phone: string | null
           plumber_licence_number: string | null
+          plumbing_licence_state: string | null
           price_range: Database["public"]["Enums"]["price_range"]
+          public_liability_insurance_amount: number | null
           rating: number
           response_time: string
           review_count: number
@@ -341,6 +347,7 @@ export type Database = {
           service_radius_km: number
           slug: string
           states: string[]
+          sub_contractor_confirmation_at: string | null
           submitted_by: string | null
           system_pricing: Json
           system_types: string[]
@@ -369,12 +376,18 @@ export type Database = {
           has_public_liability?: boolean | null
           highlights?: string[]
           id?: string
+          installation_model?:
+            | Database["public"]["Enums"]["installation_model"]
+            | null
+          installation_partners?: Json
           insurer_name?: string | null
           logo?: string | null
           name: string
           phone?: string | null
           plumber_licence_number?: string | null
+          plumbing_licence_state?: string | null
           price_range?: Database["public"]["Enums"]["price_range"]
+          public_liability_insurance_amount?: number | null
           rating?: number
           response_time?: string
           review_count?: number
@@ -386,6 +399,7 @@ export type Database = {
           service_radius_km?: number
           slug: string
           states?: string[]
+          sub_contractor_confirmation_at?: string | null
           submitted_by?: string | null
           system_pricing?: Json
           system_types?: string[]
@@ -414,12 +428,18 @@ export type Database = {
           has_public_liability?: boolean | null
           highlights?: string[]
           id?: string
+          installation_model?:
+            | Database["public"]["Enums"]["installation_model"]
+            | null
+          installation_partners?: Json
           insurer_name?: string | null
           logo?: string | null
           name?: string
           phone?: string | null
           plumber_licence_number?: string | null
+          plumbing_licence_state?: string | null
           price_range?: Database["public"]["Enums"]["price_range"]
+          public_liability_insurance_amount?: number | null
           rating?: number
           response_time?: string
           review_count?: number
@@ -431,6 +451,7 @@ export type Database = {
           service_radius_km?: number
           slug?: string
           states?: string[]
+          sub_contractor_confirmation_at?: string | null
           submitted_by?: string | null
           system_pricing?: Json
           system_types?: string[]
@@ -965,6 +986,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       approval_status: "pending" | "approved" | "rejected"
+      installation_model: "in_house_licensed" | "sub_contracted"
       invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
       price_range: "budget" | "mid" | "premium"
     }
@@ -1096,6 +1118,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       approval_status: ["pending", "approved", "rejected"],
+      installation_model: ["in_house_licensed", "sub_contracted"],
       invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
       price_range: ["budget", "mid", "premium"],
     },

@@ -17,6 +17,12 @@ import { ShieldCheck, ShieldAlert } from "lucide-react";
 import { isValidAbn, cleanAbn } from "@/lib/abn";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
 import { computeCoverageStates, detectCoverageMode, CAPITAL_METROS } from "@/lib/serviceArea";
+import InstallationModelFields, {
+  emptyInstallationModelValue,
+  validateInstallationModel,
+  type InstallationModelValue,
+  type InstallationPartner,
+} from "@/components/vendor/InstallationModelFields";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -137,6 +143,10 @@ export default function VendorProfilePage() {
     regions: [],
   });
 
+  const [installation, setInstallation] = useState<InstallationModelValue>(
+    emptyInstallationModelValue(),
+  );
+
   useEffect(() => {
     if (provider) {
       const radius = provider.service_radius_km ?? 50;
@@ -197,6 +207,38 @@ export default function VendorProfilePage() {
         statewide: radius >= 2000,
         regions: mode === "regions" ? savedStates.filter((s: string) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
       });
+
+      const partnersRaw = (provider as any).installation_partners as
+        | InstallationPartner[]
+        | null
+        | undefined;
+      const partners =
+        Array.isArray(partnersRaw) && partnersRaw.length > 0
+          ? partnersRaw.map((p) => ({
+              business_name: p?.business_name ?? "",
+              licence_number: p?.licence_number ?? "",
+              state: p?.state ?? "",
+            }))
+          : [{ business_name: "", licence_number: "", state: "" }];
+      setInstallation({
+        installation_model:
+          ((provider as any).installation_model as
+            | "in_house_licensed"
+            | "sub_contracted"
+            | null) ?? null,
+        plumber_licence_number: provider.plumber_licence_number ?? "",
+        plumbing_licence_state:
+          ((provider as any).plumbing_licence_state as string | null) ?? "",
+        has_public_liability: provider.has_public_liability ?? false,
+        insurer_name: provider.insurer_name ?? "",
+        public_liability_insurance_amount:
+          (provider as any).public_liability_insurance_amount != null
+            ? String((provider as any).public_liability_insurance_amount)
+            : "",
+        installation_partners: partners,
+        sub_contractor_confirmed: !!(provider as any)
+          .sub_contractor_confirmation_at,
+      });
     }
   }, [provider]);
 
@@ -218,6 +260,9 @@ export default function VendorProfilePage() {
       }
       // Recompute verification each save so a corrected ABN flips status correctly.
       const abnVerified = abnClean ? isValidAbn(abnClean) : false;
+
+      const installationError = validateInstallationModel(installation);
+      if (installationError) throw new Error(installationError);
 
       let radiusToSave = 0;
       let baseFields: Record<string, any> = {
@@ -284,6 +329,37 @@ export default function VendorProfilePage() {
           website: form.website ? (/^https?:\/\//i.test(form.website.trim()) ? form.website.trim() : `https://${form.website.trim()}`) : null,
           phone: form.phone || null,
           contact_email: form.contact_email || null,
+          installation_model: installation.installation_model,
+          plumber_licence_number:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumber_licence_number.trim()
+              : "",
+          plumbing_licence_state:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumbing_licence_state || null
+              : null,
+          has_public_liability: installation.has_public_liability,
+          insurer_name: installation.has_public_liability
+            ? installation.insurer_name.trim()
+            : "",
+          public_liability_insurance_amount:
+            installation.has_public_liability &&
+            installation.public_liability_insurance_amount.trim()
+              ? Number(installation.public_liability_insurance_amount)
+              : null,
+          installation_partners: (
+            installation.installation_model === "sub_contracted"
+              ? installation.installation_partners.filter(
+                  (p) => p.business_name.trim() && p.licence_number.trim(),
+                )
+              : []
+          ) as any,
+          sub_contractor_confirmation_at:
+            installation.installation_model === "sub_contracted" &&
+            installation.sub_contractor_confirmed
+              ? (provider as any)?.sub_contractor_confirmation_at ||
+                new Date().toISOString()
+              : null,
             system_pricing: (() => {
               const out: Record<string, { min: number; max: number }> = {};
               for (const id of normalizedSystemTypes) {
@@ -491,6 +567,24 @@ export default function VendorProfilePage() {
           </CardHeader>
           <CardContent>
             <ServiceAreaPicker value={serviceArea} onChange={setServiceArea} idPrefix="profile" />
+          </CardContent>
+        </Card>
+
+        {/* Installation Model & Compliance */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Shield className="h-5 w-5" /> Installation & Compliance
+            </CardTitle>
+            <CardDescription>
+              How installations are carried out, plus licence and insurance details.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <InstallationModelFields
+              value={installation}
+              onChange={setInstallation}
+            />
           </CardContent>
         </Card>
 

@@ -150,25 +150,46 @@ export default function TermsPage() {
           <h2>PART C — VENDOR TERMS</h2>
 
           <h3>17. Vendor Registration and Approval</h3>
-          <p>17.1 To become a Vendor on the Platform, you must complete the registration process and provide accurate information including your business name, ABN, state plumbing licence number, and public liability insurance details.</p>
+          <p>17.1 To become a Vendor on the Platform, you must complete the registration process and provide accurate information including your business name, ABN, your installation model (either an in-house licensed plumbing team or sub-contracted licensed plumbers), the corresponding licence and insurance details, and — where applicable — the business names and licence numbers of your installation partners.</p>
           <p>17.2 Registration does not guarantee approval. We reserve the right to approve or reject any Vendor application at our absolute discretion without being required to provide reasons.</p>
-          <p>17.3 We may verify your ABN at abn.business.gov.au and may contact your relevant state licensing authority to verify your licence. Providing false or misleading information is grounds for immediate termination.</p>
+          <p>17.3 We may verify your ABN at abn.business.gov.au and may contact the relevant state licensing authority to verify any licence you (or your nominated installation partners) provide. Providing false or misleading information is grounds for immediate termination.</p>
           <p>17.4 Your profile will be set to "pending" upon registration and will only be made live once approved by our team.</p>
 
           <h3>18. Vendor Obligations</h3>
-          <p>18.1 By registering as a Vendor, you represent, warrant, and undertake that:</p>
+          <p>18.1 The Platform supports two installation models. You must select the model that accurately describes your business at registration and keep it current at all times:</p>
+          <ol type="a">
+            <li><strong>In-house licensed</strong> — your business directly employs or engages plumbers who hold current, valid licences and who personally perform installations; or</li>
+            <li><strong>Sub-contracted</strong> — your business engages independent licensed plumbing contractors to perform installations on your behalf.</li>
+          </ol>
+
+          <p>18.2 By registering as a Vendor under the <strong>in-house licensed</strong> model, you represent, warrant, and undertake that:</p>
           <ol type="a">
             <li>you hold a current, valid plumbing licence issued by the relevant authority in each state in which you operate;</li>
             <li>you hold current public liability insurance with a minimum cover appropriate for your business;</li>
-            <li>all information provided in your profile is accurate, current, and not misleading;</li>
-            <li>all installations will be carried out by appropriately licensed tradespeople in accordance with applicable laws and standards;</li>
-            <li>you will respond to quote requests in a professional and timely manner;</li>
-            <li>you will deal honestly and fairly with Customers at all times;</li>
-            <li>you will not engage in misleading or deceptive conduct in connection with your services;</li>
+            <li>all installations arranged through the Platform will be performed by your in-house licensed personnel;</li>
             <li>you will maintain all required licences and insurance throughout your time on the Platform and notify us immediately if any lapse.</li>
           </ol>
 
-          <p>18.2 You must not:</p>
+          <p>18.3 By registering as a Vendor under the <strong>sub-contracted</strong> model, you represent, warrant, and undertake that:</p>
+          <ol type="a">
+            <li>you hold current public liability insurance with a minimum cover appropriate for your business;</li>
+            <li>every installation arranged through the Platform will be carried out by an appropriately licensed plumbing contractor in compliance with the plumbing regulations of the state in which the installation occurs;</li>
+            <li>you have nominated, and keep current, a list of your primary installation partners (including their business name and licence number) in your Vendor profile;</li>
+            <li>you take full responsibility for ensuring your installation partners hold current, valid licences and appropriate insurance, and for verifying these credentials before engaging them on any job sourced through the Platform;</li>
+            <li>you remain the contracting party with the Customer and are responsible for the quality, compliance, warranty and conduct of any work performed by your sub-contractors;</li>
+            <li>you will notify us immediately if a primary installation partner ceases to hold a valid licence or insurance, or if you cease to engage them.</li>
+          </ol>
+
+          <p>18.4 Regardless of installation model, every Vendor represents, warrants and undertakes that:</p>
+          <ol type="a">
+            <li>all information provided in your profile is accurate, current, and not misleading;</li>
+            <li>you will respond to quote requests in a professional and timely manner;</li>
+            <li>you will deal honestly and fairly with Customers at all times;</li>
+            <li>you will not engage in misleading or deceptive conduct in connection with your services or installation arrangements;</li>
+            <li>you will not represent that you personally hold a plumbing licence if you operate under the sub-contracted model.</li>
+          </ol>
+
+          <p>18.5 You must not:</p>
           <ol type="a">
             <li>use Customer contact details obtained through the Platform for any purpose other than responding to quote requests;</li>
             <li>contact Customers through channels other than those provided through the Platform without their explicit consent;</li>

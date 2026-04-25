@@ -17,6 +17,11 @@ import { systemTypes } from "@/data/systemTypes";
 import { Badge } from "@/components/ui/badge";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
 import { computeCoverageStates } from "@/lib/serviceArea";
+import InstallationModelFields, {
+  emptyInstallationModelValue,
+  validateInstallationModel,
+  type InstallationModelValue,
+} from "@/components/vendor/InstallationModelFields";
 
 const AU_STATES = [
   { value: "NSW", label: "NSW" },
@@ -98,11 +103,12 @@ export default function VendorRegisterPage() {
     website: "",
     phone: "",
     abn: "",
-    plumberLicenceNumber: "",
-    hasPublicLiability: false,
-    insurerName: "",
     googleBusinessUrl: "",
   });
+
+  const [installation, setInstallation] = useState<InstallationModelValue>(
+    emptyInstallationModelValue(),
+  );
 
   const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
     mode: "radius",
@@ -244,7 +250,12 @@ export default function VendorRegisterPage() {
       toast.error("Google Business Profile must be a valid URL");
       return;
     }
-    // Plumber licence number is optional
+    // Validate installation model fieldset (licence/insurance/partners)
+    const installationError = validateInstallationModel(installation);
+    if (installationError) {
+      toast.error(installationError);
+      return;
+    }
 
     if (serviceArea.mode === "radius") {
       if (!serviceArea.baseLat || !serviceArea.baseLng || !serviceArea.baseSuburb) {
@@ -344,9 +355,36 @@ export default function VendorRegisterPage() {
           abn: abnClean,
           abn_verified: abnVerified,
           abn_verified_at: abnVerified ? new Date().toISOString() : null,
-          plumber_licence_number: profile.plumberLicenceNumber.trim(),
-          has_public_liability: profile.hasPublicLiability,
-          insurer_name: profile.hasPublicLiability ? profile.insurerName.trim() : "",
+          plumber_licence_number:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumber_licence_number.trim()
+              : "",
+          plumbing_licence_state:
+            installation.installation_model === "in_house_licensed"
+              ? installation.plumbing_licence_state || null
+              : null,
+          has_public_liability: installation.has_public_liability,
+          insurer_name: installation.has_public_liability
+            ? installation.insurer_name.trim()
+            : "",
+          public_liability_insurance_amount:
+            installation.has_public_liability &&
+            installation.public_liability_insurance_amount.trim()
+              ? Number(installation.public_liability_insurance_amount)
+              : null,
+          installation_model: installation.installation_model,
+          installation_partners:
+            installation.installation_model === "sub_contracted"
+              ? installation.installation_partners.filter(
+                  (p) =>
+                    p.business_name.trim() && p.licence_number.trim(),
+                )
+              : [],
+          sub_contractor_confirmation_at:
+            installation.installation_model === "sub_contracted" &&
+            installation.sub_contractor_confirmed
+              ? new Date().toISOString()
+              : null,
           google_business_url: gbpTrim,
         } as any)
         .select("id")
@@ -385,7 +423,8 @@ export default function VendorRegisterPage() {
               abn: profile.abn.replace(/\s/g, ""),
               states: statesToSave,
               systemTypes: profile.systemTypes,
-              hasPublicLiability: profile.hasPublicLiability,
+              hasPublicLiability: installation.has_public_liability,
+              installationModel: installation.installation_model,
               registeredAt: new Date().toISOString(),
             },
           },
@@ -533,15 +572,6 @@ export default function VendorRegisterPage() {
                   <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Plumber Licence Number (optional)</Label>
-                  <Input
-                    value={profile.plumberLicenceNumber}
-                    onChange={e => updateProfile("plumberLicenceNumber", e.target.value)}
-                    placeholder="e.g. 12345C"
-                  />
-                  <p className="text-xs text-muted-foreground">Required only if your business performs installations directly</p>
-                </div>
-                <div className="space-y-1.5">
                   <Label>Description</Label>
                   <Textarea value={profile.description} onChange={e => updateProfile("description", e.target.value)} rows={3} placeholder="Tell customers about your business, experience, and what sets you apart…" />
                 </div>
@@ -583,27 +613,6 @@ export default function VendorRegisterPage() {
                   <p className="text-xs text-muted-foreground">Used to verify your business reviews and reputation.</p>
                 </div>
 
-                {/* Public Liability Insurance */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Public Liability Insurance</Label>
-                    <Switch
-                      checked={profile.hasPublicLiability}
-                      onCheckedChange={v => updateProfile("hasPublicLiability", v)}
-                    />
-                  </div>
-                  {profile.hasPublicLiability && (
-                    <div className="space-y-1.5">
-                      <Label>Insurer Name</Label>
-                      <Input
-                        value={profile.insurerName}
-                        onChange={e => updateProfile("insurerName", e.target.value)}
-                        placeholder="e.g. QBE, Allianz"
-                      />
-                    </div>
-                  )}
-                </div>
-
                 {/* Logo Upload */}
                 <div className="space-y-1.5">
                   <Label>Business Logo (optional)</Label>
@@ -642,6 +651,24 @@ export default function VendorRegisterPage() {
               </CardHeader>
               <CardContent>
                 <ServiceAreaPicker value={serviceArea} onChange={setServiceArea} idPrefix="reg" />
+              </CardContent>
+            </Card>
+
+            {/* Installation Model & Compliance */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" /> Installation & Compliance
+                </CardTitle>
+                <CardDescription>
+                  How installations are performed, plus licence and insurance details.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <InstallationModelFields
+                  value={installation}
+                  onChange={setInstallation}
+                />
               </CardContent>
             </Card>
 

@@ -24,6 +24,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import SystemTypeIdsManager from "@/components/admin/SystemTypeIdsManager";
 import ProviderBillingActivityLog from "@/components/admin/ProviderBillingActivityLog";
+import InstallationModelFields, {
+  emptyInstallationModelValue,
+  type InstallationModelValue,
+  type InstallationPartner,
+} from "@/components/vendor/InstallationModelFields";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
 
@@ -61,6 +66,59 @@ const emptyForm: Omit<TablesInsert<"providers">, "id" | "created_at" | "updated_
   service_radius_km: 50,
 };
 
+function partnersFromProvider(p: ProviderRow | null): InstallationPartner[] {
+  const raw = (p as any)?.installation_partners;
+  if (!Array.isArray(raw) || raw.length === 0)
+    return [{ business_name: "", licence_number: "", state: "" }];
+  return raw.map((x: any) => ({
+    business_name: x?.business_name ?? "",
+    licence_number: x?.licence_number ?? "",
+    state: x?.state ?? "",
+  }));
+}
+
+function installationFromProvider(p: ProviderRow | null): InstallationModelValue {
+  if (!p) return emptyInstallationModelValue();
+  return {
+    installation_model:
+      ((p as any).installation_model as
+        | "in_house_licensed"
+        | "sub_contracted"
+        | null) ?? null,
+    plumber_licence_number: p.plumber_licence_number ?? "",
+    plumbing_licence_state:
+      ((p as any).plumbing_licence_state as string | null) ?? "",
+    has_public_liability: p.has_public_liability ?? false,
+    insurer_name: p.insurer_name ?? "",
+    public_liability_insurance_amount:
+      (p as any).public_liability_insurance_amount != null
+        ? String((p as any).public_liability_insurance_amount)
+        : "",
+    installation_partners: partnersFromProvider(p),
+    sub_contractor_confirmed: !!(p as any).sub_contractor_confirmation_at,
+  };
+}
+
+function modelBadgeMeta(model: string | null | undefined) {
+  if (model === "in_house_licensed")
+    return {
+      label: "In-house",
+      title: "In-house licensed plumbing team",
+      cls: "border-emerald-300 text-emerald-700",
+    };
+  if (model === "sub_contracted")
+    return {
+      label: "Sub-contracted",
+      title: "Uses sub-contracted licensed plumbers",
+      cls: "border-sky-300 text-sky-700",
+    };
+  return {
+    label: "Not set",
+    title: "Installation model not set",
+    cls: "border-amber-300 text-amber-700",
+  };
+}
+
 function arrayFieldToString(arr: string[] | null | undefined): string {
   return (arr || []).join(", ");
 }
@@ -74,6 +132,9 @@ export default function AdminProvidersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [installation, setInstallation] = useState<InstallationModelValue>(
+    emptyInstallationModelValue(),
+  );
   const [scrapeUrl, setScrapeUrl] = useState("");
   const [scraping, setScraping] = useState(false);
   const [reviewProvider, setReviewProvider] = useState<ProviderRow | null>(null);
@@ -268,6 +329,7 @@ export default function AdminProvidersPage() {
     setDialogOpen(false);
     setEditId(null);
     setForm(emptyForm);
+    setInstallation(emptyInstallationModelValue());
     setScrapeUrl("");
   };
 
@@ -304,6 +366,7 @@ export default function AdminProvidersPage() {
       service_base_state: p.service_base_state ?? null,
       service_radius_km: p.service_radius_km ?? 50,
     });
+    setInstallation(installationFromProvider(p));
     setDialogOpen(true);
   };
 
@@ -345,7 +408,40 @@ export default function AdminProvidersPage() {
       toast.error("Name and slug are required");
       return;
     }
-    upsertMutation.mutate(form);
+    const partners =
+      installation.installation_model === "sub_contracted"
+        ? installation.installation_partners.filter(
+            (p) => p.business_name.trim() && p.licence_number.trim(),
+          )
+        : [];
+    const payload: any = {
+      ...form,
+      installation_model: installation.installation_model,
+      plumber_licence_number:
+        installation.installation_model === "in_house_licensed"
+          ? installation.plumber_licence_number.trim()
+          : "",
+      plumbing_licence_state:
+        installation.installation_model === "in_house_licensed"
+          ? installation.plumbing_licence_state || null
+          : null,
+      has_public_liability: installation.has_public_liability,
+      insurer_name: installation.has_public_liability
+        ? installation.insurer_name.trim()
+        : "",
+      public_liability_insurance_amount:
+        installation.has_public_liability &&
+        installation.public_liability_insurance_amount.trim()
+          ? Number(installation.public_liability_insurance_amount)
+          : null,
+      installation_partners: partners,
+      sub_contractor_confirmation_at:
+        installation.installation_model === "sub_contracted" &&
+        installation.sub_contractor_confirmed
+          ? new Date().toISOString()
+          : null,
+    };
+    upsertMutation.mutate(payload);
   };
 
   const updateField = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
@@ -575,6 +671,7 @@ export default function AdminProvidersPage() {
                   <TableHead>Rating</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>ABN</TableHead>
+                  <TableHead>Model</TableHead>
                   <TableHead>Terms</TableHead>
                   <TableHead>Billing</TableHead>
                   <TableHead>Active</TableHead>
@@ -663,6 +760,20 @@ export default function AdminProvidersPage() {
                         return (
                           <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 gap-1">
                             <Shield className="h-3 w-3" /> Unverified
+                          </Badge>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const m = modelBadgeMeta((p as any).installation_model);
+                        return (
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${m.cls}`}
+                            title={m.title}
+                          >
+                            {m.label}
                           </Badge>
                         );
                       })()}
@@ -1066,20 +1177,15 @@ export default function AdminProvidersPage() {
                 <Input type="number" value={form.service_radius_km ?? 0} onChange={(e) => updateField("service_radius_km", parseInt(e.target.value) || 0)} />
               </div>
 
-              {/* Compliance */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label>Plumber licence #</Label>
-                  <Input value={form.plumber_licence_number ?? ""} onChange={(e) => updateField("plumber_licence_number", e.target.value)} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Insurer name</Label>
-                  <Input value={form.insurer_name ?? ""} onChange={(e) => updateField("insurer_name", e.target.value)} />
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={!!form.has_public_liability} onCheckedChange={(v) => updateField("has_public_liability", v)} />
-                <Label>Has public liability insurance</Label>
+              {/* Installation model & compliance */}
+              <div className="rounded-md border border-border p-3">
+                <h4 className="mb-3 text-sm font-semibold flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-primary" /> Installation & Compliance
+                </h4>
+                <InstallationModelFields
+                  value={installation}
+                  onChange={setInstallation}
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -1340,12 +1446,62 @@ export default function AdminProvidersPage() {
                 {/* Compliance & Insurance */}
                 <div>
                   <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Shield className="h-4 w-4 text-primary" /> Compliance & Insurance</h3>
+                  {(() => {
+                    const m = modelBadgeMeta(
+                      (reviewProvider as any).installation_model,
+                    );
+                    return (
+                      <div className="mb-2 flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">Installation model:</span>
+                        <Badge variant="outline" className={`text-xs ${m.cls}`}>
+                          {m.label}
+                        </Badge>
+                      </div>
+                    );
+                  })()}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                     <div><span className="text-muted-foreground">Plumber licence #:</span> <span className="font-medium">{reviewProvider.plumber_licence_number || "—"}</span></div>
+                    <div><span className="text-muted-foreground">Licence state:</span> <span className="font-medium">{(reviewProvider as any).plumbing_licence_state || "—"}</span></div>
                     <div><span className="text-muted-foreground">Public liability:</span> <span className="font-medium">{reviewProvider.has_public_liability ? "Yes" : "No"}</span></div>
+                    <div><span className="text-muted-foreground">Cover amount:</span> <span className="font-medium">{(reviewProvider as any).public_liability_insurance_amount ? `A$${Number((reviewProvider as any).public_liability_insurance_amount).toLocaleString()}` : "—"}</span></div>
                     <div className="col-span-2"><span className="text-muted-foreground">Insurer:</span> <span className="font-medium">{reviewProvider.insurer_name || "—"}</span></div>
                     <div className="col-span-2"><span className="text-muted-foreground">Terms accepted:</span> <span className="font-medium">{reviewProvider.terms_accepted_at ? new Date(reviewProvider.terms_accepted_at).toLocaleString() : "—"}</span></div>
+                    {(reviewProvider as any).sub_contractor_confirmation_at && (
+                      <div className="col-span-2"><span className="text-muted-foreground">Sub-contractor declaration accepted:</span> <span className="font-medium">{new Date((reviewProvider as any).sub_contractor_confirmation_at).toLocaleString()}</span></div>
+                    )}
                   </div>
+                  {(() => {
+                    const partners = ((reviewProvider as any)
+                      .installation_partners as InstallationPartner[] | null) || [];
+                    if (
+                      (reviewProvider as any).installation_model !==
+                        "sub_contracted" ||
+                      partners.length === 0
+                    )
+                      return null;
+                    return (
+                      <div className="mt-3">
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Installation partners
+                        </div>
+                        <ul className="space-y-1 text-sm">
+                          {partners.map((p, i) => (
+                            <li
+                              key={i}
+                              className="rounded border border-border bg-muted/30 px-2 py-1"
+                            >
+                              <span className="font-medium">
+                                {p.business_name || "—"}
+                              </span>{" "}
+                              <span className="text-muted-foreground">
+                                · Licence {p.licence_number || "—"} · {p.state || "—"}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Additional Details */}
