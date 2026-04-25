@@ -21,7 +21,6 @@ import InstallationModelFields, {
   emptyInstallationModelValue,
   validateInstallationModel,
   type InstallationModelValue,
-  type InstallationPartner,
 } from "@/components/vendor/InstallationModelFields";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -208,18 +207,6 @@ export default function VendorProfilePage() {
         regions: mode === "regions" ? savedStates.filter((s: string) => metroValues.has(s) || /^[A-Z]{2,3}$/.test(s)) : [],
       });
 
-      const partnersRaw = (provider as any).installation_partners as
-        | InstallationPartner[]
-        | null
-        | undefined;
-      const partners =
-        Array.isArray(partnersRaw) && partnersRaw.length > 0
-          ? partnersRaw.map((p) => ({
-              business_name: p?.business_name ?? "",
-              licence_number: p?.licence_number ?? "",
-              state: p?.state ?? "",
-            }))
-          : [{ business_name: "", licence_number: "", state: "" }];
       setInstallation({
         installation_model:
           ((provider as any).installation_model as
@@ -235,7 +222,6 @@ export default function VendorProfilePage() {
           (provider as any).public_liability_insurance_amount != null
             ? String((provider as any).public_liability_insurance_amount)
             : "",
-        installation_partners: partners,
         sub_contractor_confirmed: !!(provider as any)
           .sub_contractor_confirmation_at,
       });
@@ -347,13 +333,6 @@ export default function VendorProfilePage() {
             installation.public_liability_insurance_amount.trim()
               ? Number(installation.public_liability_insurance_amount)
               : null,
-          installation_partners: (
-            installation.installation_model === "sub_contracted"
-              ? installation.installation_partners.filter(
-                  (p) => p.business_name.trim() && p.licence_number.trim(),
-                )
-              : []
-          ) as any,
           sub_contractor_confirmation_at:
             installation.installation_model === "sub_contracted" &&
             installation.sub_contractor_confirmed
