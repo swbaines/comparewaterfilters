@@ -1021,7 +1021,7 @@ export default function AdminProvidersPage() {
 
         {/* Review Application Dialog */}
         <Dialog open={!!reviewProvider} onOpenChange={(open) => { if (!open) setReviewProvider(null); }}>
-          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 flex-wrap">
                 <Eye className="h-5 w-5" />
@@ -1052,13 +1052,50 @@ export default function AdminProvidersPage() {
                 {/* Business Details */}
                 <div>
                   <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Building2 className="h-4 w-4 text-primary" /> Business Details</h3>
+                  {reviewProvider.logo && (
+                    <div className="mb-3 flex items-center gap-3">
+                      <img
+                        src={reviewProvider.logo}
+                        alt={`${reviewProvider.name} logo`}
+                        className="h-14 w-14 rounded border object-contain bg-white"
+                      />
+                      <span className="text-xs text-muted-foreground">Business logo</span>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                    <div><span className="text-muted-foreground">Name:</span> <span className="font-medium">{reviewProvider.name}</span></div>
-                    <div><span className="text-muted-foreground">Years:</span> <span className="font-medium">{reviewProvider.years_in_business}</span></div>
+                    <div><span className="text-muted-foreground">Business Name:</span> <span className="font-medium">{reviewProvider.name}</span></div>
+                    {reviewProvider.trading_name && (
+                      <div><span className="text-muted-foreground">Trading Name:</span> <span className="font-medium">{reviewProvider.trading_name}</span></div>
+                    )}
+                    <div>
+                      <span className="text-muted-foreground">ABN:</span>{" "}
+                      <span className="font-medium font-mono">{reviewProvider.abn || "—"}</span>
+                      {reviewProvider.abn && (
+                        (reviewProvider as any).abn_verified ? (
+                          <Badge variant="outline" className="ml-2 border-green-300 text-green-700 gap-1">
+                            <ShieldCheck className="h-3 w-3" /> Verified
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="ml-2 border-amber-300 text-amber-700 gap-1">
+                            <AlertTriangle className="h-3 w-3" /> Unverified
+                          </Badge>
+                        )
+                      )}
+                      {(reviewProvider as any).abn_review_flag && (
+                        <Badge variant="destructive" className="ml-2">{((reviewProvider as any).abn_review_flag as string).replace(/_/g, " ")}</Badge>
+                      )}
+                    </div>
+                    <div><span className="text-muted-foreground">Slug:</span> <span className="font-medium font-mono">{reviewProvider.slug}</span></div>
+                    <div><span className="text-muted-foreground">Years in business:</span> <span className="font-medium">{reviewProvider.years_in_business}</span></div>
                     <div><span className="text-muted-foreground">Price Range:</span> <span className="font-medium capitalize">{reviewProvider.price_range}</span></div>
                     <div><span className="text-muted-foreground">Response Time:</span> <span className="font-medium">{reviewProvider.response_time}</span></div>
+                    <div><span className="text-muted-foreground">Rating:</span> <span className="font-medium">{reviewProvider.rating || 0} ({reviewProvider.review_count || 0} reviews)</span></div>
+                    <div><span className="text-muted-foreground">Available for quote:</span> <span className="font-medium">{reviewProvider.available_for_quote ? "Yes" : "No"}</span></div>
+                    <div><span className="text-muted-foreground">Approval status:</span> <span className="font-medium capitalize">{reviewProvider.approval_status}</span></div>
+                    {reviewProvider.contact_email && <div><span className="text-muted-foreground">Contact email:</span> <a href={`mailto:${reviewProvider.contact_email}`} className="font-medium text-primary hover:underline">{reviewProvider.contact_email}</a></div>}
                     {reviewProvider.phone && <div><span className="text-muted-foreground">Phone:</span> <span className="font-medium">{reviewProvider.phone}</span></div>}
                     {reviewProvider.website && <div><span className="text-muted-foreground">Website:</span> <a href={reviewProvider.website} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">{reviewProvider.website}</a></div>}
+                    {reviewProvider.google_business_url && <div><span className="text-muted-foreground">Google Business:</span> <a href={reviewProvider.google_business_url} target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">View profile</a></div>}
                   </div>
                   {reviewProvider.description && (
                     <div className="mt-2">
@@ -1071,8 +1108,26 @@ export default function AdminProvidersPage() {
                 {/* Service Area */}
                 <div>
                   <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><MapPin className="h-4 w-4 text-primary" /> Service Area</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-2">
+                    {(reviewProvider.service_base_suburb || reviewProvider.service_base_state) && (
+                      <div className="col-span-2">
+                        <span className="text-muted-foreground">Base location:</span>{" "}
+                        <span className="font-medium">
+                          {[reviewProvider.service_base_suburb, reviewProvider.service_base_postcode, reviewProvider.service_base_state].filter(Boolean).join(", ")}
+                        </span>
+                      </div>
+                    )}
+                    {reviewProvider.service_radius_km != null && (
+                      <div>
+                        <span className="text-muted-foreground">Service radius:</span>{" "}
+                        <span className="font-medium">{reviewProvider.service_radius_km >= 2000 ? "Statewide" : `${reviewProvider.service_radius_km} km`}</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm text-muted-foreground">Coverage states / regions:</span>
                   <div className="flex flex-wrap gap-1 mb-1">
                     {reviewProvider.states.map((s) => <Badge key={s} variant="outline">{s}</Badge>)}
+                    {reviewProvider.states.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
                   </div>
                 </div>
 
@@ -1087,6 +1142,19 @@ export default function AdminProvidersPage() {
                         {reviewProvider.system_types.length === 0 && <span className="text-sm text-muted-foreground italic">None specified</span>}
                       </div>
                     </div>
+                    {reviewProvider.system_pricing && typeof reviewProvider.system_pricing === "object" && Object.keys(reviewProvider.system_pricing as Record<string, unknown>).length > 0 && (
+                      <div>
+                        <span className="text-sm text-muted-foreground">System Pricing (AUD):</span>
+                        <div className="mt-1 grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm">
+                          {Object.entries(reviewProvider.system_pricing as Record<string, { min?: number; max?: number }>).map(([key, val]) => (
+                            <div key={key} className="rounded border bg-muted/30 px-2 py-1">
+                              <span className="font-medium">{key}:</span>{" "}
+                              <span>${val?.min ?? "—"} – ${val?.max ?? "—"}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                     <div>
                       <span className="text-sm text-muted-foreground">Brands:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
@@ -1134,11 +1202,22 @@ export default function AdminProvidersPage() {
                   </div>
                 </div>
 
+                {/* Compliance & Insurance */}
+                <div>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Shield className="h-4 w-4 text-primary" /> Compliance & Insurance</h3>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div><span className="text-muted-foreground">Plumber licence #:</span> <span className="font-medium">{reviewProvider.plumber_licence_number || "—"}</span></div>
+                    <div><span className="text-muted-foreground">Public liability:</span> <span className="font-medium">{reviewProvider.has_public_liability ? "Yes" : "No"}</span></div>
+                    <div className="col-span-2"><span className="text-muted-foreground">Insurer:</span> <span className="font-medium">{reviewProvider.insurer_name || "—"}</span></div>
+                    <div className="col-span-2"><span className="text-muted-foreground">Terms accepted:</span> <span className="font-medium">{reviewProvider.terms_accepted_at ? new Date(reviewProvider.terms_accepted_at).toLocaleString() : "—"}</span></div>
+                  </div>
+                </div>
+
                 {/* Additional Details */}
                 <div>
                   <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><Shield className="h-4 w-4 text-primary" /> Additional Details</h3>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                    <div><span className="text-muted-foreground">Warranty:</span> <span className="font-medium">{reviewProvider.warranty || "—"}</span></div>
+                    <div className="col-span-2"><span className="text-muted-foreground">Warranty:</span> <span className="font-medium">{reviewProvider.warranty || "—"}</span></div>
                   </div>
                   {reviewProvider.highlights.length > 0 && (
                     <div className="mt-2">
