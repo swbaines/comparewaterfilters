@@ -654,6 +654,24 @@ export default function VendorRegisterPage() {
               </CardContent>
             </Card>
 
+            {/* Installation Model & Compliance */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" /> Installation & Compliance
+                </CardTitle>
+                <CardDescription>
+                  How installations are performed, plus licence and insurance details.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <InstallationModelFields
+                  value={installation}
+                  onChange={setInstallation}
+                />
+              </CardContent>
+            </Card>
+
             {/* Systems & Expertise */}
             <Card>
               <CardHeader className="pb-3">
