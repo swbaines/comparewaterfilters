@@ -27,7 +27,6 @@ import ProviderBillingActivityLog from "@/components/admin/ProviderBillingActivi
 import InstallationModelFields, {
   emptyInstallationModelValue,
   type InstallationModelValue,
-  type InstallationPartner,
 } from "@/components/vendor/InstallationModelFields";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
@@ -66,17 +65,6 @@ const emptyForm: Omit<TablesInsert<"providers">, "id" | "created_at" | "updated_
   service_radius_km: 50,
 };
 
-function partnersFromProvider(p: ProviderRow | null): InstallationPartner[] {
-  const raw = (p as any)?.installation_partners;
-  if (!Array.isArray(raw) || raw.length === 0)
-    return [{ business_name: "", licence_number: "", state: "" }];
-  return raw.map((x: any) => ({
-    business_name: x?.business_name ?? "",
-    licence_number: x?.licence_number ?? "",
-    state: x?.state ?? "",
-  }));
-}
-
 function installationFromProvider(p: ProviderRow | null): InstallationModelValue {
   if (!p) return emptyInstallationModelValue();
   return {
@@ -94,7 +82,6 @@ function installationFromProvider(p: ProviderRow | null): InstallationModelValue
       (p as any).public_liability_insurance_amount != null
         ? String((p as any).public_liability_insurance_amount)
         : "",
-    installation_partners: partnersFromProvider(p),
     sub_contractor_confirmed: !!(p as any).sub_contractor_confirmation_at,
   };
 }
@@ -408,12 +395,6 @@ export default function AdminProvidersPage() {
       toast.error("Name and slug are required");
       return;
     }
-    const partners =
-      installation.installation_model === "sub_contracted"
-        ? installation.installation_partners.filter(
-            (p) => p.business_name.trim() && p.licence_number.trim(),
-          )
-        : [];
     const payload: any = {
       ...form,
       installation_model: installation.installation_model,
@@ -434,7 +415,6 @@ export default function AdminProvidersPage() {
         installation.public_liability_insurance_amount.trim()
           ? Number(installation.public_liability_insurance_amount)
           : null,
-      installation_partners: partners,
       sub_contractor_confirmation_at:
         installation.installation_model === "sub_contracted" &&
         installation.sub_contractor_confirmed
