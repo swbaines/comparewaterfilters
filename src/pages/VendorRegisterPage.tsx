@@ -571,15 +571,6 @@ export default function VendorRegisterPage() {
                   <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Plumber Licence Number (optional)</Label>
-                  <Input
-                    value={profile.plumberLicenceNumber}
-                    onChange={e => updateProfile("plumberLicenceNumber", e.target.value)}
-                    placeholder="e.g. 12345C"
-                  />
-                  <p className="text-xs text-muted-foreground">Required only if your business performs installations directly</p>
-                </div>
-                <div className="space-y-1.5">
                   <Label>Description</Label>
                   <Textarea value={profile.description} onChange={e => updateProfile("description", e.target.value)} rows={3} placeholder="Tell customers about your business, experience, and what sets you apart…" />
                 </div>
@@ -619,27 +610,6 @@ export default function VendorRegisterPage() {
                     placeholder="g.page/your-business"
                   />
                   <p className="text-xs text-muted-foreground">Used to verify your business reviews and reputation.</p>
-                </div>
-
-                {/* Public Liability Insurance */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label>Public Liability Insurance</Label>
-                    <Switch
-                      checked={profile.hasPublicLiability}
-                      onCheckedChange={v => updateProfile("hasPublicLiability", v)}
-                    />
-                  </div>
-                  {profile.hasPublicLiability && (
-                    <div className="space-y-1.5">
-                      <Label>Insurer Name</Label>
-                      <Input
-                        value={profile.insurerName}
-                        onChange={e => updateProfile("insurerName", e.target.value)}
-                        placeholder="e.g. QBE, Allianz"
-                      />
-                    </div>
-                  )}
                 </div>
 
                 {/* Logo Upload */}
