@@ -85,6 +85,7 @@ export default function VendorRegisterPage() {
   // Profile fields
   const [profile, setProfile] = useState({
     name: "",
+    tradingName: "",
     description: "",
     systemTypes: [] as string[],
     brands: "",
@@ -306,6 +307,7 @@ export default function VendorRegisterPage() {
         .from("providers")
         .insert({
           name: profile.name,
+          trading_name: profile.tradingName.trim() || null,
           slug,
           description: profile.description,
           states: statesToSave,
