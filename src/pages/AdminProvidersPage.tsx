@@ -24,6 +24,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import SystemTypeIdsManager from "@/components/admin/SystemTypeIdsManager";
 import ProviderBillingActivityLog from "@/components/admin/ProviderBillingActivityLog";
+import InstallationModelFields, {
+  emptyInstallationModelValue,
+  type InstallationModelValue,
+  type InstallationPartner,
+} from "@/components/vendor/InstallationModelFields";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
 
@@ -60,6 +65,59 @@ const emptyForm: Omit<TablesInsert<"providers">, "id" | "created_at" | "updated_
   service_base_state: null,
   service_radius_km: 50,
 };
+
+function partnersFromProvider(p: ProviderRow | null): InstallationPartner[] {
+  const raw = (p as any)?.installation_partners;
+  if (!Array.isArray(raw) || raw.length === 0)
+    return [{ business_name: "", licence_number: "", state: "" }];
+  return raw.map((x: any) => ({
+    business_name: x?.business_name ?? "",
+    licence_number: x?.licence_number ?? "",
+    state: x?.state ?? "",
+  }));
+}
+
+function installationFromProvider(p: ProviderRow | null): InstallationModelValue {
+  if (!p) return emptyInstallationModelValue();
+  return {
+    installation_model:
+      ((p as any).installation_model as
+        | "in_house_licensed"
+        | "sub_contracted"
+        | null) ?? null,
+    plumber_licence_number: p.plumber_licence_number ?? "",
+    plumbing_licence_state:
+      ((p as any).plumbing_licence_state as string | null) ?? "",
+    has_public_liability: p.has_public_liability ?? false,
+    insurer_name: p.insurer_name ?? "",
+    public_liability_insurance_amount:
+      (p as any).public_liability_insurance_amount != null
+        ? String((p as any).public_liability_insurance_amount)
+        : "",
+    installation_partners: partnersFromProvider(p),
+    sub_contractor_confirmed: !!(p as any).sub_contractor_confirmation_at,
+  };
+}
+
+function modelBadgeMeta(model: string | null | undefined) {
+  if (model === "in_house_licensed")
+    return {
+      label: "In-house",
+      title: "In-house licensed plumbing team",
+      cls: "border-emerald-300 text-emerald-700",
+    };
+  if (model === "sub_contracted")
+    return {
+      label: "Sub-contracted",
+      title: "Uses sub-contracted licensed plumbers",
+      cls: "border-sky-300 text-sky-700",
+    };
+  return {
+    label: "Not set",
+    title: "Installation model not set",
+    cls: "border-amber-300 text-amber-700",
+  };
+}
 
 function arrayFieldToString(arr: string[] | null | undefined): string {
   return (arr || []).join(", ");
