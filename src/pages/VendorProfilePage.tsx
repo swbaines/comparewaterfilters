@@ -17,6 +17,12 @@ import { ShieldCheck, ShieldAlert } from "lucide-react";
 import { isValidAbn, cleanAbn } from "@/lib/abn";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
 import { computeCoverageStates, detectCoverageMode, CAPITAL_METROS } from "@/lib/serviceArea";
+import InstallationModelFields, {
+  emptyInstallationModelValue,
+  validateInstallationModel,
+  type InstallationModelValue,
+  type InstallationPartner,
+} from "@/components/vendor/InstallationModelFields";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -136,6 +142,10 @@ export default function VendorProfilePage() {
     statewide: false,
     regions: [],
   });
+
+  const [installation, setInstallation] = useState<InstallationModelValue>(
+    emptyInstallationModelValue(),
+  );
 
   useEffect(() => {
     if (provider) {
