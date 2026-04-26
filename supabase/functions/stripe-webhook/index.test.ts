@@ -142,7 +142,7 @@ function clearCalls() {
 
 // ---------- Tests ----------
 
-Deno.test("rejects requests with no stripe-signature header", async () => {
+Deno.test({ name: "rejects requests with no stripe-signature header", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const res = await handler(
     new Request("http://localhost/stripe-webhook", {
@@ -154,7 +154,7 @@ Deno.test("rejects requests with no stripe-signature header", async () => {
   assertEquals(res.status, 400);
 });
 
-Deno.test("rejects requests with an invalid signature", async () => {
+Deno.test({ name: "rejects requests with an invalid signature", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const res = await handler(
     new Request("http://localhost/stripe-webhook", {
@@ -170,7 +170,7 @@ Deno.test("rejects requests with an invalid signature", async () => {
   assertEquals(res.status, 400);
 });
 
-Deno.test("CORS preflight returns 200", async () => {
+Deno.test({ name: "CORS preflight returns 200", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const res = await handler(
     new Request("http://localhost/stripe-webhook", { method: "OPTIONS" }),
@@ -179,7 +179,7 @@ Deno.test("CORS preflight returns 200", async () => {
   assertEquals(res.status, 200);
 });
 
-Deno.test("invoice.paid with metadata.invoice_id updates by internal id", async () => {
+Deno.test({ name: "invoice.paid with metadata.invoice_id updates by internal id", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const event = {
     id: "evt_invoice_paid",
@@ -214,7 +214,7 @@ Deno.test("invoice.paid with metadata.invoice_id updates by internal id", async 
   if (!body.paid_at) throw new Error("paid_at missing from update");
 });
 
-Deno.test("invoice.payment_succeeded without metadata falls back to stripe_invoice_id", async () => {
+Deno.test({ name: "invoice.payment_succeeded without metadata falls back to stripe_invoice_id", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const event = {
     id: "evt_invoice_succ",
@@ -240,7 +240,7 @@ Deno.test("invoice.payment_succeeded without metadata falls back to stripe_invoi
   }
 });
 
-Deno.test("payment_intent.succeeded with invoice_id updates invoice", async () => {
+Deno.test({ name: "payment_intent.succeeded with invoice_id updates invoice", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const event = {
     id: "evt_pi_succ",
@@ -277,7 +277,7 @@ Deno.test("payment_intent.succeeded with invoice_id updates invoice", async () =
   }
 });
 
-Deno.test("payment_intent.succeeded without invoice_id metadata is a no-op", async () => {
+Deno.test({ name: "payment_intent.succeeded without invoice_id metadata is a no-op", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const event = {
     id: "evt_pi_no_meta",
@@ -298,7 +298,7 @@ Deno.test("payment_intent.succeeded without invoice_id metadata is a no-op", asy
   assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
 });
 
-Deno.test("invoice.payment_failed marks invoice overdue", async () => {
+Deno.test({ name: "invoice.payment_failed marks invoice overdue", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const event = {
     id: "evt_invoice_failed",
@@ -327,7 +327,7 @@ Deno.test("invoice.payment_failed marks invoice overdue", async () => {
   assertEquals(body.status, "overdue");
 });
 
-Deno.test("unhandled event type returns 200 without DB writes", async () => {
+Deno.test({ name: "unhandled event type returns 200 without DB writes", sanitizeOps: false, sanitizeResources: false }, async () => {
   clearCalls();
   const event = {
     id: "evt_unknown",
