@@ -49,17 +49,33 @@ function startSupabaseStub(): { url: string; calls: StubCall[]; stop: () => Prom
 
 // ---------- Helpers ----------
 
-const stripe = new Stripe(STRIPE_KEY, { apiVersion: "2023-10-16" });
+// Construct a Stripe-compatible signature header using WebCrypto.
+// Stripe's bundled `generateTestHeaderString` uses a sync API not available
+// under Deno's SubtleCrypto, so we sign manually with HMAC-SHA256.
+async function buildStripeSignature(payload: string, secret: string, timestamp: number) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signed = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${timestamp}.${payload}`),
+  );
+  const hex = Array.from(new Uint8Array(signed))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return `t=${timestamp},v1=${hex}`;
+}
 
-function signedRequest(handler: (req: Request) => Response | Promise<Response>, event: unknown) {
+async function signedRequest(handler: (req: Request) => Response | Promise<Response>, event: unknown) {
   const payload = JSON.stringify(event);
   const timestamp = Math.floor(Date.now() / 1000);
-  const signature = stripe.webhooks.generateTestHeaderString({
-    payload,
-    secret: WEBHOOK_SECRET,
-    timestamp,
-  });
-  return handler(
+  const signature = await buildStripeSignature(payload, WEBHOOK_SECRET, timestamp);
+  return await handler(
     new Request("http://localhost/stripe-webhook", {
       method: "POST",
       headers: {
