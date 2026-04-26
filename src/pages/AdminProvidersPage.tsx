@@ -712,9 +712,19 @@ export default function AdminProvidersPage() {
                        </button>
                      </TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {p.states.map((s) => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>)}
-                      </div>
+                      {p.states.length === 0 ? (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      ) : p.states.length === 1 ? (
+                        <Badge variant="outline" className="text-xs">{p.states[0]}</Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="text-xs cursor-help"
+                          title={p.states.join(", ")}
+                        >
+                          Multiple ({p.states.length})
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell><Badge variant="secondary" className="text-xs capitalize">{p.price_range}</Badge></TableCell>
                     <TableCell className="flex items-center gap-1"><Star className="h-3 w-3 text-primary" /> {p.rating}</TableCell>
