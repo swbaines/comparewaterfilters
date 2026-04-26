@@ -546,6 +546,76 @@ Deno.test({ name: "rejects events with non-string event.type", sanitizeOps: fals
   assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
 });
 
+Deno.test({ name: "rejects events with missing event.data.object (INVALID_PAYLOAD_SHAPE)", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "evt_no_object",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.paid",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: {}, // object intentionally omitted
+  };
+  const res = await signedRequest(handler, event);
+  const body = JSON.parse(await res.text());
+  assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_PAYLOAD_SHAPE");
+  assertEquals(body.event_id, "evt_no_object");
+  assertEquals(body.event_type, "invoice.paid");
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+  assertEquals(
+    stub.calls.filter((c) => c.method === "POST" && c.url.includes("stripe_webhook_events")).length,
+    0,
+  );
+});
+
+Deno.test({ name: "rejects events where event.data.object is not an object", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "evt_string_object",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.paid",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: { object: "not-an-object" },
+  };
+  const res = await signedRequest(handler, event);
+  const body = JSON.parse(await res.text());
+  assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_PAYLOAD_SHAPE");
+});
+
+Deno.test({ name: "rejects invoice.paid missing required id (INVALID_PAYLOAD_FIELDS)", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "evt_invoice_no_id",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.paid",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: { object: { object: "invoice", metadata: { invoice_id: "x" } } }, // no id
+  };
+  const res = await signedRequest(handler, event);
+  const body = JSON.parse(await res.text());
+  assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_PAYLOAD_FIELDS");
+  assertEquals(body.event_id, "evt_invoice_no_id");
+  assertEquals(body.event_type, "invoice.paid");
+  if (!Array.isArray(body.missing_fields) || !body.missing_fields.includes("id")) {
+    throw new Error(`Expected missing_fields to include 'id', got: ${JSON.stringify(body)}`);
+  }
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+});
+
 // Cleanup: ensure the stub server shuts down so the test runner exits cleanly.
 globalThis.addEventListener("unload", () => {
   stub.stop();
