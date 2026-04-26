@@ -1,5 +1,5 @@
 import Stripe from "npm:stripe@14.21.0";
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,11 +26,125 @@ type LogEntry = {
   detail?: unknown;
 };
 
+/**
+ * Lazily-created service-role client used ONLY for log persistence. Kept at
+ * module scope so we don't reconnect for each log line.
+ */
+let logClient: SupabaseClient | null = null;
+function getLogClient(): SupabaseClient | null {
+  if (logClient) return logClient;
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return null;
+  logClient = createClient(url, key);
+  return logClient;
+}
+
+/**
+ * Convert an arbitrary `detail` value into something safe to store in JSONB.
+ * Errors and circular structures are stringified rather than dropped.
+ */
+function normalizeDetail(detail: unknown): unknown {
+  if (detail === undefined) return null;
+  if (detail instanceof Error) {
+    return { name: detail.name, message: detail.message, stack: detail.stack };
+  }
+  try {
+    // Round-trip through JSON to strip non-serializable values.
+    return JSON.parse(JSON.stringify(detail));
+  } catch {
+    return { unserializable: String(detail) };
+  }
+}
+
+/** Fire-and-forget DB persistence of a log entry. Never throws. */
+function persistLog(entry: LogEntry): void {
+  const client = getLogClient();
+  if (!client) return;
+  const row = {
+    level: entry.code === "EVENT_RECEIVED" || entry.outcome === "success" || entry.outcome === "duplicate"
+      ? "log"
+      : "error",
+    code: entry.code,
+    status: entry.status,
+    outcome: entry.outcome,
+    event_id: entry.event_id,
+    event_type: entry.event_type,
+    stripe_object_id: entry.stripe_object_id,
+    request_id: entry.request_id,
+    message: entry.message ?? null,
+    detail: normalizeDetail(entry.detail),
+  };
+  // Don't await — webhook responses must not be delayed by log writes.
+  client
+    .from("stripe_webhook_logs")
+    .insert(row)
+    .then(({ error }) => {
+      if (error) {
+        // Log to console only — avoid recursion into persistLog.
+        console.error(
+          JSON.stringify({
+            fn: "stripe-webhook",
+            code: "LOG_PERSIST_FAILED",
+            status: 0,
+            outcome: "error",
+            event_id: entry.event_id,
+            event_type: entry.event_type,
+            stripe_object_id: entry.stripe_object_id,
+            request_id: entry.request_id,
+            message: "Failed to persist webhook log entry",
+            detail: { db_error: error.message, original_code: entry.code },
+          }),
+        );
+      }
+    });
+}
+
 function logEvent(level: LogLevel, entry: LogEntry): void {
   const line = JSON.stringify(entry);
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
   else console.log(line);
+  // Best-effort DB persistence with the actual log level.
+  persistLogWithLevel(level, entry);
+}
+
+function persistLogWithLevel(level: LogLevel, entry: LogEntry): void {
+  const client = getLogClient();
+  if (!client) return;
+  const row = {
+    level,
+    code: entry.code,
+    status: entry.status,
+    outcome: entry.outcome,
+    event_id: entry.event_id,
+    event_type: entry.event_type,
+    stripe_object_id: entry.stripe_object_id,
+    request_id: entry.request_id,
+    message: entry.message ?? null,
+    detail: normalizeDetail(entry.detail),
+  };
+  client
+    .from("stripe_webhook_logs")
+    .insert(row)
+    .then(({ error }) => {
+      if (error) {
+        console.error(
+          JSON.stringify({
+            fn: "stripe-webhook",
+            code: "LOG_PERSIST_FAILED",
+            status: 0,
+            outcome: "error",
+            event_id: entry.event_id,
+            event_type: entry.event_type,
+            stripe_object_id: entry.stripe_object_id,
+            request_id: entry.request_id,
+            message: "Failed to persist webhook log entry",
+            detail: { db_error: error.message, original_code: entry.code },
+          }),
+        );
+      }
+    });
 }
 
 function jsonResponse(
