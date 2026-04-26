@@ -73,6 +73,26 @@ Deno.serve(async (req) => {
     );
   }
 
+  // Guard: event.type drives our switch/router. Without a string type we can't
+  // safely dispatch, and downstream logging/metrics would be meaningless.
+  const eventType = (event as { type?: unknown }).type;
+  if (!eventType || typeof eventType !== "string") {
+    console.error(
+      `[stripe-webhook] Rejecting event ${event.id} with missing/invalid type`,
+    );
+    return new Response(
+      JSON.stringify({
+        code: "INVALID_EVENT_TYPE",
+        error: "Invalid webhook payload: event.type is required",
+        event_id: event.id,
+      }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
   // Idempotency: try to claim this event ID. If it already exists (unique
   // constraint violation, code 23505), Stripe is retrying an event we already
   // processed — return 200 immediately so Stripe stops retrying.

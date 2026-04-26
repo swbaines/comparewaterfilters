@@ -496,6 +496,56 @@ Deno.test({ name: "rejects events with empty-string event.id", sanitizeOps: fals
   assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
 });
 
+Deno.test({ name: "rejects events with missing event.type with INVALID_EVENT_TYPE", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "evt_no_type",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    // type intentionally omitted
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: { object: { id: "in_no_type", object: "invoice", metadata: {} } },
+  };
+  const res = await signedRequest(handler, event);
+  const body = JSON.parse(await res.text());
+  assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_EVENT_TYPE");
+  assertEquals(body.event_id, "evt_no_type");
+  if (typeof body.error !== "string" || !body.error.includes("event.type")) {
+    throw new Error(`Expected clear error mentioning event.type, got: ${JSON.stringify(body)}`);
+  }
+  // No DB writes should occur
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+  assertEquals(
+    stub.calls.filter((c) => c.method === "POST" && c.url.includes("stripe_webhook_events")).length,
+    0,
+  );
+});
+
+Deno.test({ name: "rejects events with non-string event.type", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "evt_bad_type",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: 123,
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: { object: { id: "in_bad_type", object: "invoice", metadata: {} } },
+  };
+  const res = await signedRequest(handler, event);
+  const body = JSON.parse(await res.text());
+  assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_EVENT_TYPE");
+  assertEquals(body.event_id, "evt_bad_type");
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+});
+
 // Cleanup: ensure the stub server shuts down so the test runner exits cleanly.
 globalThis.addEventListener("unload", () => {
   stub.stop();
