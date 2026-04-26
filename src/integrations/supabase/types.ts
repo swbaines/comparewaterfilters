@@ -327,6 +327,9 @@ export type Database = {
           installation_model:
             | Database["public"]["Enums"]["installation_model"]
             | null
+          insurance_certificate_url: string | null
+          insurance_expiry_date: string | null
+          insurance_paused_at: string | null
           insurer_name: string | null
           logo: string | null
           name: string
@@ -378,6 +381,9 @@ export type Database = {
           installation_model?:
             | Database["public"]["Enums"]["installation_model"]
             | null
+          insurance_certificate_url?: string | null
+          insurance_expiry_date?: string | null
+          insurance_paused_at?: string | null
           insurer_name?: string | null
           logo?: string | null
           name: string
@@ -429,6 +435,9 @@ export type Database = {
           installation_model?:
             | Database["public"]["Enums"]["installation_model"]
             | null
+          insurance_certificate_url?: string | null
+          insurance_expiry_date?: string | null
+          insurance_paused_at?: string | null
           insurer_name?: string | null
           logo?: string | null
           name?: string
