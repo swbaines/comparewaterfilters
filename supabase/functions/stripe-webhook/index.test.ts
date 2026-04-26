@@ -100,7 +100,7 @@ await import("./index.ts");
 Deno.serve = originalServe;
 
 if (!registeredHandler) throw new Error("Handler did not register with Deno.serve");
-const handler = registeredHandler;
+const handler: (req: Request) => Response | Promise<Response> = registeredHandler;
 
 function clearCalls() {
   stub.calls.length = 0;
