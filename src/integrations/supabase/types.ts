@@ -666,6 +666,51 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_webhook_logs: {
+        Row: {
+          code: string
+          created_at: string
+          detail: Json | null
+          event_id: string | null
+          event_type: string | null
+          id: string
+          level: string
+          message: string | null
+          outcome: string
+          request_id: string | null
+          status: number
+          stripe_object_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          detail?: Json | null
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          level: string
+          message?: string | null
+          outcome: string
+          request_id?: string | null
+          status?: number
+          stripe_object_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          detail?: Json | null
+          event_id?: string | null
+          event_type?: string | null
+          id?: string
+          level?: string
+          message?: string | null
+          outcome?: string
+          request_id?: string | null
+          status?: number
+          stripe_object_id?: string | null
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
