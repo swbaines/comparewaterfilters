@@ -25,10 +25,12 @@ type StubCall = {
 async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; stop: () => Promise<void> }> {
   const calls: StubCall[] = [];
   const ac = new AbortController();
-  let resolvePort: (port: number) => void;
-  const portReady = new Promise<number>((r) => { resolvePort = r; });
+  // Bind to an explicit free port so we don't depend on onListen timing.
+  const probe = Deno.listen({ port: 0 });
+  const port = (probe.addr as Deno.NetAddr).port;
+  probe.close();
   const server = Deno.serve(
-    { port: 0, signal: ac.signal, onListen: ({ port }) => resolvePort(port) },
+    { port, signal: ac.signal, onListen: () => {} },
     async (req) => {
       const body = await req.text();
       calls.push({ method: req.method, url: req.url, body });
@@ -39,7 +41,8 @@ async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; st
       });
     },
   );
-  const port = await portReady;
+  // Give Deno.serve a tick to actually start listening.
+  await new Promise((r) => setTimeout(r, 50));
   return {
     url: `http://127.0.0.1:${port}`,
     calls,
