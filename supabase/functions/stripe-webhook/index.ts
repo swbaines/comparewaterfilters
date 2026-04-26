@@ -15,13 +15,19 @@ Deno.serve(async (req) => {
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!stripeKey || !webhookSecret) {
     console.error("Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
-    return new Response("Server misconfigured", { status: 500, headers: corsHeaders });
+    return new Response(
+      JSON.stringify({ code: "SERVER_MISCONFIGURED", error: "Server misconfigured" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   }
 
   const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
-    return new Response("Missing stripe-signature header", { status: 400, headers: corsHeaders });
+    return new Response(
+      JSON.stringify({ code: "MISSING_SIGNATURE", error: "Missing stripe-signature header" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   }
 
   const rawBody = await req.text();
@@ -30,7 +36,13 @@ Deno.serve(async (req) => {
     event = await stripe.webhooks.constructEventAsync(rawBody, signature, webhookSecret);
   } catch (err) {
     console.error("Webhook signature verification failed:", err);
-    return new Response(`Webhook Error: ${(err as Error).message}`, { status: 400, headers: corsHeaders });
+    return new Response(
+      JSON.stringify({
+        code: "INVALID_SIGNATURE",
+        error: `Webhook Error: ${(err as Error).message}`,
+      }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   }
 
   const supabase = createClient(
@@ -50,6 +62,7 @@ Deno.serve(async (req) => {
     );
     return new Response(
       JSON.stringify({
+        code: "INVALID_EVENT_ID",
         error: "Invalid webhook payload: event.id is required",
         event_type: event.type ?? null,
       }),
@@ -156,7 +169,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("Webhook handler error:", err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    return new Response(JSON.stringify({ code: "HANDLER_ERROR", error: (err as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
