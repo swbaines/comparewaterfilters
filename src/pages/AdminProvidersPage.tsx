@@ -499,9 +499,14 @@ export default function AdminProvidersPage() {
           </div>
         </div>
 
-        <div className="mb-6">
-          <SystemTypeIdsManager />
-        </div>
+        <details className="mb-6 rounded-lg border bg-card">
+          <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium hover:bg-accent/40 rounded-lg">
+            System Type IDs (lookup table)
+          </summary>
+          <div className="border-t p-4">
+            <SystemTypeIdsManager />
+          </div>
+        </details>
 
         {/* Quick search by provider name */}
         <div className="mb-6">
