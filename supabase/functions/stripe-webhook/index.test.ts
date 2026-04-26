@@ -24,39 +24,43 @@ type StubCall = {
 
 async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; stop: () => Promise<void> }> {
   const calls: StubCall[] = [];
-  const ac = new AbortController();
-  // Bind to an explicit free port so we don't depend on onListen timing.
-  const probe = Deno.listen({ port: 0 });
-  const port = (probe.addr as Deno.NetAddr).port;
-  probe.close();
-  const server = Deno.serve(
-    { port, signal: ac.signal, onListen: () => {} },
-    async (req) => {
-      const body = await req.text();
-      calls.push({ method: req.method, url: req.url, body });
-      // PostgREST returns the affected rows as a JSON array on update+select.
-      return new Response("[]", {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    },
-  );
-  // Wait until the server actually accepts connections.
-  for (let i = 0; i < 50; i++) {
-    try {
-      const c = await Deno.connect({ hostname: "127.0.0.1", port });
-      c.close();
-      break;
-    } catch {
-      await new Promise((r) => setTimeout(r, 20));
+  const handler = async (req: Request): Promise<Response> => {
+    const body = await req.text();
+    calls.push({ method: req.method, url: req.url, body });
+    return new Response("[]", {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+
+  const listener = Deno.listen({ hostname: "127.0.0.1", port: 0 });
+  const port = (listener.addr as Deno.NetAddr).port;
+  let stopped = false;
+
+  (async () => {
+    for await (const conn of listener) {
+      (async () => {
+        try {
+          // @ts-ignore - Deno.serveHttp is still available
+          const httpConn = Deno.serveHttp(conn);
+          for await (const requestEvent of httpConn) {
+            const res = await handler(requestEvent.request);
+            await requestEvent.respondWith(res);
+          }
+        } catch {
+          // connection closed
+        }
+      })();
     }
-  }
+  })().catch(() => {});
+
   return {
     url: `http://127.0.0.1:${port}`,
     calls,
     stop: async () => {
-      ac.abort();
-      try { await server.finished; } catch { /* abort is expected */ }
+      if (stopped) return;
+      stopped = true;
+      try { listener.close(); } catch { /* already closed */ }
     },
   };
 }
