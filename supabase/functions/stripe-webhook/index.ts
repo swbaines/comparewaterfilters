@@ -174,6 +174,68 @@ Deno.serve(async (req) => {
     );
   }
 
+  // Guard: every Stripe event we route on carries `event.data.object`. A
+  // malformed payload (e.g. truncated body, hand-crafted webhook) without it
+  // would otherwise crash inside the switch with an opaque TypeError.
+  const dataObject = (event.data as { object?: unknown } | undefined)?.object;
+  if (!dataObject || typeof dataObject !== "object" || Array.isArray(dataObject)) {
+    return jsonResponse(
+      400,
+      {
+        code: "INVALID_PAYLOAD_SHAPE",
+        error: "Invalid webhook payload: event.data.object is required",
+        event_id: event.id,
+        event_type: eventType,
+      },
+      {
+        level: "error",
+        code: "INVALID_PAYLOAD_SHAPE",
+        outcome: "error",
+        event_id: event.id,
+        event_type: eventType,
+        message: "Missing or non-object event.data.object",
+      },
+    );
+  }
+
+  // Per-type required-field validation. Only the event types we actually
+  // handle need strict checks — unhandled types fall through to the default
+  // branch and are no-ops, so we don't reject them here.
+  const requiredFieldsByType: Record<string, string[]> = {
+    "invoice.paid": ["id"],
+    "invoice.payment_succeeded": ["id"],
+    "invoice.payment_failed": ["id"],
+    "payment_intent.succeeded": ["id"],
+  };
+  const required = requiredFieldsByType[eventType];
+  if (required) {
+    const obj = dataObject as Record<string, unknown>;
+    const missing = required.filter(
+      (f) => obj[f] === undefined || obj[f] === null || obj[f] === "",
+    );
+    if (missing.length > 0) {
+      return jsonResponse(
+        400,
+        {
+          code: "INVALID_PAYLOAD_FIELDS",
+          error: `Invalid webhook payload: missing required field(s) on event.data.object: ${missing.join(", ")}`,
+          event_id: event.id,
+          event_type: eventType,
+          missing_fields: missing,
+        },
+        {
+          level: "error",
+          code: "INVALID_PAYLOAD_FIELDS",
+          outcome: "error",
+          event_id: event.id,
+          event_type: eventType,
+          message: `Missing required field(s): ${missing.join(", ")}`,
+          detail: { missing_fields: missing },
+        },
+      );
+    }
+  }
+
   // Idempotency: try to claim this event ID. If it already exists (unique
   // constraint violation, code 23505), Stripe is retrying an event we already
   // processed — return 200 immediately so Stripe stops retrying.
