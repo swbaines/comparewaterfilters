@@ -1,7 +1,12 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, FileCheck, Upload } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -20,6 +25,9 @@ export interface InstallationModelValue {
   insurer_name: string;
   public_liability_insurance_amount: string; // string in form, parsed on save
   sub_contractor_confirmed: boolean;
+  insurance_expiry_date: string; // ISO date (yyyy-MM-dd) or empty
+  insurance_certificate_file: File | null; // new upload during this session
+  insurance_certificate_url: string; // existing url (for edit flows)
 }
 
 export const AU_STATE_OPTIONS = [
