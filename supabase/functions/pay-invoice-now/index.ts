@@ -223,7 +223,7 @@ Deno.serve(async (req) => {
       status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error processing payment:', error)
     const message = error?.raw?.message || error?.message || 'Payment failed'
     return new Response(JSON.stringify({ error: message }), {
