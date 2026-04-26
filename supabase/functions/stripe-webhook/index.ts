@@ -57,59 +57,16 @@ function normalizeDetail(detail: unknown): unknown {
   }
 }
 
-/** Fire-and-forget DB persistence of a log entry. Never throws. */
-function persistLog(entry: LogEntry): void {
-  const client = getLogClient();
-  if (!client) return;
-  const row = {
-    level: entry.code === "EVENT_RECEIVED" || entry.outcome === "success" || entry.outcome === "duplicate"
-      ? "log"
-      : "error",
-    code: entry.code,
-    status: entry.status,
-    outcome: entry.outcome,
-    event_id: entry.event_id,
-    event_type: entry.event_type,
-    stripe_object_id: entry.stripe_object_id,
-    request_id: entry.request_id,
-    message: entry.message ?? null,
-    detail: normalizeDetail(entry.detail),
-  };
-  // Don't await — webhook responses must not be delayed by log writes.
-  client
-    .from("stripe_webhook_logs")
-    .insert(row)
-    .then(({ error }) => {
-      if (error) {
-        // Log to console only — avoid recursion into persistLog.
-        console.error(
-          JSON.stringify({
-            fn: "stripe-webhook",
-            code: "LOG_PERSIST_FAILED",
-            status: 0,
-            outcome: "error",
-            event_id: entry.event_id,
-            event_type: entry.event_type,
-            stripe_object_id: entry.stripe_object_id,
-            request_id: entry.request_id,
-            message: "Failed to persist webhook log entry",
-            detail: { db_error: error.message, original_code: entry.code },
-          }),
-        );
-      }
-    });
-}
-
 function logEvent(level: LogLevel, entry: LogEntry): void {
   const line = JSON.stringify(entry);
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
   else console.log(line);
-  // Best-effort DB persistence with the actual log level.
-  persistLogWithLevel(level, entry);
+  persistLog(level, entry);
 }
 
-function persistLogWithLevel(level: LogLevel, entry: LogEntry): void {
+/** Fire-and-forget DB persistence of a log entry. Never throws. */
+function persistLog(level: LogLevel, entry: LogEntry): void {
   const client = getLogClient();
   if (!client) return;
   const row = {
