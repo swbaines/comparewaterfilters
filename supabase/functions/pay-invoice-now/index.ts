@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
-import Stripe from 'npm:stripe@14'
+import Stripe from 'npm:stripe@18.5.0'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

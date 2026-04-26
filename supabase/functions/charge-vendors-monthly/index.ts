@@ -1,4 +1,4 @@
-import Stripe from "npm:stripe@14";
+import Stripe from "npm:stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
