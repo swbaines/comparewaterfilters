@@ -10,7 +10,6 @@
 //    `Deno.serve` registers with our test fetch entrypoint.
 
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import Stripe from "npm:stripe@14.21.0";
 
 const WEBHOOK_SECRET = "whsec_test_secret";
 const STRIPE_KEY = "sk_test_dummy";
