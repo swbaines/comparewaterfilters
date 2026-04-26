@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  edge-functions:
+    name: Edge functions type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: deno check Stripe-related edge functions
+        run: |
+          set -e
+          functions=(
+            charge-vendors-monthly
+            create-manual-invoice
+            create-setup-intent
+            create-stripe-customer
+            pay-invoice-now
+            save-payment-method
+            stripe-webhook
+          )
+          for fn in "${functions[@]}"; do
+            echo "::group::deno check $fn"
+            (cd "supabase/functions/$fn" && deno check index.ts)
+            echo "::endgroup::"
+          done
+
+  build:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+      - run: bun run build
