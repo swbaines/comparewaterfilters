@@ -463,6 +463,7 @@ Deno.test({ name: "rejects events with missing event.id with a 400 and clear err
   const res = await signedRequest(handler, event);
   const body = JSON.parse(await res.text());
   assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_EVENT_ID");
   assertEquals(body.event_type, "invoice.paid");
   if (typeof body.error !== "string" || !body.error.includes("event.id")) {
     throw new Error(`Expected clear error mentioning event.id, got: ${JSON.stringify(body)}`);
@@ -489,8 +490,9 @@ Deno.test({ name: "rejects events with empty-string event.id", sanitizeOps: fals
     data: { object: { id: "in_empty_id", object: "invoice", metadata: {} } },
   };
   const res = await signedRequest(handler, event);
-  await res.text();
+  const body = JSON.parse(await res.text());
   assertEquals(res.status, 400);
+  assertEquals(body.code, "INVALID_EVENT_ID");
   assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
 });
 
