@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!stripeKey || !webhookSecret) {
-    console.error("Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
+    console.error("[stripe-webhook] [SERVER_MISCONFIGURED] Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
     return new Response(
       JSON.stringify({ code: "SERVER_MISCONFIGURED", error: "Server misconfigured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -24,6 +24,7 @@ Deno.serve(async (req) => {
   const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
+    console.error("[stripe-webhook] [MISSING_SIGNATURE] Request missing stripe-signature header");
     return new Response(
       JSON.stringify({ code: "MISSING_SIGNATURE", error: "Missing stripe-signature header" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -35,7 +36,7 @@ Deno.serve(async (req) => {
   try {
     event = await stripe.webhooks.constructEventAsync(rawBody, signature, webhookSecret);
   } catch (err) {
-    console.error("Webhook signature verification failed:", err);
+    console.error("[stripe-webhook] [INVALID_SIGNATURE] Signature verification failed:", err);
     return new Response(
       JSON.stringify({
         code: "INVALID_SIGNATURE",
@@ -58,7 +59,7 @@ Deno.serve(async (req) => {
   // letting a NULL value blow up the idempotency insert with an opaque error.
   if (!event.id || typeof event.id !== "string") {
     console.error(
-      `[stripe-webhook] Rejecting event with missing/invalid id (type=${event.type ?? "unknown"})`,
+      `[stripe-webhook] [INVALID_EVENT_ID] Rejecting event with missing/invalid id (type=${event.type ?? "unknown"})`,
     );
     return new Response(
       JSON.stringify({
@@ -78,7 +79,7 @@ Deno.serve(async (req) => {
   const eventType = (event as { type?: unknown }).type;
   if (!eventType || typeof eventType !== "string") {
     console.error(
-      `[stripe-webhook] Rejecting event ${event.id} with missing/invalid type`,
+      `[stripe-webhook] [INVALID_EVENT_TYPE] Rejecting event ${event.id} with missing/invalid type`,
     );
     return new Response(
       JSON.stringify({
@@ -110,7 +111,7 @@ Deno.serve(async (req) => {
     }
     // Any other failure: log and continue. We'd rather process twice than
     // drop a real event because the dedupe table is unavailable.
-    console.error("[stripe-webhook] Failed to record event for idempotency:", claimError);
+    console.error("[stripe-webhook] [IDEMPOTENCY_INSERT_FAILED] Failed to record event for idempotency:", claimError);
   }
 
   try {
@@ -133,7 +134,7 @@ Deno.serve(async (req) => {
           : await query.eq("stripe_invoice_id", invoice.id).select();
 
         if (error) {
-          console.error("Failed to update invoice:", error);
+          console.error(`[stripe-webhook] [INVOICE_UPDATE_FAILED] Failed to update invoice for Stripe invoice ${invoice.id}:`, error);
         } else {
           console.log(`[stripe-webhook] Marked ${data?.length ?? 0} invoice(s) as paid for Stripe invoice ${invoice.id}`);
         }
@@ -161,7 +162,7 @@ Deno.serve(async (req) => {
           .select();
 
         if (error) {
-          console.error("Failed to update invoice from PaymentIntent:", error);
+          console.error(`[stripe-webhook] [INVOICE_UPDATE_FAILED] Failed to update invoice from PaymentIntent ${pi.id}:`, error);
         } else {
           console.log(`[stripe-webhook] Marked ${data?.length ?? 0} invoice(s) as paid for PaymentIntent ${pi.id}`);
         }
@@ -175,7 +176,7 @@ Deno.serve(async (req) => {
         const { error } = internalInvoiceId
           ? await query.eq("id", internalInvoiceId)
           : await query.eq("stripe_invoice_id", invoice.id);
-        if (error) console.error("Failed to mark invoice overdue:", error);
+        if (error) console.error(`[stripe-webhook] [INVOICE_OVERDUE_FAILED] Failed to mark invoice overdue for ${invoice.id}:`, error);
         break;
       }
 
@@ -188,7 +189,7 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    console.error("Webhook handler error:", err);
+    console.error("[stripe-webhook] [HANDLER_ERROR] Webhook handler error:", err);
     return new Response(JSON.stringify({ code: "HANDLER_ERROR", error: (err as Error).message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
