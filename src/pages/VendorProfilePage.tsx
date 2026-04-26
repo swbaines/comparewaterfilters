@@ -224,6 +224,11 @@ export default function VendorProfilePage() {
             : "",
         sub_contractor_confirmed: !!(provider as any)
           .sub_contractor_confirmation_at,
+        insurance_expiry_date:
+          (provider as any).insurance_expiry_date ?? "",
+        insurance_certificate_file: null,
+        insurance_certificate_url:
+          (provider as any).insurance_certificate_url ?? "",
       });
     }
   }, [provider]);
