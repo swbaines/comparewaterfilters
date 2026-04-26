@@ -375,6 +375,72 @@ Deno.test({ name: "unhandled event type returns 200 without DB writes", sanitize
   assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
 });
 
+Deno.test({ name: "duplicate event returns 200 without re-processing", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "evt_duplicate_1",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.paid",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: {
+      object: {
+        id: "in_dup_1",
+        object: "invoice",
+        metadata: { invoice_id: "internal-dup-1" },
+      },
+    },
+  };
+
+  // First delivery: should process normally and record the event id.
+  const first = await signedRequest(handler, event);
+  await first.text();
+  assertEquals(first.status, 200);
+  const firstPatches = stub.calls.filter((c) => c.method === "PATCH").length;
+  assertEquals(firstPatches, 1, "first delivery should issue one invoice update");
+
+  // Second delivery (Stripe retry): should short-circuit. No new PATCHes.
+  clearCalls();
+  const second = await signedRequest(handler, event);
+  const body = JSON.parse(await second.text());
+  assertEquals(second.status, 200);
+  assertEquals(body.duplicate, true);
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+});
+
+Deno.test({ name: "events with different ids but same payload are both processed", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const base = {
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.paid",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: {
+      object: {
+        id: "in_same_payload",
+        object: "invoice",
+        metadata: { invoice_id: "internal-same-payload" },
+      },
+    },
+  };
+
+  const a = await signedRequest(handler, { ...base, id: "evt_diff_a" });
+  await a.text();
+  const b = await signedRequest(handler, { ...base, id: "evt_diff_b" });
+  await b.text();
+
+  assertEquals(a.status, 200);
+  assertEquals(b.status, 200);
+  // Two distinct event ids → two PATCHes (idempotency is per event id, not payload)
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 2);
+});
+
 // Cleanup: ensure the stub server shuts down so the test runner exits cleanly.
 globalThis.addEventListener("unload", () => {
   stub.stop();
