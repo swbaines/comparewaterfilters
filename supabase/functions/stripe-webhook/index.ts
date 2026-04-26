@@ -20,6 +20,8 @@ type LogEntry = {
   outcome: "success" | "duplicate" | "error";
   event_id: string | null;
   event_type: string | null;
+  stripe_object_id: string | null;
+  request_id: string | null;
   message?: string;
   detail?: unknown;
 };
@@ -40,6 +42,8 @@ function jsonResponse(
     outcome: "success" | "duplicate" | "error";
     event_id?: string | null;
     event_type?: string | null;
+    stripe_object_id?: string | null;
+    request_id?: string | null;
     message?: string;
     detail?: unknown;
   },
@@ -51,6 +55,8 @@ function jsonResponse(
     outcome: ctx.outcome,
     event_id: ctx.event_id ?? null,
     event_type: ctx.event_type ?? null,
+    stripe_object_id: ctx.stripe_object_id ?? null,
+    request_id: ctx.request_id ?? null,
     message: ctx.message,
     detail: ctx.detail,
   });
@@ -58,6 +64,24 @@ function jsonResponse(
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+/** Pull a string `id` from an unknown Stripe object, or null. */
+function readObjectId(obj: unknown): string | null {
+  if (!obj || typeof obj !== "object") return null;
+  const id = (obj as { id?: unknown }).id;
+  return typeof id === "string" && id.length > 0 ? id : null;
+}
+
+/** Pull `request.id` from a Stripe Event payload, or null. */
+function readRequestId(ev: unknown): string | null {
+  if (!ev || typeof ev !== "object") return null;
+  const req = (ev as { request?: unknown }).request;
+  if (req && typeof req === "object") {
+    const id = (req as { id?: unknown }).id;
+    if (typeof id === "string" && id.length > 0) return id;
+  }
+  return null;
 }
 
 Deno.serve(async (req) => {
@@ -119,6 +143,12 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
+  // Capture cross-cutting context once so every downstream log line carries
+  // the same identifiers.
+  const requestId = readRequestId(event);
+  const dataObjectEarly = (event.data as { object?: unknown } | undefined)?.object;
+  const stripeObjectIdEarly = readObjectId(dataObjectEarly);
+
   logEvent("log", {
     fn: "stripe-webhook",
     code: "EVENT_RECEIVED",
@@ -126,6 +156,8 @@ Deno.serve(async (req) => {
     outcome: "success",
     event_id: (event.id as string | undefined) ?? null,
     event_type: (event.type as string | undefined) ?? null,
+    stripe_object_id: stripeObjectIdEarly,
+    request_id: requestId,
     message: "Received event",
   });
 
@@ -147,6 +179,8 @@ Deno.serve(async (req) => {
         outcome: "error",
         event_id: null,
         event_type: (event.type as string | undefined) ?? null,
+        stripe_object_id: stripeObjectIdEarly,
+        request_id: requestId,
         message: "Rejecting event with missing/invalid id",
       },
     );
@@ -169,6 +203,8 @@ Deno.serve(async (req) => {
         outcome: "error",
         event_id: event.id,
         event_type: null,
+        stripe_object_id: stripeObjectIdEarly,
+        request_id: requestId,
         message: "Rejecting event with missing/invalid type",
       },
     );
@@ -193,10 +229,14 @@ Deno.serve(async (req) => {
         outcome: "error",
         event_id: event.id,
         event_type: eventType,
+        stripe_object_id: null,
+        request_id: requestId,
         message: "Missing or non-object event.data.object",
       },
     );
   }
+
+  const stripeObjectId = readObjectId(dataObject);
 
   // Per-type required-field validation. Only the event types we actually
   // handle need strict checks — unhandled types fall through to the default
@@ -229,7 +269,9 @@ Deno.serve(async (req) => {
           outcome: "error",
           event_id: event.id,
           event_type: eventType,
-          message: `Missing required field(s): ${missing.join(", ")}`,
+          stripe_object_id: stripeObjectId,
+          request_id: requestId,
+          message: "Missing required field(s) on event.data.object",
           detail: { missing_fields: missing },
         },
       );
@@ -254,7 +296,9 @@ Deno.serve(async (req) => {
           outcome: "duplicate",
           event_id: event.id,
           event_type: eventType,
-          message: "Duplicate event, skipping",
+          stripe_object_id: stripeObjectId,
+          request_id: requestId,
+          message: "Duplicate event; skipping processing",
         },
       );
     }
@@ -267,6 +311,8 @@ Deno.serve(async (req) => {
       outcome: "error",
       event_id: event.id,
       event_type: eventType,
+      stripe_object_id: stripeObjectId,
+      request_id: requestId,
       message: "Failed to record event for idempotency",
       detail: claimError,
     });
@@ -299,7 +345,9 @@ Deno.serve(async (req) => {
             outcome: "error",
             event_id: event.id,
             event_type: eventType,
-            message: `Failed to update invoice for Stripe invoice ${invoice.id}`,
+            stripe_object_id: invoice.id ?? stripeObjectId,
+            request_id: requestId,
+            message: "Failed to update invoice for Stripe invoice",
             detail: error,
           });
         } else {
@@ -310,7 +358,10 @@ Deno.serve(async (req) => {
             outcome: "success",
             event_id: event.id,
             event_type: eventType,
-            message: `Marked ${data?.length ?? 0} invoice(s) as paid for Stripe invoice ${invoice.id}`,
+            stripe_object_id: invoice.id ?? stripeObjectId,
+            request_id: requestId,
+            message: "Marked invoice(s) as paid for Stripe invoice",
+            detail: { updated_rows: data?.length ?? 0 },
           });
         }
         break;
@@ -328,7 +379,9 @@ Deno.serve(async (req) => {
             outcome: "success",
             event_id: event.id,
             event_type: eventType,
-            message: `PaymentIntent ${pi.id} has no invoice_id metadata, skipping`,
+            stripe_object_id: pi.id ?? stripeObjectId,
+            request_id: requestId,
+            message: "PaymentIntent has no invoice_id metadata; skipping",
           });
           break;
         }
@@ -352,7 +405,9 @@ Deno.serve(async (req) => {
             outcome: "error",
             event_id: event.id,
             event_type: eventType,
-            message: `Failed to update invoice from PaymentIntent ${pi.id}`,
+            stripe_object_id: pi.id ?? stripeObjectId,
+            request_id: requestId,
+            message: "Failed to update invoice from PaymentIntent",
             detail: error,
           });
         } else {
@@ -363,7 +418,10 @@ Deno.serve(async (req) => {
             outcome: "success",
             event_id: event.id,
             event_type: eventType,
-            message: `Marked ${data?.length ?? 0} invoice(s) as paid for PaymentIntent ${pi.id}`,
+            stripe_object_id: pi.id ?? stripeObjectId,
+            request_id: requestId,
+            message: "Marked invoice(s) as paid for PaymentIntent",
+            detail: { updated_rows: data?.length ?? 0 },
           });
         }
         break;
@@ -384,7 +442,9 @@ Deno.serve(async (req) => {
             outcome: "error",
             event_id: event.id,
             event_type: eventType,
-            message: `Failed to mark invoice overdue for ${invoice.id}`,
+            stripe_object_id: invoice.id ?? stripeObjectId,
+            request_id: requestId,
+            message: "Failed to mark invoice overdue",
             detail: error,
           });
         }
@@ -399,7 +459,9 @@ Deno.serve(async (req) => {
           outcome: "success",
           event_id: event.id,
           event_type: eventType,
-          message: `Unhandled event type: ${event.type}`,
+          stripe_object_id: stripeObjectId,
+          request_id: requestId,
+          message: "Unhandled event type",
         });
     }
 
@@ -412,6 +474,8 @@ Deno.serve(async (req) => {
         outcome: "success",
         event_id: event.id,
         event_type: eventType,
+        stripe_object_id: stripeObjectId,
+        request_id: requestId,
         message: "Event processed",
       },
     );
@@ -426,6 +490,8 @@ Deno.serve(async (req) => {
         outcome: "error",
         event_id: event.id,
         event_type: eventType,
+        stripe_object_id: stripeObjectId,
+        request_id: requestId,
         message: "Webhook handler error",
         detail: message,
       },
