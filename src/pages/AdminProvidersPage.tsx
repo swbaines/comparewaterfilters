@@ -405,12 +405,12 @@ export default function AdminProvidersPage() {
     if (
       installation.has_public_liability &&
       installation.insurance_certificate_file &&
-      editingProvider?.id
+      editId
     ) {
       try {
         const file = installation.insurance_certificate_file;
         const ext = (file.name.split(".").pop() || "pdf").toLowerCase();
-        const path = `${editingProvider.id}/certificate-${Date.now()}.${ext}`;
+        const path = `${editId}/certificate-${Date.now()}.${ext}`;
         const { error: upErr } = await supabase.storage
           .from("vendor-insurance-certificates")
           .upload(path, file, { upsert: true, contentType: file.type });
