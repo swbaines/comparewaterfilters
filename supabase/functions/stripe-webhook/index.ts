@@ -1,4 +1,4 @@
-import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
+import Stripe from "npm:stripe@14.21.0";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
     return new Response("Server misconfigured", { status: 500, headers: corsHeaders });
   }
 
-  const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+  const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
     return new Response("Missing stripe-signature header", { status: 400, headers: corsHeaders });
