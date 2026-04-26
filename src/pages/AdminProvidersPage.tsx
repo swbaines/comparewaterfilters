@@ -1482,6 +1482,7 @@ export default function AdminProvidersPage() {
                       <div className="col-span-2"><span className="text-muted-foreground">Sub-contractor declaration accepted:</span> <span className="font-medium">{new Date((reviewProvider as any).sub_contractor_confirmation_at).toLocaleString()}</span></div>
                     )}
                   </div>
+                  <InsuranceCertificateBlock provider={reviewProvider} />
                 </div>
 
                 {/* Additional Details */}
