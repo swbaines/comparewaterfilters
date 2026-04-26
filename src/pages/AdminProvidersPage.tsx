@@ -83,6 +83,9 @@ function installationFromProvider(p: ProviderRow | null): InstallationModelValue
         ? String((p as any).public_liability_insurance_amount)
         : "",
     sub_contractor_confirmed: !!(p as any).sub_contractor_confirmation_at,
+    insurance_expiry_date: (p as any).insurance_expiry_date ?? "",
+    insurance_certificate_file: null,
+    insurance_certificate_url: (p as any).insurance_certificate_url ?? "",
   };
 }
 
