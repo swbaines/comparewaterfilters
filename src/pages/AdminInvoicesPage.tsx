@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban, ChevronRight, ChevronDown } from "lucide-react";
+import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban, ChevronRight, ChevronDown, Download } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 import { Fragment, useState } from "react";
@@ -47,10 +47,44 @@ function InvoiceLeadsDetail({ invoiceId }: { invoiceId: string }) {
     return <div className="px-6 py-4 text-sm text-muted-foreground">No leads linked to this invoice.</div>;
   }
 
+  const exportCsv = () => {
+    const headers = ["Customer name", "Customer email", "Suburb", "State", "Ownership", "Lead status", "Lead price", "Submitted"];
+    const escape = (v: unknown) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = data.map((l) => [
+      l.customer_name,
+      l.customer_email,
+      l.customer_suburb ?? "",
+      l.customer_state ?? "",
+      l.ownership_status ?? "",
+      l.lead_status,
+      Number(l.lead_price ?? 0),
+      format(new Date(l.created_at), "yyyy-MM-dd"),
+    ].map(escape).join(","));
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `invoice-${invoiceId}-leads.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="px-6 py-4">
-      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-        Billed leads ({data.length})
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Billed leads ({data.length})
+        </div>
+        <Button size="sm" variant="outline" onClick={exportCsv}>
+          <Download className="mr-2 h-4 w-4" />
+          Export CSV
+        </Button>
       </div>
       <Table>
         <TableHeader>
