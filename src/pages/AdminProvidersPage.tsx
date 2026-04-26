@@ -28,6 +28,7 @@ import InstallationModelFields, {
   emptyInstallationModelValue,
   type InstallationModelValue,
 } from "@/components/vendor/InstallationModelFields";
+import InsuranceCertificateBlock from "@/components/admin/InsuranceCertificateBlock";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
 
