@@ -6,6 +6,60 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, stripe-signature",
 };
 
+/**
+ * Emit a single structured JSON log line for every webhook response so
+ * production logs are grep/filter-friendly. Always carries `code`,
+ * `event_type`, `event_id`, `status`, and the response `outcome`
+ * ("success" | "duplicate" | "error").
+ */
+type LogLevel = "log" | "warn" | "error";
+type LogEntry = {
+  fn: "stripe-webhook";
+  code: string;
+  status: number;
+  outcome: "success" | "duplicate" | "error";
+  event_id: string | null;
+  event_type: string | null;
+  message?: string;
+  detail?: unknown;
+};
+
+function logEvent(level: LogLevel, entry: LogEntry): void {
+  const line = JSON.stringify(entry);
+  if (level === "error") console.error(line);
+  else if (level === "warn") console.warn(line);
+  else console.log(line);
+}
+
+function jsonResponse(
+  status: number,
+  body: Record<string, unknown>,
+  ctx: {
+    level: LogLevel;
+    code: string;
+    outcome: "success" | "duplicate" | "error";
+    event_id?: string | null;
+    event_type?: string | null;
+    message?: string;
+    detail?: unknown;
+  },
+): Response {
+  logEvent(ctx.level, {
+    fn: "stripe-webhook",
+    code: ctx.code,
+    status,
+    outcome: ctx.outcome,
+    event_id: ctx.event_id ?? null,
+    event_type: ctx.event_type ?? null,
+    message: ctx.message,
+    detail: ctx.detail,
+  });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -14,20 +68,30 @@ Deno.serve(async (req) => {
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!stripeKey || !webhookSecret) {
-    console.error("[stripe-webhook] [SERVER_MISCONFIGURED] Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET");
-    return new Response(
-      JSON.stringify({ code: "SERVER_MISCONFIGURED", error: "Server misconfigured" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    return jsonResponse(
+      500,
+      { code: "SERVER_MISCONFIGURED", error: "Server misconfigured" },
+      {
+        level: "error",
+        code: "SERVER_MISCONFIGURED",
+        outcome: "error",
+        message: "Missing STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET",
+      },
     );
   }
 
   const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
-    console.error("[stripe-webhook] [MISSING_SIGNATURE] Request missing stripe-signature header");
-    return new Response(
-      JSON.stringify({ code: "MISSING_SIGNATURE", error: "Missing stripe-signature header" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    return jsonResponse(
+      400,
+      { code: "MISSING_SIGNATURE", error: "Missing stripe-signature header" },
+      {
+        level: "error",
+        code: "MISSING_SIGNATURE",
+        outcome: "error",
+        message: "Request missing stripe-signature header",
+      },
     );
   }
 
@@ -36,13 +100,17 @@ Deno.serve(async (req) => {
   try {
     event = await stripe.webhooks.constructEventAsync(rawBody, signature, webhookSecret);
   } catch (err) {
-    console.error("[stripe-webhook] [INVALID_SIGNATURE] Signature verification failed:", err);
-    return new Response(
-      JSON.stringify({
+    const message = (err as Error).message;
+    return jsonResponse(
+      400,
+      { code: "INVALID_SIGNATURE", error: `Webhook Error: ${message}` },
+      {
+        level: "error",
         code: "INVALID_SIGNATURE",
-        error: `Webhook Error: ${(err as Error).message}`,
-      }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        outcome: "error",
+        message: "Signature verification failed",
+        detail: message,
+      },
     );
   }
 
@@ -51,25 +119,35 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  console.log(`[stripe-webhook] Received event: ${event.type} (${event.id})`);
+  logEvent("log", {
+    fn: "stripe-webhook",
+    code: "EVENT_RECEIVED",
+    status: 0,
+    outcome: "success",
+    event_id: (event.id as string | undefined) ?? null,
+    event_type: (event.type as string | undefined) ?? null,
+    message: "Received event",
+  });
 
   // Guard: Stripe events must carry an `id`. If a malformed payload slips past
   // signature verification (e.g. a future SDK shape change or a manually
   // forged-but-correctly-signed test event), refuse it explicitly instead of
   // letting a NULL value blow up the idempotency insert with an opaque error.
   if (!event.id || typeof event.id !== "string") {
-    console.error(
-      `[stripe-webhook] [INVALID_EVENT_ID] Rejecting event with missing/invalid id (type=${event.type ?? "unknown"})`,
-    );
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      400,
+      {
         code: "INVALID_EVENT_ID",
         error: "Invalid webhook payload: event.id is required",
         event_type: event.type ?? null,
-      }),
+      },
       {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        level: "error",
+        code: "INVALID_EVENT_ID",
+        outcome: "error",
+        event_id: null,
+        event_type: (event.type as string | undefined) ?? null,
+        message: "Rejecting event with missing/invalid id",
       },
     );
   }
@@ -78,18 +156,20 @@ Deno.serve(async (req) => {
   // safely dispatch, and downstream logging/metrics would be meaningless.
   const eventType = (event as { type?: unknown }).type;
   if (!eventType || typeof eventType !== "string") {
-    console.error(
-      `[stripe-webhook] [INVALID_EVENT_TYPE] Rejecting event ${event.id} with missing/invalid type`,
-    );
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      400,
+      {
         code: "INVALID_EVENT_TYPE",
         error: "Invalid webhook payload: event.type is required",
         event_id: event.id,
-      }),
+      },
       {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        level: "error",
+        code: "INVALID_EVENT_TYPE",
+        outcome: "error",
+        event_id: event.id,
+        event_type: null,
+        message: "Rejecting event with missing/invalid type",
       },
     );
   }
@@ -103,15 +183,31 @@ Deno.serve(async (req) => {
 
   if (claimError) {
     if ((claimError as { code?: string }).code === "23505") {
-      console.log(`[stripe-webhook] Duplicate event ${event.id}, skipping`);
-      return new Response(JSON.stringify({ received: true, duplicate: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(
+        200,
+        { received: true, duplicate: true },
+        {
+          level: "log",
+          code: "DUPLICATE_EVENT",
+          outcome: "duplicate",
+          event_id: event.id,
+          event_type: eventType,
+          message: "Duplicate event, skipping",
+        },
+      );
     }
     // Any other failure: log and continue. We'd rather process twice than
     // drop a real event because the dedupe table is unavailable.
-    console.error("[stripe-webhook] [IDEMPOTENCY_INSERT_FAILED] Failed to record event for idempotency:", claimError);
+    logEvent("error", {
+      fn: "stripe-webhook",
+      code: "IDEMPOTENCY_INSERT_FAILED",
+      status: 0,
+      outcome: "error",
+      event_id: event.id,
+      event_type: eventType,
+      message: "Failed to record event for idempotency",
+      detail: claimError,
+    });
   }
 
   try {
@@ -134,9 +230,26 @@ Deno.serve(async (req) => {
           : await query.eq("stripe_invoice_id", invoice.id).select();
 
         if (error) {
-          console.error(`[stripe-webhook] [INVOICE_UPDATE_FAILED] Failed to update invoice for Stripe invoice ${invoice.id}:`, error);
+          logEvent("error", {
+            fn: "stripe-webhook",
+            code: "INVOICE_UPDATE_FAILED",
+            status: 0,
+            outcome: "error",
+            event_id: event.id,
+            event_type: eventType,
+            message: `Failed to update invoice for Stripe invoice ${invoice.id}`,
+            detail: error,
+          });
         } else {
-          console.log(`[stripe-webhook] Marked ${data?.length ?? 0} invoice(s) as paid for Stripe invoice ${invoice.id}`);
+          logEvent("log", {
+            fn: "stripe-webhook",
+            code: "INVOICE_MARKED_PAID",
+            status: 0,
+            outcome: "success",
+            event_id: event.id,
+            event_type: eventType,
+            message: `Marked ${data?.length ?? 0} invoice(s) as paid for Stripe invoice ${invoice.id}`,
+          });
         }
         break;
       }
@@ -146,7 +259,15 @@ Deno.serve(async (req) => {
         const internalInvoiceId = pi.metadata?.invoice_id;
 
         if (!internalInvoiceId) {
-          console.log(`[stripe-webhook] PaymentIntent ${pi.id} has no invoice_id metadata, skipping`);
+          logEvent("log", {
+            fn: "stripe-webhook",
+            code: "PAYMENT_INTENT_NO_METADATA",
+            status: 0,
+            outcome: "success",
+            event_id: event.id,
+            event_type: eventType,
+            message: `PaymentIntent ${pi.id} has no invoice_id metadata, skipping`,
+          });
           break;
         }
 
@@ -162,9 +283,26 @@ Deno.serve(async (req) => {
           .select();
 
         if (error) {
-          console.error(`[stripe-webhook] [INVOICE_UPDATE_FAILED] Failed to update invoice from PaymentIntent ${pi.id}:`, error);
+          logEvent("error", {
+            fn: "stripe-webhook",
+            code: "INVOICE_UPDATE_FAILED",
+            status: 0,
+            outcome: "error",
+            event_id: event.id,
+            event_type: eventType,
+            message: `Failed to update invoice from PaymentIntent ${pi.id}`,
+            detail: error,
+          });
         } else {
-          console.log(`[stripe-webhook] Marked ${data?.length ?? 0} invoice(s) as paid for PaymentIntent ${pi.id}`);
+          logEvent("log", {
+            fn: "stripe-webhook",
+            code: "INVOICE_MARKED_PAID",
+            status: 0,
+            outcome: "success",
+            event_id: event.id,
+            event_type: eventType,
+            message: `Marked ${data?.length ?? 0} invoice(s) as paid for PaymentIntent ${pi.id}`,
+          });
         }
         break;
       }
@@ -176,23 +314,59 @@ Deno.serve(async (req) => {
         const { error } = internalInvoiceId
           ? await query.eq("id", internalInvoiceId)
           : await query.eq("stripe_invoice_id", invoice.id);
-        if (error) console.error(`[stripe-webhook] [INVOICE_OVERDUE_FAILED] Failed to mark invoice overdue for ${invoice.id}:`, error);
+        if (error) {
+          logEvent("error", {
+            fn: "stripe-webhook",
+            code: "INVOICE_OVERDUE_FAILED",
+            status: 0,
+            outcome: "error",
+            event_id: event.id,
+            event_type: eventType,
+            message: `Failed to mark invoice overdue for ${invoice.id}`,
+            detail: error,
+          });
+        }
         break;
       }
 
       default:
-        console.log(`[stripe-webhook] Unhandled event type: ${event.type}`);
+        logEvent("log", {
+          fn: "stripe-webhook",
+          code: "UNHANDLED_EVENT_TYPE",
+          status: 0,
+          outcome: "success",
+          event_id: event.id,
+          event_type: eventType,
+          message: `Unhandled event type: ${event.type}`,
+        });
     }
 
-    return new Response(JSON.stringify({ received: true }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse(
+      200,
+      { received: true },
+      {
+        level: "log",
+        code: "EVENT_PROCESSED",
+        outcome: "success",
+        event_id: event.id,
+        event_type: eventType,
+        message: "Event processed",
+      },
+    );
   } catch (err) {
-    console.error("[stripe-webhook] [HANDLER_ERROR] Webhook handler error:", err);
-    return new Response(JSON.stringify({ code: "HANDLER_ERROR", error: (err as Error).message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const message = (err as Error).message;
+    return jsonResponse(
+      500,
+      { code: "HANDLER_ERROR", error: message },
+      {
+        level: "error",
+        code: "HANDLER_ERROR",
+        outcome: "error",
+        event_id: event.id,
+        event_type: eventType,
+        message: "Webhook handler error",
+        detail: message,
+      },
+    );
   }
 });
