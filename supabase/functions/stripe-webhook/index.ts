@@ -75,7 +75,8 @@ Deno.serve(async (req) => {
 
   // Guard: event.type drives our switch/router. Without a string type we can't
   // safely dispatch, and downstream logging/metrics would be meaningless.
-  if (!event.type || typeof event.type !== "string") {
+  const eventType = (event as { type?: unknown }).type;
+  if (!eventType || typeof eventType !== "string") {
     console.error(
       `[stripe-webhook] Rejecting event ${event.id} with missing/invalid type`,
     );
