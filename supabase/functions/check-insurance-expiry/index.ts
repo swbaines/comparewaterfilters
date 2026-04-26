@@ -1,6 +1,6 @@
 // Daily cron: warn vendors whose public liability insurance is expiring soon,
 // and auto-pause those whose insurance has already lapsed.
-import { createClient } from "npm:@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
