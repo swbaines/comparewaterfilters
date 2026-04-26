@@ -41,8 +41,16 @@ async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; st
       });
     },
   );
-  // Give Deno.serve a tick to actually start listening.
-  await new Promise((r) => setTimeout(r, 50));
+  // Wait until the server actually accepts connections.
+  for (let i = 0; i < 50; i++) {
+    try {
+      const c = await Deno.connect({ hostname: "127.0.0.1", port });
+      c.close();
+      break;
+    } catch {
+      await new Promise((r) => setTimeout(r, 20));
+    }
+  }
   return {
     url: `http://127.0.0.1:${port}`,
     calls,
