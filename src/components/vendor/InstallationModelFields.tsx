@@ -373,6 +373,24 @@ export function validateInstallationModel(
     if (!v.sub_contractor_confirmed)
       return "Please confirm the sub-contractor compliance declaration";
   }
+  // Public liability is mandatory for everyone
+  if (!v.has_public_liability)
+    return "Public liability insurance is required to register";
+  const amount = Number(v.public_liability_insurance_amount);
+  if (
+    !v.public_liability_insurance_amount.trim() ||
+    !isFinite(amount) ||
+    amount <= 0
+  )
+    return "Insurance coverage amount is required";
+  if (!v.insurance_expiry_date)
+    return "Insurance expiry date is required";
+  // Expiry must be in the future
+  if (new Date(v.insurance_expiry_date) <= new Date(new Date().setHours(0, 0, 0, 0)))
+    return "Insurance expiry date must be in the future";
+  // A certificate must exist — either freshly uploaded or already on file
+  if (!v.insurance_certificate_file && !v.insurance_certificate_url)
+    return "Please upload your Certificate of Currency";
   return null;
 }
 
@@ -385,5 +403,8 @@ export function emptyInstallationModelValue(): InstallationModelValue {
     insurer_name: "",
     public_liability_insurance_amount: "",
     sub_contractor_confirmed: false,
+    insurance_expiry_date: "",
+    insurance_certificate_file: null,
+    insurance_certificate_url: "",
   };
 }
