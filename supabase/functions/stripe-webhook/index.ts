@@ -40,6 +40,26 @@ Deno.serve(async (req) => {
 
   console.log(`[stripe-webhook] Received event: ${event.type} (${event.id})`);
 
+  // Idempotency: try to claim this event ID. If it already exists (unique
+  // constraint violation, code 23505), Stripe is retrying an event we already
+  // processed — return 200 immediately so Stripe stops retrying.
+  const { error: claimError } = await supabase
+    .from("stripe_webhook_events")
+    .insert({ stripe_event_id: event.id, event_type: event.type });
+
+  if (claimError) {
+    if ((claimError as { code?: string }).code === "23505") {
+      console.log(`[stripe-webhook] Duplicate event ${event.id}, skipping`);
+      return new Response(JSON.stringify({ received: true, duplicate: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    // Any other failure: log and continue. We'd rather process twice than
+    // drop a real event because the dedupe table is unavailable.
+    console.error("[stripe-webhook] Failed to record event for idempotency:", claimError);
+  }
+
   try {
     switch (event.type) {
       case "invoice.paid":
