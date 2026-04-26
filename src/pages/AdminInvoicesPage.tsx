@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban } from "lucide-react";
+import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban, ChevronRight, ChevronDown } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -48,6 +48,7 @@ type InvoiceAction = {
 export default function AdminInvoicesPage() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [confirmAction, setConfirmAction] = useState<InvoiceAction | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading } = useQuery({
@@ -247,6 +248,7 @@ export default function AdminInvoicesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[32px]"></TableHead>
                       <TableHead>Invoice #</TableHead>
                       <TableHead>Provider</TableHead>
                       <TableHead>Period</TableHead>
@@ -261,8 +263,28 @@ export default function AdminInvoicesPage() {
                   <TableBody>
                     {filtered.map((inv) => {
                       const actions = getActions(inv.status);
+                      const isOpen = expanded.has(inv.id);
                       return (
-                        <TableRow key={inv.id}>
+                        <Fragment key={inv.id}>
+                        <TableRow>
+                          <TableCell className="p-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => {
+                                setExpanded((prev) => {
+                                  const next = new Set(prev);
+                                  if (next.has(inv.id)) next.delete(inv.id);
+                                  else next.add(inv.id);
+                                  return next;
+                                });
+                              }}
+                              aria-label={isOpen ? "Hide billed leads" : "Show billed leads"}
+                            >
+                              {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
                           <TableCell className="font-mono text-sm">{inv.invoice_number}</TableCell>
                           <TableCell className="font-medium">
                             {(inv.providers as any)?.name ?? "—"}
@@ -322,11 +344,19 @@ export default function AdminInvoicesPage() {
                             )}
                           </TableCell>
                         </TableRow>
+                        {isOpen && (
+                          <TableRow className="bg-muted/30 hover:bg-muted/30">
+                            <TableCell colSpan={10} className="p-0">
+                              <InvoiceLeadsDetail invoiceId={inv.id} />
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        </Fragment>
                       );
                     })}
                     {filtered.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                           No invoices found
                         </TableCell>
                       </TableRow>
