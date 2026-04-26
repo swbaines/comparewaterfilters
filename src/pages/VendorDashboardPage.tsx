@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import VendorTermsAcceptance from "@/components/VendorTermsAcceptance";
 import LeadNotificationBell from "@/components/vendor/LeadNotificationBell";
+import InsuranceExpiryBanner from "@/components/vendor/InsuranceExpiryBanner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -447,6 +448,8 @@ export default function VendorDashboardPage() {
             </div>
           </div>
         )}
+
+        <InsuranceExpiryBanner provider={provider} />
 
         {/* Billing not ready banner */}
         {(!stripeDetails?.stripe_payment_method_id || !stripeDetails?.direct_debit_authorised_at) && (

@@ -28,6 +28,7 @@ import InstallationModelFields, {
   emptyInstallationModelValue,
   type InstallationModelValue,
 } from "@/components/vendor/InstallationModelFields";
+import InsuranceCertificateBlock from "@/components/admin/InsuranceCertificateBlock";
 
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "NT", "ACT"] as const;
 
@@ -83,6 +84,9 @@ function installationFromProvider(p: ProviderRow | null): InstallationModelValue
         ? String((p as any).public_liability_insurance_amount)
         : "",
     sub_contractor_confirmed: !!(p as any).sub_contractor_confirmation_at,
+    insurance_expiry_date: (p as any).insurance_expiry_date ?? "",
+    insurance_certificate_file: null,
+    insurance_certificate_url: (p as any).insurance_certificate_url ?? "",
   };
 }
 
@@ -390,11 +394,35 @@ export default function AdminProvidersPage() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim() || !form.slug.trim()) {
       toast.error("Name and slug are required");
       return;
     }
+
+    // If admin uploaded a new certificate file, push it to storage first.
+    let insuranceCertUrl: string | null =
+      installation.insurance_certificate_url || null;
+    if (
+      installation.has_public_liability &&
+      installation.insurance_certificate_file &&
+      editId
+    ) {
+      try {
+        const file = installation.insurance_certificate_file;
+        const ext = (file.name.split(".").pop() || "pdf").toLowerCase();
+        const path = `${editId}/certificate-${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("vendor-insurance-certificates")
+          .upload(path, file, { upsert: true, contentType: file.type });
+        if (upErr) throw upErr;
+        insuranceCertUrl = path;
+      } catch (e: any) {
+        toast.error("Insurance certificate upload failed: " + e.message);
+        return;
+      }
+    }
+
     const payload: any = {
       ...form,
       installation_model: installation.installation_model,
@@ -420,6 +448,11 @@ export default function AdminProvidersPage() {
         installation.sub_contractor_confirmed
           ? new Date().toISOString()
           : null,
+      insurance_expiry_date:
+        installation.has_public_liability && installation.insurance_expiry_date
+          ? installation.insurance_expiry_date
+          : null,
+      insurance_certificate_url: insuranceCertUrl,
     };
     upsertMutation.mutate(payload);
   };
@@ -1450,6 +1483,7 @@ export default function AdminProvidersPage() {
                       <div className="col-span-2"><span className="text-muted-foreground">Sub-contractor declaration accepted:</span> <span className="font-medium">{new Date((reviewProvider as any).sub_contractor_confirmation_at).toLocaleString()}</span></div>
                     )}
                   </div>
+                  <InsuranceCertificateBlock provider={reviewProvider} />
                 </div>
 
                 {/* Additional Details */}

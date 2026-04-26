@@ -1,7 +1,12 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalendarIcon, FileCheck, Upload } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -20,6 +25,9 @@ export interface InstallationModelValue {
   insurer_name: string;
   public_liability_insurance_amount: string; // string in form, parsed on save
   sub_contractor_confirmed: boolean;
+  insurance_expiry_date: string; // ISO date (yyyy-MM-dd) or empty
+  insurance_certificate_file: File | null; // new upload during this session
+  insurance_certificate_url: string; // existing url (for edit flows)
 }
 
 export const AU_STATE_OPTIONS = [
@@ -162,51 +170,183 @@ export default function InstallationModelFields({ value, onChange }: Props) {
         </label>
       )}
 
-      {/* Public liability — required for both models */}
-      <div className="space-y-3 rounded-md border border-border p-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <Label className="text-sm font-medium">
-              Public liability insurance{" "}
-              <span className="text-destructive">*</span>
-            </Label>
-            <p className="text-xs text-muted-foreground">
-              Required for all providers on the platform.
-            </p>
-          </div>
-          <Switch
-            checked={value.has_public_liability}
-            onCheckedChange={(v) => update("has_public_liability", v)}
-          />
+      {/* Insurance & Compliance Documents — required for both models */}
+      <div className="space-y-4 rounded-md border-2 border-primary/30 bg-primary/5 p-4">
+        <div>
+          <Label className="text-base font-semibold">
+            Insurance &amp; Compliance Documents{" "}
+            <span className="text-destructive">*</span>
+          </Label>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Public liability insurance is mandatory for every provider on the platform.
+          </p>
         </div>
+
+        <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border bg-background p-3 text-sm">
+          <Checkbox
+            checked={value.has_public_liability}
+            onCheckedChange={(v) => {
+              const checked = v === true;
+              onChange({
+                ...value,
+                has_public_liability: checked,
+                // Wipe insurance fields if unchecked
+                ...(checked
+                  ? {}
+                  : {
+                      insurer_name: "",
+                      public_liability_insurance_amount: "",
+                      insurance_expiry_date: "",
+                      insurance_certificate_file: null,
+                    }),
+              });
+            }}
+            className="mt-0.5"
+            required
+          />
+          <span>
+            <span className="block font-medium">
+              I confirm we hold current public liability insurance{" "}
+              <span className="text-destructive">*</span>
+            </span>
+            <span className="block text-xs text-muted-foreground">
+              Required to register. Without active cover we can&apos;t list your business.
+            </span>
+          </span>
+        </label>
+
         {value.has_public_liability && (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Insurer name</Label>
-              <Input
-                value={value.insurer_name}
-                onChange={(e) => update("insurer_name", e.target.value)}
-                placeholder="e.g. QBE, Allianz"
-              />
+          <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>
+                  Insurance coverage amount (AUD){" "}
+                  <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  value={value.public_liability_insurance_amount}
+                  onChange={(e) =>
+                    update("public_liability_insurance_amount", e.target.value)
+                  }
+                  placeholder="5,000,000"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Minimum recommended $5 million for residential plumbing work.
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Insurer name (optional)</Label>
+                <Input
+                  value={value.insurer_name}
+                  onChange={(e) => update("insurer_name", e.target.value)}
+                  placeholder="e.g. QBE, Allianz"
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Cover amount (AUD)</Label>
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={0}
-                value={value.public_liability_insurance_amount}
-                onChange={(e) =>
-                  update(
-                    "public_liability_insurance_amount",
-                    e.target.value,
-                  )
-                }
-                placeholder="e.g. 20000000"
-              />
-              <p className="text-xs text-muted-foreground">
-                Optional but recommended (e.g. 20,000,000 = $20M).
-              </p>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>
+                  Insurance expiry date{" "}
+                  <span className="text-destructive">*</span>
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !value.insurance_expiry_date && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {value.insurance_expiry_date
+                        ? format(new Date(value.insurance_expiry_date), "PPP")
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        value.insurance_expiry_date
+                          ? new Date(value.insurance_expiry_date)
+                          : undefined
+                      }
+                      onSelect={(d) =>
+                        update(
+                          "insurance_expiry_date",
+                          d ? format(d, "yyyy-MM-dd") : "",
+                        )
+                      }
+                      disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>
+                  Certificate of Currency{" "}
+                  {!value.insurance_certificate_url && (
+                    <span className="text-destructive">*</span>
+                  )}
+                </Label>
+                <label
+                  htmlFor="insurance-certificate-upload"
+                  className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-muted/50"
+                >
+                  <span className="flex items-center gap-2 truncate">
+                    {value.insurance_certificate_file ? (
+                      <>
+                        <FileCheck className="h-4 w-4 text-primary shrink-0" />
+                        <span className="truncate">
+                          {value.insurance_certificate_file.name}
+                        </span>
+                      </>
+                    ) : value.insurance_certificate_url ? (
+                      <>
+                        <FileCheck className="h-4 w-4 text-primary shrink-0" />
+                        <span className="truncate text-muted-foreground">
+                          Replace existing certificate
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <span className="text-muted-foreground">
+                          Upload PDF / JPG / PNG
+                        </span>
+                      </>
+                    )}
+                  </span>
+                </label>
+                <input
+                  id="insurance-certificate-upload"
+                  type="file"
+                  className="sr-only"
+                  accept="application/pdf,image/jpeg,image/png"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] || null;
+                    if (f && f.size > 5 * 1024 * 1024) {
+                      // eslint-disable-next-line no-alert
+                      alert("Certificate must be 5MB or smaller.");
+                      e.target.value = "";
+                      return;
+                    }
+                    update("insurance_certificate_file", f);
+                  }}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Max 5MB. Stored privately — admin access only.
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -233,6 +373,24 @@ export function validateInstallationModel(
     if (!v.sub_contractor_confirmed)
       return "Please confirm the sub-contractor compliance declaration";
   }
+  // Public liability is mandatory for everyone
+  if (!v.has_public_liability)
+    return "Public liability insurance is required to register";
+  const amount = Number(v.public_liability_insurance_amount);
+  if (
+    !v.public_liability_insurance_amount.trim() ||
+    !isFinite(amount) ||
+    amount <= 0
+  )
+    return "Insurance coverage amount is required";
+  if (!v.insurance_expiry_date)
+    return "Insurance expiry date is required";
+  // Expiry must be in the future
+  if (new Date(v.insurance_expiry_date) <= new Date(new Date().setHours(0, 0, 0, 0)))
+    return "Insurance expiry date must be in the future";
+  // A certificate must exist — either freshly uploaded or already on file
+  if (!v.insurance_certificate_file && !v.insurance_certificate_url)
+    return "Please upload your Certificate of Currency";
   return null;
 }
 
@@ -245,5 +403,8 @@ export function emptyInstallationModelValue(): InstallationModelValue {
     insurer_name: "",
     public_liability_insurance_amount: "",
     sub_contractor_confirmed: false,
+    insurance_expiry_date: "",
+    insurance_certificate_file: null,
+    insurance_certificate_url: "",
   };
 }

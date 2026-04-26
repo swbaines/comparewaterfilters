@@ -224,6 +224,11 @@ export default function VendorProfilePage() {
             : "",
         sub_contractor_confirmed: !!(provider as any)
           .sub_contractor_confirmation_at,
+        insurance_expiry_date:
+          (provider as any).insurance_expiry_date ?? "",
+        insurance_certificate_file: null,
+        insurance_certificate_url:
+          (provider as any).insurance_certificate_url ?? "",
       });
     }
   }, [provider]);
@@ -249,6 +254,20 @@ export default function VendorProfilePage() {
 
       const installationError = validateInstallationModel(installation);
       if (installationError) throw new Error(installationError);
+
+      // Upload insurance certificate if a new file was selected
+      let insuranceCertificateUrl: string | null =
+        installation.insurance_certificate_url || null;
+      if (installation.insurance_certificate_file) {
+        const file = installation.insurance_certificate_file;
+        const ext = (file.name.split(".").pop() || "pdf").toLowerCase();
+        const path = `${vendorAccount!.provider_id}/certificate-${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("vendor-insurance-certificates")
+          .upload(path, file, { upsert: true, contentType: file.type });
+        if (upErr) throw upErr;
+        insuranceCertificateUrl = path;
+      }
 
       let radiusToSave = 0;
       let baseFields: Record<string, any> = {
@@ -339,6 +358,18 @@ export default function VendorProfilePage() {
               ? (provider as any)?.sub_contractor_confirmation_at ||
                 new Date().toISOString()
               : null,
+          insurance_expiry_date:
+            installation.has_public_liability && installation.insurance_expiry_date
+              ? installation.insurance_expiry_date
+              : null,
+          insurance_certificate_url: insuranceCertificateUrl,
+          // Clearing the auto-pause when vendor uploads valid future-dated insurance
+          insurance_paused_at:
+            installation.has_public_liability &&
+            installation.insurance_expiry_date &&
+            new Date(installation.insurance_expiry_date) > new Date()
+              ? null
+              : (provider as any)?.insurance_paused_at ?? null,
             system_pricing: (() => {
               const out: Record<string, { min: number; max: number }> = {};
               for (const id of normalizedSystemTypes) {

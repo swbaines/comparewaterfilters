@@ -378,12 +378,33 @@ export default function VendorRegisterPage() {
             installation.sub_contractor_confirmed
               ? new Date().toISOString()
               : null,
+          insurance_expiry_date: installation.has_public_liability
+            ? installation.insurance_expiry_date || null
+            : null,
           google_business_url: gbpTrim,
         } as any)
         .select("id")
         .single();
 
       if (providerError) throw providerError;
+
+      // Upload insurance certificate now that we have a provider_id, then patch the row.
+      if (installation.insurance_certificate_file && provider?.id) {
+        const file = installation.insurance_certificate_file;
+        const ext = (file.name.split(".").pop() || "pdf").toLowerCase();
+        const path = `${provider.id}/certificate-${Date.now()}.${ext}`;
+        const { error: insUpErr } = await supabase.storage
+          .from("vendor-insurance-certificates")
+          .upload(path, file, { contentType: file.type });
+        if (insUpErr) throw insUpErr;
+        await supabase
+          .from("providers")
+          .update({
+            insurance_certificate_url: path,
+            insurance_expiry_date: installation.insurance_expiry_date || null,
+          } as any)
+          .eq("id", provider.id);
+      }
 
       // Kick off live ABN verification (checksum-only fallback if ABR_API_GUID
       // isn't configured). Non-blocking — the application is already submitted.
