@@ -378,6 +378,9 @@ export default function VendorRegisterPage() {
             installation.sub_contractor_confirmed
               ? new Date().toISOString()
               : null,
+          insurance_expiry_date: installation.has_public_liability
+            ? installation.insurance_expiry_date || null
+            : null,
           google_business_url: gbpTrim,
         } as any)
         .select("id")
