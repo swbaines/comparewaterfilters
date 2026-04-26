@@ -22,26 +22,30 @@ type StubCall = {
   body: string;
 };
 
-function startSupabaseStub(): { url: string; calls: StubCall[]; stop: () => Promise<void> } {
+async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; stop: () => Promise<void> }> {
   const calls: StubCall[] = [];
   const ac = new AbortController();
-  const server = Deno.serve({ port: 0, signal: ac.signal, onListen: () => {} }, async (req) => {
-    const body = await req.text();
-    calls.push({ method: req.method, url: req.url, body });
-    // PostgREST returns the affected rows as a JSON array on update+select.
-    return new Response("[]", {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  });
-  // @ts-ignore - addr is available on the server
-  const port = (server.addr as Deno.NetAddr).port;
+  let resolvePort: (port: number) => void;
+  const portReady = new Promise<number>((r) => { resolvePort = r; });
+  const server = Deno.serve(
+    { port: 0, signal: ac.signal, onListen: ({ port }) => resolvePort(port) },
+    async (req) => {
+      const body = await req.text();
+      calls.push({ method: req.method, url: req.url, body });
+      // PostgREST returns the affected rows as a JSON array on update+select.
+      return new Response("[]", {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+  );
+  const port = await portReady;
   return {
     url: `http://127.0.0.1:${port}`,
     calls,
     stop: async () => {
       ac.abort();
-      await server.finished;
+      try { await server.finished; } catch { /* abort is expected */ }
     },
   };
 }
@@ -103,7 +107,7 @@ Deno.serve = ((handler: (req: Request) => Response | Promise<Response>) => {
 
 // ---------- Boot ----------
 
-const stub = startSupabaseStub();
+const stub = await startSupabaseStub();
 Deno.env.set("STRIPE_SECRET_KEY", STRIPE_KEY);
 Deno.env.set("STRIPE_WEBHOOK_SECRET", WEBHOOK_SECRET);
 Deno.env.set("SUPABASE_URL", stub.url);
