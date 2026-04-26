@@ -441,6 +441,59 @@ Deno.test({ name: "events with different ids but same payload are both processed
   assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 2);
 });
 
+Deno.test({ name: "rejects events with missing event.id with a 400 and clear error", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    // id intentionally omitted
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.paid",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: {
+      object: {
+        id: "in_missing_event_id",
+        object: "invoice",
+        metadata: { invoice_id: "internal-missing-id" },
+      },
+    },
+  };
+  const res = await signedRequest(handler, event);
+  const body = JSON.parse(await res.text());
+  assertEquals(res.status, 400);
+  assertEquals(body.event_type, "invoice.paid");
+  if (typeof body.error !== "string" || !body.error.includes("event.id")) {
+    throw new Error(`Expected clear error mentioning event.id, got: ${JSON.stringify(body)}`);
+  }
+  // No DB writes should occur (no idempotency insert, no PATCH)
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+  assertEquals(
+    stub.calls.filter((c) => c.method === "POST" && c.url.includes("stripe_webhook_events")).length,
+    0,
+  );
+});
+
+Deno.test({ name: "rejects events with empty-string event.id", sanitizeOps: false, sanitizeResources: false }, async () => {
+  clearCalls();
+  const event = {
+    id: "",
+    object: "event",
+    api_version: "2023-10-16",
+    created: Math.floor(Date.now() / 1000),
+    type: "invoice.payment_failed",
+    livemode: false,
+    pending_webhooks: 0,
+    request: { id: null, idempotency_key: null },
+    data: { object: { id: "in_empty_id", object: "invoice", metadata: {} } },
+  };
+  const res = await signedRequest(handler, event);
+  await res.text();
+  assertEquals(res.status, 400);
+  assertEquals(stub.calls.filter((c) => c.method === "PATCH").length, 0);
+});
+
 // Cleanup: ensure the stub server shuts down so the test runner exits cleanly.
 globalThis.addEventListener("unload", () => {
   stub.stop();
