@@ -22,11 +22,39 @@ type StubCall = {
   body: string;
 };
 
-async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; stop: () => Promise<void> }> {
+async function startSupabaseStub(): Promise<{
+  url: string;
+  calls: StubCall[];
+  stop: () => Promise<void>;
+  seenEventIds: Set<string>;
+}> {
   const calls: StubCall[] = [];
+  // Track stripe_webhook_events inserts to simulate the unique constraint
+  // on stripe_event_id.
+  const seenEventIds = new Set<string>();
   const handler = async (req: Request): Promise<Response> => {
     const body = await req.text();
     calls.push({ method: req.method, url: req.url, body });
+
+    // Simulate the dedupe table's unique constraint on stripe_event_id.
+    if (req.method === "POST" && req.url.includes("/rest/v1/stripe_webhook_events")) {
+      try {
+        const parsed = JSON.parse(body);
+        const id = parsed?.stripe_event_id;
+        if (id && seenEventIds.has(id)) {
+          return new Response(
+            JSON.stringify({ code: "23505", message: "duplicate key value" }),
+            { status: 409, headers: { "Content-Type": "application/json" } },
+          );
+        }
+        if (id) seenEventIds.add(id);
+      } catch { /* fall through */ }
+      return new Response("[]", {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     return new Response("[]", {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -57,6 +85,7 @@ async function startSupabaseStub(): Promise<{ url: string; calls: StubCall[]; st
   return {
     url: `http://127.0.0.1:${port}`,
     calls,
+    seenEventIds,
     stop: async () => {
       if (stopped) return;
       stopped = true;
