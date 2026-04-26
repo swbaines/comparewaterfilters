@@ -34,6 +34,11 @@ jobs:
             echo "::endgroup::"
           done
 
+      - name: deno test stripe-webhook
+        run: |
+          cd supabase/functions/stripe-webhook
+          deno test --allow-net --allow-env --allow-read index.test.ts
+
   build:
     name: Frontend build
     runs-on: ubuntu-latest
