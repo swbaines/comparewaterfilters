@@ -5,6 +5,40 @@ and API version to keep builds reproducible. Do **not** mix esm.sh imports or
 bump versions in a single function — change them everywhere or builds will
 drift and CI (`.github/workflows/ci.yml`) will fail.
 
+## CI workflow
+
+The authoritative checks live in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
+It runs two jobs on every push to `main` and on every pull request:
+
+1. **`edge-functions`** — installs Deno v2.x, then runs `deno check index.ts`
+   for each Stripe-using function (see list below) and `deno test` for
+   `stripe-webhook`.
+2. **`build`** — installs dependencies with `bun install --frozen-lockfile`
+   and runs `bun run build` to type-check and bundle the frontend.
+
+### Mirror CI locally
+
+Run the exact same commands the workflow runs:
+
+```bash
+# 1. Edge function type-checks (matches the `edge-functions` job)
+for fn in charge-vendors-monthly create-manual-invoice create-setup-intent \
+          create-stripe-customer pay-invoice-now save-payment-method \
+          stripe-webhook; do
+  (cd "supabase/functions/$fn" && deno check index.ts) || exit 1
+done
+
+# 2. Webhook tests
+(cd supabase/functions/stripe-webhook && \
+  deno test --allow-net --allow-env --allow-read index.test.ts)
+
+# 3. Frontend build
+bun install --frozen-lockfile
+bun run build
+```
+
+If all three steps pass locally, CI will pass too.
+
 ## Pinned versions
 
 | Concern              | Import                       | `apiVersion`    |
