@@ -40,6 +40,26 @@ Deno.serve(async (req) => {
 
   console.log(`[stripe-webhook] Received event: ${event.type} (${event.id})`);
 
+  // Guard: Stripe events must carry an `id`. If a malformed payload slips past
+  // signature verification (e.g. a future SDK shape change or a manually
+  // forged-but-correctly-signed test event), refuse it explicitly instead of
+  // letting a NULL value blow up the idempotency insert with an opaque error.
+  if (!event.id || typeof event.id !== "string") {
+    console.error(
+      `[stripe-webhook] Rejecting event with missing/invalid id (type=${event.type ?? "unknown"})`,
+    );
+    return new Response(
+      JSON.stringify({
+        error: "Invalid webhook payload: event.id is required",
+        event_type: event.type ?? null,
+      }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
   // Idempotency: try to claim this event ID. If it already exists (unique
   // constraint violation, code 23505), Stripe is retrying an event we already
   // processed — return 200 immediately so Stripe stops retrying.
