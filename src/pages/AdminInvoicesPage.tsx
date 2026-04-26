@@ -12,11 +12,82 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban } from "lucide-react";
+import { Loader2, DollarSign, FileText, CheckCircle, Clock, MoreHorizontal, Send, Ban, ChevronRight, ChevronDown } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { toast } from "sonner";
+
+function InvoiceLeadsDetail({ invoiceId }: { invoiceId: string }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-invoice-leads", invoiceId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("quote_requests")
+        .select("id, customer_name, customer_email, customer_suburb, customer_state, ownership_status, lead_price, lead_status, created_at")
+        .eq("invoice_id", invoiceId)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 px-6 py-4 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Loading billed leads…
+      </div>
+    );
+  }
+  if (error) {
+    return <div className="px-6 py-4 text-sm text-destructive">Failed to load billed leads</div>;
+  }
+  if (!data || data.length === 0) {
+    return <div className="px-6 py-4 text-sm text-muted-foreground">No leads linked to this invoice.</div>;
+  }
+
+  return (
+    <div className="px-6 py-4">
+      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+        Billed leads ({data.length})
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Customer</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Ownership</TableHead>
+            <TableHead>Lead status</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+            <TableHead>Submitted</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((lead) => (
+            <TableRow key={lead.id}>
+              <TableCell>
+                <div className="font-medium">{lead.customer_name}</div>
+                <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
+              </TableCell>
+              <TableCell className="text-sm">
+                {[lead.customer_suburb, lead.customer_state].filter(Boolean).join(", ") || "—"}
+              </TableCell>
+              <TableCell className="text-sm">{lead.ownership_status || "—"}</TableCell>
+              <TableCell className="text-sm capitalize">{lead.lead_status}</TableCell>
+              <TableCell className="text-right font-medium">
+                ${Number(lead.lead_price ?? 0).toLocaleString()}
+              </TableCell>
+              <TableCell className="text-sm text-muted-foreground">
+                {format(new Date(lead.created_at), "dd MMM yyyy")}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
 
 const statusColors: Record<string, string> = {
   draft: "bg-slate-100 text-slate-800",
@@ -48,6 +119,7 @@ type InvoiceAction = {
 export default function AdminInvoicesPage() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [confirmAction, setConfirmAction] = useState<InvoiceAction | null>(null);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const queryClient = useQueryClient();
 
   const { data: invoices = [], isLoading } = useQuery({
@@ -247,6 +319,7 @@ export default function AdminInvoicesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[32px]"></TableHead>
                       <TableHead>Invoice #</TableHead>
                       <TableHead>Provider</TableHead>
                       <TableHead>Period</TableHead>
@@ -261,8 +334,28 @@ export default function AdminInvoicesPage() {
                   <TableBody>
                     {filtered.map((inv) => {
                       const actions = getActions(inv.status);
+                      const isOpen = expanded.has(inv.id);
                       return (
-                        <TableRow key={inv.id}>
+                        <Fragment key={inv.id}>
+                        <TableRow>
+                          <TableCell className="p-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              onClick={() => {
+                                setExpanded((prev) => {
+                                  const next = new Set(prev);
+                                  if (next.has(inv.id)) next.delete(inv.id);
+                                  else next.add(inv.id);
+                                  return next;
+                                });
+                              }}
+                              aria-label={isOpen ? "Hide billed leads" : "Show billed leads"}
+                            >
+                              {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
                           <TableCell className="font-mono text-sm">{inv.invoice_number}</TableCell>
                           <TableCell className="font-medium">
                             {(inv.providers as any)?.name ?? "—"}
@@ -322,11 +415,19 @@ export default function AdminInvoicesPage() {
                             )}
                           </TableCell>
                         </TableRow>
+                        {isOpen && (
+                          <TableRow className="bg-muted/30 hover:bg-muted/30">
+                            <TableCell colSpan={10} className="p-0">
+                              <InvoiceLeadsDetail invoiceId={inv.id} />
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        </Fragment>
                       );
                     })}
                     {filtered.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                           No invoices found
                         </TableCell>
                       </TableRow>
