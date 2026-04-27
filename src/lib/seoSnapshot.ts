@@ -107,7 +107,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/water-quality",
     source: "src/pages/WaterQualityPage.tsx",
-    title: "Water Quality by Suburb Australia — Hardness, Chlorine & Fluoride",
+    title: "Water Quality by Area — Hardness, Chlorine & Fluoride",
     description:
       "Free suburb water quality lookup for Australia. Check hardness, chlorine and fluoride, then get whole house water filter recommendations for your area.",
     canonical: `${BASE_URL}/water-quality`,
