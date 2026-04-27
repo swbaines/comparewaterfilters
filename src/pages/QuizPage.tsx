@@ -727,6 +727,9 @@ export default function QuizPage() {
                     </OptionButton>
                   ))}
                 </div>
+                <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                  "Coverage" means how much of your home you want filtered water in — just the kitchen tap for drinking, or every shower, bath, and tap throughout the house. Whole-house options need a single system installed at your home's water entry point.
+                </p>
                 {showErrors && !answers.coverage && (
                   <p className="mt-2 text-sm text-destructive">
                     Please select a coverage option to continue.
