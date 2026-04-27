@@ -786,6 +786,21 @@ export type Database = {
         }
         Relationships: []
       }
+      valid_concern_ids: {
+        Row: {
+          created_at: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       vendor_accounts: {
         Row: {
           created_at: string
