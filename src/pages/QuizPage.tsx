@@ -191,6 +191,15 @@ export default function QuizPage() {
     setAnswers((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleNext = () => {
+    if (!canNext()) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setStep((s) => s + 1);
+  };
+
   const toggleMulti = (field: "concerns" | "priorities", value: string) => {
     setAnswers((prev) => {
       const arr = prev[field];
