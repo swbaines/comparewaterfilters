@@ -253,6 +253,7 @@ const CONCERN_LABELS: Record<string, string> = {
   appliance: "Appliance & hot water system protection",
   bacteria: "Bacteria / microbiological safety",
   "not-sure": "Not sure — just want better water",
+  replacement: "Existing system needs replacement",
 };
 
 function PricingExplainer({ result, answers }: { result: RecommendationResult; answers: QuizAnswers }) {
