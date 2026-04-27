@@ -487,6 +487,7 @@ export type Database = {
           ownership_status: string | null
           postcode: string | null
           priorities: string[] | null
+          property_age: string | null
           property_type: string | null
           state: string | null
           suburb: string | null
@@ -508,6 +509,7 @@ export type Database = {
           ownership_status?: string | null
           postcode?: string | null
           priorities?: string[] | null
+          property_age?: string | null
           property_type?: string | null
           state?: string | null
           suburb?: string | null
@@ -529,6 +531,7 @@ export type Database = {
           ownership_status?: string | null
           postcode?: string | null
           priorities?: string[] | null
+          property_age?: string | null
           property_type?: string | null
           state?: string | null
           suburb?: string | null
@@ -556,6 +559,7 @@ export type Database = {
           lead_status: string
           message: string | null
           ownership_status: string | null
+          property_age: string | null
           property_type: string | null
           provider_id: string | null
           provider_name: string
@@ -584,6 +588,7 @@ export type Database = {
           lead_status?: string
           message?: string | null
           ownership_status?: string | null
+          property_age?: string | null
           property_type?: string | null
           provider_id?: string | null
           provider_name: string
@@ -612,6 +617,7 @@ export type Database = {
           lead_status?: string
           message?: string | null
           ownership_status?: string | null
+          property_age?: string | null
           property_type?: string | null
           provider_id?: string | null
           provider_name?: string

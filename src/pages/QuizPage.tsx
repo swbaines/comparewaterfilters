@@ -19,6 +19,7 @@ const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
 const householdSizes = ["1", "2", "3", "4", "5+"];
 const bathroomCounts = ["1", "2", "3", "4+"];
+const propertyAges = ["Less than 5 years", "5 to 20 years", "20 to 50 years", "Over 50 years", "Not sure"];
 
 const waterSources = [
   {
@@ -156,6 +157,7 @@ export default function QuizPage() {
     ownershipStatus: "",
     householdSize: "",
     bathrooms: "",
+    propertyAge: "",
     waterSource: "",
     concerns: [],
     coverage: "",
@@ -204,7 +206,8 @@ export default function QuizPage() {
           answers.propertyType &&
           answers.ownershipStatus &&
           answers.householdSize &&
-          answers.bathrooms
+          answers.bathrooms &&
+          answers.propertyAge
         );
       case 2:
         return !!answers.waterSource;
@@ -239,6 +242,7 @@ export default function QuizPage() {
         ownership_status: answers.ownershipStatus || null,
         household_size: answers.householdSize || null,
         bathrooms: answers.bathrooms || null,
+        property_age: answers.propertyAge || null,
         water_source: answers.waterSource || null,
         concerns: answers.concerns,
         coverage: answers.coverage || null,
@@ -398,6 +402,23 @@ export default function QuizPage() {
                       ))}
                     </div>
                   </div>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Approximate age of property</label>
+                  <div className="flex flex-wrap gap-2">
+                    {propertyAges.map((a) => (
+                      <OptionButton
+                        key={a}
+                        selected={answers.propertyAge === a}
+                        onClick={() => set("propertyAge", a)}
+                      >
+                        {a}
+                      </OptionButton>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    This helps installers understand your plumbing setup and provide accurate quotes.
+                  </p>
                 </div>
               </div>
             )}

@@ -744,6 +744,15 @@ export default function VendorDashboardPage() {
                         </div>
                       </div>
                     )}
+                    {selectedLead.property_age && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Property Age</p>
+                          <p className="text-sm font-medium">{selectedLead.property_age}</p>
+                        </div>
+                      </div>
+                    )}
                     {selectedLead.household_size && (
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-muted-foreground shrink-0" />
