@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench, Flame, CalendarClock } from "lucide-react";
+import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL, leadTemperatureRank } from "@/lib/leadTemperature";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -351,9 +352,14 @@ export default function VendorDashboardPage() {
   const filteredLeads = periodLeads
     .slice()
     .sort((a, b) => {
+      // 1. Hot leads first, then warm, then cold/none.
+      const tempDiff = leadTemperatureRank(b.lead_temperature) - leadTemperatureRank(a.lead_temperature);
+      if (tempDiff !== 0) return tempDiff;
+      // 2. New / pending leads above closed ones.
       const aNew = a.lead_status === "new" || a.lead_status === "sent" ? 1 : 0;
       const bNew = b.lead_status === "new" || b.lead_status === "sent" ? 1 : 0;
       if (aNew !== bNew) return bNew - aNew;
+      // 3. Most recent first.
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
@@ -364,6 +370,9 @@ export default function VendorDashboardPage() {
       : 0;
     const won = ls.filter((l) => l.lead_status === "won").length;
     const closed = ls.filter((l) => l.lead_status === "won" || l.lead_status === "lost").length;
+    const hotWaiting = ls.filter(
+      (l) => l.lead_temperature === "hot" && (l.lead_status === "new" || l.lead_status === "sent"),
+    ).length;
     return {
       total: ls.length,
       new: ls.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
@@ -373,6 +382,7 @@ export default function VendorDashboardPage() {
       avgResponseMs: avgMs,
       winRate: closed > 0 ? (won / closed) * 100 : 0,
       hasClosed: closed > 0,
+      hotWaiting,
     };
   };
 
@@ -495,6 +505,24 @@ export default function VendorDashboardPage() {
 
         {/* Stats */}
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <Card className={stats.hotWaiting > 0 ? "border-red-300 bg-red-50/40" : ""}>
+            <CardContent className="flex items-start gap-3 p-4">
+              <Flame className={`h-8 w-8 shrink-0 ${stats.hotWaiting > 0 ? "text-red-600" : "text-muted-foreground"}`} />
+              <div className="min-w-0">
+                <p className="text-sm text-muted-foreground">Hot leads waiting</p>
+                {emptyToday ? (
+                  <span className="text-sm font-medium text-muted-foreground">No leads today yet</span>
+                ) : (
+                  <span className={`text-2xl font-bold ${stats.hotWaiting > 0 ? "text-red-700" : ""}`}>
+                    {stats.hotWaiting}
+                  </span>
+                )}
+                {stats.hotWaiting > 0 && (
+                  <p className="text-[11px] text-red-700 mt-0.5">Action these first</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
           <Card><CardContent className="flex items-start gap-3 p-4">
             <Users className="h-8 w-8 text-primary shrink-0" />
             <div className="min-w-0">
@@ -616,6 +644,14 @@ export default function VendorDashboardPage() {
                     {(lead.concerns || []).includes("replacement") && (
                       <Badge className="ml-1 bg-primary text-primary-foreground text-[10px] tracking-wide">REPLACEMENT</Badge>
                     )}
+                    {lead.lead_temperature && LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"] && (
+                      <Badge
+                        variant="outline"
+                        className={`ml-1 text-[10px] tracking-wide ${LEAD_TEMPERATURE_BADGE_CLASS[lead.lead_temperature as "hot" | "warm" | "cold"]}`}
+                      >
+                        {LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"]}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}
@@ -686,6 +722,14 @@ export default function VendorDashboardPage() {
                     {(selectedLead.concerns || []).includes("replacement") && (
                       <Badge className="bg-primary text-primary-foreground text-[10px] tracking-wide">
                         REPLACEMENT
+                      </Badge>
+                    )}
+                    {selectedLead.lead_temperature && LEAD_TEMPERATURE_LABEL[selectedLead.lead_temperature as "hot" | "warm" | "cold"] && (
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] tracking-wide ${LEAD_TEMPERATURE_BADGE_CLASS[selectedLead.lead_temperature as "hot" | "warm" | "cold"]}`}
+                      >
+                        {LEAD_TEMPERATURE_LABEL[selectedLead.lead_temperature as "hot" | "warm" | "cold"]}
                       </Badge>
                     )}
                     <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-1`}>
@@ -821,6 +865,15 @@ export default function VendorDashboardPage() {
                         <div>
                           <p className="text-xs text-muted-foreground">Maintenance preference</p>
                           <p className="text-sm font-medium">{selectedLead.maintenance_tolerance}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.installation_timeline && (
+                      <div className="flex items-center gap-2 sm:col-span-2">
+                        <CalendarClock className="h-4 w-4 text-primary shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Installation timeline</p>
+                          <p className="text-sm font-medium">{selectedLead.installation_timeline}</p>
                         </div>
                       </div>
                     )}

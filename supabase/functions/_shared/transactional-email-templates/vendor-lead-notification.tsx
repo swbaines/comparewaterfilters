@@ -166,8 +166,20 @@ const VendorLeadNotificationEmail = ({
 
 export const template = {
   component: VendorLeadNotificationEmail,
-  subject: (data: Record<string, any>) =>
-    `New quote request from ${data.customerName || 'a customer'} — ${data.customerSuburb || ''}, ${data.customerState || ''}`,
+  subject: (data: Record<string, any>) => {
+    const name = data.customerName || 'a customer'
+    const temp = (data.leadTemperature || '').toString().toLowerCase()
+    if (temp === 'hot') {
+      return `Hot lead — customer wants installation within 2 weeks: ${name}`
+    }
+    if (temp === 'warm') {
+      return `New lead — ${name} - installation in next 3 months`
+    }
+    if (temp === 'cold') {
+      return `New lead — ${name} - researching`
+    }
+    return `New quote request from ${name} — ${data.customerSuburb || ''}, ${data.customerState || ''}`
+  },
   displayName: 'Vendor lead notification',
   previewData: {
     providerName: 'Pure Water Solutions',

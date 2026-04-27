@@ -86,6 +86,7 @@ export interface QuizAnswers {
   coverage: string;
   budget: string;
   maintenanceTolerance?: string;
+  installationTimeline?: string;
   priorities: string[];
   notes: string;
   firstName: string;

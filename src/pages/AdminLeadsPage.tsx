@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2 } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
+import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL } from "@/lib/leadTemperature";
 
 const LEAD_STATUSES = ["new", "sent", "contacted", "won", "lost"] as const;
 
@@ -39,6 +40,7 @@ export default function AdminLeadsPage() {
   const queryClient = useQueryClient();
   const [filterProvider, setFilterProvider] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterTemperature, setFilterTemperature] = useState<string>("all");
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [invoiceProvider, setInvoiceProvider] = useState<string>("");
   const [invoicePeriod, setInvoicePeriod] = useState({ start: "", end: "" });
@@ -265,6 +267,7 @@ export default function AdminLeadsPage() {
   const filteredLeads = leads.filter((l) => {
     if (filterProvider !== "all" && l.provider_id !== filterProvider) return false;
     if (filterStatus !== "all" && l.lead_status !== filterStatus) return false;
+    if (filterTemperature !== "all" && (l.lead_temperature || "") !== filterTemperature) return false;
     return true;
   });
 
@@ -356,6 +359,15 @@ export default function AdminLeadsPage() {
               {LEAD_STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
             </SelectContent>
           </Select>
+          <Select value={filterTemperature} onValueChange={setFilterTemperature}>
+            <SelectTrigger className="w-40"><SelectValue placeholder="All Temperatures" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Temperatures</SelectItem>
+              <SelectItem value="hot">Hot</SelectItem>
+              <SelectItem value="warm">Warm</SelectItem>
+              <SelectItem value="cold">Cold</SelectItem>
+            </SelectContent>
+          </Select>
           <Button onClick={() => setInvoiceDialogOpen(true)} className="ml-auto gap-1">
             <FileText className="h-4 w-4" /> Generate Invoice
           </Button>
@@ -372,6 +384,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Date</TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Provider</TableHead>
+                  <TableHead>Temp</TableHead>
                   <TableHead>Systems</TableHead>
                   <TableHead>Ownership</TableHead>
                   <TableHead>Property Age</TableHead>
@@ -384,7 +397,7 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={11} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={12} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -393,6 +406,18 @@ export default function AdminLeadsPage() {
                       <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
                     </TableCell>
                     <TableCell className="text-sm">{lead.provider_name}</TableCell>
+                    <TableCell>
+                      {lead.lead_temperature && LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"] ? (
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] tracking-wide ${LEAD_TEMPERATURE_BADGE_CLASS[lead.lead_temperature as "hot" | "warm" | "cold"]}`}
+                        >
+                          {LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"]}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {(lead.recommended_systems || []).map((s: string) => (

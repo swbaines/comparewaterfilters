@@ -108,6 +108,13 @@ const maintenanceToleranceOptions = [
   { value: "Not a concern — I want the best filtration regardless", label: "Not a concern — I want the best filtration regardless" },
 ];
 
+const installationTimelineOptions = [
+  { value: "As soon as possible — within 2 weeks", label: "As soon as possible — within 2 weeks" },
+  { value: "Within 1 month", label: "Within 1 month" },
+  { value: "Within 3 months", label: "Within 3 months" },
+  { value: "Just researching — no specific timeframe", label: "Just researching — no specific timeframe" },
+];
+
 const priorityOptions = [
   { value: "lowest-cost", label: "Lowest upfront cost" },
   { value: "lowest-maintenance", label: "Lowest maintenance" },
@@ -196,6 +203,7 @@ export default function QuizPage() {
     coverage: "",
     budget: "",
     maintenanceTolerance: "",
+    installationTimeline: "",
     priorities: [],
     notes: "",
     firstName: "",
@@ -289,7 +297,7 @@ export default function QuizPage() {
       case 6:
         return true; // optional
       case 7:
-        return true; // optional
+        return !!answers.installationTimeline;
       case 8:
         return !!(answers.firstName && answers.email && answers.mobile && answers.consent && answers.disclaimerAck);
       default:
@@ -319,6 +327,7 @@ export default function QuizPage() {
         coverage: answers.coverage || null,
         budget: answers.budget || null,
         maintenance_tolerance: answers.maintenanceTolerance || null,
+        installation_timeline: answers.installationTimeline || null,
         priorities: answers.priorities || [],
         notes: answers.notes || null,
         consent: answers.consent,
@@ -838,6 +847,36 @@ export default function QuizPage() {
             {/* Step 7 */}
             {step === 7 && (
               <div className="space-y-5">
+                <div>
+                  <label className="mb-1.5 block text-sm font-medium">
+                    When are you looking to have your system installed? *
+                  </label>
+                  <p className="mb-3 text-xs text-muted-foreground">
+                    This helps us prioritise vendors who can match your timeline.
+                  </p>
+                  <div
+                    className={`grid gap-2 sm:grid-cols-2 ${
+                      showErrors && !answers.installationTimeline
+                        ? "rounded-lg ring-2 ring-destructive/40 p-1"
+                        : ""
+                    }`}
+                  >
+                    {installationTimelineOptions.map((t) => (
+                      <OptionButton
+                        key={t.value}
+                        selected={answers.installationTimeline === t.value}
+                        onClick={() => set("installationTimeline", t.value)}
+                      >
+                        {t.label}
+                      </OptionButton>
+                    ))}
+                  </div>
+                  {showErrors && !answers.installationTimeline && (
+                    <p className="mt-2 text-xs text-destructive">
+                      Please select an installation timeline to continue.
+                    </p>
+                  )}
+                </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Anything else we should know?</label>
                   <Textarea
