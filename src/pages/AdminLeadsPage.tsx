@@ -359,6 +359,15 @@ export default function AdminLeadsPage() {
               {LEAD_STATUSES.map((s) => <SelectItem key={s} value={s} className="capitalize">{s}</SelectItem>)}
             </SelectContent>
           </Select>
+          <Select value={filterTemperature} onValueChange={setFilterTemperature}>
+            <SelectTrigger className="w-40"><SelectValue placeholder="All Temperatures" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Temperatures</SelectItem>
+              <SelectItem value="hot">Hot</SelectItem>
+              <SelectItem value="warm">Warm</SelectItem>
+              <SelectItem value="cold">Cold</SelectItem>
+            </SelectContent>
+          </Select>
           <Button onClick={() => setInvoiceDialogOpen(true)} className="ml-auto gap-1">
             <FileText className="h-4 w-4" /> Generate Invoice
           </Button>
