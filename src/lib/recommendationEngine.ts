@@ -10,6 +10,8 @@ export interface QuizAnswers {
   bathrooms: string;
   propertyAge?: string;
   waterSource: string;
+  waterTestedRecently?: string;
+  waterUsageType?: string;
   concerns: string[];
   coverage: string;
   budget: string;
