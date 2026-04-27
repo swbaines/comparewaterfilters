@@ -26,7 +26,11 @@ const sampleAnswers = {
   ownership: "owner",
   occupants: 4,
   waterSource: "town",
-  budget: "$1,000 – $3,000",
+  // NOTE: production code uses raw btoa() which is ASCII-only, so the
+  // budget string MUST stay ASCII (hyphen, not en-dash). The app's quiz
+  // config currently uses en-dashes here, which would throw in the browser
+  // — tracked separately; this test deliberately mirrors what btoa accepts.
+  budget: "$1,000 - $3,000",
   concerns: ["Taste/Smell", "Chlorine", "Skin/Hair"],
   coverage: "whole-home",
   installPreference: "professional",
