@@ -554,6 +554,44 @@ export default function AdminLeadsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={resetDialogOpen} onOpenChange={(open) => {
+        setResetDialogOpen(open);
+        if (!open) setResetConfirmText("");
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset test data?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes every lead and invoice flagged as
+              <span className="font-mono"> is_test = true</span>. Real customer
+              leads and invoices are not touched. This cannot be undone.
+              <br /><br />
+              Type <span className="font-mono font-semibold">{RESET_PHRASE}</span> to confirm.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={resetConfirmText}
+            onChange={(e) => setResetConfirmText(e.target.value)}
+            placeholder={RESET_PHRASE}
+            autoFocus
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={resetConfirmText !== RESET_PHRASE || resetTestDataMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                resetTestDataMutation.mutate();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {resetTestDataMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Delete test data
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
