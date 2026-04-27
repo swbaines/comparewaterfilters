@@ -37,9 +37,13 @@ export default function ProviderMatchPage() {
       <div className="py-20 text-center">
         <div className="container max-w-md">
           <h1 className="text-2xl font-bold">Request received!</h1>
-          <p className="mt-3 text-muted-foreground">We'll review your details and connect you with suitable providers in your area.</p>
+          <p className="mt-3 text-muted-foreground">
+            We'll review your details and connect you with suitable providers in your area.
+          </p>
           <Link to="/">
-            <Button className="mt-6 gap-2">Back to home <ArrowRight className="h-4 w-4" /></Button>
+            <Button className="mt-6 gap-2">
+              Back to home <ArrowRight className="h-4 w-4" />
+            </Button>
           </Link>
         </div>
       </div>
@@ -49,12 +53,16 @@ export default function ProviderMatchPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Get Matched With Whole House Water Filter Providers"
+        title="Match Whole House Water Filter Providers"
         description="Request free quotes from vetted whole house water filter providers in your area. Independent, no-obligation matching across Australia."
         path="/provider-match"
       />
       <div className="container max-w-2xl">
-        <SectionHeading badge="Provider match" title="Request matched providers" subtitle="Tell us a bit more so we can connect you with the right providers in your area." />
+        <SectionHeading
+          badge="Provider match"
+          title="Request matched providers"
+          subtitle="Tell us a bit more so we can connect you with the right providers in your area."
+        />
 
         <Card className="mt-10">
           <CardContent className="p-6">
@@ -66,7 +74,11 @@ export default function ProviderMatchPage() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Email *</label>
-                  <Input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
+                  <Input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                  />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -126,9 +138,15 @@ export default function ProviderMatchPage() {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium">Notes</label>
-                <Textarea placeholder="Any additional details..." value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
+                <Textarea
+                  placeholder="Any additional details..."
+                  value={form.notes}
+                  onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                />
               </div>
-              <Button type="submit" className="w-full">Submit request</Button>
+              <Button type="submit" className="w-full">
+                Submit request
+              </Button>
             </form>
           </CardContent>
         </Card>
