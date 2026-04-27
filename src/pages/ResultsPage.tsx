@@ -780,7 +780,7 @@ export default function ResultsPage() {
         <div className="mb-10 text-center">
           <Badge className="mb-3">Your personalised results</Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            Hi {answers.firstName}, here's what we recommend
+            Hi {answers.firstName}, here's our recommendation
           </h1>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
