@@ -149,7 +149,11 @@ function getFlags(answers: QuizAnswers) {
     drinkingCoverage &&
     concerns.every((c) => ["taste", "chlorine", "drinking-quality"].includes(c));
 
-  const budgetUnder1k = budget === "under-1000";
+  // Replacement intent — these customers already have a system and are
+  // upgrading. They've invested before, so we relax the strict budget filter
+  // and surface modern best-practice equivalents.
+  const isReplacement = has("replacement");
+  const budgetUnder1k = budget === "under-1000" && !isReplacement;
 
   return {
     has,
@@ -166,6 +170,7 @@ function getFlags(answers: QuizAnswers) {
     isOldProperty,
     isVeryOldProperty,
     oldPipesHeavyMetals,
+    isReplacement,
   };
 }
 
