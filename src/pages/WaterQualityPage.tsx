@@ -354,17 +354,6 @@ export default function WaterQualityPage() {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Droplets className="h-4 w-4" />
-                    Hardness
-                  </div>
-                  <p className="mt-2 text-3xl font-bold">{result.hardness}</p>
-                  <p className="text-sm text-muted-foreground">mg/L CaCO₃</p>
-                  <Badge className={`mt-2 ${hardness?.bg} ${hardness?.color} border-0`}>{hardness?.label}</Badge>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                     <Thermometer className="h-4 w-4" />
                     Chlorine
                   </div>
@@ -420,6 +409,17 @@ export default function WaterQualityPage() {
                   <p className="mt-2 text-[11px] sm:text-xs text-muted-foreground/80 leading-snug">
                     *See &ldquo;What is PFAS?&rdquo; below for data sources &amp; context.
                   </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <Droplets className="h-4 w-4" />
+                    Hardness
+                  </div>
+                  <p className="mt-2 text-3xl font-bold">{result.hardness}</p>
+                  <p className="text-sm text-muted-foreground">mg/L CaCO₃</p>
+                  <Badge className={`mt-2 ${hardness?.bg} ${hardness?.color} border-0`}>{hardness?.label}</Badge>
                 </CardContent>
               </Card>
             </div>
