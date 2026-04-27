@@ -360,9 +360,9 @@ export default function WaterQualityPage() {
                   <p className="mt-2 text-3xl font-bold">{result.chlorine}</p>
                   <p className="text-sm text-muted-foreground">mg/L typical</p>
                   <Badge className={`mt-2 ${chlorine?.bg} ${chlorine?.color} border-0`}>{chlorine?.label}</Badge>
-                  {result.chlorine >= 1.0 && (
+                  {result.chlorine >= 0.1 && (
                     <p className="mt-2 text-xs text-muted-foreground/80 leading-snug">
-                      Above the typical taste &amp; smell threshold (~1.0 mg/L) — many people will notice it.
+                      Above the typical taste &amp; smell threshold (0.1–0.4 mg/L) — most people will notice it.
                     </p>
                   )}
                   {result.usesChloramine && (
