@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2 } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
+import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL } from "@/lib/leadTemperature";
 
 const LEAD_STATUSES = ["new", "sent", "contacted", "won", "lost"] as const;
 
@@ -39,6 +40,7 @@ export default function AdminLeadsPage() {
   const queryClient = useQueryClient();
   const [filterProvider, setFilterProvider] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [filterTemperature, setFilterTemperature] = useState<string>("all");
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [invoiceProvider, setInvoiceProvider] = useState<string>("");
   const [invoicePeriod, setInvoicePeriod] = useState({ start: "", end: "" });
@@ -265,6 +267,7 @@ export default function AdminLeadsPage() {
   const filteredLeads = leads.filter((l) => {
     if (filterProvider !== "all" && l.provider_id !== filterProvider) return false;
     if (filterStatus !== "all" && l.lead_status !== filterStatus) return false;
+    if (filterTemperature !== "all" && (l.lead_temperature || "") !== filterTemperature) return false;
     return true;
   });
 
