@@ -384,6 +384,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Date</TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Provider</TableHead>
+                  <TableHead>Temp</TableHead>
                   <TableHead>Systems</TableHead>
                   <TableHead>Ownership</TableHead>
                   <TableHead>Property Age</TableHead>
@@ -405,6 +406,18 @@ export default function AdminLeadsPage() {
                       <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
                     </TableCell>
                     <TableCell className="text-sm">{lead.provider_name}</TableCell>
+                    <TableCell>
+                      {lead.lead_temperature && LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"] ? (
+                        <Badge
+                          variant="outline"
+                          className={`text-[10px] tracking-wide ${LEAD_TEMPERATURE_BADGE_CLASS[lead.lead_temperature as "hot" | "warm" | "cold"]}`}
+                        >
+                          {LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"]}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {(lead.recommended_systems || []).map((s: string) => (
