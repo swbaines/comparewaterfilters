@@ -309,6 +309,12 @@ function PricingExplainer({ result, answers }: { result: RecommendationResult; a
       detail: "Smaller scope keeps install short and parts minimal.",
       effect: "down",
     });
+  } else if (answers.coverage === "showers-bathrooms") {
+    drivers.push({
+      label: "Filtered showers & bathrooms",
+      detail: "Whole-house carbon at the water entry point — the only effective long-term solution for filtered shower water.",
+      effect: "up",
+    });
   }
 
   if (answers.waterSource && ["rainwater", "tank-water", "bore-water"].includes(answers.waterSource)) {
@@ -814,6 +820,17 @@ export default function ResultsPage() {
             <p className="mt-2 text-muted-foreground">{result.primaryReason}</p>
           </CardContent>
         </Card>
+
+        {answers.coverage === "showers-bathrooms" && (
+          <Card className="mb-8 border-primary/20 bg-primary/5">
+            <CardContent className="p-6 sm:p-8">
+              <Badge className="mb-3">Why we don't recommend standalone shower filters</Badge>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                While they're widely sold, standalone shower filters typically lose effectiveness against chlorine within weeks of installation, especially at hot water temperatures. A whole-house carbon filter installed at your home's water entry point provides genuinely filtered water to every shower and bath, with proven long-term performance and lower replacement frequency. It's a higher upfront cost but a far better solution for skin and hair concerns.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Jump to providers box – mobile only */}
         <a
