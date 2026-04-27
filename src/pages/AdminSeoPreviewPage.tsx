@@ -11,20 +11,26 @@ import {
   AlertTriangle,
   CheckCircle2,
   ShieldAlert,
+  Info,
 } from "lucide-react";
 import {
   ROUTES,
+  BASE_URL,
   SITE_NAME,
   diffRouteAgainstSource,
   type DriftIssue,
   type RouteMeta,
 } from "@/lib/seoSnapshot";
 
-const TITLE_LIMIT = 60;
-const DESC_LIMIT = 160;
+const TITLE_MIN = 30;
+const TITLE_MAX = 60;
+const TITLE_HARD_MAX = 65;
+const DESC_MIN = 70;
+const DESC_MAX = 160;
+const DESC_HARD_MAX = 165;
 
 interface MetaIssue {
-  level: "warn" | "error";
+  level: "info" | "warn" | "error";
   message: string;
 }
 
@@ -34,18 +40,121 @@ function audit(meta: RouteMeta): MetaIssue[] {
   const fullTitle = meta.title.includes(SITE_NAME)
     ? meta.title
     : `${meta.title} | ${SITE_NAME}`;
-  if (fullTitle.length > TITLE_LIMIT + 5) {
+
+  // Title length
+  if (fullTitle.length > TITLE_HARD_MAX) {
+    issues.push({
+      level: "error",
+      message: `Title is ${fullTitle.length} chars — Google will truncate (target ${TITLE_MIN}–${TITLE_MAX}).`,
+    });
+  } else if (fullTitle.length > TITLE_MAX) {
     issues.push({
       level: "warn",
-      message: `Title is ${fullTitle.length} chars (target ≤ ${TITLE_LIMIT}).`,
+      message: `Title is ${fullTitle.length} chars (target ≤ ${TITLE_MAX}).`,
     });
-  }
-  if (meta.description.length > DESC_LIMIT) {
+  } else if (fullTitle.length < TITLE_MIN) {
     issues.push({
       level: "warn",
-      message: `Description is ${meta.description.length} chars (target ≤ ${DESC_LIMIT}).`,
+      message: `Title is ${fullTitle.length} chars — under ${TITLE_MIN} wastes SERP real estate.`,
     });
   }
+
+  // Description length
+  if (meta.description.length > DESC_HARD_MAX) {
+    issues.push({
+      level: "error",
+      message: `Description is ${meta.description.length} chars — Google will truncate (target ${DESC_MIN}–${DESC_MAX}).`,
+    });
+  } else if (meta.description.length > DESC_MAX) {
+    issues.push({
+      level: "warn",
+      message: `Description is ${meta.description.length} chars (target ≤ ${DESC_MAX}).`,
+    });
+  } else if (meta.description.length < DESC_MIN) {
+    issues.push({
+      level: "warn",
+      message: `Description is ${meta.description.length} chars — under ${DESC_MIN} is too thin for SERP snippets.`,
+    });
+  }
+
+  // Description sanity
+  if (!meta.description.trim()) {
+    issues.push({ level: "error", message: "Description is empty." });
+  }
+
+  // Canonical URL format
+  try {
+    const url = new URL(meta.canonical);
+    if (url.protocol !== "https:") {
+      issues.push({
+        level: "error",
+        message: `Canonical must use https:// (got ${url.protocol}).`,
+      });
+    }
+    if (`${url.protocol}//${url.host}` !== BASE_URL) {
+      issues.push({
+        level: "error",
+        message: `Canonical host is ${url.host} — must be ${new URL(BASE_URL).host}.`,
+      });
+    }
+    if (url.search || url.hash) {
+      issues.push({
+        level: "warn",
+        message: "Canonical contains query or hash — should be the bare URL.",
+      });
+    }
+    if (url.pathname !== "/" && url.pathname.endsWith("/")) {
+      issues.push({
+        level: "warn",
+        message: "Canonical has a trailing slash — site convention is no trailing slash.",
+      });
+    }
+  } catch {
+    issues.push({
+      level: "error",
+      message: `Canonical is not a valid URL: ${meta.canonical}`,
+    });
+  }
+
+  // Open Graph tag inputs (PageMeta derives og:title/description/url/image
+  // from these; if the inputs are good, the OG tags are good).
+  if (!fullTitle.includes(SITE_NAME)) {
+    issues.push({
+      level: "warn",
+      message: "og:title will not include the site name (PageMeta auto-appends it only when missing).",
+    });
+  }
+
+  // OG image
+  if (!meta.ogImage) {
+    issues.push({
+      level: "error",
+      message: "Missing og:image — social cards will fall back to a generic preview.",
+    });
+  } else {
+    try {
+      const ogUrl = new URL(meta.ogImage);
+      if (ogUrl.protocol !== "https:") {
+        issues.push({
+          level: "error",
+          message: `og:image must be served over https:// (got ${ogUrl.protocol}).`,
+        });
+      }
+      if (!/\.(jpe?g|png|webp)$/i.test(ogUrl.pathname)) {
+        issues.push({
+          level: "warn",
+          message: `og:image extension ${ogUrl.pathname.split(".").pop()} is unusual — Facebook/Twitter prefer .jpg, .png or .webp.`,
+        });
+      }
+    } catch {
+      issues.push({
+        level: "error",
+        message: `og:image is not a valid URL: ${meta.ogImage}`,
+      });
+    }
+  }
+
+  // Keyword rules (existing)
   if (/whole[\s-]home/i.test(meta.title)) {
     issues.push({
       level: "error",
@@ -85,6 +194,9 @@ export default function AdminSeoPreviewPage() {
   const [filter, setFilter] = useState("");
   const [liveTitle, setLiveTitle] = useState("");
   const [liveCanonical, setLiveCanonical] = useState("");
+  const [imageStatus, setImageStatus] = useState<
+    Record<string, "ok" | "missing" | "checking">
+  >({});
 
   useEffect(() => {
     setLiveTitle(document.title);
@@ -92,6 +204,36 @@ export default function AdminSeoPreviewPage() {
       'link[rel="canonical"]',
     ) as HTMLLinkElement | null;
     setLiveCanonical(link?.href ?? "");
+  }, []);
+
+  // Probe each unique og:image with an HTMLImageElement (avoids CORS issues
+  // a fetch HEAD would hit on cross-origin assets). Marks status per URL so
+  // we can show "missing image" warnings inline.
+  useEffect(() => {
+    const unique = Array.from(new Set(ROUTES.map((r) => r.ogImage).filter(Boolean)));
+    setImageStatus((prev) => {
+      const next = { ...prev };
+      for (const url of unique) {
+        if (!next[url]) next[url] = "checking";
+      }
+      return next;
+    });
+    const cleanups: Array<() => void> = [];
+    for (const url of unique) {
+      const img = new Image();
+      const onLoad = () =>
+        setImageStatus((p) => ({ ...p, [url]: "ok" }));
+      const onErr = () =>
+        setImageStatus((p) => ({ ...p, [url]: "missing" }));
+      img.addEventListener("load", onLoad);
+      img.addEventListener("error", onErr);
+      img.src = url;
+      cleanups.push(() => {
+        img.removeEventListener("load", onLoad);
+        img.removeEventListener("error", onErr);
+      });
+    }
+    return () => cleanups.forEach((fn) => fn());
   }, []);
 
   const driftByRoute = useMemo(() => {
@@ -108,6 +250,34 @@ export default function AdminSeoPreviewPage() {
     [driftByRoute],
   );
 
+  const issuesByRoute = useMemo(() => {
+    const map = new Map<string, MetaIssue[]>();
+    for (const meta of ROUTES) {
+      const list = audit(meta);
+      const status = imageStatus[meta.ogImage];
+      if (status === "missing") {
+        list.push({
+          level: "error",
+          message: `og:image is unreachable (404 / network error): ${meta.ogImage}`,
+        });
+      } else if (status === "checking") {
+        list.push({
+          level: "info",
+          message: "Checking og:image reachability…",
+        });
+      }
+      map.set(meta.route, list);
+    }
+    return map;
+  }, [imageStatus]);
+
+  const allIssues = useMemo(
+    () => Array.from(issuesByRoute.values()).flat(),
+    [issuesByRoute],
+  );
+  const errorCount = allIssues.filter((i) => i.level === "error").length;
+  const warnCount = allIssues.filter((i) => i.level === "warn").length;
+
   const filtered = ROUTES.filter(
     (r) =>
       filter === "" ||
@@ -115,8 +285,6 @@ export default function AdminSeoPreviewPage() {
       r.title.toLowerCase().includes(filter.toLowerCase()) ||
       r.description.toLowerCase().includes(filter.toLowerCase()),
   );
-
-  const totalIssues = ROUTES.reduce((n, r) => n + audit(r).length, 0);
 
   return (
     <div className="container max-w-6xl py-8">
@@ -186,19 +354,29 @@ export default function AdminSeoPreviewPage() {
       )}
 
       <Card className="mb-6 p-4">
-        <div className="grid gap-3 text-sm md:grid-cols-4">
+        <div className="grid gap-3 text-sm md:grid-cols-5">
           <div>
             <div className="text-muted-foreground">Routes tracked</div>
             <div className="text-2xl font-semibold">{ROUTES.length}</div>
           </div>
           <div>
-            <div className="text-muted-foreground">Audit issues</div>
+            <div className="text-muted-foreground">Errors</div>
             <div
               className={`text-2xl font-semibold ${
-                totalIssues > 0 ? "text-destructive" : "text-primary"
+                errorCount > 0 ? "text-destructive" : "text-primary"
               }`}
             >
-              {totalIssues}
+              {errorCount}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground">Warnings</div>
+            <div
+              className={`text-2xl font-semibold ${
+                warnCount > 0 ? "text-amber-700 dark:text-amber-400" : "text-primary"
+              }`}
+            >
+              {warnCount}
             </div>
           </div>
           <div>
@@ -236,7 +414,9 @@ export default function AdminSeoPreviewPage() {
 
       <div className="space-y-4">
         {filtered.map((meta) => {
-          const issues = audit(meta);
+          const issues = issuesByRoute.get(meta.route) ?? [];
+          const errs = issues.filter((i) => i.level === "error");
+          const warns = issues.filter((i) => i.level === "warn");
           const drift = driftByRoute.get(meta.route) ?? [];
           const fullTitle = meta.title.includes(SITE_NAME)
             ? meta.title
@@ -258,18 +438,28 @@ export default function AdminSeoPreviewPage() {
                         Drift ({drift.length})
                       </Badge>
                     )}
-                    {issues.length === 0 ? (
-                      <Badge
-                        variant="outline"
-                        className="gap-1 text-primary"
-                      >
+                    {errs.length === 0 && warns.length === 0 ? (
+                      <Badge variant="outline" className="gap-1 text-primary">
                         <CheckCircle2 className="h-3 w-3" /> OK
                       </Badge>
                     ) : (
-                      <Badge variant="destructive" className="gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        {issues.length} issue{issues.length === 1 ? "" : "s"}
-                      </Badge>
+                      <>
+                        {errs.length > 0 && (
+                          <Badge variant="destructive" className="gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {errs.length} error{errs.length === 1 ? "" : "s"}
+                          </Badge>
+                        )}
+                        {warns.length > 0 && (
+                          <Badge
+                            variant="outline"
+                            className="gap-1 border-amber-400 text-amber-700 dark:text-amber-400"
+                          >
+                            <AlertTriangle className="h-3 w-3" />
+                            {warns.length} warning{warns.length === 1 ? "" : "s"}
+                          </Badge>
+                        )}
+                      </>
                     )}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
@@ -345,10 +535,19 @@ export default function AdminSeoPreviewPage() {
                           className={
                             i.level === "error"
                               ? "text-destructive"
-                              : "text-amber-700 dark:text-amber-400"
+                              : i.level === "warn"
+                                ? "text-amber-700 dark:text-amber-400"
+                                : "text-muted-foreground"
                           }
                         >
-                          • {i.message}
+                          {i.level === "error" ? (
+                            <AlertTriangle className="mr-1 inline h-3 w-3" />
+                          ) : i.level === "warn" ? (
+                            <AlertTriangle className="mr-1 inline h-3 w-3" />
+                          ) : (
+                            <Info className="mr-1 inline h-3 w-3" />
+                          )}
+                          {i.message}
                         </li>
                       ))}
                     </ul>
