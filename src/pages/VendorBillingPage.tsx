@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft, DollarSign, Receipt, History, ShieldCheck, RefreshCw, CalendarIcon, FilterX } from "lucide-react";
+import { Loader2, CreditCard, CheckCircle2, AlertCircle, ExternalLink, FileText, X, Download, ArrowLeft, DollarSign, Receipt, History, ShieldCheck, RefreshCw, CalendarIcon, FilterX, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -433,16 +434,8 @@ export default function VendorBillingPage() {
         </div>
 
         {/* Billing readiness checklist */}
-        {provider && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Billing setup checklist</CardTitle>
-              <CardDescription>
-                Both items must be complete for you to receive matched leads.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {[
+        {provider && (() => {
+          const checklistItems = [
                 {
                   label: "Payment method on file",
                   done: !!provider.stripe_payment_method_id,
@@ -455,7 +448,38 @@ export default function VendorBillingPage() {
                   timestamp: provider.direct_debit_authorised_at,
                   todoHint: "Tick the authorisation when saving your card.",
                 },
-              ].map((item) => (
+          ];
+          const allDone = checklistItems.every((i) => i.done);
+          const completeCount = checklistItems.filter((i) => i.done).length;
+          return (
+          <Card>
+            <Collapsible defaultOpen={!allDone}>
+              <CollapsibleTrigger className="w-full text-left group">
+                <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      Billing setup checklist
+                      <Badge
+                        variant="outline"
+                        className={
+                          allDone
+                            ? "border-green-200 bg-green-50 text-green-700"
+                            : "border-amber-200 bg-amber-50 text-amber-700"
+                        }
+                      >
+                        {completeCount}/{checklistItems.length} complete
+                      </Badge>
+                    </CardTitle>
+                    <CardDescription className="mt-1.5">
+                      Both items must be complete for you to receive matched leads.
+                    </CardDescription>
+                  </div>
+                  <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-3">
+                  {checklistItems.map((item) => (
                 <div
                   key={item.label}
                   className="flex items-start justify-between gap-4 rounded-lg border p-3"
@@ -486,10 +510,13 @@ export default function VendorBillingPage() {
                     {item.done ? "Complete" : "Incomplete"}
                   </Badge>
                 </div>
-              ))}
-            </CardContent>
+                  ))}
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
-        )}
+          );
+        })()}
 
         {/* Billing audit log */}
         {provider && isAdmin && (
