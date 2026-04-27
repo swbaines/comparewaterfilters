@@ -18,7 +18,8 @@ import type { Recommendation } from "@/data/recommendations";
 import MatchedVendorsSection from "@/components/MatchedVendorsSection";
 import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout";
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
-import { getSystemPricing, formatPriceRange, PRICING_DISCLAIMER } from "@/lib/systemPricing";
+import { getSystemPricing, formatPriceRange } from "@/lib/systemPricing";
+import { PricingFootnote } from "@/components/PricingFootnote";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins from an under-sink carbon filter or reverse osmosis system at the kitchen tap without a big upfront spend.",
@@ -153,7 +154,11 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
             <div className="flex items-start gap-2">
               <DollarSign className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
               <div>
-                <p className="font-medium">Installed price</p>
+                <p className="font-medium">
+                  Installed price
+                  <span aria-hidden="true">*</span>
+                  <span className="sr-only"> (see pricing notes below)</span>
+                </p>
                 <p className="text-muted-foreground">{installRange}</p>
               </div>
             </div>
@@ -165,7 +170,6 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
               </div>
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">{PRICING_DISCLAIMER}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm">
