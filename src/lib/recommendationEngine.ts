@@ -727,7 +727,19 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
 
   else if (f.wholeHomeTrigger) {
     pushRule("rule-1-whole-home");
-    if (f.budgetUnder1k) {
+    // Showers & bathrooms + skin/hair or chlorine — whole-house carbon is
+    // the only effective long-term solution. Never surface standalone
+    // shower filters: they lose chlorine knockdown within 4–8 weeks at
+    // hot-water temperatures.
+    if (f.showersBathroomsSkinChlorine) {
+      primaryId = "whole-house-filtration";
+      primaryReason = `For genuinely filtered shower and bath water, a whole house carbon filtration system installed at your home's water entry point is the only effective long-term solution — it delivers properly filtered, chlorine-free water to every shower, bath, and tap. This is what actually addresses skin, hair and chlorine concerns in the bathroom. $3,000–$5,000 installed.`;
+      secondaryId = "whole-house-filtration";
+      secondaryReason = `A basic-specification whole house carbon filter is the more affordable version of the same solution — still effective at removing chlorine and improving shower/bath water, just with a smaller capacity (more frequent cartridge changes for larger households). $2,500–$3,500 installed. We do NOT recommend standalone shower filters: they typically lose chlorine performance within 4–8 weeks at hot-water temperatures.`;
+      premiumId = "whole-house-combo";
+      premiumReason = `The complete premium build: whole house carbon filtration for every shower, bath and tap, paired with a reverse osmosis unit at the kitchen for ultra-pure drinking water. The proper long-term answer for filtered bathroom water plus drinking-water purity. $4,000–$6,000 installed together.`;
+      // Done — skip the generic whole-home branches below.
+    } else if (f.budgetUnder1k) {
       // RULE 6: Budget under $1k — move under-sink to Best, whole-house to Premium
       pushRule("rule-6-budget-under-1k");
       primaryId = "under-sink-carbon";
