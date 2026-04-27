@@ -634,10 +634,6 @@ export default function VendorProfilePage() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="space-y-2">
-              <Label>Brands (comma-separated)</Label>
-              <Input value={form.brands} onChange={(e) => setForm((p) => ({ ...p, brands: e.target.value }))} placeholder="Puretec, 3M, Davey" />
-            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Overall Price Tier</Label>
