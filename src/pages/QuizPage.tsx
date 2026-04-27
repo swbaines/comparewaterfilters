@@ -647,7 +647,7 @@ export default function QuizPage() {
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               {step < TOTAL_STEPS ? (
-                <Button onClick={() => setStep((s) => s + 1)} disabled={!canNext()} className="gap-1">
+                <Button onClick={handleNext} className="gap-1">
                   Continue <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
@@ -675,8 +675,7 @@ export default function QuizPage() {
           </Button>
           {step < TOTAL_STEPS ? (
             <Button
-              onClick={() => setStep((s) => s + 1)}
-              disabled={!canNext()}
+              onClick={handleNext}
               className="flex-1 gap-1 whitespace-nowrap"
             >
               Continue <ArrowRight className="h-4 w-4" />
