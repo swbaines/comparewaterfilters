@@ -21,6 +21,15 @@ const householdSizes = ["1", "2", "3", "4", "5+"];
 const bathroomCounts = ["1", "2", "3", "4+"];
 const propertyAges = ["Less than 5 years", "5 to 20 years", "20 to 50 years", "Over 50 years", "Not sure"];
 
+const waterTestedOptions = ["Yes, recently tested", "No, not tested", "Not sure"];
+const waterUsageOptions = [
+  "Drinking and cooking only",
+  "Showering and bathing only",
+  "Drinking, cooking, showering and bathing",
+  "Garden and outdoor use only",
+];
+const NON_TOWN_SOURCES = ["rainwater", "tank-water", "bore-water"];
+
 const waterSources = [
   {
     value: "town-water",
