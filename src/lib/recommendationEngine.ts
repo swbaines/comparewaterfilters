@@ -1,5 +1,75 @@
 import { recommendations, type Recommendation } from "@/data/recommendations";
 
+/**
+ * Maintenance tolerance tiers — derived from the verbatim labels stored
+ * in the quiz answers. Used to nudge the engine and to render the
+ * "matches your maintenance budget" indicators on the results page.
+ *
+ *  - critical    → ≤ $200/yr preferred
+ *  - important   → ≤ $400/yr preferred
+ *  - manageable  → ≤ $700/yr is fine
+ *  - none        → not a concern
+ */
+export type MaintenanceTier = "critical" | "important" | "manageable" | "none" | "unspecified";
+
+export function getMaintenanceTier(value?: string | null): MaintenanceTier {
+  if (!value) return "unspecified";
+  if (value.startsWith("Critical")) return "critical";
+  if (value.startsWith("Important")) return "important";
+  if (value.startsWith("Manageable")) return "manageable";
+  if (value.startsWith("Not a concern")) return "none";
+  return "unspecified";
+}
+
+/** Upper bound (AUD/yr) the customer is comfortable spending on maintenance. */
+function tierCeiling(tier: MaintenanceTier): number | null {
+  switch (tier) {
+    case "critical":   return 200;
+    case "important":  return 400;
+    case "manageable": return 700;
+    case "none":       return null;
+    default:           return null;
+  }
+}
+
+export type MaintenanceFitLevel = "match" | "slightly-above" | "well-above" | "unspecified";
+
+export interface MaintenanceFit {
+  level: MaintenanceFitLevel;
+  message: string;
+}
+
+/**
+ * Given the customer's tolerance and a system's annual maintenance band,
+ * returns a coloured indicator + plain-English message for the results UI.
+ */
+export function getMaintenanceFit(
+  tolerance: string | undefined | null,
+  annualMin: number,
+  annualMax: number,
+): MaintenanceFit {
+  const tier = getMaintenanceTier(tolerance);
+  const ceiling = tierCeiling(tier);
+  if (ceiling === null) {
+    return {
+      level: "unspecified",
+      message: "",
+    };
+  }
+  if (annualMax <= ceiling) {
+    return { level: "match", message: "Matches your maintenance budget" };
+  }
+  // "Slightly above" if the bottom of the band is still inside (or within
+  // 25% of) the ceiling — otherwise we treat it as well above.
+  if (annualMin <= ceiling * 1.25) {
+    return { level: "slightly-above", message: "Slightly above your maintenance preference" };
+  }
+  return {
+    level: "well-above",
+    message: "Significantly above your maintenance preference — consider a service plan",
+  };
+}
+
 export interface QuizAnswers {
   postcode: string;
   suburb: string;
