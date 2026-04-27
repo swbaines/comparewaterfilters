@@ -53,7 +53,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/pricing-guide",
     source: "src/pages/PricingGuidePage.tsx",
-    title: "Whole House Water Filter Prices Australia 2026 — Installed Costs",
+    title: "Whole House Water Filter Prices 2026",
     description:
       "How much does a whole house water filter cost in Australia? Installed prices from $300–$6,000, maintenance costs and what affects pricing per system type.",
     canonical: `${BASE_URL}/pricing-guide`,
