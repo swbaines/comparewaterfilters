@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Cookie } from "lucide-react";
+import { Cookie, ChevronDown, ChevronUp } from "lucide-react";
 
 type ConsentValue = "all" | "essential";
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
@@ -23,46 +24,56 @@ export default function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-card p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] sm:p-6">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-card p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] sm:p-4">
       <div className="container max-w-4xl">
-        <div className="flex items-start gap-3">
-          <Cookie className="mt-0.5 hidden h-5 w-5 shrink-0 text-primary sm:block" />
-          <div className="flex-1 space-y-3">
-            <p className="text-sm font-semibold text-foreground">We use cookies</p>
+        {/* Compact row — always visible */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
+            <Cookie className="mt-0.5 hidden h-5 w-5 shrink-0 text-primary sm:block" />
             <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
-              Compare Water Filters uses cookies and similar tracking technologies to improve your experience and understand how our platform is used.
+              <span className="font-semibold text-foreground">We use cookies</span> to improve your experience and measure platform performance.{" "}
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="inline-flex items-center gap-0.5 font-medium text-primary hover:underline"
+                aria-expanded={expanded}
+              >
+                {expanded ? "Hide details" : "Learn more"}
+                {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
+              </button>
             </p>
-            <div className="space-y-1.5 text-xs text-muted-foreground">
-              <p>
-                <span className="font-medium text-foreground">Essential cookies</span> — required for the platform to function. Cannot be disabled.
-              </p>
-              <p>
-                <span className="font-medium text-foreground">Analytics cookies</span> — Google Analytics helps us understand which pages are most useful so we can improve them. No personally identifiable information is collected.
-              </p>
-              <p>
-                <span className="font-medium text-foreground">Marketing cookies</span> — Meta Pixel allows us to measure the effectiveness of our advertising and show relevant ads. This may involve sharing data with Meta (Facebook).
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              By clicking "Accept all" you consent to all cookies. Click "Essential only" to decline optional cookies.
+          </div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <Button size="sm" onClick={() => handleConsent("all")}>
+              Accept all
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => handleConsent("essential")}>
+              Essential only
+            </Button>
+          </div>
+        </div>
+
+        {/* Expanded details */}
+        {expanded && (
+          <div className="mt-3 space-y-1.5 border-t pt-3 text-xs text-muted-foreground">
+            <p>
+              <span className="font-medium text-foreground">Essential cookies</span> — required for the platform to function. Cannot be disabled.
             </p>
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <Button size="sm" onClick={() => handleConsent("all")}>
-                Accept all
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => handleConsent("essential")}>
-                Essential only
-              </Button>
-            </div>
-            <p className="text-[11px] text-muted-foreground">
-              You can change your preferences at any time in our{" "}
+            <p>
+              <span className="font-medium text-foreground">Analytics cookies</span> — Google Analytics helps us understand which pages are most useful. No personally identifiable information is collected.
+            </p>
+            <p>
+              <span className="font-medium text-foreground">Marketing cookies</span> — Meta Pixel measures advertising effectiveness. May involve sharing data with Meta (Facebook).
+            </p>
+            <p className="text-[11px]">
+              Change preferences anytime in our{" "}
               <a href="/disclaimer" className="font-medium text-primary hover:underline">
                 Privacy Policy
               </a>
               .
             </p>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
