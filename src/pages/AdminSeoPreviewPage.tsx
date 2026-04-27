@@ -194,6 +194,9 @@ export default function AdminSeoPreviewPage() {
   const [filter, setFilter] = useState("");
   const [liveTitle, setLiveTitle] = useState("");
   const [liveCanonical, setLiveCanonical] = useState("");
+  const [imageStatus, setImageStatus] = useState<
+    Record<string, "ok" | "missing" | "checking">
+  >({});
 
   useEffect(() => {
     setLiveTitle(document.title);
@@ -201,6 +204,36 @@ export default function AdminSeoPreviewPage() {
       'link[rel="canonical"]',
     ) as HTMLLinkElement | null;
     setLiveCanonical(link?.href ?? "");
+  }, []);
+
+  // Probe each unique og:image with an HTMLImageElement (avoids CORS issues
+  // a fetch HEAD would hit on cross-origin assets). Marks status per URL so
+  // we can show "missing image" warnings inline.
+  useEffect(() => {
+    const unique = Array.from(new Set(ROUTES.map((r) => r.ogImage).filter(Boolean)));
+    setImageStatus((prev) => {
+      const next = { ...prev };
+      for (const url of unique) {
+        if (!next[url]) next[url] = "checking";
+      }
+      return next;
+    });
+    const cleanups: Array<() => void> = [];
+    for (const url of unique) {
+      const img = new Image();
+      const onLoad = () =>
+        setImageStatus((p) => ({ ...p, [url]: "ok" }));
+      const onErr = () =>
+        setImageStatus((p) => ({ ...p, [url]: "missing" }));
+      img.addEventListener("load", onLoad);
+      img.addEventListener("error", onErr);
+      img.src = url;
+      cleanups.push(() => {
+        img.removeEventListener("load", onLoad);
+        img.removeEventListener("error", onErr);
+      });
+    }
+    return () => cleanups.forEach((fn) => fn());
   }, []);
 
   const driftByRoute = useMemo(() => {
@@ -217,6 +250,34 @@ export default function AdminSeoPreviewPage() {
     [driftByRoute],
   );
 
+  const issuesByRoute = useMemo(() => {
+    const map = new Map<string, MetaIssue[]>();
+    for (const meta of ROUTES) {
+      const list = audit(meta);
+      const status = imageStatus[meta.ogImage];
+      if (status === "missing") {
+        list.push({
+          level: "error",
+          message: `og:image is unreachable (404 / network error): ${meta.ogImage}`,
+        });
+      } else if (status === "checking") {
+        list.push({
+          level: "info",
+          message: "Checking og:image reachability…",
+        });
+      }
+      map.set(meta.route, list);
+    }
+    return map;
+  }, [imageStatus]);
+
+  const allIssues = useMemo(
+    () => Array.from(issuesByRoute.values()).flat(),
+    [issuesByRoute],
+  );
+  const errorCount = allIssues.filter((i) => i.level === "error").length;
+  const warnCount = allIssues.filter((i) => i.level === "warn").length;
+
   const filtered = ROUTES.filter(
     (r) =>
       filter === "" ||
@@ -224,8 +285,6 @@ export default function AdminSeoPreviewPage() {
       r.title.toLowerCase().includes(filter.toLowerCase()) ||
       r.description.toLowerCase().includes(filter.toLowerCase()),
   );
-
-  const totalIssues = ROUTES.reduce((n, r) => n + audit(r).length, 0);
 
   return (
     <div className="container max-w-6xl py-8">
