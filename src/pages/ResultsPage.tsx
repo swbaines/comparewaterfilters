@@ -782,9 +782,6 @@ export default function ResultsPage() {
           <h1 className="text-2xl font-bold sm:text-3xl">
             Hi {answers.firstName}, here's what we recommend
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-            Your tap water is treated to meet safety standards — but there's no upside to drinking chlorine, chloramine, and trace contaminants when you don't have to. Based on your home and water profile, here's how to upgrade.
-          </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
               size="lg"
