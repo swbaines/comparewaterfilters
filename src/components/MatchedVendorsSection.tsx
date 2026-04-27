@@ -28,6 +28,7 @@ import {
   formatStartingFrom,
   type BudgetBand,
 } from "@/lib/budgetMatching";
+import { deriveLeadTemperature } from "@/lib/leadTemperature";
 
 interface Props {
   customerLat: number | null;
@@ -349,6 +350,7 @@ export default function MatchedVendorsSection({
       // Fire-and-forget vendor + customer notifications
       for (const v of selectedVendors) {
         const row = rows.find((r) => r.provider_id === v.provider_id)!;
+        const leadTemperature = deriveLeadTemperature(answers.installationTimeline);
         supabase
           .from("providers")
           .select("contact_email")
@@ -378,6 +380,8 @@ export default function MatchedVendorsSection({
                       recommendedSystems: dedupedSystems,
                       message: message || "",
                       createdAt: new Date().toISOString(),
+                      installationTimeline: answers.installationTimeline || "",
+                      leadTemperature: leadTemperature || "",
                     },
                   },
                 })
