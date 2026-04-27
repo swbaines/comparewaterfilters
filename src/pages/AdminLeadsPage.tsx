@@ -426,6 +426,15 @@ export default function AdminLeadsPage() {
                         )}
                       </div>
                     </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[180px]">
+                      {lead.maintenance_tolerance ? (
+                        <span title={lead.maintenance_tolerance} className="line-clamp-2">
+                          {lead.maintenance_tolerance}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Select
                         value={lead.lead_status}
