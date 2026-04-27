@@ -387,13 +387,13 @@ export default function WaterQualityPage() {
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-6">
+                <CardContent className="pt-5">
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                     <ShieldCheck className="h-4 w-4" />
                     PFAS
                   </div>
                   <Badge
-                    className={`mt-2 border-0 text-xs sm:text-sm px-2.5 py-0.5 ${
+                    className={`mt-1.5 border-0 text-xs px-2 py-0.5 ${
                       result.pfasRisk === "low"
                         ? "bg-green-100 text-green-800"
                         : result.pfasRisk === "moderate"
@@ -407,15 +407,15 @@ export default function WaterQualityPage() {
                         ? "Moderate risk"
                         : "Elevated risk"}
                   </Badge>
-                  <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-snug">
+                  <p className="mt-1.5 text-xs text-muted-foreground leading-snug">
                     {result.pfasRisk === "low"
                       ? "No known PFAS contamination sources near your catchment."
                       : result.pfasRisk === "moderate"
                         ? "Limited PFAS testing data available for your area. Trace levels possible due to broader environmental exposure."
                         : "Your catchment has documented PFAS detection. Local water authority is actively monitoring. Consider RO filtration for drinking water."}
                   </p>
-                  <p className="mt-2 text-[11px] sm:text-xs text-muted-foreground/80 leading-snug">
-                    *See &ldquo;What is PFAS?&rdquo; below for data sources &amp; context.
+                  <p className="mt-1.5 text-[11px] text-muted-foreground/80 leading-snug">
+                    *See &ldquo;What is PFAS?&rdquo; below for context.
                   </p>
                 </CardContent>
               </Card>
