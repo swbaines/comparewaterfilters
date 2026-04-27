@@ -526,29 +526,41 @@ export default function WaterQualityPage() {
             )}
 
             {/* Utility info card */}
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="flex gap-3 pt-6">
-                <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <div>
-                  <p className="text-sm font-medium">
-                    Water supplied by{" "}
-                    <a
-                      href={result.reportUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline decoration-primary/40 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary"
-                    >
-                      {result.utilityName} <ExternalLink className="ml-0.5 inline h-3 w-3" />
-                    </a>
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">{result.notes}</p>
-                  <p className="mt-2 text-xs text-muted-foreground/70 italic">
-                    Note: Water quality levels are sourced from official utility reports and may vary over time. Figures
-                    represent typical reported values and may not reflect exact current conditions at your tap.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <Accordion
+              type="single"
+              collapsible
+              className="rounded-lg border border-primary/20 bg-primary/5"
+            >
+              <AccordionItem value="utility-info" className="border-b-0">
+                <AccordionTrigger className="px-4 py-3 text-left hover:no-underline">
+                  <span className="flex items-start gap-3 text-sm font-medium">
+                    <Info className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <span>
+                      Water supplied by{" "}
+                      <a
+                        href={result.reportUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="underline decoration-primary/40 underline-offset-2 transition-colors hover:text-primary hover:decoration-primary"
+                      >
+                        {result.utilityName} <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                      </a>
+                    </span>
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <div className="pl-8">
+                    <p className="text-sm text-muted-foreground">{result.notes}</p>
+                    <p className="mt-2 text-xs text-muted-foreground/70 italic">
+                      Note: Water quality levels are sourced from official utility reports and may vary over time.
+                      Figures represent typical reported values and may not reflect exact current conditions at your
+                      tap.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             {/* What this means */}
             <Card>
