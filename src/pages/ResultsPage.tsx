@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { generateRecommendations, explainRuleEvaluations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
+import { generateRecommendations, explainRuleEvaluations, getMaintenanceFit, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
 import type { Recommendation } from "@/data/recommendations";
 import MatchedVendorsSection from "@/components/MatchedVendorsSection";
