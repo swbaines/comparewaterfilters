@@ -271,3 +271,120 @@ describe("recommendation engine — maintenance tolerance integration", () => {
     }
   });
 });
+
+// ─── Boundary tests: exact ceiling, exactly 1.25×, and just-over-ceiling ────
+//
+// Engine rules (from getMaintenanceFit):
+//   match           ← annualMax <= ceiling
+//   slightly-above  ← annualMax  > ceiling AND annualMin <= ceiling * 1.25
+//   well-above      ← annualMin  > ceiling * 1.25
+//
+// Each tier is exercised at four boundaries:
+//   1. Band ends exactly AT the ceiling                     → match
+//   2. Min just above ceiling, max just above ceiling       → slightly-above
+//   3. Min exactly AT ceiling * 1.25                        → slightly-above
+//   4. Min just over ceiling * 1.25                         → well-above
+
+describe("getMaintenanceFit — exact boundary values per tolerance label", () => {
+  const cases = [
+    { tier: "critical",   label: TOLERANCE_LABELS.critical,   ceiling: 200 },
+    { tier: "important",  label: TOLERANCE_LABELS.important,  ceiling: 400 },
+    { tier: "manageable", label: TOLERANCE_LABELS.manageable, ceiling: 700 },
+  ] as const;
+
+  for (const { tier, label, ceiling } of cases) {
+    const upper = ceiling * 1.25;
+
+    describe(`${tier} (ceiling=$${ceiling}/yr, 1.25× = $${upper}/yr)`, () => {
+      it("match: max == ceiling exactly", () => {
+        const fit = getMaintenanceFit(label, ceiling - 50, ceiling);
+        expect(fit.level).toBe("match");
+        expect(fit.message).toBe("Matches your maintenance budget");
+      });
+
+      it("match: both min and max == ceiling exactly (zero-width band)", () => {
+        expect(getMaintenanceFit(label, ceiling, ceiling).level).toBe("match");
+      });
+
+      it("slightly-above: max == ceiling + 1, min == ceiling (just over ceiling)", () => {
+        const fit = getMaintenanceFit(label, ceiling, ceiling + 1);
+        expect(fit.level).toBe("slightly-above");
+        expect(fit.message).toBe("Slightly above your maintenance preference");
+      });
+
+      it("slightly-above: min == ceiling * 1.25 exactly", () => {
+        const fit = getMaintenanceFit(label, upper, upper + 100);
+        expect(fit.level).toBe("slightly-above");
+      });
+
+      it("well-above: min == ceiling * 1.25 + 1 (just over the 1.25× threshold)", () => {
+        const fit = getMaintenanceFit(label, upper + 1, upper + 200);
+        expect(fit.level).toBe("well-above");
+        expect(fit.message).toBe(
+          "Significantly above your maintenance preference — consider a service plan",
+        );
+      });
+    });
+  }
+
+  describe("none ('Not a concern') — no ceiling enforced at any boundary", () => {
+    const label = TOLERANCE_LABELS.none;
+    it("returns 'unspecified' at $0", () => {
+      expect(getMaintenanceFit(label, 0, 0).level).toBe("unspecified");
+    });
+    it("returns 'unspecified' at very large bands", () => {
+      expect(getMaintenanceFit(label, 1000, 9999).level).toBe("unspecified");
+    });
+    it("returns an empty message at every boundary", () => {
+      expect(getMaintenanceFit(label, 200, 200).message).toBe("");
+      expect(getMaintenanceFit(label, 700, 875).message).toBe("");
+      expect(getMaintenanceFit(label, 5000, 5000).message).toBe("");
+    });
+  });
+});
+
+// ─── Snapshot: lock the fit-level matrix across all tiers × bands ───────────
+//
+// This snapshot guards against silent drift in either the ceilings or the
+// 1.25× slightly-above window. If the engine logic intentionally changes,
+// regenerate with `vitest -u`.
+
+describe("getMaintenanceFit — snapshot matrix", () => {
+  it("matches the canonical fit matrix for all tolerance × representative bands", () => {
+    const tolerances = [
+      ["critical",   TOLERANCE_LABELS.critical],
+      ["important",  TOLERANCE_LABELS.important],
+      ["manageable", TOLERANCE_LABELS.manageable],
+      ["none",       TOLERANCE_LABELS.none],
+    ] as const;
+
+    // Representative bands chosen to exercise every boundary path.
+    const bands: Array<[number, number]> = [
+      [0, 0],
+      [100, 200],
+      [200, 200],
+      [200, 201],
+      [250, 250],
+      [300, 400],
+      [400, 400],
+      [450, 500],
+      [500, 500],
+      [600, 700],
+      [700, 700],
+      [800, 875],
+      [875, 875],
+      [876, 1000],
+      [1500, 2500],
+    ];
+
+    const matrix: Record<string, Record<string, string>> = {};
+    for (const [name, label] of tolerances) {
+      matrix[name] = {};
+      for (const [min, max] of bands) {
+        matrix[name][`$${min}-$${max}/yr`] = getMaintenanceFit(label, min, max).level;
+      }
+    }
+
+    expect(matrix).toMatchSnapshot();
+  });
+});
