@@ -423,15 +423,7 @@ export default function WaterQualityPage() {
                         : "Your catchment has documented PFAS detection. Local water authority is actively monitoring. Consider RO filtration for drinking water."}
                   </p>
                   <p className="mt-3 text-xs text-muted-foreground/80">
-                    Data &amp; context: NHMRC 2025 PFAS guideline values, cross-referenced with utility reports and the PFAS NEMP 3.0. Risk bands are general guidance based on documented contamination patterns and may not reflect exact conditions at your specific address.{" "}
-                    <a
-                      href="https://www.dcceew.gov.au/environment/protection/publications/pfas-nemp-3"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
-                    >
-                      PFAS NEMP 3.0 <ExternalLink className="ml-0.5 inline h-3 w-3" />
-                    </a>
+                    *See &ldquo;What is PFAS?&rdquo; below for data sources &amp; context.
                   </p>
                 </CardContent>
               </Card>
@@ -467,7 +459,23 @@ export default function WaterQualityPage() {
                       are reverse osmosis (RO) systems and activated carbon block filters with NSF certification for
                       PFAS removal.
                     </p>
+                    <div className="rounded-md border border-border/60 bg-muted/40 p-3 text-xs">
+                      <p className="mb-1 font-semibold text-foreground">*Data &amp; context</p>
+                      <p>
+                        NHMRC 2025 PFAS guideline values, cross-referenced with utility reports and the PFAS NEMP 3.0.
+                        Risk bands are general guidance based on documented contamination patterns and may not reflect
+                        exact conditions at your specific address.
+                      </p>
+                    </div>
                     <div className="flex flex-wrap gap-x-4 gap-y-1 pt-2 text-xs">
+                      <a
+                        href="https://www.dcceew.gov.au/environment/protection/publications/pfas-nemp-3"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                      >
+                        PFAS NEMP 3.0 <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                      </a>
                       <a
                         href="https://www.nhmrc.gov.au/health-advice/environmental-health/water/PFAS-review"
                         target="_blank"
