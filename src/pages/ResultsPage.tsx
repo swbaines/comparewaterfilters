@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil, ShieldCheck } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -109,7 +109,7 @@ function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
   );
 }
 
-function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string; confidence: ConfidenceLevel; labelAbove?: boolean }) {
+function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove, needsBadge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string; confidence: ConfidenceLevel; labelAbove?: boolean; needsBadge?: string }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
     allrounder: "bg-accent text-accent-foreground border-primary/30",
@@ -133,12 +133,22 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
           <div className="flex flex-wrap items-center gap-2">
             <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
             {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+            {needsBadge && (
+              <Badge className="w-fit gap-1 bg-primary/10 text-primary border border-primary/30 hover:bg-primary/15">
+                <ShieldCheck className="h-3 w-3" /> {needsBadge}
+              </Badge>
+            )}
             <ConfidenceBadge level={confidence} />
           </div>
         )}
         {labelAbove && (badge || confidence) && (
           <div className="flex flex-wrap items-center gap-2">
             {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+            {needsBadge && (
+              <Badge className="w-fit gap-1 bg-primary/10 text-primary border border-primary/30 hover:bg-primary/15">
+                <ShieldCheck className="h-3 w-3" /> {needsBadge}
+              </Badge>
+            )}
             <ConfidenceBadge level={confidence} />
           </div>
         )}
