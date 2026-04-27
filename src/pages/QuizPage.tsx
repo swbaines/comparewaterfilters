@@ -86,7 +86,6 @@ const priorityOptions = [
   { value: "premium-appearance", label: "Premium appearance" },
   { value: "best-warranty", label: "Best warranty / servicing" },
   { value: "local-support", label: "Local / Australian support" },
-  { value: "easy-install", label: "Easiest installation" },
 ];
 
 function OptionButton({
