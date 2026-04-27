@@ -396,7 +396,7 @@ export default function WaterQualityPage() {
                     PFAS
                   </div>
                   <Badge
-                    className={`mt-3 border-0 text-sm px-3 py-1 ${
+                    className={`mt-2 border-0 text-xs sm:text-sm px-2.5 py-0.5 ${
                       result.pfasRisk === "low"
                         ? "bg-green-100 text-green-800"
                         : result.pfasRisk === "moderate"
@@ -410,14 +410,14 @@ export default function WaterQualityPage() {
                         ? "Moderate risk"
                         : "Elevated risk"}
                   </Badge>
-                  <p className="mt-3 text-sm text-muted-foreground">
+                  <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-snug">
                     {result.pfasRisk === "low"
                       ? "No known PFAS contamination sources near your catchment. Standard tap water testing meets 2025 NHMRC guidelines."
                       : result.pfasRisk === "moderate"
                         ? "Limited PFAS testing data available for your area. Trace levels possible due to broader environmental exposure."
                         : "Your catchment has documented PFAS detection. Local water authority is actively monitoring. Consider RO filtration for drinking water."}
                   </p>
-                  <p className="mt-3 text-xs text-muted-foreground/80">
+                  <p className="mt-2 text-[11px] sm:text-xs text-muted-foreground/80 leading-snug">
                     *See &ldquo;What is PFAS?&rdquo; below for data sources &amp; context.
                   </p>
                 </CardContent>
