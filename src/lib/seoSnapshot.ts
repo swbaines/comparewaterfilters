@@ -26,7 +26,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/",
     source: "src/pages/HomePage.tsx",
-    title: "Whole House Water Filters — Compare & Get Free Quotes",
+    title: "Compare Whole House Water Filters — Get Free Quotes",
     description:
       "Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers.",
     canonical: `${BASE_URL}/`,
@@ -62,7 +62,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/learn",
     source: "src/pages/LearnPage.tsx",
-    title: "Whole House Water Filter Guides & Articles for Australian Homes",
+    title: "Whole House Water Filter Guides for Australian Homes",
     description:
       "Plain-English guides on whole house water filters, reverse osmosis, water quality and pricing — helping Australian homeowners pick the right filtration system.",
     canonical: `${BASE_URL}/learn`,
