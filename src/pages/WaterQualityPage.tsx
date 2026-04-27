@@ -397,17 +397,25 @@ export default function WaterQualityPage() {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                    <Droplets className="h-4 w-4" />
-                    pH Level
+                    <ShieldCheck className="h-4 w-4" />
+                    PFAS
                   </div>
-                  <p className="mt-2 text-3xl font-bold">{result.ph}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {result.ph < 6.5 ? "Acidic" : result.ph > 8.5 ? "Alkaline" : "Neutral"}
-                  </p>
+                  <p className="mt-2 text-3xl font-bold capitalize">{result.pfasRisk}</p>
+                  <p className="text-sm text-muted-foreground">detected risk</p>
                   <Badge
-                    className={`mt-2 ${result.ph >= 6.5 && result.ph <= 8.5 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"} border-0`}
+                    className={`mt-2 border-0 ${
+                      result.pfasRisk === "low"
+                        ? "bg-green-100 text-green-800"
+                        : result.pfasRisk === "moderate"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                    }`}
                   >
-                    {result.ph >= 6.5 && result.ph <= 8.5 ? "Normal range" : result.ph < 6.5 ? "Acidic" : "Alkaline"}
+                    {result.pfasRisk === "low"
+                      ? "Low risk"
+                      : result.pfasRisk === "moderate"
+                        ? "Moderate"
+                        : "Elevated"}
                   </Badge>
                 </CardContent>
               </Card>
