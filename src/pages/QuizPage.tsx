@@ -802,6 +802,34 @@ export default function QuizPage() {
           )}
         </div>
       </div>
+
+      <AlertDialog
+        open={pendingWaterSource !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingWaterSource(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change water source?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Switching your water source will clear your answers to the follow-up questions
+              (water testing and how the water is used). Are you sure you want to change it?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep current selection</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingWaterSource) applyWaterSource(pendingWaterSource);
+                setPendingWaterSource(null);
+              }}
+            >
+              Yes, change it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
