@@ -658,8 +658,16 @@ export default function QuizPage() {
             {/* Step 3 */}
             {step === 3 && (
               <div className="space-y-1">
-                <p className="mb-3 text-sm text-muted-foreground">Select all that apply.</p>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Select all that apply. <span className="text-destructive">*</span>
+                </p>
+                <div
+                  className={`grid gap-2 sm:grid-cols-2 ${
+                    showErrors && answers.concerns.length === 0
+                      ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                      : ""
+                  }`}
+                >
                   {concernOptions.map((c) => (
                     <MultiSelectButton
                       key={c.value}
@@ -677,6 +685,11 @@ export default function QuizPage() {
                     </MultiSelectButton>
                   ))}
                 </div>
+                {showErrors && answers.concerns.length === 0 && (
+                  <p className="mt-3 text-xs font-medium text-destructive" role="alert">
+                    Please select at least one concern to continue.
+                  </p>
+                )}
                 {answers.concerns.includes("replacement") && (
                   <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/[0.02] px-4 py-3 shadow-sm animate-fade-in">
                     <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
