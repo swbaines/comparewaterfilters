@@ -87,7 +87,7 @@ export default function AboutPage() {
   return (
     <div className="bg-background">
       <PageMeta
-        title="About Compare Water Filters — Independent Australian Platform"
+        title="About Compare Water Filters — Independent Platform"
         description="Independent Australian platform helping households choose the right whole house water filter and connect with trusted local providers."
         path="/about"
       />
@@ -107,13 +107,10 @@ export default function AboutPage() {
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <Heart className="h-3.5 w-3.5" /> Australian-owned &amp; independent
           </span>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
-            About Compare Water Filters
-          </h1>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">About Compare Water Filters</h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            We help Australian households cut through the marketing noise around water
-            filtration — and connect them with trusted local providers they can compare
-            side-by-side.
+            We help Australian households cut through the marketing noise around water filtration — and connect them
+            with trusted local providers they can compare side-by-side.
           </p>
         </div>
       </section>
@@ -124,25 +121,22 @@ export default function AboutPage() {
           <SectionHeading title="Our story" subtitle="Why Compare Water Filters exists" />
           <div className="prose prose-slate mt-6 max-w-none text-foreground/90">
             <p>
-              Choosing a water filter in Australia shouldn't feel like guesswork. Most
-              households have no easy way to know which contaminants are actually in
-              their tap water, what type of system would fix them, or what a fair price
-              looks like — and the existing market is full of high-pressure sales tactics
-              and confusing jargon.
+              Choosing a water filter in Australia shouldn't feel like guesswork. Most households have no easy way to
+              know which contaminants are actually in their tap water, what type of system would fix them, or what a
+              fair price looks like — and the existing market is full of high-pressure sales tactics and confusing
+              jargon.
             </p>
             <p>
-              We built <strong>Compare Water Filters</strong> to give Australians a
-              clear, transparent platform to understand exactly what system they need to
-              remove the contaminants they care about — chlorine, chloramine, sediment,
-              hardness, fluoride, PFAS and more — and then to compare quotes from
-              trusted, vetted local providers without pressure.
+              We built <strong>Compare Water Filters</strong> to give Australians a clear, transparent platform to
+              understand exactly what system they need to remove the contaminants they care about — chlorine,
+              chloramine, sediment, hardness, fluoride, PFAS and more — and then to compare quotes from trusted, vetted
+              local providers without pressure.
             </p>
             <p>
-              We don't sell filters ourselves. We don't take a cut of the install. Our
-              recommendations are based on your water source, household size, and
-              priorities — not on which brand pays us the most. Providers pay a flat fee
-              per qualified lead, and that's what keeps the platform free and unbiased
-              for homeowners and renters alike.
+              We don't sell filters ourselves. We don't take a cut of the install. Our recommendations are based on your
+              water source, household size, and priorities — not on which brand pays us the most. Providers pay a flat
+              fee per qualified lead, and that's what keeps the platform free and unbiased for homeowners and renters
+              alike.
             </p>
           </div>
         </div>
@@ -152,10 +146,7 @@ export default function AboutPage() {
       <section className="bg-muted/30 py-16">
         <div className="container">
           <div className="mx-auto max-w-3xl text-center">
-            <SectionHeading
-              title="What we stand for"
-              subtitle="Three principles that guide everything we publish"
-            />
+            <SectionHeading title="What we stand for" subtitle="Three principles that guide everything we publish" />
           </div>
           <div className="mx-auto mt-10 grid max-w-5xl gap-6 md:grid-cols-3">
             <Card className="border-primary/10">
@@ -165,9 +156,8 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-semibold">Independent &amp; transparent</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  We don't sell systems. We don't have affiliates. Our
-                  recommendations are based on your water and your home — not
-                  advertiser priority.
+                  We don't sell systems. We don't have affiliates. Our recommendations are based on your water and your
+                  home — not advertiser priority.
                 </p>
               </CardContent>
             </Card>
@@ -178,9 +168,8 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-semibold">Pro-filtration, pro-truth</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Australian tap water may meet safety standards, but reducing chlorine,
-                  taste, sediment and emerging contaminants makes a real difference to
-                  long-term health and well-being.
+                  Australian tap water may meet safety standards, but reducing chlorine, taste, sediment and emerging
+                  contaminants makes a real difference to long-term health and well-being.
                 </p>
               </CardContent>
             </Card>
@@ -191,8 +180,8 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-semibold">Trusted local providers</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Every provider on the platform is vetted for ABN, customer reviews and
-                  our terms before they can quote on a single lead.
+                  Every provider on the platform is vetted for ABN, customer reviews and our terms before they can quote
+                  on a single lead.
                 </p>
               </CardContent>
             </Card>
@@ -203,9 +192,7 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="bg-primary/5 py-16">
         <div className="container text-center">
-          <h2 className="text-2xl font-bold md:text-3xl">
-            Ready to find the right system for your home?
-          </h2>
+          <h2 className="text-2xl font-bold md:text-3xl">Ready to find the right system for your home?</h2>
           <p className="mt-3 text-muted-foreground">
             Take the 2-minute quiz and get matched with trusted Australian providers.
           </p>
