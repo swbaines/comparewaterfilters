@@ -36,7 +36,7 @@ const ROUTES: RouteMeta[] = [
   {
     route: "/",
     source: "src/pages/HomePage.tsx",
-    title: "Whole House Water Filters Australia — Compare & Get Free Quotes",
+    title: "Whole House Water Filters — Compare & Get Free Quotes",
     description:
       "Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers.",
     canonical: `${BASE_URL}/`,
