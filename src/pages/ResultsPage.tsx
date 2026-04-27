@@ -633,7 +633,9 @@ export default function ResultsPage() {
     setEmailSending(true);
     try {
       const encoded = btoa(JSON.stringify(answers));
-      const url = `${window.location.origin}/results?d=${encoded}`;
+      // Always send the canonical production URL in emails so links work
+      // even when the user submitted from a preview / custom domain.
+      const url = `https://comparewaterfilters.com.au/results?d=${encoded}`;
       const idempotencyKey = `quiz-results-${trimmed.toLowerCase()}-${encoded.slice(0, 24)}`;
 
       const { error } = await supabase.functions.invoke("send-transactional-email", {

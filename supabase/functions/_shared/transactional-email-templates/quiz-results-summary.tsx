@@ -19,7 +19,7 @@ interface QuizResultsSummaryProps {
 
 const QuizResultsSummaryEmail = ({
   customerName = 'there',
-  resultsUrl = SITE_URL,
+  resultsUrl = `${SITE_URL}/quiz`,
   topRecommendation = '',
   budgetOption = '',
   premiumOption = '',
