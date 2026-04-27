@@ -175,6 +175,14 @@ export default function WaterQualityPage() {
           <p className="mt-4 text-lg text-muted-foreground">
             Australian tap water meets safety standards — but "safe" doesn't mean "ideal." Chlorine, chloramine, and trace contaminants are present in every supply, and there's no health benefit to consuming them. Enter your suburb below to see exactly what's in your water and what you can do about it.
           </p>
+          <div className="mt-6 flex justify-center">
+            <Button asChild size="lg" className="shadow-lg">
+              <Link to="/quiz">
+                Start my Water Match
+                <ArrowRight className="ml-1" />
+              </Link>
+            </Button>
+          </div>
           <form onSubmit={handleSearch} className="mt-8 flex gap-2">
             <div className="relative flex-1" ref={wrapperRef}>
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
