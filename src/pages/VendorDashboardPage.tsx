@@ -815,6 +815,15 @@ export default function VendorDashboardPage() {
                         </div>
                       </div>
                     )}
+                    {selectedLead.maintenance_tolerance && (
+                      <div className="flex items-center gap-2 sm:col-span-2">
+                        <Wrench className="h-4 w-4 text-primary shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Maintenance preference</p>
+                          <p className="text-sm font-medium">{selectedLead.maintenance_tolerance}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
