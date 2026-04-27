@@ -44,7 +44,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/system-types",
     source: "src/pages/SystemTypesPage.tsx",
-    title: "Whole House Water Filter Types Compared",
+    title: "Compare Water Filter Types",
     description:
       "Compare whole house water filter types: reverse osmosis, under-sink carbon, UV and water softeners. Pros, cons, pricing and who each suits in Australia.",
     canonical: `${BASE_URL}/system-types`,
