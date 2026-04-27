@@ -101,6 +101,13 @@ const budgetOptions = [
   { value: "not-sure", label: "Not sure" },
 ];
 
+const maintenanceToleranceOptions = [
+  { value: "Critical — under $200 per year preferred", label: "Critical — under $200 per year preferred" },
+  { value: "Important — under $400 per year preferred", label: "Important — under $400 per year preferred" },
+  { value: "Manageable — up to $700 per year is fine", label: "Manageable — up to $700 per year is fine" },
+  { value: "Not a concern — I want the best filtration regardless", label: "Not a concern — I want the best filtration regardless" },
+];
+
 const priorityOptions = [
   { value: "lowest-cost", label: "Lowest upfront cost" },
   { value: "lowest-maintenance", label: "Lowest maintenance" },
@@ -188,6 +195,7 @@ export default function QuizPage() {
     concerns: [],
     coverage: "",
     budget: "",
+    maintenanceTolerance: "",
     priorities: [],
     notes: "",
     firstName: "",
@@ -277,7 +285,7 @@ export default function QuizPage() {
       case 4:
         return !!answers.coverage;
       case 5:
-        return !!answers.budget;
+        return !!answers.budget && !!answers.maintenanceTolerance;
       case 6:
         return true; // optional
       case 7:
@@ -310,6 +318,7 @@ export default function QuizPage() {
         concerns: answers.concerns,
         coverage: answers.coverage || null,
         budget: answers.budget || null,
+        maintenance_tolerance: answers.maintenanceTolerance || null,
         priorities: answers.priorities || [],
         notes: answers.notes || null,
         consent: answers.consent,
@@ -750,16 +759,61 @@ export default function QuizPage() {
 
             {/* Step 5 */}
             {step === 5 && (
-              <div className="grid gap-2 sm:grid-cols-2">
-                {budgetOptions.map((b) => (
-                  <OptionButton
-                    key={b.value}
-                    selected={answers.budget === b.value}
-                    onClick={() => set("budget", b.value)}
+              <div className="space-y-6">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Upfront budget <span className="text-destructive">*</span>
+                  </label>
+                  <div
+                    className={`grid gap-2 sm:grid-cols-2 ${
+                      showErrors && !answers.budget
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
                   >
-                    {b.label}
-                  </OptionButton>
-                ))}
+                    {budgetOptions.map((b) => (
+                      <OptionButton
+                        key={b.value}
+                        selected={answers.budget === b.value}
+                        onClick={() => set("budget", b.value)}
+                      >
+                        {b.label}
+                      </OptionButton>
+                    ))}
+                  </div>
+                  {showErrors && !answers.budget && (
+                    <p className="mt-2 text-sm text-destructive">Please select an upfront budget to continue.</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    How important is low ongoing maintenance cost? <span className="text-destructive">*</span>
+                  </label>
+                  <p className="mb-3 text-xs text-muted-foreground">
+                    Different systems have different annual maintenance needs — knowing your tolerance helps us match the right one.
+                  </p>
+                  <div
+                    className={`grid gap-2 sm:grid-cols-2 ${
+                      showErrors && !answers.maintenanceTolerance
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
+                  >
+                    {maintenanceToleranceOptions.map((m) => (
+                      <OptionButton
+                        key={m.value}
+                        selected={answers.maintenanceTolerance === m.value}
+                        onClick={() => set("maintenanceTolerance", m.value)}
+                      >
+                        {m.label}
+                      </OptionButton>
+                    ))}
+                  </div>
+                  {showErrors && !answers.maintenanceTolerance && (
+                    <p className="mt-2 text-sm text-destructive">Please select a maintenance preference to continue.</p>
+                  )}
+                </div>
               </div>
             )}
 

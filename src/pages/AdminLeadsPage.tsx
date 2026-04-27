@@ -376,6 +376,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Ownership</TableHead>
                   <TableHead>Property Age</TableHead>
                   <TableHead>Water</TableHead>
+                  <TableHead>Maintenance</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
@@ -383,7 +384,7 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={10} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={11} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -424,6 +425,15 @@ export default function AdminLeadsPage() {
                           <span className="text-[10px] text-muted-foreground">{lead.water_usage_type}</span>
                         )}
                       </div>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[180px]">
+                      {lead.maintenance_tolerance ? (
+                        <span title={lead.maintenance_tolerance} className="line-clamp-2">
+                          {lead.maintenance_tolerance}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
                     </TableCell>
                     <TableCell>
                       <Select

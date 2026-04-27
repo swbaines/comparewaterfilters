@@ -482,6 +482,7 @@ export type Database = {
           first_name: string
           household_size: string | null
           id: string
+          maintenance_tolerance: string | null
           mobile: string | null
           notes: string | null
           ownership_status: string | null
@@ -506,6 +507,7 @@ export type Database = {
           first_name: string
           household_size?: string | null
           id?: string
+          maintenance_tolerance?: string | null
           mobile?: string | null
           notes?: string | null
           ownership_status?: string | null
@@ -530,6 +532,7 @@ export type Database = {
           first_name?: string
           household_size?: string | null
           id?: string
+          maintenance_tolerance?: string | null
           mobile?: string | null
           notes?: string | null
           ownership_status?: string | null
@@ -563,6 +566,7 @@ export type Database = {
           is_test: boolean
           lead_price: number | null
           lead_status: string
+          maintenance_tolerance: string | null
           message: string | null
           ownership_status: string | null
           property_age: string | null
@@ -594,6 +598,7 @@ export type Database = {
           is_test?: boolean
           lead_price?: number | null
           lead_status?: string
+          maintenance_tolerance?: string | null
           message?: string | null
           ownership_status?: string | null
           property_age?: string | null
@@ -625,6 +630,7 @@ export type Database = {
           is_test?: boolean
           lead_price?: number | null
           lead_status?: string
+          maintenance_tolerance?: string | null
           message?: string | null
           ownership_status?: string | null
           property_age?: string | null

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -812,6 +812,15 @@ export default function VendorDashboardPage() {
                         <div>
                           <p className="text-xs text-muted-foreground">Budget</p>
                           <p className="text-sm font-medium">{selectedLead.budget}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.maintenance_tolerance && (
+                      <div className="flex items-center gap-2 sm:col-span-2">
+                        <Wrench className="h-4 w-4 text-primary shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Maintenance preference</p>
+                          <p className="text-sm font-medium">{selectedLead.maintenance_tolerance}</p>
                         </div>
                       </div>
                     )}

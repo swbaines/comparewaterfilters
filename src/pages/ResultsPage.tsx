@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil, ShieldCheck } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil, ShieldCheck, AlertTriangle, Flag } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { generateRecommendations, explainRuleEvaluations, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
+import { generateRecommendations, explainRuleEvaluations, getMaintenanceFit, type QuizAnswers, type RecommendationResult } from "@/lib/recommendationEngine";
 import { lookupPostcodeCoords } from "@/lib/geo";
 import type { Recommendation } from "@/data/recommendations";
 import MatchedVendorsSection from "@/components/MatchedVendorsSection";
@@ -991,7 +991,35 @@ export default function ResultsPage() {
             const rows: { label: string; render: (rec: Recommendation) => React.ReactNode }[] = [
               { label: "System type", render: (r) => <span className="font-medium">{r.title}</span> },
               { label: "Price range", render: (r) => `$${r.priceMin.toLocaleString()} – $${r.priceMax.toLocaleString()}` },
-              { label: "Annual maintenance", render: (r) => `$${r.annualMaintenanceMin} – $${r.annualMaintenanceMax}/yr` },
+              {
+                label: "Annual maintenance",
+                render: (r) => {
+                  const fit = getMaintenanceFit(answers.maintenanceTolerance, r.annualMaintenanceMin, r.annualMaintenanceMax);
+                  return (
+                    <div className="space-y-1">
+                      <div>{`$${r.annualMaintenanceMin} – $${r.annualMaintenanceMax}/yr`}</div>
+                      {fit.level === "match" && (
+                        <div className="flex items-start gap-1 text-[11px] font-medium text-emerald-600">
+                          <Check className="h-3 w-3 shrink-0 mt-0.5" />
+                          <span>{fit.message}</span>
+                        </div>
+                      )}
+                      {fit.level === "slightly-above" && (
+                        <div className="flex items-start gap-1 text-[11px] font-medium text-amber-600">
+                          <AlertTriangle className="h-3 w-3 shrink-0 mt-0.5" />
+                          <span>{fit.message}</span>
+                        </div>
+                      )}
+                      {fit.level === "well-above" && (
+                        <div className="flex items-start gap-1 text-[11px] font-medium text-destructive">
+                          <Flag className="h-3 w-3 shrink-0 mt-0.5" />
+                          <span>{fit.message}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                },
+              },
               { label: "Filter changes", render: (r) => r.filterFrequency },
               { label: "Coverage", render: (r) => r.idealHomeType },
               {
