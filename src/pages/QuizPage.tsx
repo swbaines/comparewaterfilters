@@ -145,9 +145,11 @@ function MultiSelectButton({
 export default function QuizPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowErrors(false);
   }, [step]);
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "",
@@ -188,6 +190,15 @@ export default function QuizPage() {
 
   const set = (field: keyof QuizAnswers, value: string | string[] | boolean) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = () => {
+    if (!canNext()) {
+      setShowErrors(true);
+      return;
+    }
+    setShowErrors(false);
+    setStep((s) => s + 1);
   };
 
   const toggleMulti = (field: "concerns" | "priorities", value: string) => {
@@ -404,8 +415,16 @@ export default function QuizPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-medium">Approximate age of property</label>
-                  <div className="flex flex-wrap gap-2">
+                  <label className="mb-2 block text-sm font-medium">
+                    Approximate age of property <span className="text-destructive">*</span>
+                  </label>
+                  <div
+                    className={`flex flex-wrap gap-2 ${
+                      showErrors && !answers.propertyAge
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
+                  >
                     {propertyAges.map((a) => (
                       <OptionButton
                         key={a}
@@ -416,9 +435,15 @@ export default function QuizPage() {
                       </OptionButton>
                     ))}
                   </div>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    This helps installers understand your plumbing setup and provide accurate quotes.
-                  </p>
+                  {showErrors && !answers.propertyAge ? (
+                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                      Please select an option to continue. Choose “Not sure” if you’re unsure.
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      This helps installers understand your plumbing setup and provide accurate quotes.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -622,7 +647,7 @@ export default function QuizPage() {
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               {step < TOTAL_STEPS ? (
-                <Button onClick={() => setStep((s) => s + 1)} disabled={!canNext()} className="gap-1">
+                <Button onClick={handleNext} className="gap-1">
                   Continue <ArrowRight className="h-4 w-4" />
                 </Button>
               ) : (
@@ -650,8 +675,7 @@ export default function QuizPage() {
           </Button>
           {step < TOTAL_STEPS ? (
             <Button
-              onClick={() => setStep((s) => s + 1)}
-              disabled={!canNext()}
+              onClick={handleNext}
               className="flex-1 gap-1 whitespace-nowrap"
             >
               Continue <ArrowRight className="h-4 w-4" />
