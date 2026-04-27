@@ -11,20 +11,26 @@ import {
   AlertTriangle,
   CheckCircle2,
   ShieldAlert,
+  Info,
 } from "lucide-react";
 import {
   ROUTES,
+  BASE_URL,
   SITE_NAME,
   diffRouteAgainstSource,
   type DriftIssue,
   type RouteMeta,
 } from "@/lib/seoSnapshot";
 
-const TITLE_LIMIT = 60;
-const DESC_LIMIT = 160;
+const TITLE_MIN = 30;
+const TITLE_MAX = 60;
+const TITLE_HARD_MAX = 65;
+const DESC_MIN = 70;
+const DESC_MAX = 160;
+const DESC_HARD_MAX = 165;
 
 interface MetaIssue {
-  level: "warn" | "error";
+  level: "info" | "warn" | "error";
   message: string;
 }
 
@@ -34,18 +40,121 @@ function audit(meta: RouteMeta): MetaIssue[] {
   const fullTitle = meta.title.includes(SITE_NAME)
     ? meta.title
     : `${meta.title} | ${SITE_NAME}`;
-  if (fullTitle.length > TITLE_LIMIT + 5) {
+
+  // Title length
+  if (fullTitle.length > TITLE_HARD_MAX) {
+    issues.push({
+      level: "error",
+      message: `Title is ${fullTitle.length} chars — Google will truncate (target ${TITLE_MIN}–${TITLE_MAX}).`,
+    });
+  } else if (fullTitle.length > TITLE_MAX) {
     issues.push({
       level: "warn",
-      message: `Title is ${fullTitle.length} chars (target ≤ ${TITLE_LIMIT}).`,
+      message: `Title is ${fullTitle.length} chars (target ≤ ${TITLE_MAX}).`,
     });
-  }
-  if (meta.description.length > DESC_LIMIT) {
+  } else if (fullTitle.length < TITLE_MIN) {
     issues.push({
       level: "warn",
-      message: `Description is ${meta.description.length} chars (target ≤ ${DESC_LIMIT}).`,
+      message: `Title is ${fullTitle.length} chars — under ${TITLE_MIN} wastes SERP real estate.`,
     });
   }
+
+  // Description length
+  if (meta.description.length > DESC_HARD_MAX) {
+    issues.push({
+      level: "error",
+      message: `Description is ${meta.description.length} chars — Google will truncate (target ${DESC_MIN}–${DESC_MAX}).`,
+    });
+  } else if (meta.description.length > DESC_MAX) {
+    issues.push({
+      level: "warn",
+      message: `Description is ${meta.description.length} chars (target ≤ ${DESC_MAX}).`,
+    });
+  } else if (meta.description.length < DESC_MIN) {
+    issues.push({
+      level: "warn",
+      message: `Description is ${meta.description.length} chars — under ${DESC_MIN} is too thin for SERP snippets.`,
+    });
+  }
+
+  // Description sanity
+  if (!meta.description.trim()) {
+    issues.push({ level: "error", message: "Description is empty." });
+  }
+
+  // Canonical URL format
+  try {
+    const url = new URL(meta.canonical);
+    if (url.protocol !== "https:") {
+      issues.push({
+        level: "error",
+        message: `Canonical must use https:// (got ${url.protocol}).`,
+      });
+    }
+    if (`${url.protocol}//${url.host}` !== BASE_URL) {
+      issues.push({
+        level: "error",
+        message: `Canonical host is ${url.host} — must be ${new URL(BASE_URL).host}.`,
+      });
+    }
+    if (url.search || url.hash) {
+      issues.push({
+        level: "warn",
+        message: "Canonical contains query or hash — should be the bare URL.",
+      });
+    }
+    if (url.pathname !== "/" && url.pathname.endsWith("/")) {
+      issues.push({
+        level: "warn",
+        message: "Canonical has a trailing slash — site convention is no trailing slash.",
+      });
+    }
+  } catch {
+    issues.push({
+      level: "error",
+      message: `Canonical is not a valid URL: ${meta.canonical}`,
+    });
+  }
+
+  // Open Graph tag inputs (PageMeta derives og:title/description/url/image
+  // from these; if the inputs are good, the OG tags are good).
+  if (!fullTitle.includes(SITE_NAME)) {
+    issues.push({
+      level: "warn",
+      message: "og:title will not include the site name (PageMeta auto-appends it only when missing).",
+    });
+  }
+
+  // OG image
+  if (!meta.ogImage) {
+    issues.push({
+      level: "error",
+      message: "Missing og:image — social cards will fall back to a generic preview.",
+    });
+  } else {
+    try {
+      const ogUrl = new URL(meta.ogImage);
+      if (ogUrl.protocol !== "https:") {
+        issues.push({
+          level: "error",
+          message: `og:image must be served over https:// (got ${ogUrl.protocol}).`,
+        });
+      }
+      if (!/\.(jpe?g|png|webp)$/i.test(ogUrl.pathname)) {
+        issues.push({
+          level: "warn",
+          message: `og:image extension ${ogUrl.pathname.split(".").pop()} is unusual — Facebook/Twitter prefer .jpg, .png or .webp.`,
+        });
+      }
+    } catch {
+      issues.push({
+        level: "error",
+        message: `og:image is not a valid URL: ${meta.ogImage}`,
+      });
+    }
+  }
+
+  // Keyword rules (existing)
   if (/whole[\s-]home/i.test(meta.title)) {
     issues.push({
       level: "error",
