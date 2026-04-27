@@ -62,7 +62,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/learn",
     source: "src/pages/LearnPage.tsx",
-    title: "Whole House Water Filter Guides for Australian Homes",
+    title: "Whole House Filtration Guide for Your Home",
     description:
       "Plain-English guides on whole house water filters, reverse osmosis, water quality and pricing — helping Australian homeowners pick the right filtration system.",
     canonical: `${BASE_URL}/learn`,
