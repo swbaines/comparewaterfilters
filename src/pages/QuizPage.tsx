@@ -195,6 +195,7 @@ export default function QuizPage() {
     concerns: [],
     coverage: "",
     budget: "",
+    maintenanceTolerance: "",
     priorities: [],
     notes: "",
     firstName: "",
