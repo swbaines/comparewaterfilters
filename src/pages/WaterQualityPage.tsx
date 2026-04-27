@@ -381,6 +381,9 @@ export default function WaterQualityPage() {
                   <p className="mt-2 text-3xl font-bold">{result.fluoride}</p>
                   <p className="text-sm text-muted-foreground">mg/L</p>
                   <Badge className={`mt-2 ${fluoride?.bg} ${fluoride?.color} border-0`}>{fluoride?.label}</Badge>
+                  <p className="mt-2 text-xs text-muted-foreground/80 leading-snug">
+                    Added by most Australian utilities (~0.6–1.0 mg/L) to support dental health. Health effects are still actively debated — we encourage you to research the evidence and decide what's right for your household.
+                  </p>
                 </CardContent>
               </Card>
               <Card>
