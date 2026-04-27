@@ -30,7 +30,7 @@ export default function LearnPage() {
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Whole House Water Filter Guides for Australian Homes"
+        title="Whole House Filtration Guide for Your Home"
         description="Plain-English guides on whole house water filters, reverse osmosis, water quality and pricing — helping Australian homeowners pick the right filtration system."
         path="/learn"
       />
