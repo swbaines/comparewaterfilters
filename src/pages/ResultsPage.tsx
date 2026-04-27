@@ -902,17 +902,6 @@ export default function ResultsPage() {
 
         {/* Shared pricing-asterisk footnote — replaces the per-card disclaimer
             so the recommendation boxes stay scannable. */}
-        <p
-          id="installed-price-note"
-          className="mx-auto mt-6 max-w-3xl text-xs text-muted-foreground"
-        >
-          <span aria-hidden="true">*</span>
-          <span className="font-medium text-foreground/80">Installed price</span>{" "}
-          is an estimate. Final pricing depends on your property, installer, and
-          any access or plumbing requirements. Request a quote for an exact price.
-        </p>
-        <PricingFootnote variant="compact" className="mx-auto mt-2 max-w-3xl" />
-
         {/* ── Debug: full rule-evaluation trace (only with ?debug=1) ── */}
         {searchParams.get("debug") === "1" && (
           <RuleDebugPanel result={result} answers={answers} />
@@ -940,6 +929,19 @@ export default function ResultsPage() {
             recommendedSystems={recommendedSystemIds}
           />
         </div>
+
+        {/* Shared pricing-asterisk footnote — moved below matched providers
+            so the recommendation + provider sections stay scannable. */}
+        <p
+          id="installed-price-note"
+          className="mx-auto mt-10 max-w-3xl text-xs text-muted-foreground"
+        >
+          <span aria-hidden="true">*</span>
+          <span className="font-medium text-foreground/80">Installed price</span>{" "}
+          is an estimate. Final pricing depends on your property, installer, and
+          any access or plumbing requirements. Request a quote for an exact price.
+        </p>
+        <PricingFootnote variant="compact" className="mx-auto mt-2 max-w-3xl" />
 
         {/* Comparison table */}
         <div className="mt-12">
