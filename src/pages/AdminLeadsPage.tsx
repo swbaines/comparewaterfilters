@@ -403,6 +403,11 @@ export default function AdminLeadsPage() {
                       <Badge variant="outline" className={`text-xs ${lead.ownership_status === "Rent" ? "bg-amber-50 text-amber-700 border-amber-200" : lead.ownership_status === "Own" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : ""}`}>
                         {lead.ownership_status || "—"}
                       </Badge>
+                      {(lead.concerns || []).includes("replacement") && (
+                        <Badge className="ml-1 bg-primary text-primary-foreground text-[10px] tracking-wide">
+                          REPLACEMENT
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {lead.property_age || "—"}
