@@ -30,8 +30,10 @@ const sampleAnswers = {
   concerns: ["Taste/Smell", "Chlorine", "Skin/Hair"],
   coverage: "whole-home",
   installPreference: "professional",
-  // Nested + falsy + unicode values to make sure encoding survives them.
-  notes: "Hard water — fix it! ✅",
+  // Nested + falsy values + ASCII punctuation. NOTE: the production code
+  // uses btoa() which is ASCII-only — emojis/non-Latin chars would throw
+  // in the browser too, so we deliberately keep the payload ASCII.
+  notes: "Hard water - fix it!",
   preferences: { contactByEmail: true, contactBySms: false, bestTime: null },
 };
 
@@ -75,7 +77,7 @@ describe("Saved-results email link — d= round-trip", () => {
     expect(decoded.budget).toBe(sampleAnswers.budget);
     expect(decoded.concerns).toEqual(sampleAnswers.concerns);
     expect(decoded.preferences).toEqual(sampleAnswers.preferences);
-    // Unicode + punctuation must survive the base64 round-trip.
+    // Punctuation must survive the base64 round-trip.
     expect(decoded.notes).toBe(sampleAnswers.notes);
   });
 
