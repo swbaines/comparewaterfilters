@@ -89,7 +89,15 @@ const priorityOptions = [
   { value: "easy-install", label: "Easiest installation" },
 ];
 
-function OptionButton({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+function OptionButton({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -105,7 +113,15 @@ function OptionButton({ selected, onClick, children }: { selected: boolean; onCl
   );
 }
 
-function MultiSelectButton({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
+function MultiSelectButton({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -116,7 +132,9 @@ function MultiSelectButton({ selected, onClick, children }: { selected: boolean;
           : "border-border bg-card text-foreground hover:border-primary/30"
       }`}
     >
-      <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${selected ? "border-primary bg-primary" : "border-muted-foreground"}`}>
+      <span
+        className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border ${selected ? "border-primary bg-primary" : "border-muted-foreground"}`}
+      >
         {selected && <span className="text-[10px] text-primary-foreground">✓</span>}
       </span>
       {children}
@@ -132,10 +150,24 @@ export default function QuizPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [step]);
   const [answers, setAnswers] = useState<QuizAnswers>({
-    postcode: "", suburb: "", state: "", propertyType: "", ownershipStatus: "",
-    householdSize: "", bathrooms: "", waterSource: "", concerns: [],
-    coverage: "", budget: "", priorities: [], notes: "",
-    firstName: "", email: "", mobile: "", consent: false, disclaimerAck: false,
+    postcode: "",
+    suburb: "",
+    state: "",
+    propertyType: "",
+    ownershipStatus: "",
+    householdSize: "",
+    bathrooms: "",
+    waterSource: "",
+    concerns: [],
+    coverage: "",
+    budget: "",
+    priorities: [],
+    notes: "",
+    firstName: "",
+    email: "",
+    mobile: "",
+    consent: false,
+    disclaimerAck: false,
   });
 
   // Prefill from sessionStorage when user clicks "Edit my answers" on results page
@@ -166,15 +198,31 @@ export default function QuizPage() {
 
   const canNext = (): boolean => {
     switch (step) {
-      case 1: return !!(answers.postcode && answers.state && answers.propertyType && answers.ownershipStatus && answers.householdSize && answers.bathrooms);
-      case 2: return !!answers.waterSource;
-      case 3: return answers.concerns.length > 0;
-      case 4: return !!answers.coverage;
-      case 5: return !!answers.budget;
-      case 6: return true; // optional
-      case 7: return true; // optional
-      case 8: return !!(answers.firstName && answers.email && answers.mobile && answers.consent && answers.disclaimerAck);
-      default: return true;
+      case 1:
+        return !!(
+          answers.postcode &&
+          answers.state &&
+          answers.propertyType &&
+          answers.ownershipStatus &&
+          answers.householdSize &&
+          answers.bathrooms
+        );
+      case 2:
+        return !!answers.waterSource;
+      case 3:
+        return answers.concerns.length > 0;
+      case 4:
+        return !!answers.coverage;
+      case 5:
+        return !!answers.budget;
+      case 6:
+        return true; // optional
+      case 7:
+        return true; // optional
+      case 8:
+        return !!(answers.firstName && answers.email && answers.mobile && answers.consent && answers.disclaimerAck);
+      default:
+        return true;
     }
   };
 
@@ -207,10 +255,10 @@ export default function QuizPage() {
     // Store answers in sessionStorage for results page
     sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
     // Meta Pixel: track quiz completion as CompleteRegistration event
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'CompleteRegistration', {
-        content_name: 'Water Filter Quiz',
-        status: 'complete',
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "CompleteRegistration", {
+        content_name: "Water Filter Quiz",
+        status: "complete",
       });
     }
     navigate("/results");
@@ -230,7 +278,7 @@ export default function QuizPage() {
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
       <PageMeta
-        title="Whole House Water Filter Quiz — Find Your Match in 2 Minutes"
+        title="Whole House Water Filter Quiz — Find Your Match"
         description="Answer a few quick questions about your home and water concerns to get personalised whole house water filter recommendations and free quotes."
         path="/quiz"
       />
@@ -239,17 +287,15 @@ export default function QuizPage() {
         <div className="mb-6">
           <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
             <span className="font-medium text-foreground">
-              Step {step} of {TOTAL_STEPS}: <span className="text-muted-foreground font-normal">{stepTitles[step - 1]}</span>
+              Step {step} of {TOTAL_STEPS}:{" "}
+              <span className="text-muted-foreground font-normal">{stepTitles[step - 1]}</span>
             </span>
             <span>{Math.round((step / TOTAL_STEPS) * 100)}%</span>
           </div>
           <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
 
           {/* Step checkpoints */}
-          <ol
-            className="mt-4 flex items-center justify-between gap-1 sm:gap-2"
-            aria-label="Quiz progress checkpoints"
-          >
+          <ol className="mt-4 flex items-center justify-between gap-1 sm:gap-2" aria-label="Quiz progress checkpoints">
             {stepTitles.map((title, idx) => {
               const stepNum = idx + 1;
               const isComplete = stepNum < step;
@@ -304,7 +350,13 @@ export default function QuizPage() {
                   <label className="mb-2 block text-sm font-medium">Property type</label>
                   <div className="grid grid-cols-3 gap-2">
                     {propertyOptions.map((p) => (
-                      <OptionButton key={p} selected={answers.propertyType === p} onClick={() => set("propertyType", p)}>{p}</OptionButton>
+                      <OptionButton
+                        key={p}
+                        selected={answers.propertyType === p}
+                        onClick={() => set("propertyType", p)}
+                      >
+                        {p}
+                      </OptionButton>
                     ))}
                   </div>
                 </div>
@@ -312,7 +364,13 @@ export default function QuizPage() {
                   <label className="mb-2 block text-sm font-medium">Do you own or rent?</label>
                   <div className="grid grid-cols-2 gap-2">
                     {ownershipOptions.map((o) => (
-                      <OptionButton key={o} selected={answers.ownershipStatus === o} onClick={() => set("ownershipStatus", o)}>{o}</OptionButton>
+                      <OptionButton
+                        key={o}
+                        selected={answers.ownershipStatus === o}
+                        onClick={() => set("ownershipStatus", o)}
+                      >
+                        {o}
+                      </OptionButton>
                     ))}
                   </div>
                 </div>
@@ -321,7 +379,13 @@ export default function QuizPage() {
                     <label className="mb-2 block text-sm font-medium">People in home</label>
                     <div className="flex gap-2">
                       {householdSizes.map((s) => (
-                        <OptionButton key={s} selected={answers.householdSize === s} onClick={() => set("householdSize", s)}>{s}</OptionButton>
+                        <OptionButton
+                          key={s}
+                          selected={answers.householdSize === s}
+                          onClick={() => set("householdSize", s)}
+                        >
+                          {s}
+                        </OptionButton>
                       ))}
                     </div>
                   </div>
@@ -329,7 +393,9 @@ export default function QuizPage() {
                     <label className="mb-2 block text-sm font-medium">Bathrooms</label>
                     <div className="flex gap-2">
                       {bathroomCounts.map((b) => (
-                        <OptionButton key={b} selected={answers.bathrooms === b} onClick={() => set("bathrooms", b)}>{b}</OptionButton>
+                        <OptionButton key={b} selected={answers.bathrooms === b} onClick={() => set("bathrooms", b)}>
+                          {b}
+                        </OptionButton>
                       ))}
                     </div>
                   </div>
@@ -341,12 +407,16 @@ export default function QuizPage() {
             {step === 2 && (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Tell us where your water comes from. This determines whether we recommend UV disinfection
-                  (for untreated sources like rainwater, tank or bore) on top of filtration.
+                  Tell us where your water comes from. This determines whether we recommend UV disinfection (for
+                  untreated sources like rainwater, tank or bore) on top of filtration.
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {waterSources.map((w) => (
-                    <OptionButton key={w.value} selected={answers.waterSource === w.value} onClick={() => set("waterSource", w.value)}>
+                    <OptionButton
+                      key={w.value}
+                      selected={answers.waterSource === w.value}
+                      onClick={() => set("waterSource", w.value)}
+                    >
                       <span className="flex flex-col items-start gap-0.5 text-left">
                         <span className="font-medium">{w.label}</span>
                         <span className="text-xs font-normal text-muted-foreground">{w.hint}</span>
@@ -363,7 +433,11 @@ export default function QuizPage() {
                 <p className="mb-3 text-sm text-muted-foreground">Select all that apply.</p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {concernOptions.map((c) => (
-                    <MultiSelectButton key={c.value} selected={answers.concerns.includes(c.value)} onClick={() => toggleMulti("concerns", c.value)}>
+                    <MultiSelectButton
+                      key={c.value}
+                      selected={answers.concerns.includes(c.value)}
+                      onClick={() => toggleMulti("concerns", c.value)}
+                    >
                       {c.label}
                     </MultiSelectButton>
                   ))}
@@ -375,7 +449,11 @@ export default function QuizPage() {
             {step === 4 && (
               <div className="grid gap-2 sm:grid-cols-2">
                 {coverageOptions.map((c) => (
-                  <OptionButton key={c.value} selected={answers.coverage === c.value} onClick={() => set("coverage", c.value)}>
+                  <OptionButton
+                    key={c.value}
+                    selected={answers.coverage === c.value}
+                    onClick={() => set("coverage", c.value)}
+                  >
                     {c.label}
                   </OptionButton>
                 ))}
@@ -386,7 +464,11 @@ export default function QuizPage() {
             {step === 5 && (
               <div className="grid gap-2 sm:grid-cols-2">
                 {budgetOptions.map((b) => (
-                  <OptionButton key={b.value} selected={answers.budget === b.value} onClick={() => set("budget", b.value)}>
+                  <OptionButton
+                    key={b.value}
+                    selected={answers.budget === b.value}
+                    onClick={() => set("budget", b.value)}
+                  >
                     {b.label}
                   </OptionButton>
                 ))}
@@ -399,7 +481,11 @@ export default function QuizPage() {
                 <p className="mb-3 text-sm text-muted-foreground">Select any priorities that matter most to you.</p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {priorityOptions.map((p) => (
-                    <MultiSelectButton key={p.value} selected={answers.priorities.includes(p.value)} onClick={() => toggleMulti("priorities", p.value)}>
+                    <MultiSelectButton
+                      key={p.value}
+                      selected={answers.priorities.includes(p.value)}
+                      onClick={() => toggleMulti("priorities", p.value)}
+                    >
                       {p.label}
                     </MultiSelectButton>
                   ))}
@@ -412,7 +498,11 @@ export default function QuizPage() {
               <div className="space-y-5">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Anything else we should know?</label>
-                  <Textarea placeholder="Any specific concerns, existing systems, or questions..." value={answers.notes} onChange={(e) => set("notes", e.target.value)} />
+                  <Textarea
+                    placeholder="Any specific concerns, existing systems, or questions..."
+                    value={answers.notes}
+                    onChange={(e) => set("notes", e.target.value)}
+                  />
                 </div>
               </div>
             )}
@@ -420,18 +510,34 @@ export default function QuizPage() {
             {/* Step 8 */}
             {step === 8 && (
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">Enter your details to see your personalised recommendations.</p>
+                <p className="text-sm text-muted-foreground">
+                  Enter your details to see your personalised recommendations.
+                </p>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">First name *</label>
-                  <Input placeholder="Your first name" value={answers.firstName} onChange={(e) => set("firstName", e.target.value)} />
+                  <Input
+                    placeholder="Your first name"
+                    value={answers.firstName}
+                    onChange={(e) => set("firstName", e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Email *</label>
-                  <Input type="email" placeholder="you@email.com" value={answers.email} onChange={(e) => set("email", e.target.value)} />
+                  <Input
+                    type="email"
+                    placeholder="you@email.com"
+                    value={answers.email}
+                    onChange={(e) => set("email", e.target.value)}
+                  />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">Mobile *</label>
-                  <Input placeholder="04XX XXX XXX" value={answers.mobile} onChange={(e) => set("mobile", e.target.value)} required />
+                  <Input
+                    placeholder="04XX XXX XXX"
+                    value={answers.mobile}
+                    onChange={(e) => set("mobile", e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="flex items-start gap-2">
                   <Checkbox
@@ -440,9 +546,26 @@ export default function QuizPage() {
                     onCheckedChange={(checked) => set("consent", !!checked)}
                   />
                   <label htmlFor="consent" className="text-sm text-muted-foreground">
-                    I agree to receive my recommendations via email and understand my information is used to provide personalised guidance in accordance with our{" "}
-                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">Privacy Policy</a> and{" "}
-                    <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">Terms and Conditions</a>. I can unsubscribe at any time.
+                    I agree to receive my recommendations via email and understand my information is used to provide
+                    personalised guidance in accordance with our{" "}
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:text-primary/80"
+                    >
+                      Privacy Policy
+                    </a>{" "}
+                    and{" "}
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline hover:text-primary/80"
+                    >
+                      Terms and Conditions
+                    </a>
+                    . I can unsubscribe at any time.
                   </label>
                 </div>
                 <div className="flex items-start gap-2">
@@ -452,10 +575,17 @@ export default function QuizPage() {
                     onCheckedChange={(checked) => set("disclaimerAck", !!checked)}
                   />
                   <label htmlFor="disclaimerAck" className="text-sm text-muted-foreground">
-                    I acknowledge that recommendations are for general guidance only and do not constitute professional advice. I have read and accept the{" "}
-                    <a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="font-medium text-primary hover:underline">
+                    I acknowledge that recommendations are for general guidance only and do not constitute professional
+                    advice. I have read and accept the{" "}
+                    <a
+                      href="/disclaimer"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-primary hover:underline"
+                    >
                       platform disclaimer
-                    </a>.
+                    </a>
+                    .
                   </label>
                 </div>
               </div>
@@ -463,7 +593,12 @@ export default function QuizPage() {
 
             {/* Navigation — desktop inline */}
             <div className="mt-8 hidden items-center justify-between gap-2 sm:flex">
-              <Button variant="ghost" onClick={() => setStep((s) => s - 1)} disabled={step === 1} className="gap-1 shrink-0">
+              <Button
+                variant="ghost"
+                onClick={() => setStep((s) => s - 1)}
+                disabled={step === 1}
+                className="gap-1 shrink-0"
+              >
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               {step < TOTAL_STEPS ? (
@@ -494,7 +629,11 @@ export default function QuizPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
           {step < TOTAL_STEPS ? (
-            <Button onClick={() => setStep((s) => s + 1)} disabled={!canNext()} className="flex-1 gap-1 whitespace-nowrap">
+            <Button
+              onClick={() => setStep((s) => s + 1)}
+              disabled={!canNext()}
+              className="flex-1 gap-1 whitespace-nowrap"
+            >
               Continue <ArrowRight className="h-4 w-4" />
             </Button>
           ) : (
