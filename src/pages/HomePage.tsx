@@ -230,13 +230,13 @@ export default function HomePage() {
   return (
     <div>
       <PageMeta
-        title="Whole House Water Filters — Compare & Get Free Quotes"
+        title="Compare Whole House Water Filters — Get Free Quotes"
         description="Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers."
         path="/"
       />
 
       {/* ── Hero ── */}
-       <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28 bg-secondary-foreground">
+      <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28 bg-secondary-foreground">
         <div className="container relative z-10 text-center">
           <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
             Australia's independent water filter comparison
@@ -310,7 +310,10 @@ export default function HomePage() {
                     <Search className="h-4 w-4" /> Check
                   </Button>
                 </form>
-                <Link to="/water-quality" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                <Link
+                  to="/water-quality"
+                  className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary"
+                >
                   <MapPin className="h-3 w-3" /> Or search by suburb
                 </Link>
               </div>
