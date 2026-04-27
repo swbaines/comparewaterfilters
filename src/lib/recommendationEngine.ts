@@ -695,6 +695,49 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // ── State-specific warnings (VIC chlorine, WA hardness, SA hardness, QLD seasonal taste, NSW PFAS) ──
   warnings.push(...getStateWarnings(answers, f));
 
+  // ── RULE 8: Old property (50+ yrs) + heavy-metals concern ─────────────────
+  // Aged galvanised steel and pre-1980s copper plumbing can leach lead,
+  // copper, zinc and iron into household water — particularly first-draw
+  // water that has sat in the pipes overnight. Reverse osmosis is the only
+  // household technology that reliably removes dissolved heavy metals at
+  // the kitchen tap, so we force RO into the recommendation here.
+  if (f.oldPipesHeavyMetals) {
+    pushRule("rule-8-old-pipes-heavy-metals");
+    const ageNote =
+      "Important: Properties over 50 years old often have aging galvanised or copper plumbing that can leach lead, copper or other heavy metals into household water — especially first-draw water in the morning. A reverse osmosis system at the kitchen tap is the proper, evidence-based fix and is included in your recommendation.";
+    warnings.push(ageNote);
+
+    // Guarantee RO appears somewhere in the result. Order of preference:
+    // 1. If we can install whole-home → primary should be the whole-house+RO combo.
+    // 2. Otherwise → primary should be reverse-osmosis at the kitchen tap.
+    const roPresent =
+      [primaryId, secondaryId, premiumId].includes("reverse-osmosis") ||
+      [primaryId, secondaryId, premiumId].includes("whole-house-combo");
+
+    if (!roPresent) {
+      if (f.canHaveWholeHome && !f.budgetUnder1k) {
+        primaryId = "whole-house-combo";
+        primaryReason = `Because your property is over 50 years old AND you've flagged heavy metals, the right answer is a whole house filtration system paired with reverse osmosis at the kitchen tap. RO is the only household technology that reliably removes lead, copper and other heavy metals that can leach from aged plumbing — and pairing it with whole-house coverage handles chlorine and sediment everywhere else. $4,000–$6,000 installed together.`;
+        secondaryId = "reverse-osmosis";
+        secondaryReason = `If a full combo isn't possible right now, a reverse osmosis system on its own at the kitchen tap is the most important step — it directly addresses heavy metals from aged pipes for drinking and cooking water. $800–$1,600 installed.`;
+        // keep premiumId as-is (likely already combo)
+        if (premiumId !== "whole-house-combo") premiumId = "whole-house-combo";
+        premiumReason = `The premium build: a higher-spec whole house filtration system paired with a reverse osmosis unit featuring alkaline remineralisation — chlorine-free water at every tap and shower, plus purified, mineral-balanced drinking water at the kitchen, with full protection against heavy metals from aged plumbing.`;
+      } else {
+        primaryId = "reverse-osmosis";
+        primaryReason = `Because your property is over 50 years old AND you've flagged heavy metals, a reverse osmosis system at the kitchen tap is essential — it's the only household technology that reliably removes lead, copper and other heavy metals that can leach from aged galvanised or copper plumbing. $800–$1,600 installed.`;
+      }
+    }
+  } else if (f.isOldProperty) {
+    // Lighter-touch nudge for 20–50 year homes: scale and chlorine-by-products
+    // can degrade older plumbing faster, so a whole-house carbon + scale-
+    // reduction setup pays off. We only add an informational warning — we
+    // don't change the recommendation.
+    warnings.push(
+      "Your property is in the 20–50 year age range — older plumbing benefits from reduced chlorine and scale exposure. A whole house filtration system with a scale-reduction (TAC) cartridge can extend the life of your hot water system, dishwasher and washing machine.",
+    );
+  }
+
   // ── Determine triggering concerns based on the dominant rule ──────────────
   // The dominant rule is the LAST one pushed (most specific path taken).
   const dominantRule: FiredRule = appliedRules[appliedRules.length - 1]?.rule ?? "default";
@@ -708,6 +751,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     "rule-5-renter-apartment": [], // not concern-driven — driven by ownership/property type
     "rule-6-budget-under-1k": [], // budget modifier, concerns inherited from base rule
     "rule-7-untreated-water-uv": ["bacteria"], // driven by water source, not concerns; bacteria is the closest match
+    "rule-8-old-pipes-heavy-metals": ["heavy-metals"],
     "default": [],
   };
 
