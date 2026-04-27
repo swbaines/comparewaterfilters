@@ -477,7 +477,13 @@ export default function QuizPage() {
                     <OptionButton
                       key={w.value}
                       selected={answers.waterSource === w.value}
-                      onClick={() => set("waterSource", w.value)}
+                      onClick={() => {
+                        set("waterSource", w.value);
+                        if (!NON_TOWN_SOURCES.includes(w.value)) {
+                          set("waterTestedRecently", "");
+                          set("waterUsageType", "");
+                        }
+                      }}
                     >
                       <span className="flex flex-col items-start gap-0.5 text-left">
                         <span className="font-medium">{w.label}</span>
@@ -486,6 +492,71 @@ export default function QuizPage() {
                     </OptionButton>
                   ))}
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  This helps us recommend the right filtration including any disinfection systems needed for non-mains water.
+                </p>
+
+                {NON_TOWN_SOURCES.includes(answers.waterSource) && (
+                  <div className="space-y-5 animate-fade-in pt-2">
+                    <div
+                      className={`rounded-lg border-2 p-4 transition-colors ${
+                        showErrors && !answers.waterTestedRecently
+                          ? "border-destructive/50 bg-destructive/5"
+                          : "border-border bg-muted/30"
+                      }`}
+                    >
+                      <p className="mb-3 text-sm font-medium text-foreground">
+                        Has your water been tested in the last 2 years?
+                        <span className="ml-1 text-destructive">*</span>
+                      </p>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        {waterTestedOptions.map((opt) => (
+                          <OptionButton
+                            key={opt}
+                            selected={answers.waterTestedRecently === opt}
+                            onClick={() => set("waterTestedRecently", opt)}
+                          >
+                            {opt}
+                          </OptionButton>
+                        ))}
+                      </div>
+                      {showErrors && !answers.waterTestedRecently && (
+                        <p className="mt-2 text-xs font-medium text-destructive">
+                          Please select an option to continue.
+                        </p>
+                      )}
+                    </div>
+
+                    <div
+                      className={`rounded-lg border-2 p-4 transition-colors ${
+                        showErrors && !answers.waterUsageType
+                          ? "border-destructive/50 bg-destructive/5"
+                          : "border-border bg-muted/30"
+                      }`}
+                    >
+                      <p className="mb-3 text-sm font-medium text-foreground">
+                        How is the water used in your home?
+                        <span className="ml-1 text-destructive">*</span>
+                      </p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {waterUsageOptions.map((opt) => (
+                          <OptionButton
+                            key={opt}
+                            selected={answers.waterUsageType === opt}
+                            onClick={() => set("waterUsageType", opt)}
+                          >
+                            {opt}
+                          </OptionButton>
+                        ))}
+                      </div>
+                      {showErrors && !answers.waterUsageType && (
+                        <p className="mt-2 text-xs font-medium text-destructive">
+                          Please select an option to continue.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
