@@ -165,6 +165,7 @@ export default function QuizPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [showErrors, setShowErrors] = useState(false);
+  const [pendingWaterSource, setPendingWaterSource] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -211,6 +212,28 @@ export default function QuizPage() {
 
   const set = (field: keyof QuizAnswers, value: string | string[] | boolean) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const applyWaterSource = (value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      waterSource: value,
+      ...(NON_TOWN_SOURCES.includes(value)
+        ? {}
+        : { waterTestedRecently: "", waterUsageType: "" }),
+    }));
+  };
+
+  const handleWaterSourceChange = (value: string) => {
+    if (value === answers.waterSource) return;
+    const wasNonTown = NON_TOWN_SOURCES.includes(answers.waterSource);
+    const hasFollowUps = !!(answers.waterTestedRecently || answers.waterUsageType);
+    // Only confirm when switching AWAY from a non-town source that has follow-up answers.
+    if (wasNonTown && hasFollowUps && answers.waterSource !== value) {
+      setPendingWaterSource(value);
+      return;
+    }
+    applyWaterSource(value);
   };
 
   const handleNext = () => {
@@ -487,13 +510,7 @@ export default function QuizPage() {
                     <OptionButton
                       key={w.value}
                       selected={answers.waterSource === w.value}
-                      onClick={() => {
-                        set("waterSource", w.value);
-                        if (!NON_TOWN_SOURCES.includes(w.value)) {
-                          set("waterTestedRecently", "");
-                          set("waterUsageType", "");
-                        }
-                      }}
+                      onClick={() => handleWaterSourceChange(w.value)}
                     >
                       <span className="flex flex-col items-start gap-0.5 text-left">
                         <span className="font-medium">{w.label}</span>
