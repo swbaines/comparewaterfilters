@@ -35,7 +35,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/quiz",
     source: "src/pages/QuizPage.tsx",
-    title: "Whole House Water Filter Quiz — Find Your Match in 2 Minutes",
+    title: "Whole House Water Filter Quiz — Find Your Match",
     description:
       "Answer a few quick questions about your home and water concerns to get personalised whole house water filter recommendations and free quotes.",
     canonical: `${BASE_URL}/quiz`,
