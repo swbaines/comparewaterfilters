@@ -599,10 +599,20 @@ export default function QuizPage() {
                       selected={answers.concerns.includes(c.value)}
                       onClick={() => toggleMulti("concerns", c.value)}
                     >
-                      {c.label}
+                      <span className="flex items-center gap-2">
+                        {c.value === "replacement" && (
+                          <RefreshCw className="h-3.5 w-3.5 shrink-0 text-primary" />
+                        )}
+                        <span>{c.label}</span>
+                      </span>
                     </MultiSelectButton>
                   ))}
                 </div>
+                {answers.concerns.includes("replacement") && (
+                  <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary animate-fade-in">
+                    We'll match you with vendors who can quote on system replacements and upgrades.
+                  </p>
+                )}
               </div>
             )}
 
