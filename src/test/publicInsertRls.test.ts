@@ -33,7 +33,9 @@ describeIfEnv("Public RLS insert surface", () => {
   });
 
   it("allows anonymous insert into quote_requests (flagged as test)", async () => {
-    const { data, error } = await anon
+    // Mirror production code: insert without `.select()` so we don't also need
+    // a SELECT policy for `anon` (the row is not read back).
+    const { error, status } = await anon
       .from("quote_requests")
       .insert({
         provider_name: "RLS Test Provider",
@@ -42,27 +44,23 @@ describeIfEnv("Public RLS insert surface", () => {
         customer_state: "VIC",
         recommended_systems: [],
         is_test: true,
-      })
-      .select("id, is_test")
-      .single();
+      });
 
     expect(error, error?.message).toBeNull();
-    expect(data?.is_test).toBe(true);
+    expect(status).toBe(201);
   });
 
   it("allows anonymous insert into quiz_submissions", async () => {
-    const { data, error } = await anon
+    const { error, status } = await anon
       .from("quiz_submissions")
       .insert({
         first_name: "RLS Anon Test",
         email: SENTINEL_EMAIL,
         consent: false,
-      })
-      .select("id")
-      .single();
+      });
 
     expect(error, error?.message).toBeNull();
-    expect(data?.id).toBeTruthy();
+    expect(status).toBe(201);
   });
 
   // Tables that should reject anonymous inserts.
@@ -99,23 +97,16 @@ describeIfEnv("Public RLS insert surface", () => {
   it.each(lockedTables)(
     "rejects anonymous insert into %s",
     async (table, payload) => {
-      const { data, error } = await (anon as any)
+      // Same reasoning as above: omit `.select()` so we measure the INSERT
+      // policy alone, not a missing SELECT-back permission.
+      const { error, status } = await (anon as any)
         .from(table)
-        .insert(payload)
-        .select();
-
-      // Either the insert returns an explicit RLS error, or it silently
-      // returns no rows (PostgREST behaviour when the WITH CHECK clause hides
-      // the inserted row). Both outcomes prove anonymous writes are blocked.
-      const blocked =
-        !!error ||
-        (Array.isArray(data) && data.length === 0) ||
-        data === null;
+        .insert(payload);
 
       expect(
-        blocked,
-        `Anonymous insert into '${table}' was unexpectedly accepted: ${JSON.stringify(data)}`,
-      ).toBe(true);
+        error,
+        `Anonymous insert into '${table}' was unexpectedly accepted (status ${status}).`,
+      ).not.toBeNull();
 
       if (error) {
         // When an error is surfaced it should be an RLS / permission error
