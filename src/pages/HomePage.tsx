@@ -420,7 +420,7 @@ export default function HomePage() {
                 },
                 {
                   heading: "PFAS is in more water supplies than we thought",
-                  body: "Elevated PFAS was detected at Sydney's Blue Mountains Cascade WFP in 2024. Australia updated its drinking water guidelines in June 2025 to set lower PFAS limits — acknowledging the problem is real. Also linking PFAS with lower fertility rates ",
+                  body: "Elevated PFAS was detected at Sydney's Blue Mountains Cascade WFP in 2024. Australia updated its drinking water guidelines in June 2025 to set lower PFAS limits — acknowledging the problem is real. PFAS exposure has also been linked to lower fertility rates.",
                 },
                 {
                   heading: "Bushfires contaminated major catchments",
