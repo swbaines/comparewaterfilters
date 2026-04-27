@@ -414,7 +414,9 @@ export default function AdminSeoPreviewPage() {
 
       <div className="space-y-4">
         {filtered.map((meta) => {
-          const issues = audit(meta);
+          const issues = issuesByRoute.get(meta.route) ?? [];
+          const errs = issues.filter((i) => i.level === "error");
+          const warns = issues.filter((i) => i.level === "warn");
           const drift = driftByRoute.get(meta.route) ?? [];
           const fullTitle = meta.title.includes(SITE_NAME)
             ? meta.title
@@ -436,18 +438,28 @@ export default function AdminSeoPreviewPage() {
                         Drift ({drift.length})
                       </Badge>
                     )}
-                    {issues.length === 0 ? (
-                      <Badge
-                        variant="outline"
-                        className="gap-1 text-primary"
-                      >
+                    {errs.length === 0 && warns.length === 0 ? (
+                      <Badge variant="outline" className="gap-1 text-primary">
                         <CheckCircle2 className="h-3 w-3" /> OK
                       </Badge>
                     ) : (
-                      <Badge variant="destructive" className="gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        {issues.length} issue{issues.length === 1 ? "" : "s"}
-                      </Badge>
+                      <>
+                        {errs.length > 0 && (
+                          <Badge variant="destructive" className="gap-1">
+                            <AlertTriangle className="h-3 w-3" />
+                            {errs.length} error{errs.length === 1 ? "" : "s"}
+                          </Badge>
+                        )}
+                        {warns.length > 0 && (
+                          <Badge
+                            variant="outline"
+                            className="gap-1 border-amber-400 text-amber-700 dark:text-amber-400"
+                          >
+                            <AlertTriangle className="h-3 w-3" />
+                            {warns.length} warning{warns.length === 1 ? "" : "s"}
+                          </Badge>
+                        )}
+                      </>
                     )}
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
@@ -523,10 +535,19 @@ export default function AdminSeoPreviewPage() {
                           className={
                             i.level === "error"
                               ? "text-destructive"
-                              : "text-amber-700 dark:text-amber-400"
+                              : i.level === "warn"
+                                ? "text-amber-700 dark:text-amber-400"
+                                : "text-muted-foreground"
                           }
                         >
-                          • {i.message}
+                          {i.level === "error" ? (
+                            <AlertTriangle className="mr-1 inline h-3 w-3" />
+                          ) : i.level === "warn" ? (
+                            <AlertTriangle className="mr-1 inline h-3 w-3" />
+                          ) : (
+                            <Info className="mr-1 inline h-3 w-3" />
+                          )}
+                          {i.message}
                         </li>
                       ))}
                     </ul>
