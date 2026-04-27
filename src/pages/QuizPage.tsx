@@ -90,6 +90,7 @@ const coverageOptions = [
   { value: "kitchen", label: "Kitchen only" },
   { value: "whole-house", label: "Whole house" },
   { value: "whole-house-plus", label: "Whole house + drinking water" },
+  { value: "showers-bathrooms", label: "Filtered showers and bathrooms" },
 ];
 
 const budgetOptions = [
