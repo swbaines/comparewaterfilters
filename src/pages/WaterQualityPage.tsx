@@ -352,22 +352,22 @@ export default function WaterQualityPage() {
             {/* Metric cards */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
               <Card>
-                <CardContent className="pt-6">
+                <CardContent className="pt-5">
                   <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                     <Thermometer className="h-4 w-4" />
                     Chlorine
                   </div>
-                  <p className="mt-2 text-3xl font-bold">{result.chlorine}</p>
-                  <p className="text-sm text-muted-foreground">mg/L typical</p>
+                  <p className="mt-1.5 text-3xl font-bold leading-none">{result.chlorine}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">mg/L typical</p>
                   <Badge className={`mt-2 ${chlorine?.bg} ${chlorine?.color} border-0`}>{chlorine?.label}</Badge>
                   {result.chlorine >= 0.1 && (
-                    <p className="mt-2 text-xs text-muted-foreground/80 leading-snug">
-                      Above the typical taste &amp; smell threshold (0.1–0.4 mg/L) — most people will notice it.
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-snug">
+                      Above the taste &amp; smell threshold (0.1–0.4 mg/L) — most people notice it.
                     </p>
                   )}
                   {result.usesChloramine && (
-                    <p className="mt-2 text-xs text-muted-foreground/80">
-                      Chloramine is also used as a secondary disinfectant in this area
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-snug">
+                      Chloramine also used as secondary disinfectant here.
                     </p>
                   )}
                 </CardContent>
