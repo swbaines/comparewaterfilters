@@ -601,17 +601,27 @@ export default function QuizPage() {
                     >
                       <span className="flex items-center gap-2">
                         {c.value === "replacement" && (
-                          <RefreshCw className="h-3.5 w-3.5 shrink-0 text-primary" />
+                          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+                            <RefreshCw className="h-3.5 w-3.5 text-primary" />
+                          </span>
                         )}
-                        <span>{c.label}</span>
+                        <span className="leading-snug">{c.label}</span>
                       </span>
                     </MultiSelectButton>
                   ))}
                 </div>
                 {answers.concerns.includes("replacement") && (
-                  <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary animate-fade-in">
-                    We'll match you with vendors who can quote on system replacements and upgrades.
-                  </p>
+                  <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/[0.02] px-4 py-3 shadow-sm animate-fade-in">
+                    <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
+                      <RefreshCw className="h-3.5 w-3.5 text-primary" />
+                    </span>
+                    <div className="space-y-0.5">
+                      <p className="text-sm font-semibold text-foreground">Replacement & upgrade matching</p>
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        We'll prioritise providers who can quote on replacing or upgrading your existing system — including modern warranties and best-practice installs.
+                      </p>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
