@@ -96,7 +96,7 @@ const STATE_WATER_PROFILES: Record<string, StateWaterProfile> = {
 
 // ─── Helper flags ───────────────────────────────────────────────────────────
 function getFlags(answers: QuizAnswers) {
-  const { concerns, coverage, budget, ownershipStatus, propertyType, state } = answers;
+  const { concerns, coverage, budget, ownershipStatus, propertyType, state, propertyAge } = answers;
   const has = (c: string) => concerns.includes(c);
 
   const isRenter = ownershipStatus === "Rent";
@@ -105,6 +105,12 @@ function getFlags(answers: QuizAnswers) {
 
   const stateProfile = STATE_WATER_PROFILES[state] || null;
   const isWAorSA = state === "WA" || state === "SA";
+
+  // Property age flags — older homes typically have aging galvanised/copper
+  // pipework that can leach lead, copper or sediment into household water.
+  const isVeryOldProperty = propertyAge === "Over 50 years";
+  const isOldProperty = isVeryOldProperty || propertyAge === "20 to 50 years";
+  const oldPipesHeavyMetals = isVeryOldProperty && has("heavy-metals");
 
   // RULE 1 trigger: whole-home intent
   const wholeHomeTrigger =
@@ -155,6 +161,9 @@ function getFlags(answers: QuizAnswers) {
     roTrigger,
     onlyTasteChlorine,
     budgetUnder1k,
+    isOldProperty,
+    isVeryOldProperty,
+    oldPipesHeavyMetals,
   };
 }
 
