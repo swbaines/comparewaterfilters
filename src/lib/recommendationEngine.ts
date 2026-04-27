@@ -8,6 +8,7 @@ export interface QuizAnswers {
   ownershipStatus: string;
   householdSize: string;
   bathrooms: string;
+  propertyAge: string;
   waterSource: string;
   concerns: string[];
   coverage: string;
