@@ -11,6 +11,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const TOTAL_STEPS = 8;
 
@@ -155,6 +165,7 @@ export default function QuizPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [showErrors, setShowErrors] = useState(false);
+  const [pendingWaterSource, setPendingWaterSource] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -201,6 +212,28 @@ export default function QuizPage() {
 
   const set = (field: keyof QuizAnswers, value: string | string[] | boolean) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const applyWaterSource = (value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      waterSource: value,
+      ...(NON_TOWN_SOURCES.includes(value)
+        ? {}
+        : { waterTestedRecently: "", waterUsageType: "" }),
+    }));
+  };
+
+  const handleWaterSourceChange = (value: string) => {
+    if (value === answers.waterSource) return;
+    const wasNonTown = NON_TOWN_SOURCES.includes(answers.waterSource);
+    const hasFollowUps = !!(answers.waterTestedRecently || answers.waterUsageType);
+    // Only confirm when switching AWAY from a non-town source that has follow-up answers.
+    if (wasNonTown && hasFollowUps && answers.waterSource !== value) {
+      setPendingWaterSource(value);
+      return;
+    }
+    applyWaterSource(value);
   };
 
   const handleNext = () => {
@@ -477,13 +510,7 @@ export default function QuizPage() {
                     <OptionButton
                       key={w.value}
                       selected={answers.waterSource === w.value}
-                      onClick={() => {
-                        set("waterSource", w.value);
-                        if (!NON_TOWN_SOURCES.includes(w.value)) {
-                          set("waterTestedRecently", "");
-                          set("waterUsageType", "");
-                        }
-                      }}
+                      onClick={() => handleWaterSourceChange(w.value)}
                     >
                       <span className="flex flex-col items-start gap-0.5 text-left">
                         <span className="font-medium">{w.label}</span>
@@ -775,6 +802,34 @@ export default function QuizPage() {
           )}
         </div>
       </div>
+
+      <AlertDialog
+        open={pendingWaterSource !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingWaterSource(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Change water source?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Switching your water source will clear your answers to the follow-up questions
+              (water testing and how the water is used). Are you sure you want to change it?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep current selection</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingWaterSource) applyWaterSource(pendingWaterSource);
+                setPendingWaterSource(null);
+              }}
+            >
+              Yes, change it
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
