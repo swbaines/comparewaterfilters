@@ -354,19 +354,29 @@ export default function AdminSeoPreviewPage() {
       )}
 
       <Card className="mb-6 p-4">
-        <div className="grid gap-3 text-sm md:grid-cols-4">
+        <div className="grid gap-3 text-sm md:grid-cols-5">
           <div>
             <div className="text-muted-foreground">Routes tracked</div>
             <div className="text-2xl font-semibold">{ROUTES.length}</div>
           </div>
           <div>
-            <div className="text-muted-foreground">Audit issues</div>
+            <div className="text-muted-foreground">Errors</div>
             <div
               className={`text-2xl font-semibold ${
-                totalIssues > 0 ? "text-destructive" : "text-primary"
+                errorCount > 0 ? "text-destructive" : "text-primary"
               }`}
             >
-              {totalIssues}
+              {errorCount}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground">Warnings</div>
+            <div
+              className={`text-2xl font-semibold ${
+                warnCount > 0 ? "text-amber-700 dark:text-amber-400" : "text-primary"
+              }`}
+            >
+              {warnCount}
             </div>
           </div>
           <div>
