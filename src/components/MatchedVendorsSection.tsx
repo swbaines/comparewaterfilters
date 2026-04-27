@@ -331,6 +331,8 @@ export default function MatchedVendorsSection({
         household_size: answers.householdSize,
         property_age: answers.propertyAge || null,
         water_source: answers.waterSource,
+        water_tested_recently: answers.waterTestedRecently || null,
+        water_usage_type: answers.waterUsageType || null,
         concerns: answers.concerns,
         budget: answers.budget,
         recommended_systems: dedupedSystems,

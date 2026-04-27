@@ -492,6 +492,8 @@ export type Database = {
           state: string | null
           suburb: string | null
           water_source: string | null
+          water_tested_recently: string | null
+          water_usage_type: string | null
         }
         Insert: {
           bathrooms?: string | null
@@ -514,6 +516,8 @@ export type Database = {
           state?: string | null
           suburb?: string | null
           water_source?: string | null
+          water_tested_recently?: string | null
+          water_usage_type?: string | null
         }
         Update: {
           bathrooms?: string | null
@@ -536,6 +540,8 @@ export type Database = {
           state?: string | null
           suburb?: string | null
           water_source?: string | null
+          water_tested_recently?: string | null
+          water_usage_type?: string | null
         }
         Relationships: []
       }
@@ -568,6 +574,8 @@ export type Database = {
           status_updated_at: string | null
           vendor_notes: string | null
           water_source: string | null
+          water_tested_recently: string | null
+          water_usage_type: string | null
         }
         Insert: {
           budget?: string | null
@@ -597,6 +605,8 @@ export type Database = {
           status_updated_at?: string | null
           vendor_notes?: string | null
           water_source?: string | null
+          water_tested_recently?: string | null
+          water_usage_type?: string | null
         }
         Update: {
           budget?: string | null
@@ -626,6 +636,8 @@ export type Database = {
           status_updated_at?: string | null
           vendor_notes?: string | null
           water_source?: string | null
+          water_tested_recently?: string | null
+          water_usage_type?: string | null
         }
         Relationships: [
           {
