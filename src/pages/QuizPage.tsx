@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, RefreshCw } from "lucide-react";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import {
   AlertDialog,
@@ -82,6 +82,7 @@ const concernOptions = [
   { value: "bacteria", label: "Bacteria / microbiological safety" },
   { value: "not-sure", label: "Not sure, just want better water" },
   { value: "hard-water", label: "Hard water / scale buildup" },
+  { value: "replacement", label: "Existing system needs replacement" },
 ];
 
 const coverageOptions = [
@@ -598,10 +599,20 @@ export default function QuizPage() {
                       selected={answers.concerns.includes(c.value)}
                       onClick={() => toggleMulti("concerns", c.value)}
                     >
-                      {c.label}
+                      <span className="flex items-center gap-2">
+                        {c.value === "replacement" && (
+                          <RefreshCw className="h-3.5 w-3.5 shrink-0 text-primary" />
+                        )}
+                        <span>{c.label}</span>
+                      </span>
                     </MultiSelectButton>
                   ))}
                 </div>
+                {answers.concerns.includes("replacement") && (
+                  <p className="mt-3 rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-primary animate-fade-in">
+                    We'll match you with vendors who can quote on system replacements and upgrades.
+                  </p>
+                )}
               </div>
             )}
 

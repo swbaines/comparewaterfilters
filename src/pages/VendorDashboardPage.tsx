@@ -613,6 +613,9 @@ export default function VendorDashboardPage() {
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
                     )}
+                    {(lead.concerns || []).includes("replacement") && (
+                      <Badge className="ml-1 bg-primary text-primary-foreground text-[10px] tracking-wide">REPLACEMENT</Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}
@@ -679,9 +682,16 @@ export default function VendorDashboardPage() {
               <DialogHeader>
                 <DialogTitle className="flex items-center justify-between">
                   <span>Lead Details — {selectedLead.customer_name}</span>
-                  <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-2`}>
-                    {selectedLead.lead_status}
-                  </Badge>
+                  <span className="flex items-center gap-2">
+                    {(selectedLead.concerns || []).includes("replacement") && (
+                      <Badge className="bg-primary text-primary-foreground text-[10px] tracking-wide">
+                        REPLACEMENT
+                      </Badge>
+                    )}
+                    <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-1`}>
+                      {selectedLead.lead_status}
+                    </Badge>
+                  </span>
                 </DialogTitle>
               </DialogHeader>
 

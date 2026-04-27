@@ -149,7 +149,11 @@ function getFlags(answers: QuizAnswers) {
     drinkingCoverage &&
     concerns.every((c) => ["taste", "chlorine", "drinking-quality"].includes(c));
 
-  const budgetUnder1k = budget === "under-1000";
+  // Replacement intent — these customers already have a system and are
+  // upgrading. They've invested before, so we relax the strict budget filter
+  // and surface modern best-practice equivalents.
+  const isReplacement = has("replacement");
+  const budgetUnder1k = budget === "under-1000" && !isReplacement;
 
   return {
     has,
@@ -166,6 +170,7 @@ function getFlags(answers: QuizAnswers) {
     isOldProperty,
     isVeryOldProperty,
     oldPipesHeavyMetals,
+    isReplacement,
   };
 }
 
@@ -515,6 +520,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   const warnings: string[] = [];
   const appliedRules: { rule: FiredRule; label: string }[] = [];
   const pushRule = (r: FiredRule) => appliedRules.push({ rule: r, label: RULE_LABELS[r] });
+
+  // Replacement / upgrade intent — surface a clear note so the user knows
+  // we're focused on modern best-practice systems rather than budget-first.
+  if (f.isReplacement) {
+    warnings.push(
+      "You're likely upgrading from an existing system — our recommendations focus on current best-practice systems with modern filtration and warranties.",
+    );
+  }
 
   let primaryId = "under-sink-carbon";
   let secondaryId = "under-sink-carbon";
