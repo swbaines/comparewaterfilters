@@ -425,15 +425,6 @@ export default function WaterQualityPage() {
                   <p className="mt-3 text-xs text-muted-foreground/80">
                     Data &amp; context: NHMRC 2025 PFAS guideline values, cross-referenced with utility reports and the PFAS NEMP 3.0. Risk bands are general guidance based on documented contamination patterns and may not reflect exact conditions at your specific address.{" "}
                     <a
-                      href="https://www.nhmrc.gov.au/about-us/news-centre/updated-pfas-guideline-values-australian-drinking-water-guidelines"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 inline-block underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
-                    >
-                      NHMRC <ExternalLink className="ml-0.5 inline h-3 w-3" />
-                    </a>
-                    {" · "}
-                    <a
                       href="https://www.dcceew.gov.au/environment/protection/publications/pfas-nemp-3"
                       target="_blank"
                       rel="noopener noreferrer"
