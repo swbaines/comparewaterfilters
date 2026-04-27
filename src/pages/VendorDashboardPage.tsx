@@ -724,6 +724,14 @@ export default function VendorDashboardPage() {
                         REPLACEMENT
                       </Badge>
                     )}
+                    {selectedLead.lead_temperature && LEAD_TEMPERATURE_LABEL[selectedLead.lead_temperature as "hot" | "warm" | "cold"] && (
+                      <Badge
+                        variant="outline"
+                        className={`text-[10px] tracking-wide ${LEAD_TEMPERATURE_BADGE_CLASS[selectedLead.lead_temperature as "hot" | "warm" | "cold"]}`}
+                      >
+                        {LEAD_TEMPERATURE_LABEL[selectedLead.lead_temperature as "hot" | "warm" | "cold"]}
+                      </Badge>
+                    )}
                     <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-1`}>
                       {selectedLead.lead_status}
                     </Badge>
