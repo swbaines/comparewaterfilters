@@ -613,6 +613,9 @@ export default function VendorDashboardPage() {
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
                     )}
+                    {(lead.concerns || []).includes("replacement") && (
+                      <Badge className="ml-1 bg-primary text-primary-foreground text-[10px] tracking-wide">REPLACEMENT</Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}
