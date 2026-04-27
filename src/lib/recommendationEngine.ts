@@ -31,6 +31,7 @@ export type FiredRule =
   | "rule-6-budget-under-1k"
   | "rule-7-untreated-water-uv"
   | "rule-1b-whole-home-plus-ro"
+  | "rule-8-old-pipes-heavy-metals"
   | "default";
 
 export interface RuleExplanation {
@@ -95,7 +96,7 @@ const STATE_WATER_PROFILES: Record<string, StateWaterProfile> = {
 
 // ─── Helper flags ───────────────────────────────────────────────────────────
 function getFlags(answers: QuizAnswers) {
-  const { concerns, coverage, budget, ownershipStatus, propertyType, state } = answers;
+  const { concerns, coverage, budget, ownershipStatus, propertyType, state, propertyAge } = answers;
   const has = (c: string) => concerns.includes(c);
 
   const isRenter = ownershipStatus === "Rent";
@@ -104,6 +105,12 @@ function getFlags(answers: QuizAnswers) {
 
   const stateProfile = STATE_WATER_PROFILES[state] || null;
   const isWAorSA = state === "WA" || state === "SA";
+
+  // Property age flags — older homes typically have aging galvanised/copper
+  // pipework that can leach lead, copper or sediment into household water.
+  const isVeryOldProperty = propertyAge === "Over 50 years";
+  const isOldProperty = isVeryOldProperty || propertyAge === "20 to 50 years";
+  const oldPipesHeavyMetals = isVeryOldProperty && has("heavy-metals");
 
   // RULE 1 trigger: whole-home intent
   const wholeHomeTrigger =
@@ -154,6 +161,9 @@ function getFlags(answers: QuizAnswers) {
     roTrigger,
     onlyTasteChlorine,
     budgetUnder1k,
+    isOldProperty,
+    isVeryOldProperty,
+    oldPipesHeavyMetals,
   };
 }
 
@@ -208,6 +218,7 @@ const RULE_LABELS: Record<FiredRule, string> = {
   "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
   "rule-7-untreated-water-uv": "Rule 7 — Untreated water source (rainwater, tank, or bore) — UV recommended",
   "rule-1b-whole-home-plus-ro": "Rule 1b — Whole-home intent + RO-essential contaminants (combo recommended)",
+  "rule-8-old-pipes-heavy-metals": "Rule 8 — Older property (50+ yrs) + heavy-metals concern — RO required for lead/copper from aged pipes",
   "default": "Default — general drinking-water improvement",
 };
 
@@ -464,6 +475,29 @@ export function explainRuleEvaluations(
         },
       ],
     },
+    {
+      rule: "rule-8-old-pipes-heavy-metals",
+      label: RULE_LABELS["rule-8-old-pipes-heavy-metals"],
+      fired: f.oldPipesHeavyMetals,
+      matchedConcerns: matched(["heavy-metals"]),
+      reason: f.oldPipesHeavyMetals
+        ? `Property age="Over 50 years" AND heavy-metals concern selected — RO forced into recommendation.`
+        : `propertyAge="${answers.propertyAge || "(not set)"}", heavy-metals concern=${anyOf(["heavy-metals"]) ? "yes" : "no"}.`,
+      checks: [
+        {
+          label: "Property age",
+          expected: "Over 50 years",
+          actual: answers.propertyAge || "(not set)",
+          pass: f.isVeryOldProperty,
+        },
+        {
+          label: "Concerns",
+          expected: "heavy-metals",
+          actual: matchedStr(["heavy-metals"]),
+          pass: anyOf(["heavy-metals"]),
+        },
+      ],
+    },
   ];
 
   // Mark the dominant rule explicitly so the UI can highlight it.
@@ -684,6 +718,49 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // ── State-specific warnings (VIC chlorine, WA hardness, SA hardness, QLD seasonal taste, NSW PFAS) ──
   warnings.push(...getStateWarnings(answers, f));
 
+  // ── RULE 8: Old property (50+ yrs) + heavy-metals concern ─────────────────
+  // Aged galvanised steel and pre-1980s copper plumbing can leach lead,
+  // copper, zinc and iron into household water — particularly first-draw
+  // water that has sat in the pipes overnight. Reverse osmosis is the only
+  // household technology that reliably removes dissolved heavy metals at
+  // the kitchen tap, so we force RO into the recommendation here.
+  if (f.oldPipesHeavyMetals) {
+    pushRule("rule-8-old-pipes-heavy-metals");
+    const ageNote =
+      "Important: Properties over 50 years old often have aging galvanised or copper plumbing that can leach lead, copper or other heavy metals into household water — especially first-draw water in the morning. A reverse osmosis system at the kitchen tap is the proper, evidence-based fix and is included in your recommendation.";
+    warnings.push(ageNote);
+
+    // Guarantee RO appears somewhere in the result. Order of preference:
+    // 1. If we can install whole-home → primary should be the whole-house+RO combo.
+    // 2. Otherwise → primary should be reverse-osmosis at the kitchen tap.
+    const roPresent =
+      [primaryId, secondaryId, premiumId].includes("reverse-osmosis") ||
+      [primaryId, secondaryId, premiumId].includes("whole-house-combo");
+
+    if (!roPresent) {
+      if (f.canHaveWholeHome && !f.budgetUnder1k) {
+        primaryId = "whole-house-combo";
+        primaryReason = `Because your property is over 50 years old AND you've flagged heavy metals, the right answer is a whole house filtration system paired with reverse osmosis at the kitchen tap. RO is the only household technology that reliably removes lead, copper and other heavy metals that can leach from aged plumbing — and pairing it with whole-house coverage handles chlorine and sediment everywhere else. $4,000–$6,000 installed together.`;
+        secondaryId = "reverse-osmosis";
+        secondaryReason = `If a full combo isn't possible right now, a reverse osmosis system on its own at the kitchen tap is the most important step — it directly addresses heavy metals from aged pipes for drinking and cooking water. $800–$1,600 installed.`;
+        // keep premiumId as-is (likely already combo)
+        if (premiumId !== "whole-house-combo") premiumId = "whole-house-combo";
+        premiumReason = `The premium build: a higher-spec whole house filtration system paired with a reverse osmosis unit featuring alkaline remineralisation — chlorine-free water at every tap and shower, plus purified, mineral-balanced drinking water at the kitchen, with full protection against heavy metals from aged plumbing.`;
+      } else {
+        primaryId = "reverse-osmosis";
+        primaryReason = `Because your property is over 50 years old AND you've flagged heavy metals, a reverse osmosis system at the kitchen tap is essential — it's the only household technology that reliably removes lead, copper and other heavy metals that can leach from aged galvanised or copper plumbing. $800–$1,600 installed.`;
+      }
+    }
+  } else if (f.isOldProperty) {
+    // Lighter-touch nudge for 20–50 year homes: scale and chlorine-by-products
+    // can degrade older plumbing faster, so a whole-house carbon + scale-
+    // reduction setup pays off. We only add an informational warning — we
+    // don't change the recommendation.
+    warnings.push(
+      "Your property is in the 20–50 year age range — older plumbing benefits from reduced chlorine and scale exposure. A whole house filtration system with a scale-reduction (TAC) cartridge can extend the life of your hot water system, dishwasher and washing machine.",
+    );
+  }
+
   // ── Determine triggering concerns based on the dominant rule ──────────────
   // The dominant rule is the LAST one pushed (most specific path taken).
   const dominantRule: FiredRule = appliedRules[appliedRules.length - 1]?.rule ?? "default";
@@ -697,6 +774,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
     "rule-5-renter-apartment": [], // not concern-driven — driven by ownership/property type
     "rule-6-budget-under-1k": [], // budget modifier, concerns inherited from base rule
     "rule-7-untreated-water-uv": ["bacteria"], // driven by water source, not concerns; bacteria is the closest match
+    "rule-8-old-pipes-heavy-metals": ["heavy-metals"],
     "default": [],
   };
 
