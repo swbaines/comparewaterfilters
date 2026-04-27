@@ -417,6 +417,27 @@ export default function WaterQualityPage() {
                         ? "Moderate"
                         : "Elevated"}
                   </Badge>
+                  <p className="mt-3 text-xs text-muted-foreground/80">
+                    Data &amp; context:{" "}
+                    <a
+                      href="https://www.nhmrc.gov.au/about-us/news-centre/updated-pfas-guideline-values-australian-drinking-water-guidelines"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                    >
+                      NHMRC 2025 PFAS guideline values <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                    </a>
+                    , cross-referenced with utility reports and the{" "}
+                    <a
+                      href="https://www.dcceew.gov.au/environment/protection/publications/pfas-nemp-3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                    >
+                      PFAS NEMP 3.0 <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                    </a>
+                    .
+                  </p>
                 </CardContent>
               </Card>
             </div>
