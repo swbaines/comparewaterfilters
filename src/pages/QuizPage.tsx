@@ -404,16 +404,39 @@ export default function QuizPage() {
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-4">
-                <SuburbPostcodeAutocomplete
-                  postcode={answers.postcode}
-                  suburb={answers.suburb}
-                  onSelect={(postcode, suburb, state) => {
-                    setAnswers((prev) => ({ ...prev, postcode, suburb, state }));
-                  }}
-                />
                 <div>
-                  <label className="mb-2 block text-sm font-medium">Property type</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div
+                    className={
+                      showErrors && (!answers.postcode || !answers.state)
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background"
+                        : ""
+                    }
+                  >
+                    <SuburbPostcodeAutocomplete
+                      postcode={answers.postcode}
+                      suburb={answers.suburb}
+                      onSelect={(postcode, suburb, state) => {
+                        setAnswers((prev) => ({ ...prev, postcode, suburb, state }));
+                      }}
+                    />
+                  </div>
+                  {showErrors && (!answers.postcode || !answers.state) && (
+                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                      Please select your suburb or postcode to continue.
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Property type <span className="text-destructive">*</span>
+                  </label>
+                  <div
+                    className={`grid grid-cols-3 gap-2 ${
+                      showErrors && !answers.propertyType
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
+                  >
                     {propertyOptions.map((p) => (
                       <OptionButton
                         key={p}
@@ -424,10 +447,23 @@ export default function QuizPage() {
                       </OptionButton>
                     ))}
                   </div>
+                  {showErrors && !answers.propertyType && (
+                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                      Please select an option to continue.
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-medium">Do you own or rent?</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <label className="mb-2 block text-sm font-medium">
+                    Do you own or rent? <span className="text-destructive">*</span>
+                  </label>
+                  <div
+                    className={`grid grid-cols-2 gap-2 ${
+                      showErrors && !answers.ownershipStatus
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
+                  >
                     {ownershipOptions.map((o) => (
                       <OptionButton
                         key={o}
@@ -438,11 +474,24 @@ export default function QuizPage() {
                       </OptionButton>
                     ))}
                   </div>
+                  {showErrors && !answers.ownershipStatus && (
+                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                      Please select an option to continue.
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium">People in home</label>
-                    <div className="flex gap-2">
+                    <label className="mb-2 block text-sm font-medium">
+                      People in home <span className="text-destructive">*</span>
+                    </label>
+                    <div
+                      className={`flex gap-2 ${
+                        showErrors && !answers.householdSize
+                          ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                          : ""
+                      }`}
+                    >
                       {householdSizes.map((s) => (
                         <OptionButton
                           key={s}
@@ -453,16 +502,34 @@ export default function QuizPage() {
                         </OptionButton>
                       ))}
                     </div>
+                    {showErrors && !answers.householdSize && (
+                      <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                        Please select an option.
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <label className="mb-2 block text-sm font-medium">Bathrooms</label>
-                    <div className="flex gap-2">
+                    <label className="mb-2 block text-sm font-medium">
+                      Bathrooms <span className="text-destructive">*</span>
+                    </label>
+                    <div
+                      className={`flex gap-2 ${
+                        showErrors && !answers.bathrooms
+                          ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                          : ""
+                      }`}
+                    >
                       {bathroomCounts.map((b) => (
                         <OptionButton key={b} selected={answers.bathrooms === b} onClick={() => set("bathrooms", b)}>
                           {b}
                         </OptionButton>
                       ))}
                     </div>
+                    {showErrors && !answers.bathrooms && (
+                      <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                        Please select an option.
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
