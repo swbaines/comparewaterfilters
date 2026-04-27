@@ -116,7 +116,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/provider-match",
     source: "src/pages/ProviderMatchPage.tsx",
-    title: "Get Matched With Whole House Water Filter Providers",
+    title: "Match Whole House Water Filter Providers",
     description:
       "Request free quotes from vetted whole house water filter providers in your area. Independent, no-obligation matching across Australia.",
     canonical: `${BASE_URL}/provider-match`,
