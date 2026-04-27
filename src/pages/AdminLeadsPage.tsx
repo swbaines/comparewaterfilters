@@ -7,11 +7,21 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
+import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2 } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 
@@ -35,6 +45,9 @@ export default function AdminLeadsPage() {
   const [pricesDialogOpen, setPricesDialogOpen] = useState(false);
   const [ownerPrice, setOwnerPrice] = useState<string>("");
   const [rentalPrice, setRentalPrice] = useState<string>("");
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetConfirmText, setResetConfirmText] = useState("");
+  const RESET_PHRASE = "RESET TEST DATA";
 
   const { data: leadPrices = [] } = useQuery({
     queryKey: ["lead-prices"],
@@ -255,6 +268,27 @@ export default function AdminLeadsPage() {
     return true;
   });
 
+  const resetTestDataMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("reset-test-data", {
+        body: { confirm: RESET_PHRASE },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      return data as { ok: true; deleted: { leads: number; invoices: number } };
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-invoices"] });
+      setResetDialogOpen(false);
+      setResetConfirmText("");
+      toast.success(
+        `Test data cleared — ${res.deleted.leads} lead(s), ${res.deleted.invoices} invoice(s) removed.`,
+      );
+    },
+    onError: (e: Error) => toast.error(e.message || "Failed to reset test data"),
+  });
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.lead_status === "new").length,
@@ -274,6 +308,14 @@ export default function AdminLeadsPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={openPricesDialog} className="gap-1">
               <Settings className="h-4 w-4" /> Lead Prices
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setResetDialogOpen(true)}
+              className="gap-1 text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" /> Reset Test Data
             </Button>
           </div>
         </div>
@@ -512,6 +554,44 @@ export default function AdminLeadsPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={resetDialogOpen} onOpenChange={(open) => {
+        setResetDialogOpen(open);
+        if (!open) setResetConfirmText("");
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset test data?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes every lead and invoice flagged as
+              <span className="font-mono"> is_test = true</span>. Real customer
+              leads and invoices are not touched. This cannot be undone.
+              <br /><br />
+              Type <span className="font-mono font-semibold">{RESET_PHRASE}</span> to confirm.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={resetConfirmText}
+            onChange={(e) => setResetConfirmText(e.target.value)}
+            placeholder={RESET_PHRASE}
+            autoFocus
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={resetConfirmText !== RESET_PHRASE || resetTestDataMutation.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                resetTestDataMutation.mutate();
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {resetTestDataMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Delete test data
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
