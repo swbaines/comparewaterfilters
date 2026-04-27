@@ -784,14 +784,7 @@ export default function ResultsPage() {
           </h1>
         </div>
 
-        {/* Warnings */}
-        {result.warnings && result.warnings.length > 0 && (
-          <div className="mb-8 space-y-3">
-            {result.warnings.map((warning, i) => (
-              <WarningCallout key={i} message={warning} variant={inferWarningVariant(warning)} />
-            ))}
-          </div>
-        )}
+        {/* Warnings hidden — duplicates info already in the "Top recommendation" box */}
 
         {/* Top recommendation */}
         <Card className="mb-8 border-primary/20 bg-accent/50">
