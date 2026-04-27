@@ -45,22 +45,30 @@ describe("Saved-results email — 'View my saved results' deep link", () => {
   });
 
   it("ResultsPage sends the canonical production /results?d=<encoded> URL as resultsUrl", () => {
+    // Isolate the handleEmailResults block so we only assert against the
+    // email-sending code path, not unrelated share-link logic that may
+    // legitimately use window.location.origin.
+    const handlerMatch = resultsPage.match(
+      /handleEmailResults[\s\S]*?templateName:\s*["']quiz-results-summary["'][\s\S]*?\}\);/,
+    );
+    expect(handlerMatch, "handleEmailResults block should exist").toBeTruthy();
+    const handler = handlerMatch![0];
+
     // Must encode the answers payload via base64 (btoa) so the link is
     // self-contained and re-hydrates the user's quiz state on click.
-    expect(resultsPage).toMatch(/btoa\(JSON\.stringify\(answers\)\)/);
+    expect(handler).toMatch(/btoa\(JSON\.stringify\(answers\)\)/);
 
     // Must build an absolute URL pointing at the production host — using
     // window.location.origin would leak preview / lovable.app domains into
     // emails, breaking the link for the recipient.
-    expect(resultsPage).toMatch(
+    expect(handler).toMatch(
       /https:\/\/comparewaterfilters\.com\.au\/results\?d=\$\{encoded\}/,
     );
-    expect(resultsPage).not.toMatch(
+    expect(handler).not.toMatch(
       /\$\{window\.location\.origin\}\/results\?d=/,
     );
 
     // And that URL must be passed through to the email template as resultsUrl.
-    expect(resultsPage).toMatch(/templateName:\s*["']quiz-results-summary["']/);
-    expect(resultsPage).toMatch(/resultsUrl:\s*url\b/);
+    expect(handler).toMatch(/resultsUrl:\s*url\b/);
   });
 });
