@@ -415,8 +415,16 @@ export default function QuizPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-medium">Approximate age of property</label>
-                  <div className="flex flex-wrap gap-2">
+                  <label className="mb-2 block text-sm font-medium">
+                    Approximate age of property <span className="text-destructive">*</span>
+                  </label>
+                  <div
+                    className={`flex flex-wrap gap-2 ${
+                      showErrors && !answers.propertyAge
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
+                  >
                     {propertyAges.map((a) => (
                       <OptionButton
                         key={a}
@@ -427,9 +435,15 @@ export default function QuizPage() {
                       </OptionButton>
                     ))}
                   </div>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    This helps installers understand your plumbing setup and provide accurate quotes.
-                  </p>
+                  {showErrors && !answers.propertyAge ? (
+                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                      Please select an option to continue. Choose “Not sure” if you’re unsure.
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      This helps installers understand your plumbing setup and provide accurate quotes.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
