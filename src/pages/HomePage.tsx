@@ -317,7 +317,7 @@ export default function HomePage() {
                   <MapPin className="h-3 w-3" /> Or search by suburb
                 </Link>
               </div>
-              <div className="space-y-3">
+              <div className="hidden space-y-3 sm:block">
                 {[
                   { suburb: "Wanneroo, WA", detail: "Hardness 195 mg/L — very hard" },
                   { suburb: "Adelaide CBD, SA", detail: "Chlorine up to 1.3 mg/L" },
