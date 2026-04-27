@@ -682,9 +682,16 @@ export default function VendorDashboardPage() {
               <DialogHeader>
                 <DialogTitle className="flex items-center justify-between">
                   <span>Lead Details — {selectedLead.customer_name}</span>
-                  <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-2`}>
-                    {selectedLead.lead_status}
-                  </Badge>
+                  <span className="flex items-center gap-2">
+                    {(selectedLead.concerns || []).includes("replacement") && (
+                      <Badge className="bg-primary text-primary-foreground text-[10px] tracking-wide">
+                        REPLACEMENT
+                      </Badge>
+                    )}
+                    <Badge className={`${statusColors[selectedLead.lead_status] || ""} text-xs ml-1`}>
+                      {selectedLead.lead_status}
+                    </Badge>
+                  </span>
                 </DialogTitle>
               </DialogHeader>
 
