@@ -505,6 +505,24 @@ export default function VendorDashboardPage() {
 
         {/* Stats */}
         <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <Card className={stats.hotWaiting > 0 ? "border-red-300 bg-red-50/40" : ""}>
+            <CardContent className="flex items-start gap-3 p-4">
+              <Flame className={`h-8 w-8 shrink-0 ${stats.hotWaiting > 0 ? "text-red-600" : "text-muted-foreground"}`} />
+              <div className="min-w-0">
+                <p className="text-sm text-muted-foreground">Hot leads waiting</p>
+                {emptyToday ? (
+                  <span className="text-sm font-medium text-muted-foreground">No leads today yet</span>
+                ) : (
+                  <span className={`text-2xl font-bold ${stats.hotWaiting > 0 ? "text-red-700" : ""}`}>
+                    {stats.hotWaiting}
+                  </span>
+                )}
+                {stats.hotWaiting > 0 && (
+                  <p className="text-[11px] text-red-700 mt-0.5">Action these first</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
           <Card><CardContent className="flex items-start gap-3 p-4">
             <Users className="h-8 w-8 text-primary shrink-0" />
             <div className="min-w-0">
