@@ -118,6 +118,7 @@ function getFlags(answers: QuizAnswers) {
   const wholeHomeTrigger =
     coverage === "whole-house" ||
     coverage === "whole-house-plus" ||
+    coverage === "showers-bathrooms" ||
     has("skin-hair") ||
     has("skin-shower") ||
     has("appliance") ||
@@ -155,6 +156,14 @@ function getFlags(answers: QuizAnswers) {
   const isReplacement = has("replacement");
   const budgetUnder1k = budget === "under-1000" && !isReplacement;
 
+  // Showers & bathrooms coverage paired with skin/hair or chlorine concerns
+  // demands a whole-house carbon solution. Standalone shower filters lose
+  // effectiveness against chlorine within weeks at hot-water temperatures —
+  // we never recommend them.
+  const showersBathroomsCoverage = coverage === "showers-bathrooms";
+  const skinOrChlorineConcern = has("skin-hair") || has("chlorine");
+  const showersBathroomsSkinChlorine = showersBathroomsCoverage && skinOrChlorineConcern;
+
   return {
     has,
     isRenter,
@@ -171,6 +180,8 @@ function getFlags(answers: QuizAnswers) {
     isVeryOldProperty,
     oldPipesHeavyMetals,
     isReplacement,
+    showersBathroomsCoverage,
+    showersBathroomsSkinChlorine,
   };
 }
 
