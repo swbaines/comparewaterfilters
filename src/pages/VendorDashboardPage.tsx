@@ -352,9 +352,14 @@ export default function VendorDashboardPage() {
   const filteredLeads = periodLeads
     .slice()
     .sort((a, b) => {
+      // 1. Hot leads first, then warm, then cold/none.
+      const tempDiff = leadTemperatureRank(b.lead_temperature) - leadTemperatureRank(a.lead_temperature);
+      if (tempDiff !== 0) return tempDiff;
+      // 2. New / pending leads above closed ones.
       const aNew = a.lead_status === "new" || a.lead_status === "sent" ? 1 : 0;
       const bNew = b.lead_status === "new" || b.lead_status === "sent" ? 1 : 0;
       if (aNew !== bNew) return bNew - aNew;
+      // 3. Most recent first.
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
@@ -365,6 +370,9 @@ export default function VendorDashboardPage() {
       : 0;
     const won = ls.filter((l) => l.lead_status === "won").length;
     const closed = ls.filter((l) => l.lead_status === "won" || l.lead_status === "lost").length;
+    const hotWaiting = ls.filter(
+      (l) => l.lead_temperature === "hot" && (l.lead_status === "new" || l.lead_status === "sent"),
+    ).length;
     return {
       total: ls.length,
       new: ls.filter((l) => l.lead_status === "new" || l.lead_status === "sent").length,
@@ -374,6 +382,7 @@ export default function VendorDashboardPage() {
       avgResponseMs: avgMs,
       winRate: closed > 0 ? (won / closed) * 100 : 0,
       hasClosed: closed > 0,
+      hotWaiting,
     };
   };
 
