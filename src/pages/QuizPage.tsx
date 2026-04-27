@@ -729,7 +729,7 @@ export default function QuizPage() {
                     <div className="space-y-0.5">
                       <p className="text-sm font-semibold text-foreground">Honest note on shower & bath filtration</p>
                       <p className="text-xs leading-relaxed text-muted-foreground">
-                        For genuinely filtered shower and bath water, a whole-house filtration system is the only effective long-term solution. Standalone shower filters are limited — they typically lose effectiveness against chlorine within 4-8 weeks at hot water temperatures. We'll recommend a whole-house system that delivers properly filtered water to every shower, bath, and tap.
+                        For genuinely filtered shower and bath water, a whole-house filtration system is the only effective long-term solution. Standalone shower filters are limited — they typically lose effectiveness against chlorine within weeks at hot water temperatures. We'll recommend a whole-house system that delivers properly filtered water to every shower, bath, and tap.
                       </p>
                     </div>
                   </div>
