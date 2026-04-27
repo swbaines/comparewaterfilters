@@ -868,6 +868,15 @@ export default function VendorDashboardPage() {
                         </div>
                       </div>
                     )}
+                    {selectedLead.installation_timeline && (
+                      <div className="flex items-center gap-2 sm:col-span-2">
+                        <CalendarClock className="h-4 w-4 text-primary shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Installation timeline</p>
+                          <p className="text-sm font-medium">{selectedLead.installation_timeline}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
