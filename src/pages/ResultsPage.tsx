@@ -778,6 +778,15 @@ export default function ResultsPage() {
 
   const confidence = computeConfidence(answers);
 
+  // Surface a "Recommended because of your needs" badge on the primary card
+  // when Rule 8 fired (older property + heavy-metals → RO forced into result).
+  const oldPipesRoForced = result.explanation.appliedRules.some(
+    (r) => r.rule === "rule-8-old-pipes-heavy-metals",
+  );
+  const primaryNeedsBadge = oldPipesRoForced
+    ? "Recommended because of your needs"
+    : undefined;
+
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
       <PageMeta
