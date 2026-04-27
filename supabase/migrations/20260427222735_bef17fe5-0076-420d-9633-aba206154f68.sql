@@ -1,0 +1,2 @@
+ALTER TABLE public.quote_requests ADD COLUMN IF NOT EXISTS water_tested_recently text, ADD COLUMN IF NOT EXISTS water_usage_type text;
+ALTER TABLE public.quiz_submissions ADD COLUMN IF NOT EXISTS water_tested_recently text, ADD COLUMN IF NOT EXISTS water_usage_type text;
