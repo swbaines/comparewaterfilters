@@ -268,6 +268,27 @@ export default function AdminLeadsPage() {
     return true;
   });
 
+  const resetTestDataMutation = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("reset-test-data", {
+        body: { confirm: RESET_PHRASE },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      return data as { ok: true; deleted: { leads: number; invoices: number } };
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-invoices"] });
+      setResetDialogOpen(false);
+      setResetConfirmText("");
+      toast.success(
+        `Test data cleared — ${res.deleted.leads} lead(s), ${res.deleted.invoices} invoice(s) removed.`,
+      );
+    },
+    onError: (e: Error) => toast.error(e.message || "Failed to reset test data"),
+  });
+
   const stats = {
     total: leads.length,
     new: leads.filter((l) => l.lead_status === "new").length,
@@ -287,6 +308,14 @@ export default function AdminLeadsPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={openPricesDialog} className="gap-1">
               <Settings className="h-4 w-4" /> Lead Prices
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setResetDialogOpen(true)}
+              className="gap-1 text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" /> Reset Test Data
             </Button>
           </div>
         </div>
