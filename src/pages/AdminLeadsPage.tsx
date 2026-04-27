@@ -7,11 +7,21 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings } from "lucide-react";
+import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2 } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 
@@ -35,6 +45,9 @@ export default function AdminLeadsPage() {
   const [pricesDialogOpen, setPricesDialogOpen] = useState(false);
   const [ownerPrice, setOwnerPrice] = useState<string>("");
   const [rentalPrice, setRentalPrice] = useState<string>("");
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetConfirmText, setResetConfirmText] = useState("");
+  const RESET_PHRASE = "RESET TEST DATA";
 
   const { data: leadPrices = [] } = useQuery({
     queryKey: ["lead-prices"],
