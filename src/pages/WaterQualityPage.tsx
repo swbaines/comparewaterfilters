@@ -400,10 +400,8 @@ export default function WaterQualityPage() {
                     <ShieldCheck className="h-4 w-4" />
                     PFAS
                   </div>
-                  <p className="mt-2 text-3xl font-bold capitalize">{result.pfasRisk}</p>
-                  <p className="text-sm text-muted-foreground">detected risk</p>
                   <Badge
-                    className={`mt-2 border-0 ${
+                    className={`mt-3 border-0 text-sm px-3 py-1 ${
                       result.pfasRisk === "low"
                         ? "bg-green-100 text-green-800"
                         : result.pfasRisk === "moderate"
@@ -414,20 +412,27 @@ export default function WaterQualityPage() {
                     {result.pfasRisk === "low"
                       ? "Low risk"
                       : result.pfasRisk === "moderate"
-                        ? "Moderate"
-                        : "Elevated"}
+                        ? "Moderate risk"
+                        : "Elevated risk"}
                   </Badge>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {result.pfasRisk === "low"
+                      ? "No known PFAS contamination sources near your catchment. Standard tap water testing meets 2025 NHMRC guidelines."
+                      : result.pfasRisk === "moderate"
+                        ? "Limited PFAS testing data available for your area. Trace levels possible due to broader environmental exposure."
+                        : "Your catchment has documented PFAS detection. Local water authority is actively monitoring. Consider RO filtration for drinking water."}
+                  </p>
                   <p className="mt-3 text-xs text-muted-foreground/80">
-                    Data &amp; context:{" "}
+                    Data &amp; context: NHMRC 2025 PFAS guideline values, cross-referenced with utility reports and the PFAS NEMP 3.0. Risk bands are general guidance based on documented contamination patterns and may not reflect exact conditions at your specific address.{" "}
                     <a
                       href="https://www.nhmrc.gov.au/about-us/news-centre/updated-pfas-guideline-values-australian-drinking-water-guidelines"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                      className="mt-1 inline-block underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
                     >
-                      NHMRC 2025 PFAS guideline values <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                      NHMRC <ExternalLink className="ml-0.5 inline h-3 w-3" />
                     </a>
-                    , cross-referenced with utility reports and the{" "}
+                    {" · "}
                     <a
                       href="https://www.dcceew.gov.au/environment/protection/publications/pfas-nemp-3"
                       target="_blank"
@@ -436,11 +441,63 @@ export default function WaterQualityPage() {
                     >
                       PFAS NEMP 3.0 <ExternalLink className="ml-0.5 inline h-3 w-3" />
                     </a>
-                    .
                   </p>
                 </CardContent>
               </Card>
             </div>
+
+            {/* What is PFAS — expandable educational section */}
+            <Accordion type="single" collapsible className="rounded-lg border bg-card">
+              <AccordionItem value="what-is-pfas" className="border-b-0">
+                <AccordionTrigger className="px-4 text-left font-semibold">
+                  <span className="flex items-center gap-2">
+                    <Info className="h-4 w-4 text-primary" />
+                    What is PFAS?
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 text-sm text-muted-foreground">
+                  <div className="space-y-3">
+                    <p>
+                      PFAS (per- and polyfluoroalkyl substances) are synthetic chemicals known as forever chemicals
+                      because they don&apos;t break down in the environment. They&apos;ve been used in firefighting foams,
+                      non-stick cookware, waterproof materials, and industrial manufacturing for decades.
+                    </p>
+                    <p>
+                      Health concerns linked to PFAS exposure include effects on cholesterol levels, kidney function,
+                      hormone balance, and immune response. PFAS has been detected in the blood of 85% of Australians
+                      (Australian Bureau of Statistics, 2025).
+                    </p>
+                    <p>
+                      Drinking water is estimated to account for 2–3% of total PFAS exposure in low-contamination
+                      areas, with the remainder coming from food, household products, and environmental exposure.
+                    </p>
+                    <p>
+                      Standard water treatment plants do not remove PFAS. The most effective home filtration methods
+                      are reverse osmosis (RO) systems and activated carbon block filters with NSF certification for
+                      PFAS removal.
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 pt-2 text-xs">
+                      <a
+                        href="https://www.nhmrc.gov.au/health-advice/environmental-health/water/PFAS-review"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                      >
+                        NHMRC 2025 PFAS guidelines <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                      </a>
+                      <a
+                        href="https://www.foe.org.au/sydney_water_pfas_detections_2025"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                      >
+                        Friends of the Earth — Australian PFAS database <ExternalLink className="ml-0.5 inline h-3 w-3" />
+                      </a>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
 
             {/* Suburb-specific notices */}
             {(result.hardness >= 180 || result.usesChloramine || result.pfasRisk === "elevated") && (

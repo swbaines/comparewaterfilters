@@ -462,7 +462,7 @@ export const WATER_UTILITIES: WaterUtilityProfile[] = [
     chlorine: 0.6,
     fluoride: 1.0,
     ph: 7.7,
-    pfasRisk: "moderate",
+    pfasRisk: "elevated",
     source: "Cascade WFP",
     notes: "Blue Mountains water is soft at 38 mg/L but PFAS was elevated at Cascade WFP in 2024 — now within updated 2025 guidelines. For households concerned about PFAS, a reverse osmosis system provides the best protection.",
   },
