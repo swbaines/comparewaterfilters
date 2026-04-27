@@ -335,6 +335,7 @@ export default function MatchedVendorsSection({
         water_usage_type: answers.waterUsageType || null,
         concerns: answers.concerns,
         budget: answers.budget,
+        maintenance_tolerance: answers.maintenanceTolerance || null,
         recommended_systems: dedupedSystems,
         message: message || null,
         ownership_status: answers.ownershipStatus || null,
