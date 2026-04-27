@@ -521,6 +521,14 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   const appliedRules: { rule: FiredRule; label: string }[] = [];
   const pushRule = (r: FiredRule) => appliedRules.push({ rule: r, label: RULE_LABELS[r] });
 
+  // Replacement / upgrade intent — surface a clear note so the user knows
+  // we're focused on modern best-practice systems rather than budget-first.
+  if (f.isReplacement) {
+    warnings.push(
+      "You're likely upgrading from an existing system — our recommendations focus on current best-practice systems with modern filtration and warranties.",
+    );
+  }
+
   let primaryId = "under-sink-carbon";
   let secondaryId = "under-sink-carbon";
   let premiumId = "reverse-osmosis";
