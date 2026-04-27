@@ -710,7 +710,13 @@ export default function QuizPage() {
             {/* Step 4 */}
             {step === 4 && (
               <div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div
+                  className={`grid gap-2 sm:grid-cols-2 ${
+                    showErrors && !answers.coverage
+                      ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                      : ""
+                  }`}
+                >
                   {coverageOptions.map((c) => (
                     <OptionButton
                       key={c.value}
@@ -721,6 +727,11 @@ export default function QuizPage() {
                     </OptionButton>
                   ))}
                 </div>
+                {showErrors && !answers.coverage && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Please select a coverage option to continue.
+                  </p>
+                )}
                 {answers.coverage === "showers-bathrooms" && (
                   <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/[0.02] px-4 py-3 shadow-sm animate-fade-in">
                     <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
