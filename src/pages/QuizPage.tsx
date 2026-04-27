@@ -203,6 +203,7 @@ export default function QuizPage() {
     coverage: "",
     budget: "",
     maintenanceTolerance: "",
+    installationTimeline: "",
     priorities: [],
     notes: "",
     firstName: "",
@@ -296,7 +297,7 @@ export default function QuizPage() {
       case 6:
         return true; // optional
       case 7:
-        return true; // optional
+        return !!answers.installationTimeline;
       case 8:
         return !!(answers.firstName && answers.email && answers.mobile && answers.consent && answers.disclaimerAck);
       default:
@@ -326,6 +327,7 @@ export default function QuizPage() {
         coverage: answers.coverage || null,
         budget: answers.budget || null,
         maintenance_tolerance: answers.maintenanceTolerance || null,
+        installation_timeline: answers.installationTimeline || null,
         priorities: answers.priorities || [],
         notes: answers.notes || null,
         consent: answers.consent,
