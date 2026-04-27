@@ -170,6 +170,8 @@ export default function QuizPage() {
     bathrooms: "",
     propertyAge: "",
     waterSource: "",
+    waterTestedRecently: "",
+    waterUsageType: "",
     concerns: [],
     coverage: "",
     budget: "",
@@ -230,7 +232,11 @@ export default function QuizPage() {
           answers.propertyAge
         );
       case 2:
-        return !!answers.waterSource;
+        if (!answers.waterSource) return false;
+        if (NON_TOWN_SOURCES.includes(answers.waterSource)) {
+          return !!(answers.waterTestedRecently && answers.waterUsageType);
+        }
+        return true;
       case 3:
         return answers.concerns.length > 0;
       case 4:
@@ -264,6 +270,8 @@ export default function QuizPage() {
         bathrooms: answers.bathrooms || null,
         property_age: answers.propertyAge || null,
         water_source: answers.waterSource || null,
+        water_tested_recently: answers.waterTestedRecently || null,
+        water_usage_type: answers.waterUsageType || null,
         concerns: answers.concerns,
         coverage: answers.coverage || null,
         budget: answers.budget || null,
