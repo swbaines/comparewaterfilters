@@ -15,6 +15,7 @@ export interface QuizAnswers {
   concerns: string[];
   coverage: string;
   budget: string;
+  maintenanceTolerance?: string;
   priorities: string[];
   notes: string;
   firstName: string;
