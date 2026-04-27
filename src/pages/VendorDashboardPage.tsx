@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
@@ -768,6 +768,31 @@ export default function VendorDashboardPage() {
                         <div>
                           <p className="text-xs text-muted-foreground">Water Source</p>
                           <p className="text-sm font-medium capitalize">{selectedLead.water_source}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.water_tested_recently && (
+                      <div className="flex items-center gap-2">
+                        <FlaskConical className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Water Tested (last 2 yrs)</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium">{selectedLead.water_tested_recently}</p>
+                            {selectedLead.water_tested_recently === "No, not tested" && (
+                              <Badge variant="outline" className="border-amber-300 bg-amber-50 text-amber-800 text-[10px] gap-1">
+                                <AlertTriangle className="h-3 w-3" /> UV likely required
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedLead.water_usage_type && (
+                      <div className="flex items-center gap-2">
+                        <Droplets className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Water Usage</p>
+                          <p className="text-sm font-medium">{selectedLead.water_usage_type}</p>
                         </div>
                       </div>
                     )}
