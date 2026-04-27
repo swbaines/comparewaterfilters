@@ -318,6 +318,7 @@ export default function QuizPage() {
         concerns: answers.concerns,
         coverage: answers.coverage || null,
         budget: answers.budget || null,
+        maintenance_tolerance: answers.maintenanceTolerance || null,
         priorities: answers.priorities || [],
         notes: answers.notes || null,
         consent: answers.consent,
