@@ -108,6 +108,13 @@ const maintenanceToleranceOptions = [
   { value: "Not a concern — I want the best filtration regardless", label: "Not a concern — I want the best filtration regardless" },
 ];
 
+const installationTimelineOptions = [
+  { value: "As soon as possible — within 2 weeks", label: "As soon as possible — within 2 weeks" },
+  { value: "Within 1 month", label: "Within 1 month" },
+  { value: "Within 3 months", label: "Within 3 months" },
+  { value: "Just researching — no specific timeframe", label: "Just researching — no specific timeframe" },
+];
+
 const priorityOptions = [
   { value: "lowest-cost", label: "Lowest upfront cost" },
   { value: "lowest-maintenance", label: "Lowest maintenance" },
