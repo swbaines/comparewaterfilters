@@ -403,6 +403,23 @@ export default function QuizPage() {
                     </div>
                   </div>
                 </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Approximate age of property</label>
+                  <div className="flex flex-wrap gap-2">
+                    {propertyAges.map((a) => (
+                      <OptionButton
+                        key={a}
+                        selected={answers.propertyAge === a}
+                        onClick={() => set("propertyAge", a)}
+                      >
+                        {a}
+                      </OptionButton>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    This helps installers understand your plumbing setup and provide accurate quotes.
+                  </p>
+                </div>
               </div>
             )}
 
