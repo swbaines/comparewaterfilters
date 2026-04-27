@@ -149,6 +149,7 @@ export default function QuizPage() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowErrors(false);
   }, [step]);
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "",
