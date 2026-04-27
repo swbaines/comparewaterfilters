@@ -227,6 +227,9 @@ function getFlags(answers: QuizAnswers) {
   const isReplacement = has("replacement");
   const budgetUnder1k = budget === "under-1000" && !isReplacement;
 
+  const maintenanceTier = getMaintenanceTier(answers.maintenanceTolerance);
+  const lowMaintenanceCritical = maintenanceTier === "critical";
+
   // Showers & bathrooms coverage paired with skin/hair or chlorine concerns
   // demands a whole-house carbon solution. Standalone shower filters lose
   // effectiveness against chlorine within weeks at hot-water temperatures —
@@ -253,6 +256,8 @@ function getFlags(answers: QuizAnswers) {
     isReplacement,
     showersBathroomsCoverage,
     showersBathroomsSkinChlorine,
+    maintenanceTier,
+    lowMaintenanceCritical,
   };
 }
 
