@@ -236,19 +236,19 @@ export default function HomePage() {
       />
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-28 bg-secondary-foreground">
+      <section className="relative overflow-hidden bg-gradient-to-b from-accent/50 to-background py-20 sm:py-16 lg:py-20 xl:py-24 bg-secondary-foreground">
         <div className="container relative z-10 text-center">
-          <span className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
+          <span className="mb-3 inline-block rounded-full px-4 py-1.5 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
             Australia's independent water filter comparison
           </span>
-          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl">
+          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
             Compare Water Filters — Find the Right System for Your Home
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base sm:text-lg text-muted-foreground">
             Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
             the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-4">
+          <div className="mt-6 flex flex-col items-center gap-3">
             <Link to="/quiz">
               <Button size="lg" className="gap-2 px-10 py-6 text-lg font-bold shadow-lg">
                 Get Free Quotes in 2 Minutes <ArrowRight className="h-5 w-5" />
@@ -259,7 +259,7 @@ export default function HomePage() {
                 <Search className="h-3 w-3" /> Check my water quality
               </Button>
             </Link>
-            <p className="mt-1 max-w-md text-xs text-muted-foreground">
+            <p className="max-w-md text-xs text-muted-foreground">
               We'll match you with licensed water filtration providers servicing your area.
             </p>
           </div>
