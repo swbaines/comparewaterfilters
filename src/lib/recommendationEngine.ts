@@ -475,6 +475,29 @@ export function explainRuleEvaluations(
         },
       ],
     },
+    {
+      rule: "rule-8-old-pipes-heavy-metals",
+      label: RULE_LABELS["rule-8-old-pipes-heavy-metals"],
+      fired: f.oldPipesHeavyMetals,
+      matchedConcerns: matched(["heavy-metals"]),
+      reason: f.oldPipesHeavyMetals
+        ? `Property age="Over 50 years" AND heavy-metals concern selected — RO forced into recommendation.`
+        : `propertyAge="${answers.propertyAge || "(not set)"}", heavy-metals concern=${anyOf(["heavy-metals"]) ? "yes" : "no"}.`,
+      checks: [
+        {
+          label: "Property age",
+          expected: "Over 50 years",
+          actual: answers.propertyAge || "(not set)",
+          pass: f.isVeryOldProperty,
+        },
+        {
+          label: "Concerns",
+          expected: "heavy-metals",
+          actual: matchedStr(["heavy-metals"]),
+          pass: anyOf(["heavy-metals"]),
+        },
+      ],
+    },
   ];
 
   // Mark the dominant rule explicitly so the UI can highlight it.
