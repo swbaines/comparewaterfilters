@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,135 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminNav from "@/components/AdminNav";
 import PageMeta from "@/components/PageMeta";
-import { ExternalLink, AlertTriangle, CheckCircle2 } from "lucide-react";
-
-const BASE_URL = "https://www.comparewaterfilters.com.au";
-const SITE_NAME = "Compare Water Filters";
-const DEFAULT_OG = `${BASE_URL}/og-default.jpg`;
-
-interface RouteMeta {
-  route: string;
-  title: string;
-  description: string;
-  /** Computed canonical URL (BASE_URL + path). */
-  canonical: string;
-  /** OG image URL (defaults to DEFAULT_OG). */
-  ogImage: string;
-  /** Source file path (for reference). */
-  source: string;
-  /** True when title/description are dynamic and computed at runtime. */
-  dynamic?: boolean;
-}
-
-/**
- * Static snapshot of the metadata each route emits via <PageMeta />.
- * Mirrors the literals in src/pages/*.tsx — keep in sync when you change
- * the marketing copy. The SEO regression test (jsonLdMetadata.test.ts +
- * seoMetadata.test.ts) catches drift.
- */
-const ROUTES: RouteMeta[] = [
-  {
-    route: "/",
-    source: "src/pages/HomePage.tsx",
-    title: "Whole House Water Filters — Compare & Get Free Quotes",
-    description:
-      "Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers.",
-    canonical: `${BASE_URL}/`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/quiz",
-    source: "src/pages/QuizPage.tsx",
-    title: "Whole House Water Filter Quiz — Find Your Match in 2 Minutes",
-    description:
-      "Answer a few quick questions about your home and water concerns to get personalised whole house water filter recommendations and free quotes.",
-    canonical: `${BASE_URL}/quiz`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/system-types",
-    source: "src/pages/SystemTypesPage.tsx",
-    title: "Whole House Water Filter Types Compared — RO, Carbon, UV",
-    description:
-      "Compare whole house water filter types: reverse osmosis, under-sink carbon, UV and water softeners. Pros, cons, pricing and who each suits in Australia.",
-    canonical: `${BASE_URL}/system-types`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/pricing-guide",
-    source: "src/pages/PricingGuidePage.tsx",
-    title:
-      "Whole House Water Filter Prices Australia 2026 — Installed Costs",
-    description:
-      "How much does a whole house water filter cost in Australia? Installed prices from $300–$6,000, maintenance costs and what affects pricing per system type.",
-    canonical: `${BASE_URL}/pricing-guide`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/learn",
-    source: "src/pages/LearnPage.tsx",
-    title: "Whole House Water Filter Guides & Articles for Australian Homes",
-    description:
-      "Plain-English guides on whole house water filters, reverse osmosis, water quality and pricing — helping Australian homeowners pick the right filtration system.",
-    canonical: `${BASE_URL}/learn`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/learn/:slug",
-    source: "src/pages/ArticlePage.tsx",
-    title: "(article.title — dynamic per article)",
-    description: "(article.seoDescription || article.summary)",
-    canonical: `${BASE_URL}/learn/{slug}`,
-    ogImage: DEFAULT_OG,
-    dynamic: true,
-  },
-  {
-    route: "/how-it-works",
-    source: "src/pages/HowItWorksPage.tsx",
-    title: "How It Works — Match With the Right Whole House Water Filter",
-    description:
-      "Three simple steps to find the right whole house water filter: take the quiz, get independent recommendations, and compare free quotes from licensed installers.",
-    canonical: `${BASE_URL}/how-it-works`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/contact",
-    source: "src/pages/ContactPage.tsx",
-    title: "Contact Compare Water Filters — Whole House Filter Help",
-    description:
-      "Need help choosing a whole house water filter or comparing systems? Contact our independent Australian team for plain-English guidance.",
-    canonical: `${BASE_URL}/contact`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/about",
-    source: "src/pages/AboutPage.tsx",
-    title: "About Compare Water Filters — Independent Australian Platform",
-    description:
-      "Independent Australian platform helping households choose the right whole house water filter and connect with trusted local providers.",
-    canonical: `${BASE_URL}/about`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/water-quality",
-    source: "src/pages/WaterQualityPage.tsx",
-    title:
-      "Water Quality by Suburb Australia — Hardness, Chlorine & Fluoride",
-    description:
-      "Free suburb water quality lookup for Australia. Check hardness, chlorine and fluoride, then get whole house water filter recommendations for your area.",
-    canonical: `${BASE_URL}/water-quality`,
-    ogImage: DEFAULT_OG,
-  },
-  {
-    route: "/provider-match",
-    source: "src/pages/ProviderMatchPage.tsx",
-    title: "Get Matched With Whole House Water Filter Providers",
-    description:
-      "Request free quotes from vetted whole house water filter providers in your area. Independent, no-obligation matching across Australia.",
-    canonical: `${BASE_URL}/provider-match`,
-    ogImage: DEFAULT_OG,
-  },
-];
+import {
+  ExternalLink,
+  AlertTriangle,
+  CheckCircle2,
+  ShieldAlert,
+} from "lucide-react";
+import {
+  ROUTES,
+  SITE_NAME,
+  diffRouteAgainstSource,
+  type DriftIssue,
+  type RouteMeta,
+} from "@/lib/seoSnapshot";
 
 const TITLE_LIMIT = 60;
 const DESC_LIMIT = 160;
@@ -181,6 +65,22 @@ function audit(meta: RouteMeta): MetaIssue[] {
   return issues;
 }
 
+// Eagerly load every page source as a raw string so we can diff against the
+// snapshot at runtime. Vite resolves this at build time — bundle cost is
+// limited to admin users who actually open this route via lazy chunking, and
+// these are plain text strings (not re-evaluated as code).
+const PAGE_SOURCES = import.meta.glob("/src/pages/*.tsx", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+function getPageSource(snapshotPath: string): string | undefined {
+  // snapshotPath is e.g. "src/pages/HomePage.tsx" — glob keys are absolute.
+  const key = `/${snapshotPath}`;
+  return PAGE_SOURCES[key];
+}
+
 export default function AdminSeoPreviewPage() {
   const [filter, setFilter] = useState("");
   const [liveTitle, setLiveTitle] = useState("");
@@ -193,6 +93,20 @@ export default function AdminSeoPreviewPage() {
     ) as HTMLLinkElement | null;
     setLiveCanonical(link?.href ?? "");
   }, []);
+
+  const driftByRoute = useMemo(() => {
+    const map = new Map<string, DriftIssue[]>();
+    for (const meta of ROUTES) {
+      const source = getPageSource(meta.source);
+      map.set(meta.route, diffRouteAgainstSource(meta, source));
+    }
+    return map;
+  }, []);
+
+  const allDrift = useMemo(
+    () => Array.from(driftByRoute.values()).flat(),
+    [driftByRoute],
+  );
 
   const filtered = ROUTES.filter(
     (r) =>
@@ -221,20 +135,80 @@ export default function AdminSeoPreviewPage() {
         </p>
       </div>
 
+      {allDrift.length > 0 && (
+        <Card className="mb-6 border-destructive/50 bg-destructive/5 p-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-destructive">
+                Snapshot drift detected ({allDrift.length}{" "}
+                {allDrift.length === 1 ? "field" : "fields"})
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                One or more page sources have changed since this snapshot was
+                last updated. Update{" "}
+                <code className="rounded bg-muted px-1">
+                  src/lib/seoSnapshot.ts
+                </code>{" "}
+                to match. The{" "}
+                <code className="rounded bg-muted px-1">
+                  seoSnapshotDrift
+                </code>{" "}
+                vitest will fail in CI until they re-align.
+              </p>
+              <ul className="mt-3 space-y-2 text-xs">
+                {allDrift.map((d, i) => (
+                  <li
+                    key={i}
+                    className="rounded border border-destructive/30 bg-background p-2"
+                  >
+                    <div className="font-medium">
+                      <code>{d.route}</code> · {d.field}
+                    </div>
+                    <div className="mt-1 text-muted-foreground">
+                      <span className="font-semibold text-foreground">
+                        snapshot:
+                      </span>{" "}
+                      {d.expected}
+                    </div>
+                    <div className="text-muted-foreground">
+                      <span className="font-semibold text-foreground">
+                        source:
+                      </span>{" "}
+                      {d.actual}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Card>
+      )}
+
       <Card className="mb-6 p-4">
-        <div className="grid gap-3 text-sm md:grid-cols-3">
+        <div className="grid gap-3 text-sm md:grid-cols-4">
           <div>
             <div className="text-muted-foreground">Routes tracked</div>
             <div className="text-2xl font-semibold">{ROUTES.length}</div>
           </div>
           <div>
-            <div className="text-muted-foreground">Issues detected</div>
+            <div className="text-muted-foreground">Audit issues</div>
             <div
               className={`text-2xl font-semibold ${
                 totalIssues > 0 ? "text-destructive" : "text-primary"
               }`}
             >
               {totalIssues}
+            </div>
+          </div>
+          <div>
+            <div className="text-muted-foreground">Source drift</div>
+            <div
+              className={`text-2xl font-semibold ${
+                allDrift.length > 0 ? "text-destructive" : "text-primary"
+              }`}
+            >
+              {allDrift.length}
             </div>
           </div>
           <div>
@@ -263,6 +237,7 @@ export default function AdminSeoPreviewPage() {
       <div className="space-y-4">
         {filtered.map((meta) => {
           const issues = audit(meta);
+          const drift = driftByRoute.get(meta.route) ?? [];
           const fullTitle = meta.title.includes(SITE_NAME)
             ? meta.title
             : `${meta.title} | ${SITE_NAME}`;
@@ -270,12 +245,18 @@ export default function AdminSeoPreviewPage() {
             <Card key={meta.route} className="overflow-hidden">
               <div className="flex items-start justify-between gap-4 border-b p-4">
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <code className="rounded bg-muted px-2 py-0.5 text-sm font-medium">
                       {meta.route}
                     </code>
                     {meta.dynamic && (
                       <Badge variant="secondary">Dynamic</Badge>
+                    )}
+                    {drift.length > 0 && (
+                      <Badge variant="destructive" className="gap-1">
+                        <ShieldAlert className="h-3 w-3" />
+                        Drift ({drift.length})
+                      </Badge>
                     )}
                     {issues.length === 0 ? (
                       <Badge
@@ -345,6 +326,17 @@ export default function AdminSeoPreviewPage() {
                     </div>
                     <code className="break-all text-xs">{meta.ogImage}</code>
                   </div>
+                  {drift.length > 0 && (
+                    <ul className="mt-2 space-y-1 rounded border border-destructive/40 bg-destructive/5 p-2 text-xs">
+                      {drift.map((d, idx) => (
+                        <li key={idx} className="text-destructive">
+                          • <strong>{d.field}</strong> drift — snapshot:{" "}
+                          <em>{d.expected}</em> · source:{" "}
+                          <em>{d.actual}</em>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   {issues.length > 0 && (
                     <ul className="mt-2 space-y-1 rounded border border-destructive/40 bg-destructive/5 p-2 text-xs">
                       {issues.map((i, idx) => (
