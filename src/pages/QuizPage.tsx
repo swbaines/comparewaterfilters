@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, RefreshCw } from "lucide-react";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import {
   AlertDialog,
@@ -82,6 +82,7 @@ const concernOptions = [
   { value: "bacteria", label: "Bacteria / microbiological safety" },
   { value: "not-sure", label: "Not sure, just want better water" },
   { value: "hard-water", label: "Hard water / scale buildup" },
+  { value: "replacement", label: "Existing system needs replacement" },
 ];
 
 const coverageOptions = [
