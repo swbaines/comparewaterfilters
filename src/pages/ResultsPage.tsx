@@ -871,7 +871,7 @@ export default function ResultsPage() {
         </a>
 
         {/* 3 Recommendation cards (or 2 if budget = recommendation or premium = recommendation) */}
-        <h2 className="mb-4 text-lg font-bold">Recommended system types</h2>
+        <h2 className="mb-4 text-lg font-bold">Recommended system types & Matched providers</h2>
         {result.primary.id === result.premium.id ? (
           /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto items-start">
