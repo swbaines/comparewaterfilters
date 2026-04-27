@@ -482,6 +482,8 @@ export type Database = {
           first_name: string
           household_size: string | null
           id: string
+          installation_timeline: string | null
+          lead_temperature: string | null
           maintenance_tolerance: string | null
           mobile: string | null
           notes: string | null
@@ -507,6 +509,8 @@ export type Database = {
           first_name: string
           household_size?: string | null
           id?: string
+          installation_timeline?: string | null
+          lead_temperature?: string | null
           maintenance_tolerance?: string | null
           mobile?: string | null
           notes?: string | null
@@ -532,6 +536,8 @@ export type Database = {
           first_name?: string
           household_size?: string | null
           id?: string
+          installation_timeline?: string | null
+          lead_temperature?: string | null
           maintenance_tolerance?: string | null
           mobile?: string | null
           notes?: string | null
@@ -562,10 +568,12 @@ export type Database = {
           first_response_at: string | null
           household_size: string | null
           id: string
+          installation_timeline: string | null
           invoice_id: string | null
           is_test: boolean
           lead_price: number | null
           lead_status: string
+          lead_temperature: string | null
           maintenance_tolerance: string | null
           message: string | null
           ownership_status: string | null
@@ -594,10 +602,12 @@ export type Database = {
           first_response_at?: string | null
           household_size?: string | null
           id?: string
+          installation_timeline?: string | null
           invoice_id?: string | null
           is_test?: boolean
           lead_price?: number | null
           lead_status?: string
+          lead_temperature?: string | null
           maintenance_tolerance?: string | null
           message?: string | null
           ownership_status?: string | null
@@ -626,10 +636,12 @@ export type Database = {
           first_response_at?: string | null
           household_size?: string | null
           id?: string
+          installation_timeline?: string | null
           invoice_id?: string | null
           is_test?: boolean
           lead_price?: number | null
           lead_status?: string
+          lead_temperature?: string | null
           maintenance_tolerance?: string | null
           message?: string | null
           ownership_status?: string | null
