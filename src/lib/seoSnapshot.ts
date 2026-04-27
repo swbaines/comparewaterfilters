@@ -98,7 +98,7 @@ export const ROUTES: RouteMeta[] = [
   {
     route: "/about",
     source: "src/pages/AboutPage.tsx",
-    title: "About Compare Water Filters — Independent Australian Platform",
+    title: "About Compare Water Filters — Independent Platform",
     description:
       "Independent Australian platform helping households choose the right whole house water filter and connect with trusted local providers.",
     canonical: `${BASE_URL}/about`,
