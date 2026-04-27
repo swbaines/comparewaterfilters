@@ -644,6 +644,14 @@ export default function VendorDashboardPage() {
                     {(lead.concerns || []).includes("replacement") && (
                       <Badge className="ml-1 bg-primary text-primary-foreground text-[10px] tracking-wide">REPLACEMENT</Badge>
                     )}
+                    {lead.lead_temperature && LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"] && (
+                      <Badge
+                        variant="outline"
+                        className={`ml-1 text-[10px] tracking-wide ${LEAD_TEMPERATURE_BADGE_CLASS[lead.lead_temperature as "hot" | "warm" | "cold"]}`}
+                      >
+                        {LEAD_TEMPERATURE_LABEL[lead.lead_temperature as "hot" | "warm" | "cold"]}
+                      </Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}
