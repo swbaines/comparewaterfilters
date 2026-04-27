@@ -541,16 +541,63 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
           ? "tank water"
           : "rainwater";
 
-    primaryId = "whole-house-filtration";
-    primaryReason = `Because you're on ${sourceLabel} (not treated town water), a whole house filtration system is the right starting point — it removes sediment, organic matter, and provides essential pre-filtration before water reaches your taps and any UV unit. $3,000–$5,000 installed.`;
-    secondaryId = "under-sink-carbon";
-    secondaryReason = `An under-sink carbon and sediment filter is a much cheaper drinking-water option, but it does NOT kill bacteria, viruses, or other microorganisms — which is the critical risk on ${sourceLabel}. Suitable only as a temporary or supplementary measure.`;
-    premiumId = "uv-system";
-    premiumReason = `A UV disinfection system is essential for ${sourceLabel} — it kills 99.99% of bacteria, viruses, and pathogens that filters cannot remove. Best installed downstream of a whole house filter for combined sediment, taste, and microbiological protection. $800–$2,500 installed.`;
+    const usage = answers.waterUsageType || "";
+    const notTested = answers.waterTestedRecently === "No, not tested";
+    const isGardenOnly = usage === "Garden and outdoor use only";
+    const isShowerOnly = usage === "Showering and bathing only";
+    const includesDrinking =
+      usage === "Drinking and cooking only" ||
+      usage === "Drinking, cooking, showering and bathing";
+    const includesShower =
+      usage === "Showering and bathing only" ||
+      usage === "Drinking, cooking, showering and bathing";
 
-    warnings.push(
-      `Important: ${sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1)} is untreated and can carry bacteria, viruses, and protozoa. UV disinfection (paired with adequate pre-filtration) is the standard safety solution — please don't skip this step.`,
-    );
+    if (isGardenOnly) {
+      // Garden / outdoor only — basic sediment filter is sufficient
+      primaryId = "whole-house-filtration";
+      primaryReason = `Because the ${sourceLabel} is used for garden and outdoor use only, a basic sediment filter is the right starting point — it removes grit, leaf matter, and protects irrigation lines and outdoor taps. Full whole-house filtration and UV disinfection are not required for non-potable outdoor use. Sediment-only setups typically install from $300–$800.`;
+      secondaryId = "under-sink-carbon";
+      secondaryReason = `Not needed for outdoor-only use, but listed as a future option if you ever decide to bring this water indoors for drinking or showering.`;
+      premiumId = "whole-house-filtration";
+      premiumReason = `A full whole-house sediment + carbon filter is overkill for garden-only use, but worth considering if your usage may expand to indoor taps.`;
+      warnings.push(
+        `Because the ${sourceLabel} is used for outdoor / garden use only, a basic sediment filter is sufficient — UV disinfection is not required.`,
+      );
+    } else if (isShowerOnly) {
+      // Showering/bathing only — whole house filter with UV
+      primaryId = "whole-house-combo";
+      primaryReason = `Because the ${sourceLabel} is used for showering and bathing, a whole house filtration system paired with UV disinfection is the right solution — it removes sediment, organic matter, and kills bacteria, viruses, and protozoa before water reaches your shower and bathroom taps. $4,000–$6,000 installed.`;
+      secondaryId = "whole-house-filtration";
+      secondaryReason = `A whole house filtration system on its own removes sediment and improves water quality — but it does NOT kill bacteria or viruses. UV disinfection is the proper add-on for shower/bath use of ${sourceLabel}.`;
+      premiumId = "uv-system";
+      premiumReason = `UV disinfection is essential for any non-mains water used for showering or bathing — it kills 99.99% of bacteria, viruses, and pathogens. Best paired with whole-house pre-filtration. $800–$2,500 installed.`;
+      warnings.push(
+        `Important: ${sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1)} used for showering and bathing should be paired with whole-house filtration AND UV disinfection — bathing exposes skin and lungs (steam) to any pathogens present.`,
+      );
+    } else {
+      // Default untreated path — drinking/cooking included, or unspecified
+      primaryId = "whole-house-filtration";
+      primaryReason = `Because you're on ${sourceLabel} (not treated town water), a whole house filtration system is the right starting point — it removes sediment, organic matter, and provides essential pre-filtration before water reaches your taps and any UV unit. $3,000–$5,000 installed.`;
+      secondaryId = "under-sink-carbon";
+      secondaryReason = `An under-sink carbon and sediment filter is a much cheaper drinking-water option, but it does NOT kill bacteria, viruses, or other microorganisms — which is the critical risk on ${sourceLabel}. Suitable only as a temporary or supplementary measure.`;
+      premiumId = "uv-system";
+      premiumReason = `A UV disinfection system is essential for ${sourceLabel} — it kills 99.99% of bacteria, viruses, and pathogens that filters cannot remove. Best installed downstream of a whole house filter for combined sediment, taste, and microbiological protection. $800–$2,500 installed.`;
+
+      warnings.push(
+        `Important: ${sourceLabel.charAt(0).toUpperCase() + sourceLabel.slice(1)} is untreated and can carry bacteria, viruses, and protozoa. UV disinfection (paired with adequate pre-filtration) is the standard safety solution — please don't skip this step.`,
+      );
+
+      if (includesDrinking && notTested) {
+        warnings.push(
+          `Critical: Your ${sourceLabel} is used for drinking/cooking and has NOT been tested in the last 2 years. UV disinfection is essential — and we strongly recommend a water test before relying on this supply for drinking. Australian guidelines recommend annual testing for non-mains potable water.`,
+        );
+      }
+      if (includesShower) {
+        warnings.push(
+          `Because this ${sourceLabel} is also used for showering and bathing, a whole-house + UV setup (rather than under-sink only) is the appropriate level of protection.`,
+        );
+      }
+    }
 
     if (f.budgetUnder1k) {
       pushRule("rule-6-budget-under-1k");
