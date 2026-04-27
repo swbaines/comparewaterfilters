@@ -309,6 +309,12 @@ function PricingExplainer({ result, answers }: { result: RecommendationResult; a
       detail: "Smaller scope keeps install short and parts minimal.",
       effect: "down",
     });
+  } else if (answers.coverage === "showers-bathrooms") {
+    drivers.push({
+      label: "Filtered showers & bathrooms",
+      detail: "Whole-house carbon at the water entry point — the only effective long-term solution for filtered shower water.",
+      effect: "up",
+    });
   }
 
   if (answers.waterSource && ["rainwater", "tank-water", "bore-water"].includes(answers.waterSource)) {
