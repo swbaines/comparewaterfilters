@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, DollarSign, Wrench, Home, Clock, Users, Share2, Check, ChevronDown, Info, Mail, Loader2, Pencil, ShieldCheck } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -109,7 +109,7 @@ function ConfidenceBadge({ level }: { level: ConfidenceLevel }) {
   );
 }
 
-function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string; confidence: ConfidenceLevel; labelAbove?: boolean }) {
+function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove, needsBadge }: { rec: Recommendation; label: string; reason: string; variant: "value" | "allrounder" | "premium"; badge?: string; confidence: ConfidenceLevel; labelAbove?: boolean; needsBadge?: string }) {
   const colors = {
     value: "bg-sage-light text-sage-dark border-primary/20",
     allrounder: "bg-accent text-accent-foreground border-primary/30",
@@ -133,12 +133,22 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove }:
           <div className="flex flex-wrap items-center gap-2">
             <Badge className={`w-fit ${colors[variant]}`}>{label}</Badge>
             {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+            {needsBadge && (
+              <Badge className="w-fit gap-1 bg-primary/10 text-primary border border-primary/30 hover:bg-primary/15">
+                <ShieldCheck className="h-3 w-3" /> {needsBadge}
+              </Badge>
+            )}
             <ConfidenceBadge level={confidence} />
           </div>
         )}
         {labelAbove && (badge || confidence) && (
           <div className="flex flex-wrap items-center gap-2">
             {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
+            {needsBadge && (
+              <Badge className="w-fit gap-1 bg-primary/10 text-primary border border-primary/30 hover:bg-primary/15">
+                <ShieldCheck className="h-3 w-3" /> {needsBadge}
+              </Badge>
+            )}
             <ConfidenceBadge level={confidence} />
           </div>
         )}
@@ -768,6 +778,15 @@ export default function ResultsPage() {
 
   const confidence = computeConfidence(answers);
 
+  // Surface a "Recommended because of your needs" badge on the primary card
+  // when Rule 8 fired (older property + heavy-metals → RO forced into result).
+  const oldPipesRoForced = result.explanation.appliedRules.some(
+    (r) => r.rule === "rule-8-old-pipes-heavy-metals",
+  );
+  const primaryNeedsBadge = oldPipesRoForced
+    ? "Recommended because of your needs"
+    : undefined;
+
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
       <PageMeta
@@ -809,26 +828,26 @@ export default function ResultsPage() {
         {result.primary.id === result.premium.id ? (
           /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto items-start">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" confidence={confidence} labelAbove />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Complete solution" confidence={confidence} labelAbove needsBadge={primaryNeedsBadge} />
             <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} labelAbove />
           </div>
         ) : result.secondary.id === result.primary.id ? (
           <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto items-start">
-            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" confidence={confidence} labelAbove />
+            <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" badge="Also the most affordable option" confidence={confidence} labelAbove needsBadge={primaryNeedsBadge} />
             <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} labelAbove />
           </div>
         ) : (
           <>
             {/* Mobile: recommendation first, then budget & premium */}
             <div className="flex flex-col gap-6 sm:hidden">
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} labelAbove />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} labelAbove needsBadge={primaryNeedsBadge} />
               <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} labelAbove />
               <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} labelAbove />
             </div>
             {/* Desktop: standard 3-column order */}
             <div className="hidden sm:grid gap-6 md:[grid-template-columns:0.9fr_1.1fr_0.9fr] items-start">
               <RecCard rec={result.secondary} label="Budget alternative" reason={result.secondaryReason} variant="value" confidence={confidence} labelAbove />
-              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} labelAbove />
+              <RecCard rec={result.primary} label="Our recommendation" reason={result.primaryReason} variant="allrounder" confidence={confidence} labelAbove needsBadge={primaryNeedsBadge} />
               <RecCard rec={result.premium} label="Premium option" reason={result.premiumReason} variant="premium" confidence={confidence} labelAbove />
             </div>
           </>
