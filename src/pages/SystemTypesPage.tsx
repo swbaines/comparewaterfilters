@@ -21,20 +21,35 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function SystemTypesPage() {
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'ViewContent', {
-        content_name: 'Water Filter System Types',
-        content_type: 'product_group',
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "ViewContent", {
+        content_name: "Water Filter System Types",
+        content_type: "product_group",
       });
     }
   }, []);
 
   const systemFaqs = [
-    { q: "What type of water filter is best for my home?", a: "It depends on your water concerns. Under-sink carbon filters suit most households wanting better-tasting drinking water. Reverse osmosis removes fluoride and heavy metals. Whole house systems protect all taps and appliances. Take the quiz to get a personalised recommendation." },
-    { q: "Do I need a whole house water filter?", a: "A whole house filter is ideal if you want filtered water at every tap — for drinking, showering, and protecting appliances from sediment and chlorine. If you only need better drinking water, an under-sink system is more affordable." },
-    { q: "Does reverse osmosis remove fluoride?", a: "Yes. Reverse osmosis is one of the most effective methods for removing fluoride, along with heavy metals, bacteria, and dissolved solids. Standard carbon filters do not remove fluoride." },
-    { q: "What is a UV water filter?", a: "UV (ultraviolet) water filters use UV light to kill bacteria, viruses, and parasites without chemicals. They are essential for bore water or tank water but do not remove chemical contaminants — they are often paired with carbon or sediment filters." },
-    { q: "What does a water softener do?", a: "A water softener removes calcium and magnesium (hard water minerals) using ion exchange. This prevents scale buildup in pipes and appliances, improves soap lathering, and is particularly useful in areas with hard bore or ground water." },
+    {
+      q: "What type of water filter is best for my home?",
+      a: "It depends on your water concerns. Under-sink carbon filters suit most households wanting better-tasting drinking water. Reverse osmosis removes fluoride and heavy metals. Whole house systems protect all taps and appliances. Take the quiz to get a personalised recommendation.",
+    },
+    {
+      q: "Do I need a whole house water filter?",
+      a: "A whole house filter is ideal if you want filtered water at every tap — for drinking, showering, and protecting appliances from sediment and chlorine. If you only need better drinking water, an under-sink system is more affordable.",
+    },
+    {
+      q: "Does reverse osmosis remove fluoride?",
+      a: "Yes. Reverse osmosis is one of the most effective methods for removing fluoride, along with heavy metals, bacteria, and dissolved solids. Standard carbon filters do not remove fluoride.",
+    },
+    {
+      q: "What is a UV water filter?",
+      a: "UV (ultraviolet) water filters use UV light to kill bacteria, viruses, and parasites without chemicals. They are essential for bore water or tank water but do not remove chemical contaminants — they are often paired with carbon or sediment filters.",
+    },
+    {
+      q: "What does a water softener do?",
+      a: "A water softener removes calcium and magnesium (hard water minerals) using ion exchange. This prevents scale buildup in pipes and appliances, improves soap lathering, and is particularly useful in areas with hard bore or ground water.",
+    },
   ];
 
   useEffect(() => {
@@ -46,14 +61,20 @@ export default function SystemTypesPage() {
         "@context": "https://schema.org",
         "@type": "WebPage",
         name: "Water Filter System Types — Compare Water Filters",
-        description: "Explore different water filtration system types — under-sink, whole house, reverse osmosis, UV, and more. Learn the pros, cons, and ideal use cases.",
+        description:
+          "Explore different water filtration system types — under-sink, whole house, reverse osmosis, UV, and more. Learn the pros, cons, and ideal use cases.",
         url: "https://www.comparewaterfilters.com.au/system-types",
         isPartOf: { "@type": "WebSite", name: "Compare Water Filters", url: "https://www.comparewaterfilters.com.au" },
         breadcrumb: {
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "https://www.comparewaterfilters.com.au" },
-            { "@type": "ListItem", position: 2, name: "System Types", item: "https://www.comparewaterfilters.com.au/system-types" },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "System Types",
+              item: "https://www.comparewaterfilters.com.au/system-types",
+            },
           ],
         },
       },
@@ -68,13 +89,15 @@ export default function SystemTypesPage() {
       },
     ]);
     document.head.appendChild(script);
-    return () => { document.getElementById("systemtypes-jsonld")?.remove(); };
+    return () => {
+      document.getElementById("systemtypes-jsonld")?.remove();
+    };
   }, []);
 
   return (
     <div className="py-12 sm:py-16">
       <PageMeta
-        title="Whole House Water Filter Types Compared — RO, Carbon, UV"
+        title="Whole House Water Filter Types Compared"
         description="Compare whole house water filter types: reverse osmosis, under-sink carbon, UV and water softeners. Pros, cons, pricing and who each suits in Australia."
         path="/system-types"
       />
@@ -172,8 +195,12 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Best Whole House Water Filter Australia 2026</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Top systems compared — installed costs, features, and city-by-city picks.</p>
-                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read guide <ArrowRight className="h-3 w-3" /></span>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Top systems compared — installed costs, features, and city-by-city picks.
+                  </p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    Read guide <ArrowRight className="h-3 w-3" />
+                  </span>
                 </CardContent>
               </Card>
             </Link>
@@ -181,8 +208,12 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Reverse Osmosis vs Whole House — Which Do You Need?</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">The most common question we get, answered with real data and comparisons.</p>
-                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read guide <ArrowRight className="h-3 w-3" /></span>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    The most common question we get, answered with real data and comparisons.
+                  </p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    Read guide <ArrowRight className="h-3 w-3" />
+                  </span>
                 </CardContent>
               </Card>
             </Link>
@@ -190,8 +221,12 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Does Carbon Remove Fluoride?</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Why standard carbon filters can't remove fluoride — and which systems can.</p>
-                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read article <ArrowRight className="h-3 w-3" /></span>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Why standard carbon filters can't remove fluoride — and which systems can.
+                  </p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    Read article <ArrowRight className="h-3 w-3" />
+                  </span>
                 </CardContent>
               </Card>
             </Link>
@@ -199,8 +234,12 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">What Does a Water Softener Actually Do?</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Ion exchange explained — who needs one and how it helps your home.</p>
-                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">Read article <ArrowRight className="h-3 w-3" /></span>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Ion exchange explained — who needs one and how it helps your home.
+                  </p>
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                    Read article <ArrowRight className="h-3 w-3" />
+                  </span>
                 </CardContent>
               </Card>
             </Link>
@@ -215,7 +254,9 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Pricing Guide</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">See installed prices and annual maintenance costs for every system type.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    See installed prices and annual maintenance costs for every system type.
+                  </p>
                 </CardContent>
               </Card>
             </Link>
@@ -223,7 +264,9 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Check Your Water Quality</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Look up hardness, chlorine, fluoride, and PFAS levels for your suburb.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Look up hardness, chlorine, fluoride, and PFAS levels for your suburb.
+                  </p>
                 </CardContent>
               </Card>
             </Link>
@@ -231,7 +274,9 @@ export default function SystemTypesPage() {
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
                   <h3 className="text-sm font-semibold">Browse All Guides</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Guides and articles on water quality, filtration methods, and buying tips.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Guides and articles on water quality, filtration methods, and buying tips.
+                  </p>
                 </CardContent>
               </Card>
             </Link>
