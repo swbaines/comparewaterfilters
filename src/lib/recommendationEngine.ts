@@ -879,6 +879,22 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   // ── State-specific warnings (VIC chlorine, WA hardness, SA hardness, QLD seasonal taste, NSW PFAS) ──
   warnings.push(...getStateWarnings(answers, f));
 
+  // ── Maintenance tolerance: honest note when RO ends up in the result for
+  //    a customer who flagged "critical" low-maintenance preference. We never
+  //    silently strip RO when their concerns mandate it (PFAS, fluoride,
+  //    heavy metals, microplastics, bacteria) — instead we surface a
+  //    transparent service-plan suggestion.
+  if (f.lowMaintenanceCritical) {
+    const recHasRo =
+      [primaryId, secondaryId, premiumId].includes("reverse-osmosis") ||
+      [primaryId, secondaryId, premiumId].includes("whole-house-combo");
+    if (recHasRo && f.roTrigger) {
+      warnings.push(
+        "This system has higher annual maintenance ($150–$250/year). Given your priority for low maintenance, consider a multi-year service plan from your installer.",
+      );
+    }
+  }
+
   // ── RULE 8: Old property (50+ yrs) + heavy-metals concern ─────────────────
   // Aged galvanised steel and pre-1980s copper plumbing can leach lead,
   // copper, zinc and iron into household water — particularly first-draw
