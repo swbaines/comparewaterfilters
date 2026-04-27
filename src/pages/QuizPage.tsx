@@ -145,6 +145,7 @@ function MultiSelectButton({
 export default function QuizPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
