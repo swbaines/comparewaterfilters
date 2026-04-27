@@ -31,6 +31,7 @@ export type FiredRule =
   | "rule-6-budget-under-1k"
   | "rule-7-untreated-water-uv"
   | "rule-1b-whole-home-plus-ro"
+  | "rule-8-old-pipes-heavy-metals"
   | "default";
 
 export interface RuleExplanation {
@@ -208,6 +209,7 @@ const RULE_LABELS: Record<FiredRule, string> = {
   "rule-6-budget-under-1k": "Rule 6 — Budget under $1,000 (whole-house moved to Premium)",
   "rule-7-untreated-water-uv": "Rule 7 — Untreated water source (rainwater, tank, or bore) — UV recommended",
   "rule-1b-whole-home-plus-ro": "Rule 1b — Whole-home intent + RO-essential contaminants (combo recommended)",
+  "rule-8-old-pipes-heavy-metals": "Rule 8 — Older property (50+ yrs) + heavy-metals concern — RO required for lead/copper from aged pipes",
   "default": "Default — general drinking-water improvement",
 };
 
