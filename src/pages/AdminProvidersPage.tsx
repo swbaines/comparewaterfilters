@@ -1097,7 +1097,7 @@ export default function AdminProvidersPage() {
                   </PopoverTrigger>
                   <PopoverContent className="w-80 p-3">
                     <div className="space-y-2">
-                      {systemTypes.map((st) => (
+                      {systemTypes.filter((st) => st.id !== "hybrid").map((st) => (
                         <label key={st.id} className="flex items-center gap-2 text-sm cursor-pointer">
                           <Checkbox
                             checked={(form.system_types || []).includes(st.id)}
