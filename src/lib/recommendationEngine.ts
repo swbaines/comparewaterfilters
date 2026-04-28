@@ -7,7 +7,7 @@ import { recommendations, type Recommendation } from "@/data/recommendations";
  *
  *  - critical    → ≤ $200/yr preferred
  *  - important   → ≤ $400/yr preferred
- *  - manageable  → ≤ $700/yr is fine
+ *  - manageable  → ≤ $600/yr is fine
  *  - none        → not a concern
  */
 export type MaintenanceTier = "critical" | "important" | "manageable" | "none" | "unspecified";
@@ -26,7 +26,7 @@ function tierCeiling(tier: MaintenanceTier): number | null {
   switch (tier) {
     case "critical":   return 200;
     case "important":  return 400;
-    case "manageable": return 700;
+    case "manageable": return 600;
     case "none":       return null;
     default:           return null;
   }
