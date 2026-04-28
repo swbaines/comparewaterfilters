@@ -502,12 +502,24 @@ export default function WaterQualityPage() {
             </Accordion>
 
             {/* Suburb-specific notices */}
-            {(result.hardness >= 180 || result.usesChloramine || result.pfasRisk === "elevated") && (
+            {(result.hardness >= 60 || result.usesChloramine || result.pfasRisk === "elevated") && (
               <div className="space-y-3">
                 {result.hardness >= 180 && (
                   <WarningCallout
                     variant="risk"
                     message={`${result.matchedSuburb || result.region} has very hard water (${result.hardness} mg/L CaCO₃). Expect noticeable scale buildup on taps, kettles, shower screens, and inside your hot water system. A water softener or scale-reduction whole-house filter is the most effective fix.`}
+                  />
+                )}
+                {result.hardness >= 120 && result.hardness < 180 && (
+                  <WarningCallout
+                    variant="risk"
+                    message={`${result.matchedSuburb || result.region} has hard water (${result.hardness} mg/L CaCO₃). You'll likely see scale on taps and in the kettle, and over time it can shorten the life of your hot water system and dishwasher. A scale-reduction or whole-house filter helps protect appliances and keeps fixtures cleaner for longer.`}
+                  />
+                )}
+                {result.hardness >= 60 && result.hardness < 120 && (
+                  <WarningCallout
+                    variant="info"
+                    message={`${result.matchedSuburb || result.region} sits in the moderately hard range (${result.hardness} mg/L CaCO₃). Expect light scale spotting on taps, glassware, and shower screens, and gradual build-up inside kettles, dishwashers, and your hot water system that can reduce efficiency over time. Soap and detergent also lather less. A scale-reduction or whole-house filter is a sensible preventative upgrade.`}
                   />
                 )}
                 {result.pfasRisk === "elevated" && (
