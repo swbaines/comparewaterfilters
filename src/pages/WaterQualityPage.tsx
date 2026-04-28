@@ -501,26 +501,21 @@ export default function WaterQualityPage() {
             </Accordion>
 
             {/* Suburb-specific notices */}
-            {(result.hardness >= 60 || result.usesChloramine || result.pfasRisk === "elevated") && (
-              <div className="space-y-3">
-                {result.hardness >= 180 && (
-                  <WarningCallout
-                    variant="risk"
-                    message={`${result.matchedSuburb || result.region} has very hard water (${result.hardness} mg/L CaCO₃). Expect noticeable scale buildup on taps, kettles, shower screens, and inside your hot water system. A water softener or scale-reduction whole-house filter is the most effective fix.`}
-                  />
-                )}
-                {result.hardness >= 120 && result.hardness < 180 && (
-                  <WarningCallout
-                    variant="risk"
-                    message={`${result.matchedSuburb || result.region} has hard water (${result.hardness} mg/L CaCO₃). You'll likely see scale on taps and in the kettle, and over time it can shorten the life of your hot water system and dishwasher. A scale-reduction or whole-house filter helps protect appliances and keeps fixtures cleaner for longer.`}
-                  />
-                )}
-                {result.hardness >= 60 && result.hardness < 120 && (
-                  <WarningCallout
-                    variant="info"
-                    message={`${result.matchedSuburb || result.region} sits in the moderately hard range (${result.hardness} mg/L CaCO₃). Expect light scale spotting on taps, glassware, and shower screens, and gradual build-up inside kettles, dishwashers, and your hot water system that can reduce efficiency over time. Soap and detergent also lather less. A scale-reduction or whole-house filter is a sensible preventative upgrade.`}
-                  />
-                )}
+            {(() => {
+              const hg = getHardnessGuidance(result.hardness);
+              const hasHardnessNotice = hg.suburbCallout != null && hg.calloutVariant != null;
+              const show =
+                hasHardnessNotice || result.usesChloramine || result.pfasRisk === "elevated";
+              if (!show) return null;
+              const area = result.matchedSuburb || result.region;
+              return (
+                <div className="space-y-3">
+                  {hasHardnessNotice && (
+                    <WarningCallout
+                      variant={hg.calloutVariant!}
+                      message={hg.suburbCallout!(result.hardness, area)}
+                    />
+                  )}
                 {result.pfasRisk === "elevated" && (
                   <WarningCallout
                     variant="risk"
@@ -533,8 +528,9 @@ export default function WaterQualityPage() {
                     message={`${result.utilityName} uses chloramine as a secondary disinfectant in this area. Chloramine is harder to remove than chlorine — make sure any carbon filter you choose is rated for chloramine (catalytic carbon) rather than standard activated carbon.`}
                   />
                 )}
-              </div>
-            )}
+                </div>
+              );
+            })()}
 
             {/* Utility info card */}
             <Accordion
