@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { normalizeSystemTypeIds } from "@/lib/canonicalSystemTypes";
+import { normalizeSystemTypeIds, expandCombosToComponents } from "@/lib/canonicalSystemTypes";
 import { applyPriceFloors } from "@/lib/budgetMatching";
 
 export interface MatchedVendor {
@@ -49,7 +49,12 @@ export function useMatchedVendors({
   recommendedSystems,
   enabled = true,
 }: Args) {
-  const normalizedRecommended = normalizeSystemTypeIds(recommendedSystems);
+  // Expand combo IDs (e.g. "hybrid") into their component systems so that
+  // matching enforces a provider supplies every component, not the combo
+  // tag itself (which vendors no longer select).
+  const normalizedRecommended = expandCombosToComponents(
+    normalizeSystemTypeIds(recommendedSystems)
+  );
   return useQuery({
     queryKey: [
       "matched-vendors",
