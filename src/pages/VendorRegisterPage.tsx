@@ -147,6 +147,7 @@ export default function VendorRegisterPage() {
     review_flag?: string | null;
     reason?: string;
     mode?: string;
+    verifiedAt?: string;
   };
   const [abrChecking, setAbrChecking] = useState(false);
   const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
@@ -175,6 +176,8 @@ export default function VendorRegisterPage() {
       });
       if (error) throw error;
       const preview = data as AbrPreview;
+      const verifiedAt = new Date().toISOString();
+      preview.verifiedAt = verifiedAt;
       // Auto-fill business name from the ABR-registered entity name when:
       //   - the lookup succeeded and returned an entity name, AND
       //   - the user hasn't typed a business name yet, OR
@@ -193,7 +196,7 @@ export default function VendorRegisterPage() {
         updateProfile("name", preview.entityName);
         // Clear the name_mismatch flag locally — we just adopted ABR's name,
         // so the next verification (or submission) will treat it as a match.
-        setAbrPreview({ ...preview, verified: true, review_flag: null });
+        setAbrPreview({ ...preview, verified: true, review_flag: null, verifiedAt });
         toast.success("Business name set from the Australian Business Register.");
         return;
       }
