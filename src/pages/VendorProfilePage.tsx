@@ -408,12 +408,19 @@ export default function VendorProfilePage() {
             toast.warning("ABN found, but the registered name doesn't match — flagged for admin review.");
           } else if (data?.reason === "abn_cancelled") {
             toast.error("This ABN is marked Cancelled by the ABR. Lead delivery has been paused.");
+          } else if (data?.reason === "abr_lookup_failed" || data?.verified === false) {
+            toast.error(
+              "We couldn't verify this ABN with the Australian Business Register. Please check the number and try again, or contact us if the issue persists.",
+            );
           } else if (data?.verified) {
             toast.success("ABN verified");
           }
           queryClient.invalidateQueries({ queryKey: ["vendor-account"] });
         } catch (e) {
           console.error("verify-abn failed", e);
+          toast.error(
+            "We couldn't verify this ABN with the Australian Business Register. Please check the number and try again, or contact us if the issue persists.",
+          );
         }
       }
     },
