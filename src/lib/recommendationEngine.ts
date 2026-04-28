@@ -92,6 +92,7 @@ export interface QuizAnswers {
   firstName: string;
   email: string;
   mobile: string;
+  contactPreference?: string;
   consent: boolean;
   disclaimerAck: boolean;
 }
