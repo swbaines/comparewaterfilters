@@ -254,6 +254,30 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_temperature_audit_log: {
+        Row: {
+          created_at: string
+          id: string
+          installation_timeline: string | null
+          lead_temperature: string | null
+          quote_request_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          installation_timeline?: string | null
+          lead_temperature?: string | null
+          quote_request_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          installation_timeline?: string | null
+          lead_temperature?: string | null
+          quote_request_id?: string
+        }
+        Relationships: []
+      }
       provider_stripe_details: {
         Row: {
           created_at: string

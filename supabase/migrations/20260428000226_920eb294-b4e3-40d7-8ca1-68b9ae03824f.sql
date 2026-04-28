@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.log_quote_request_lead_temperature() FROM PUBLIC, anon, authenticated;
