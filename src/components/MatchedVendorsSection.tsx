@@ -342,6 +342,7 @@ export default function MatchedVendorsSection({
         message: message || null,
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
+        contact_preference: answers.contactPreference || "no_preference",
       }));
 
       const { error } = await supabase.from("quote_requests").insert(rows);
@@ -382,6 +383,7 @@ export default function MatchedVendorsSection({
                       createdAt: new Date().toISOString(),
                       installationTimeline: answers.installationTimeline || "",
                       leadTemperature: leadTemperature || "",
+                      contactPreference: answers.contactPreference || "no_preference",
                     },
                   },
                 })
