@@ -383,6 +383,7 @@ export default function AdminLeadsPage() {
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Customer</TableHead>
+                  <TableHead>Contact Pref</TableHead>
                   <TableHead>Provider</TableHead>
                   <TableHead>Temp</TableHead>
                   <TableHead>Timeline</TableHead>
@@ -398,13 +399,29 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={14} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell>
                       <div className="text-sm font-medium">{lead.customer_name}</div>
                       <div className="text-xs text-muted-foreground">{lead.customer_email}</div>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {(() => {
+                        const pref = (lead as any).contact_preference as string | null | undefined;
+                        const labels: Record<string, string> = {
+                          phone: "📞 Phone",
+                          sms: "💬 SMS first",
+                          email: "✉️ Email first",
+                          no_preference: "✨ No preference",
+                        };
+                        return pref && labels[pref] ? (
+                          <Badge variant="outline" className="text-[10px] whitespace-nowrap">{labels[pref]}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="text-sm">{lead.provider_name}</TableCell>
                     <TableCell>
