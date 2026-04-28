@@ -672,16 +672,6 @@ export default function VendorRegisterPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label>Business Name *</Label>
-                  <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="e.g. Sam's Water Filtration" />
-                  <p className="text-xs text-muted-foreground">Your registered legal business name. Tip: enter your ABN below and click <span className="font-medium">Verify with ABR</span> — we'll fill this in for you.</p>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Trading Name (if different)</Label>
-                  <Input value={profile.tradingName} onChange={e => updateProfile("tradingName", e.target.value)} placeholder="e.g. Sam's Filters" />
-                  <p className="text-xs text-muted-foreground">Optional — the name customers know your business by, if different from your registered name.</p>
-                </div>
-                <div className="space-y-1.5">
                   <Label>ABN *</Label>
                   <div className="flex gap-2">
                     <Input
@@ -705,7 +695,7 @@ export default function VendorRegisterPage() {
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
+                  <p className="text-xs text-muted-foreground">Start here — enter your 11-digit ABN and click <span className="font-medium">Verify with ABR</span>. We'll auto-fill your registered business name below.</p>
                   {abrPreview && (
                     <div
                       className={
@@ -749,6 +739,16 @@ export default function VendorRegisterPage() {
                       )}
                     </div>
                   )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Business Name *</Label>
+                  <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="Auto-filled from your ABN — or type it in" />
+                  <p className="text-xs text-muted-foreground">Your registered legal business name. Filled automatically when you verify your ABN above.</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Trading Name (if different)</Label>
+                  <Input value={profile.tradingName} onChange={e => updateProfile("tradingName", e.target.value)} placeholder="e.g. Sam's Filters" />
+                  <p className="text-xs text-muted-foreground">Optional — the name customers know your business by, if different from your registered name.</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Description</Label>
