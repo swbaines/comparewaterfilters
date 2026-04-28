@@ -385,6 +385,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Customer</TableHead>
                   <TableHead>Provider</TableHead>
                   <TableHead>Temp</TableHead>
+                  <TableHead>Timeline</TableHead>
                   <TableHead>Systems</TableHead>
                   <TableHead>Ownership</TableHead>
                   <TableHead>Property Age</TableHead>
