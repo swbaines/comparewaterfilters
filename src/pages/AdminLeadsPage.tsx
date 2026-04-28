@@ -385,6 +385,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Customer</TableHead>
                   <TableHead>Provider</TableHead>
                   <TableHead>Temp</TableHead>
+                  <TableHead>Timeline</TableHead>
                   <TableHead>Systems</TableHead>
                   <TableHead>Ownership</TableHead>
                   <TableHead>Property Age</TableHead>
@@ -397,7 +398,7 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={12} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -417,6 +418,9 @@ export default function AdminLeadsPage() {
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[180px]">
+                      {lead.installation_timeline || "—"}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
