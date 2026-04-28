@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -154,7 +154,7 @@ export default function VendorRegisterPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   // Tracks names we set programmatically (from ABR) so the reset effect
   // below doesn't immediately clear the verified banner after auto-fill.
-  const abrAutoFilledNameRef = React.useRef<string | null>(null);
+  const abrAutoFilledNameRef = useRef<string | null>(null);
 
   // Reset preview whenever the user edits the ABN or manually edits the
   // business name. Skip resets caused by our own ABR auto-fill.
