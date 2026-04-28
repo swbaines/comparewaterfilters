@@ -104,7 +104,7 @@ describe("recommendationEngine — replacement / high-intent leads", () => {
 const TOLERANCE_LABELS = {
   critical: "Critical — under $200 per year preferred",
   important: "Important — under $400 per year preferred",
-  manageable: "Manageable — up to $700 per year is fine",
+  manageable: "Manageable — up to $600 per year is fine",
   none: "Not a concern — I want the best filtration regardless",
 } as const;
 
@@ -161,16 +161,16 @@ describe("getMaintenanceFit — per tolerance option", () => {
     });
   });
 
-  describe("manageable (≤$700/yr)", () => {
+  describe("manageable (≤$600/yr)", () => {
     const t = TOLERANCE_LABELS.manageable;
-    it("match: band within $700 ceiling", () => {
-      expect(getMaintenanceFit(t, 300, 700).level).toBe("match");
+    it("match: band within $600 ceiling", () => {
+      expect(getMaintenanceFit(t, 300, 600).level).toBe("match");
     });
-    it("slightly-above: min within 700 * 1.25 = 875", () => {
-      expect(getMaintenanceFit(t, 800, 1000).level).toBe("slightly-above");
+    it("slightly-above: min within 600 * 1.25 = 750", () => {
+      expect(getMaintenanceFit(t, 700, 1000).level).toBe("slightly-above");
     });
-    it("well-above: min above 875", () => {
-      expect(getMaintenanceFit(t, 900, 1200).level).toBe("well-above");
+    it("well-above: min above 750", () => {
+      expect(getMaintenanceFit(t, 800, 1200).level).toBe("well-above");
     });
   });
 
@@ -289,7 +289,7 @@ describe("getMaintenanceFit — exact boundary values per tolerance label", () =
   const cases = [
     { tier: "critical",   label: TOLERANCE_LABELS.critical,   ceiling: 200 },
     { tier: "important",  label: TOLERANCE_LABELS.important,  ceiling: 400 },
-    { tier: "manageable", label: TOLERANCE_LABELS.manageable, ceiling: 700 },
+    { tier: "manageable", label: TOLERANCE_LABELS.manageable, ceiling: 600 },
   ] as const;
 
   for (const { tier, label, ceiling } of cases) {
@@ -337,7 +337,7 @@ describe("getMaintenanceFit — exact boundary values per tolerance label", () =
     });
     it("returns an empty message at every boundary", () => {
       expect(getMaintenanceFit(label, 200, 200).message).toBe("");
-      expect(getMaintenanceFit(label, 700, 875).message).toBe("");
+      expect(getMaintenanceFit(label, 600, 750).message).toBe("");
       expect(getMaintenanceFit(label, 5000, 5000).message).toBe("");
     });
   });
@@ -369,11 +369,11 @@ describe("getMaintenanceFit — snapshot matrix", () => {
       [400, 400],
       [450, 500],
       [500, 500],
-      [600, 700],
-      [700, 700],
-      [800, 875],
-      [875, 875],
-      [876, 1000],
+      [500, 600],
+      [600, 600],
+      [700, 750],
+      [750, 750],
+      [751, 1000],
       [1500, 2500],
     ];
 

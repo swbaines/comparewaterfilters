@@ -48,7 +48,7 @@ const factors = [
 const pricingFaqs = [
   {
     q: "How much does a water filter cost in Australia?",
-    a: "Water filter prices in Australia range from $300 for a basic under-sink carbon filter up to about $6,000 for a whole house combo system, fully installed. Ongoing maintenance adds $80–$700 per year depending on the system type.",
+    a: "Water filter prices in Australia range from $300 for a basic under-sink carbon filter up to about $6,000 for a whole house combo system, fully installed. Ongoing maintenance adds $80–$600 per year depending on the system type.",
   },
   {
     q: "What affects the price of a water filter?",
