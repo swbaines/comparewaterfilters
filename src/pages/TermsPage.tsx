@@ -198,6 +198,15 @@ export default function TermsPage() {
             <li>offer or accept payment for the placement or ranking of your profile.</li>
           </ol>
 
+          <p>18.6 <strong>Customer Contact Preferences.</strong> Each Lead includes the Customer's preferred contact method (phone call, SMS first, email first, or no preference). You must respect that preference when making first contact and during ongoing communication. By way of example only:</p>
+          <ol type="a">
+            <li>where a Customer has selected "email first", you must initiate contact by email and must not cold-call the Customer before they have responded;</li>
+            <li>where a Customer has selected "SMS first", you must send a text message before placing a phone call;</li>
+            <li>where a Customer has selected "phone call", you may call the Customer at reasonable hours;</li>
+            <li>where a Customer has selected "no preference", you may use any reasonable contact method.</li>
+          </ol>
+          <p>18.7 Vendors who repeatedly disregard a Customer's stated contact preference will receive a written warning. Continued or serious breaches may result in the suspension or termination of your Vendor account under clause 22 and may form the basis of a substantiated complaint for the purposes of clause 16.</p>
+
           <h3>19. Lead Fees and Billing</h3>
           <p>19.1 You will be charged a lead fee for each valid quote request submitted by a Customer and matched to your profile ("Lead").</p>
           <p>19.2 The lead fee is determined by the Customer's ownership status as follows:</p>

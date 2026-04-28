@@ -24,6 +24,13 @@ const waterSourceLabels: Record<string, string> = {
   'not-sure': 'Not sure',
 }
 
+const contactPreferenceLabels: Record<string, string> = {
+  phone: 'Phone call — okay to call anytime',
+  sms: 'SMS first — text before calling',
+  email: 'Email first — email before calling',
+  no_preference: 'No preference — any method is fine',
+}
+
 interface VendorLeadNotificationProps {
   providerName?: string
   customerName?: string
@@ -40,6 +47,7 @@ interface VendorLeadNotificationProps {
   recommendedSystems?: string[]
   message?: string
   createdAt?: string
+  contactPreference?: string
 }
 
 const VendorLeadNotificationEmail = ({
@@ -58,6 +66,7 @@ const VendorLeadNotificationEmail = ({
   recommendedSystems = [],
   message = '',
   createdAt = '',
+  contactPreference = '',
 }: VendorLeadNotificationProps) => {
   const formattedDate = createdAt
     ? new Date(createdAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -65,6 +74,8 @@ const VendorLeadNotificationEmail = ({
   const formattedConcerns = concerns
     .map((c) => c.replace(/-/g, ' ').replace(/^\w/, (ch) => ch.toUpperCase()))
     .join(', ')
+  const contactPreferenceLabel =
+    contactPreferenceLabels[contactPreference] || (contactPreference ? contactPreference : '')
 
   return (
     <Html lang="en" dir="ltr">
@@ -91,6 +102,21 @@ const VendorLeadNotificationEmail = ({
             <Row style={infoRow}><Column style={labelCol}>Email</Column><Column style={valueCol}>{customerEmail}</Column></Row>
             <Row style={infoRow}><Column style={labelCol}>Location</Column><Column style={valueCol}>{customerSuburb}, {customerState} {customerPostcode}</Column></Row>
           </Section>
+
+          {contactPreferenceLabel && (
+            <>
+              <Hr style={dividerLight} />
+              <Section style={infoSection}>
+                <Heading as="h3" style={sectionHeading}>Preferred Contact Method</Heading>
+                <Text style={contactPrefBox}>
+                  Customer prefers: <strong>{contactPreferenceLabel}</strong>
+                </Text>
+                <Text style={contactPrefHelp}>
+                  Please respect the customer's preferred contact method. Repeated breaches (e.g. cold-calling a customer who selected "email first") may result in warnings or removal from the platform.
+                </Text>
+              </Section>
+            </>
+          )}
 
           <Hr style={dividerLight} />
 
@@ -197,6 +223,7 @@ export const template = {
     recommendedSystems: ['Under-sink filter', 'Reverse osmosis'],
     message: 'We have a baby on the way and want the cleanest water possible.',
     createdAt: '2026-03-28T10:00:00Z',
+    contactPreference: 'email',
   },
 } satisfies TemplateEntry
 
@@ -219,3 +246,5 @@ const tag: React.CSSProperties = { backgroundColor: 'hsl(168, 30%, 92%)', color:
 const quoteText = { fontSize: '14px', color: 'hsl(220, 20%, 14%)', fontStyle: 'italic' as const, margin: '0', lineHeight: '1.5', backgroundColor: '#f9f8f6', padding: '12px 16px', borderRadius: '8px', borderLeft: '3px solid hsl(168, 42%, 40%)' }
 const ctaButton = { backgroundColor: 'hsl(168, 42%, 40%)', color: '#ffffff', fontSize: '14px', fontWeight: '600' as const, borderRadius: '12px', padding: '12px 28px', textDecoration: 'none' }
 const footer = { fontSize: '12px', color: '#999999', margin: '0', textAlign: 'center' as const }
+const contactPrefBox = { fontSize: '14px', color: 'hsl(220, 20%, 14%)', margin: '0 0 8px', backgroundColor: 'hsl(168, 30%, 95%)', padding: '12px 14px', borderRadius: '8px', borderLeft: '3px solid hsl(168, 42%, 40%)' }
+const contactPrefHelp = { fontSize: '12px', color: 'hsl(220, 10%, 46%)', margin: '0', lineHeight: '1.5' }
