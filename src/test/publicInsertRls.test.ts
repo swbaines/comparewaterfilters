@@ -44,6 +44,7 @@ describeIfEnv("Public RLS insert surface", () => {
         customer_state: "VIC",
         recommended_systems: [],
         is_test: true,
+        contact_preference: "no_preference",
       });
 
     expect(error, error?.message).toBeNull();
