@@ -128,7 +128,7 @@ describe("getMaintenanceTier", () => {
 });
 
 describe("getMaintenanceFit — per tolerance option", () => {
-  // Ceilings: critical=$200, important=$400, manageable=$700, none=null.
+  // Ceilings: critical=$200, important=$400, manageable=$600, none=null.
   // "slightly-above" if annualMin <= ceiling * 1.25, else "well-above".
 
   describe("critical (≤$200/yr)", () => {
