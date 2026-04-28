@@ -811,3 +811,118 @@ export default function VendorProfilePage() {
     </div>
   );
 }
+
+function AbnVerificationStatus({
+  provider,
+  currentInputAbn,
+}: {
+  provider: any;
+  currentInputAbn: string;
+}) {
+  const savedAbn = cleanAbn(provider?.abn || "");
+  const inputAbn = cleanAbn(currentInputAbn || "");
+  const hasSavedAbn = /^\d{11}$/.test(savedAbn);
+  const inputMatchesSaved = hasSavedAbn && inputAbn === savedAbn;
+  const reviewFlag: string | null = provider?.abn_review_flag ?? null;
+  const isVerified =
+    provider?.abn_verified === true && inputMatchesSaved && !reviewFlag;
+  const isPendingReview = hasSavedAbn && !!reviewFlag;
+  const verifiedAt = provider?.abn_verified_at
+    ? new Date(provider.abn_verified_at).toLocaleString("en-AU", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
+    : null;
+
+  // Reason copy for unverified / pending states
+  const reasonForUnverified = (() => {
+    if (!hasSavedAbn) return "No ABN saved yet — enter your 11-digit ABN above and save to start verification.";
+    if (!inputMatchesSaved)
+      return "The ABN above has been edited but not saved yet. Save your profile to re-run verification.";
+    if (provider?.abn_verified === false)
+      return "This ABN couldn't be confirmed against the Australian Business Register. Double-check the digits, or contact us if you believe this is incorrect.";
+    return "This ABN hasn't been verified yet.";
+  })();
+
+  const reasonForPending = (() => {
+    if (reviewFlag === "name_mismatch")
+      return "We found this ABN on the Australian Business Register, but the registered entity name doesn't match your business name. Our team will review and confirm shortly.";
+    if (reviewFlag === "abn_cancelled")
+      return "The Australian Business Register lists this ABN as cancelled. Please update to an active ABN — lead delivery is paused until this is resolved.";
+    return `Awaiting admin review (${reviewFlag}).`;
+  })();
+
+  let tone: "verified" | "pending" | "unverified";
+  if (isVerified) tone = "verified";
+  else if (isPendingReview) tone = "pending";
+  else tone = "unverified";
+
+  const palette = {
+    verified: {
+      ring: "border-emerald-200 bg-emerald-50",
+      icon: <ShieldCheck className="h-5 w-5 text-emerald-700" />,
+      label: "Verified",
+      labelClass: "bg-emerald-100 text-emerald-800 hover:bg-emerald-100",
+    },
+    pending: {
+      ring: "border-amber-200 bg-amber-50",
+      icon: <Clock className="h-5 w-5 text-amber-700" />,
+      label: "Pending review",
+      labelClass: "bg-amber-100 text-amber-800 hover:bg-amber-100",
+    },
+    unverified: {
+      ring: "border-muted bg-muted/30",
+      icon: <ShieldAlert className="h-5 w-5 text-muted-foreground" />,
+      label: "Unverified",
+      labelClass: "bg-muted text-foreground hover:bg-muted",
+    },
+  }[tone];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Shield className="h-5 w-5" /> ABN Verification Status
+        </CardTitle>
+        <CardDescription>
+          Confirms your business identity against the Australian Business Register.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className={`flex items-start gap-3 rounded-lg border p-4 ${palette.ring}`}>
+          <div className="mt-0.5 shrink-0">{palette.icon}</div>
+          <div className="flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className={`gap-1 ${palette.labelClass}`}>
+                {palette.label}
+              </Badge>
+              {hasSavedAbn && (
+                <span className="text-xs text-muted-foreground font-mono">
+                  ABN {savedAbn.replace(/(\d{2})(\d{3})(\d{3})(\d{3})/, "$1 $2 $3 $4")}
+                </span>
+              )}
+            </div>
+            {tone === "verified" ? (
+              <p className="text-sm text-foreground/80">
+                Your ABN matches an active record on the Australian Business Register.
+                {verifiedAt && <span className="text-muted-foreground"> Last checked {verifiedAt}.</span>}
+              </p>
+            ) : tone === "pending" ? (
+              <p className="text-sm text-foreground/80">{reasonForPending}</p>
+            ) : (
+              <p className="text-sm text-foreground/80">{reasonForUnverified}</p>
+            )}
+            {provider?.abn_verification_response?.entity_name && tone !== "verified" && (
+              <p className="text-xs text-muted-foreground">
+                ABR registered name:{" "}
+                <span className="font-medium text-foreground/80">
+                  {provider.abn_verification_response.entity_name}
+                </span>
+              </p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
