@@ -115,6 +115,13 @@ const installationTimelineOptions = [
   { value: "Just researching — no specific timeframe", label: "Just researching — no specific timeframe" },
 ];
 
+export const contactPreferenceOptions = [
+  { value: "phone", label: "Phone call — call me anytime" },
+  { value: "sms", label: "SMS first — text me before calling" },
+  { value: "email", label: "Email first — email me before calling" },
+  { value: "no_preference", label: "No preference — any method is fine" },
+];
+
 const priorityOptions = [
   { value: "lowest-cost", label: "Lowest upfront cost" },
   { value: "lowest-maintenance", label: "Lowest maintenance" },
@@ -209,6 +216,7 @@ export default function QuizPage() {
     firstName: "",
     email: "",
     mobile: "",
+    contactPreference: "",
     consent: false,
     disclaimerAck: false,
   });
@@ -299,7 +307,14 @@ export default function QuizPage() {
       case 7:
         return !!answers.installationTimeline;
       case 8:
-        return !!(answers.firstName && answers.email && answers.mobile && answers.consent && answers.disclaimerAck);
+        return !!(
+          answers.firstName &&
+          answers.email &&
+          answers.mobile &&
+          answers.contactPreference &&
+          answers.consent &&
+          answers.disclaimerAck
+        );
       default:
         return true;
     }
@@ -331,6 +346,7 @@ export default function QuizPage() {
         priorities: answers.priorities || [],
         notes: answers.notes || null,
         consent: answers.consent,
+        contact_preference: answers.contactPreference || null,
       });
     } catch (err) {
       console.error("Failed to save quiz submission:", err);
