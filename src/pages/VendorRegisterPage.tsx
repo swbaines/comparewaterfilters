@@ -204,6 +204,7 @@ export default function VendorRegisterPage() {
         if (typed && typed.toLowerCase() !== preview.entityName.toLowerCase() && !profile.tradingName.trim()) {
           updateProfile("tradingName", typed);
         }
+        abrAutoFilledNameRef.current = preview.entityName;
         updateProfile("name", preview.entityName);
         // Clear the name_mismatch flag locally — we just adopted ABR's name,
         // so the next verification (or submission) will treat it as a match.
