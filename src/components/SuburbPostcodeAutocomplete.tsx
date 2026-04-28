@@ -168,7 +168,9 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="mb-1.5 block text-sm font-medium">Suburb or postcode</label>
+      <label className="mb-1.5 block text-sm font-medium">
+        Suburb or postcode <span className="text-destructive">*</span>
+      </label>
       {autoDetectFailed && (
         <div className="mb-2">
           <p className="mb-1 text-xs text-muted-foreground">Select your state to improve results:</p>
