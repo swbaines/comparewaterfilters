@@ -575,6 +575,12 @@ export default function VendorProfilePage() {
           </CardContent>
         </Card>
 
+        {/* ABN Verification Status */}
+        <AbnVerificationStatus
+          provider={provider}
+          currentInputAbn={form.abn}
+        />
+
         {/* Service Area */}
         <Card>
           <CardHeader>
