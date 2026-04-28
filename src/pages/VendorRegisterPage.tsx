@@ -152,12 +152,14 @@ export default function VendorRegisterPage() {
   const [abrChecking, setAbrChecking] = useState(false);
   const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [abnOverride, setAbnOverride] = useState(false);
   // Tracks names we set programmatically (from ABR) so the reset effect
   // below doesn't immediately clear the verified banner after auto-fill.
   const abrAutoFilledNameRef = useRef<string | null>(null);
 
-  // Reset preview whenever the user edits the ABN or manually edits the
-  // business name. Skip resets caused by our own ABR auto-fill.
+  // Reset preview (and any override) whenever the user edits the ABN or
+  // manually edits the business name. Skip resets caused by our own
+  // ABR auto-fill.
   useEffect(() => {
     if (
       abrAutoFilledNameRef.current !== null &&
@@ -167,6 +169,7 @@ export default function VendorRegisterPage() {
     }
     abrAutoFilledNameRef.current = null;
     setAbrPreview(null);
+    setAbnOverride(false);
   }, [profile.abn, profile.name]);
 
   const runAbrLookup = async () => {
@@ -1073,10 +1076,48 @@ export default function VendorRegisterPage() {
             </Card>
 
 
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Submit for Approval
-            </Button>
+            {(() => {
+              const isAbnVerified = !!abrPreview?.verified;
+              const canSubmit = isAbnVerified || abnOverride;
+              return (
+                <div className="space-y-3">
+                  {!isAbnVerified && (
+                    <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                      <div className="flex items-start gap-2">
+                        <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <p className="font-medium">ABN not yet verified</p>
+                          <p className="text-xs">
+                            Scroll up and click <span className="font-medium">Verify with ABR</span> to confirm your ABN against the Australian Business Register. Verified applications are reviewed faster.
+                          </p>
+                          <label className="mt-1 flex items-start gap-2 text-xs">
+                            <input
+                              type="checkbox"
+                              checked={abnOverride}
+                              onChange={(e) => setAbnOverride(e.target.checked)}
+                              className="mt-0.5 h-3.5 w-3.5 rounded border-amber-400 text-amber-700 focus:ring-amber-500"
+                            />
+                            <span>
+                              I confirm my ABN is correct and want to submit without ABR verification. My application will be flagged for manual admin review.
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    size="lg"
+                    disabled={loading || !canSubmit}
+                    title={canSubmit ? undefined : "Verify your ABN above, or tick the override checkbox to continue."}
+                  >
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    Submit for Approval
+                  </Button>
+                </div>
+              );
+            })()}
 
             <p className="text-xs text-muted-foreground text-center">
               Your profile will be reviewed by our team. Once approved, you'll start receiving leads.
