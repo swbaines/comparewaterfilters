@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail, ShieldCheck, ShieldAlert } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail, ShieldCheck, ShieldAlert, RefreshCw } from "lucide-react";
 import { systemTypes } from "@/data/systemTypes";
 import { Badge } from "@/components/ui/badge";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
@@ -1070,8 +1070,21 @@ export default function VendorRegisterPage() {
                 </Button>
                 <Button
                   type="button"
+                  variant="outline"
+                  onClick={runAbrLookup}
+                  disabled={loading || abrChecking}
+                >
+                  {abrChecking ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                  )}
+                  Verify again
+                </Button>
+                <Button
+                  type="button"
                   onClick={performProfileSubmit}
-                  disabled={loading}
+                  disabled={loading || abrChecking}
                 >
                   {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   Confirm & submit
