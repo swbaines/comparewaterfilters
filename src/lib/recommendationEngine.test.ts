@@ -344,6 +344,72 @@ describe("getMaintenanceFit — exact boundary values per tolerance label", () =
 });
 
 // ─── Snapshot: lock the fit-level matrix across all tiers × bands ───────────
+
+// ─── Manageable tier — explicit $600 / $750 transition guard ─────────────────
+//
+// The "manageable" ceiling moved from $700 → $600 (1.25× window 875 → 750).
+// These tests pin the new transitions so any future regression is loud:
+//   • $599  → match           (just under ceiling)
+//   • $600  → match           (exact ceiling)
+//   • $601  → slightly-above  (one dollar over)
+//   • $750  → slightly-above  (exact 1.25× edge)
+//   • $751  → well-above      (one dollar over the 1.25× edge)
+
+describe("manageable tier — $600 ceiling and $750 (1.25×) transitions", () => {
+  const t = TOLERANCE_LABELS.manageable;
+
+  describe("at the $600 ceiling", () => {
+    it("$599 max → match", () => {
+      expect(getMaintenanceFit(t, 400, 599).level).toBe("match");
+    });
+    it("$600 max (exact ceiling) → match", () => {
+      expect(getMaintenanceFit(t, 400, 600).level).toBe("match");
+    });
+    it("zero-width band exactly at $600 → match", () => {
+      expect(getMaintenanceFit(t, 600, 600).level).toBe("match");
+    });
+    it("$601 max with min still at $600 → slightly-above", () => {
+      expect(getMaintenanceFit(t, 600, 601).level).toBe("slightly-above");
+    });
+  });
+
+  describe("at the $750 (1.25×) edge", () => {
+    it("min == $749 → slightly-above (within 1.25× window)", () => {
+      expect(getMaintenanceFit(t, 749, 900).level).toBe("slightly-above");
+    });
+    it("min == $750 exactly → slightly-above (inclusive boundary)", () => {
+      expect(getMaintenanceFit(t, 750, 900).level).toBe("slightly-above");
+    });
+    it("min == $751 → well-above (just over 1.25× window)", () => {
+      expect(getMaintenanceFit(t, 751, 900).level).toBe("well-above");
+    });
+  });
+
+  it("legacy $700 ceiling no longer behaves as 'match' for max=$700", () => {
+    // Previously $700 was the manageable ceiling; under the $600 rule a
+    // band ending at $700 must now be flagged as slightly-above.
+    expect(getMaintenanceFit(t, 500, 700).level).toBe("slightly-above");
+  });
+
+  it("legacy $875 (1.25× of old $700) no longer behaves as 'slightly-above'", () => {
+    // Old window upper bound was 875; under $600/$750 rules min=$875 is
+    // well above the new 1.25× edge of $750.
+    expect(getMaintenanceFit(t, 875, 900).level).toBe("well-above");
+  });
+
+  it("attaches the correct human-readable messages at each transition", () => {
+    expect(getMaintenanceFit(t, 500, 600).message).toBe(
+      "Matches your maintenance budget",
+    );
+    expect(getMaintenanceFit(t, 600, 700).message).toBe(
+      "Slightly above your maintenance preference",
+    );
+    expect(getMaintenanceFit(t, 800, 1000).message).toBe(
+      "Significantly above your maintenance preference — consider a service plan",
+    );
+  });
+});
+
 //
 // This snapshot guards against silent drift in either the ceilings or the
 // 1.25× slightly-above window. If the engine logic intentionally changes,
