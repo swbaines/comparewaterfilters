@@ -98,3 +98,31 @@ export function normalizeSystemTypeIds(ids: readonly string[]): string[] {
   for (const id of ids) seen.add(normalizeSystemTypeId(id));
   return [...seen];
 }
+
+/**
+ * Combo / hybrid recommendations are NOT a real product vendors stock —
+ * they're a bundle of individual systems installed together. To match
+ * providers correctly we expand the combo ID into its component canonical
+ * system types. A provider must supply ALL components to qualify.
+ */
+export const COMBO_COMPONENT_IDS: Record<string, CanonicalSystemType[]> = {
+  hybrid: ["whole-house-filtration", "reverse-osmosis"],
+};
+
+/**
+ * Expand any combo IDs in a recommended-systems list into their component
+ * canonical IDs, removing the combo ID itself. Non-combo IDs pass through.
+ * Result is de-duplicated.
+ */
+export function expandCombosToComponents(ids: readonly string[]): string[] {
+  const out = new Set<string>();
+  for (const id of ids) {
+    const components = COMBO_COMPONENT_IDS[id];
+    if (components) {
+      for (const c of components) out.add(c);
+    } else {
+      out.add(id);
+    }
+  }
+  return [...out];
+}

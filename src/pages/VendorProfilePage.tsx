@@ -39,7 +39,11 @@ const AU_STATES = [
 import { systemTypes } from "@/data/systemTypes";
 import { normalizeSystemTypeIds } from "@/lib/canonicalSystemTypes";
 
-const SYSTEM_TYPES = systemTypes.map((s) => ({ value: s.id, label: s.name }));
+// "hybrid" (combo) excluded — vendors pick individual systems and combos
+// are matched by supplying every component system.
+const SYSTEM_TYPES = systemTypes
+  .filter((s) => s.id !== "hybrid")
+  .map((s) => ({ value: s.id, label: s.name }));
 const VALID_SYSTEM_TYPE_IDS = new Set(SYSTEM_TYPES.map((s) => s.value));
 
 const CERTIFICATIONS = [
