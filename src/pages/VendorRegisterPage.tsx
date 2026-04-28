@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail } from "lucide-react";
+import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail, ShieldCheck, ShieldAlert } from "lucide-react";
 import { systemTypes } from "@/data/systemTypes";
 import { Badge } from "@/components/ui/badge";
 import ServiceAreaPicker, { type ServiceAreaValue } from "@/components/ServiceAreaPicker";
@@ -127,6 +127,64 @@ export default function VendorRegisterPage() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+
+  // Live ABR lookup state (pre-registration). The verify-abn edge function
+  // accepts an authenticated call without a provider_id and returns the ABR
+  // entity details + name-match outcome.
+  type AbrPreview = {
+    verified: boolean;
+    status?: string;
+    entityName?: string | null;
+    businessNames?: string[];
+    review_flag?: string | null;
+    reason?: string;
+    mode?: string;
+  };
+  const [abrChecking, setAbrChecking] = useState(false);
+  const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
+
+  // Reset preview whenever ABN or business name change.
+  useEffect(() => {
+    setAbrPreview(null);
+  }, [profile.abn, profile.name]);
+
+  const runAbrLookup = async () => {
+    const abnClean = profile.abn.replace(/\s/g, "");
+    if (!/^\d{11}$/.test(abnClean)) {
+      toast.error("ABN must be exactly 11 digits");
+      return;
+    }
+    if (!profile.name.trim()) {
+      toast.error("Enter your registered business name first so we can match it against the ABR.");
+      return;
+    }
+    setAbrChecking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("verify-abn", {
+        body: { abn: abnClean, business_name: profile.name },
+      });
+      if (error) throw error;
+      setAbrPreview(data as AbrPreview);
+      if (data?.reason === "abn_cancelled") {
+        toast.error("This ABN is marked Cancelled by the ABR.");
+      } else if (data?.reason === "abr_lookup_failed") {
+        toast.error(
+          "We couldn't verify this ABN with the Australian Business Register. Please check the number and try again, or contact us if the issue persists.",
+        );
+      } else if (data?.review_flag === "name_mismatch") {
+        toast.warning("ABN found, but the registered name doesn't match — admin will review on submission.");
+      } else if (data?.verified) {
+        toast.success("ABN verified against the Australian Business Register.");
+      }
+    } catch (e: any) {
+      toast.error(
+        "We couldn't verify this ABN with the Australian Business Register. Please check the number and try again, or contact us if the issue persists.",
+      );
+      console.error("verify-abn preview failed", e);
+    } finally {
+      setAbrChecking(false);
+    }
+  };
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -578,14 +636,72 @@ export default function VendorRegisterPage() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>ABN *</Label>
-                  <Input
-                    value={profile.abn}
-                    onChange={e => updateProfile("abn", e.target.value)}
-                    required
-                    placeholder="12 345 678 901"
-                    maxLength={14}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      value={profile.abn}
+                      onChange={e => updateProfile("abn", e.target.value)}
+                      required
+                      placeholder="12 345 678 901"
+                      maxLength={14}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={runAbrLookup}
+                      disabled={abrChecking}
+                    >
+                      {abrChecking ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Checking…</>
+                      ) : (
+                        <>Verify with ABR</>
+                      )}
+                    </Button>
+                  </div>
                   <p className="text-xs text-muted-foreground">Australian Business Number — 11 digits</p>
+                  {abrPreview && (
+                    <div
+                      className={
+                        "mt-2 rounded-md border p-3 text-sm " +
+                        (abrPreview.verified
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                          : "border-amber-200 bg-amber-50 text-amber-900")
+                      }
+                    >
+                      <div className="flex items-center gap-2 font-medium">
+                        {abrPreview.verified ? (
+                          <ShieldCheck className="h-4 w-4" />
+                        ) : (
+                          <ShieldAlert className="h-4 w-4" />
+                        )}
+                        {abrPreview.verified
+                          ? "Verified against the Australian Business Register"
+                          : abrPreview.reason === "abn_cancelled"
+                            ? "ABR lists this ABN as Cancelled"
+                            : abrPreview.reason === "abr_lookup_failed"
+                              ? "ABR lookup failed"
+                              : abrPreview.review_flag === "name_mismatch"
+                                ? "ABN found, but the registered name doesn't match"
+                                : "Unverified"}
+                      </div>
+                      {abrPreview.entityName && (
+                        <p className="mt-1 text-xs">
+                          ABR entity name: <span className="font-medium">{abrPreview.entityName}</span>
+                          {abrPreview.status ? ` · Status: ${abrPreview.status}` : ""}
+                        </p>
+                      )}
+                      {abrPreview.businessNames && abrPreview.businessNames.length > 0 && (
+                        <p className="mt-0.5 text-xs">
+                          Trading names on record: {abrPreview.businessNames.join(", ")}
+                        </p>
+                      )}
+                      {abrPreview.review_flag === "name_mismatch" && (
+                        <p className="mt-1 text-xs">
+                          Update the Business Name above to match the ABR record (or your trading name) and check again. Mismatches are flagged for admin review on submission.
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>Description</Label>
