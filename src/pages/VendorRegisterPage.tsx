@@ -163,25 +163,47 @@ export default function VendorRegisterPage() {
       toast.error("ABN must be exactly 11 digits");
       return;
     }
-    if (!profile.name.trim()) {
-      toast.error("Enter your registered business name first so we can match it against the ABR.");
-      return;
-    }
     setAbrChecking(true);
     try {
       const { data, error } = await supabase.functions.invoke("verify-abn", {
-        body: { abn: abnClean, business_name: profile.name },
+        // Send the current business name only if the user already typed one.
+        // Otherwise we let ABR be the source of truth and auto-fill it below.
+        body: {
+          abn: abnClean,
+          business_name: profile.name.trim() || undefined,
+        },
       });
       if (error) throw error;
-      setAbrPreview(data as AbrPreview);
+      const preview = data as AbrPreview;
+      // Auto-fill business name from the ABR-registered entity name when:
+      //   - the lookup succeeded and returned an entity name, AND
+      //   - the user hasn't typed a business name yet, OR
+      //   - the typed name didn't match (name_mismatch) — adopt ABR's canonical name.
+      const shouldAutoFill =
+        !!preview.entityName &&
+        preview.reason !== "abn_cancelled" &&
+        preview.reason !== "abr_lookup_failed" &&
+        (!profile.name.trim() || preview.review_flag === "name_mismatch");
+      if (shouldAutoFill && preview.entityName) {
+        // If the user already typed something different, preserve it as a trading name.
+        const typed = profile.name.trim();
+        if (typed && typed.toLowerCase() !== preview.entityName.toLowerCase() && !profile.tradingName.trim()) {
+          updateProfile("tradingName", typed);
+        }
+        updateProfile("name", preview.entityName);
+        // Clear the name_mismatch flag locally — we just adopted ABR's name,
+        // so the next verification (or submission) will treat it as a match.
+        setAbrPreview({ ...preview, verified: true, review_flag: null });
+        toast.success("Business name set from the Australian Business Register.");
+        return;
+      }
+      setAbrPreview(preview);
       if (data?.reason === "abn_cancelled") {
         toast.error("This ABN is marked Cancelled by the ABR.");
       } else if (data?.reason === "abr_lookup_failed") {
         toast.error(
           "We couldn't verify this ABN with the Australian Business Register. Please check the number and try again, or contact us if the issue persists.",
         );
-      } else if (data?.review_flag === "name_mismatch") {
-        toast.warning("ABN found, but the registered name doesn't match — admin will review on submission.");
       } else if (data?.verified) {
         toast.success("ABN verified against the Australian Business Register.");
       }
@@ -652,7 +674,7 @@ export default function VendorRegisterPage() {
                 <div className="space-y-1.5">
                   <Label>Business Name *</Label>
                   <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="e.g. Sam's Water Filtration" />
-                  <p className="text-xs text-muted-foreground">Your registered legal business name (as shown on your ABN).</p>
+                  <p className="text-xs text-muted-foreground">Your registered legal business name. Tip: enter your ABN below and click <span className="font-medium">Verify with ABR</span> — we'll fill this in for you.</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Trading Name (if different)</Label>
@@ -722,7 +744,7 @@ export default function VendorRegisterPage() {
                       )}
                       {abrPreview.review_flag === "name_mismatch" && (
                         <p className="mt-1 text-xs">
-                          Update the Business Name above to match the ABR record (or your trading name) and check again. Mismatches are flagged for admin review on submission.
+                          We've kept your typed name. Click <span className="font-medium">Verify with ABR</span> again to replace it with the registered entity name above, or move it to the Trading Name field.
                         </p>
                       )}
                     </div>
