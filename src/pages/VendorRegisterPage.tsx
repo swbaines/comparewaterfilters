@@ -152,12 +152,14 @@ export default function VendorRegisterPage() {
   const [abrChecking, setAbrChecking] = useState(false);
   const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [abnOverride, setAbnOverride] = useState(false);
   // Tracks names we set programmatically (from ABR) so the reset effect
   // below doesn't immediately clear the verified banner after auto-fill.
   const abrAutoFilledNameRef = useRef<string | null>(null);
 
-  // Reset preview whenever the user edits the ABN or manually edits the
-  // business name. Skip resets caused by our own ABR auto-fill.
+  // Reset preview (and any override) whenever the user edits the ABN or
+  // manually edits the business name. Skip resets caused by our own
+  // ABR auto-fill.
   useEffect(() => {
     if (
       abrAutoFilledNameRef.current !== null &&
@@ -167,6 +169,7 @@ export default function VendorRegisterPage() {
     }
     abrAutoFilledNameRef.current = null;
     setAbrPreview(null);
+    setAbnOverride(false);
   }, [profile.abn, profile.name]);
 
   const runAbrLookup = async () => {
