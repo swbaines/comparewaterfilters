@@ -353,8 +353,10 @@ export default function VendorRegisterPage() {
           certification_files: certFilePaths,
           logo: logoUrl,
           abn: abnClean,
-          abn_verified: abnVerified,
-          abn_verified_at: abnVerified ? new Date().toISOString() : null,
+          // Source of truth is the live ABR check below — start as unverified
+          // and let the edge function flip these once the ABR confirms the entity.
+          abn_verified: false,
+          abn_verified_at: null,
           plumber_licence_number:
             installation.installation_model === "in_house_licensed"
               ? installation.plumber_licence_number.trim()
