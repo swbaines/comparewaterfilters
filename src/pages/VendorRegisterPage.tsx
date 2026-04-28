@@ -42,7 +42,12 @@ const AU_STATES = [
   { value: "NT", label: "NT" },
 ];
 
-const SYSTEM_TYPES = systemTypes.map((s) => ({ value: s.id, label: s.name }));
+// "hybrid" (combo) is intentionally excluded — combos are inferred when a
+// provider supplies the individual component systems (e.g. whole-house +
+// reverse-osmosis), not selected as a standalone offering.
+const SYSTEM_TYPES = systemTypes
+  .filter((s) => s.id !== "hybrid")
+  .map((s) => ({ value: s.id, label: s.name }));
 const VALID_SYSTEM_TYPE_IDS = new Set(SYSTEM_TYPES.map((s) => s.value));
 
 const CERTIFICATIONS = [
