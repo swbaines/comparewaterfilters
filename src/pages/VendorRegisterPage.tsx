@@ -147,6 +147,7 @@ export default function VendorRegisterPage() {
     review_flag?: string | null;
     reason?: string;
     mode?: string;
+    verifiedAt?: string;
   };
   const [abrChecking, setAbrChecking] = useState(false);
   const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
@@ -175,6 +176,8 @@ export default function VendorRegisterPage() {
       });
       if (error) throw error;
       const preview = data as AbrPreview;
+      const verifiedAt = new Date().toISOString();
+      preview.verifiedAt = verifiedAt;
       // Auto-fill business name from the ABR-registered entity name when:
       //   - the lookup succeeded and returned an entity name, AND
       //   - the user hasn't typed a business name yet, OR
@@ -193,7 +196,7 @@ export default function VendorRegisterPage() {
         updateProfile("name", preview.entityName);
         // Clear the name_mismatch flag locally — we just adopted ABR's name,
         // so the next verification (or submission) will treat it as a match.
-        setAbrPreview({ ...preview, verified: true, review_flag: null });
+        setAbrPreview({ ...preview, verified: true, review_flag: null, verifiedAt });
         toast.success("Business name set from the Australian Business Register.");
         return;
       }
@@ -697,47 +700,89 @@ export default function VendorRegisterPage() {
                   </div>
                   <p className="text-xs text-muted-foreground">Start here — enter your 11-digit ABN and click <span className="font-medium">Verify with ABR</span>. We'll auto-fill your registered business name below.</p>
                   {abrPreview && (
-                    <div
-                      className={
-                        "mt-2 rounded-md border p-3 text-sm " +
-                        (abrPreview.verified
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                          : "border-amber-200 bg-amber-50 text-amber-900")
-                      }
-                    >
-                      <div className="flex items-center gap-2 font-medium">
-                        {abrPreview.verified ? (
-                          <ShieldCheck className="h-4 w-4" />
-                        ) : (
+                    abrPreview.verified ? (
+                      <div className="mt-3 rounded-lg border-2 border-emerald-300 bg-emerald-50 p-4 text-emerald-900 shadow-sm">
+                        <div className="flex items-start gap-3">
+                          <div className="rounded-full bg-emerald-600 p-1.5 text-white">
+                            <ShieldCheck className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold">ABN Verified</span>
+                              <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                                {abrPreview.status || "Active"}
+                              </span>
+                            </div>
+                            <dl className="mt-2 space-y-1 text-sm">
+                              {abrPreview.entityName && (
+                                <div className="flex flex-wrap gap-x-2">
+                                  <dt className="text-emerald-800/80">Entity name:</dt>
+                                  <dd className="font-medium">{abrPreview.entityName}</dd>
+                                </div>
+                              )}
+                              <div className="flex flex-wrap gap-x-2">
+                                <dt className="text-emerald-800/80">ABN:</dt>
+                                <dd className="font-medium tabular-nums">
+                                  {profile.abn.replace(/\s/g, "").replace(/^(\d{2})(\d{3})(\d{3})(\d{3})$/, "$1 $2 $3 $4")}
+                                </dd>
+                              </div>
+                              {abrPreview.verifiedAt && (
+                                <div className="flex flex-wrap gap-x-2">
+                                  <dt className="text-emerald-800/80">Verified on:</dt>
+                                  <dd className="font-medium">
+                                    {new Date(abrPreview.verifiedAt).toLocaleString("en-AU", {
+                                      day: "numeric",
+                                      month: "short",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </dd>
+                                </div>
+                              )}
+                              {abrPreview.businessNames && abrPreview.businessNames.length > 0 && (
+                                <div className="flex flex-wrap gap-x-2">
+                                  <dt className="text-emerald-800/80">Trading names:</dt>
+                                  <dd className="font-medium">{abrPreview.businessNames.join(", ")}</dd>
+                                </div>
+                              )}
+                            </dl>
+                            <p className="mt-2 text-xs text-emerald-800/80">
+                              Confirmed against the Australian Business Register.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                        <div className="flex items-center gap-2 font-medium">
                           <ShieldAlert className="h-4 w-4" />
-                        )}
-                        {abrPreview.verified
-                          ? "Verified against the Australian Business Register"
-                          : abrPreview.reason === "abn_cancelled"
+                          {abrPreview.reason === "abn_cancelled"
                             ? "ABR lists this ABN as Cancelled"
                             : abrPreview.reason === "abr_lookup_failed"
                               ? "ABR lookup failed"
                               : abrPreview.review_flag === "name_mismatch"
                                 ? "ABN found, but the registered name doesn't match"
                                 : "Unverified"}
+                        </div>
+                        {abrPreview.entityName && (
+                          <p className="mt-1 text-xs">
+                            ABR entity name: <span className="font-medium">{abrPreview.entityName}</span>
+                            {abrPreview.status ? ` · Status: ${abrPreview.status}` : ""}
+                          </p>
+                        )}
+                        {abrPreview.businessNames && abrPreview.businessNames.length > 0 && (
+                          <p className="mt-0.5 text-xs">
+                            Trading names on record: {abrPreview.businessNames.join(", ")}
+                          </p>
+                        )}
+                        {abrPreview.review_flag === "name_mismatch" && (
+                          <p className="mt-1 text-xs">
+                            We've kept your typed name. Click <span className="font-medium">Verify with ABR</span> again to replace it with the registered entity name above, or move it to the Trading Name field.
+                          </p>
+                        )}
                       </div>
-                      {abrPreview.entityName && (
-                        <p className="mt-1 text-xs">
-                          ABR entity name: <span className="font-medium">{abrPreview.entityName}</span>
-                          {abrPreview.status ? ` · Status: ${abrPreview.status}` : ""}
-                        </p>
-                      )}
-                      {abrPreview.businessNames && abrPreview.businessNames.length > 0 && (
-                        <p className="mt-0.5 text-xs">
-                          Trading names on record: {abrPreview.businessNames.join(", ")}
-                        </p>
-                      )}
-                      {abrPreview.review_flag === "name_mismatch" && (
-                        <p className="mt-1 text-xs">
-                          We've kept your typed name. Click <span className="font-medium">Verify with ABR</span> again to replace it with the registered entity name above, or move it to the Trading Name field.
-                        </p>
-                      )}
-                    </div>
+                    )
                   )}
                 </div>
                 <div className="space-y-1.5">
