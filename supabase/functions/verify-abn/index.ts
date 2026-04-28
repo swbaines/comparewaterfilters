@@ -120,7 +120,6 @@ Deno.serve(async (req) => {
   const rawAbn = (body.abn ?? '').replace(/\s/g, '')
   const businessName = (body.business_name ?? '').trim()
 
-  if (!providerId) return json({ error: 'provider_id is required' }, 400)
   if (!/^\d{11}$/.test(rawAbn)) {
     return json({ verified: false, reason: 'format', error: 'ABN must be exactly 11 digits' }, 200)
   }
@@ -135,7 +134,7 @@ Deno.serve(async (req) => {
     try {
       await admin.from('abr_lookups').insert({
         user_id: userData.user.id,
-        provider_id: providerId,
+        provider_id: providerId || null,
         submitted_abn: rawAbn,
         submitted_business_name: businessName || null,
         duration_ms: Date.now() - startedAt,
@@ -146,26 +145,32 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Confirm caller owns this provider (or is the submitter, or is admin).
-  const { data: prov } = await admin
-    .from('providers')
-    .select('id, name, submitted_by')
-    .eq('id', providerId)
-    .maybeSingle()
-  if (!prov) return json({ error: 'Provider not found' }, 404)
-  const { data: vendorLink } = await admin
-    .from('vendor_accounts')
-    .select('id')
-    .eq('user_id', userData.user.id)
-    .eq('provider_id', providerId)
-    .maybeSingle()
-  const { data: roles } = await admin
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userData.user.id)
-  const isAdmin = (roles || []).some((r: any) => r.role === 'admin')
-  if (!isAdmin && !vendorLink && prov.submitted_by !== userData.user.id) {
-    return json({ error: 'Forbidden' }, 403)
+  // Preview mode: no provider_id supplied (e.g. pre-registration). We still
+  // require an authenticated user, perform the live ABR lookup, and log the
+  // result, but skip the provider ownership check and DB writes.
+  let prov: { id: string; name: string; submitted_by: string | null } | null = null
+  if (providerId) {
+    const { data: provRow } = await admin
+      .from('providers')
+      .select('id, name, submitted_by')
+      .eq('id', providerId)
+      .maybeSingle()
+    if (!provRow) return json({ error: 'Provider not found' }, 404)
+    prov = provRow as any
+    const { data: vendorLink } = await admin
+      .from('vendor_accounts')
+      .select('id')
+      .eq('user_id', userData.user.id)
+      .eq('provider_id', providerId)
+      .maybeSingle()
+    const { data: roles } = await admin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userData.user.id)
+    const isAdmin = (roles || []).some((r: any) => r.role === 'admin')
+    if (!isAdmin && !vendorLink && prov!.submitted_by !== userData.user.id) {
+      return json({ error: 'Forbidden' }, 403)
+    }
   }
 
   const guid = Deno.env.get('ABR_API_GUID')
@@ -173,16 +178,18 @@ Deno.serve(async (req) => {
   // Without a GUID, accept the checksum-only verification (live mode disabled).
   if (!guid) {
     const nowIso = new Date().toISOString()
-    await admin
-      .from('providers')
-      .update({
-        abn: rawAbn,
-        abn_verified: true,
-        abn_verified_at: nowIso,
-        abn_verification_response: { mode: 'checksum-only', verified_at: nowIso },
-        abn_review_flag: null,
-      })
-      .eq('id', providerId)
+    if (providerId) {
+      await admin
+        .from('providers')
+        .update({
+          abn: rawAbn,
+          abn_verified: true,
+          abn_verified_at: nowIso,
+          abn_verification_response: { mode: 'checksum-only', verified_at: nowIso },
+          abn_review_flag: null,
+        })
+        .eq('id', providerId)
+    }
     await logLookup({
       mode: 'checksum-only',
       verified: true,
@@ -196,16 +203,18 @@ Deno.serve(async (req) => {
   const nowIso = new Date().toISOString()
 
   if (!lookup.ok || lookup.status === 'Unknown') {
-    await admin
-      .from('providers')
-      .update({
-        abn: rawAbn,
-        abn_verified: false,
-        abn_verified_at: null,
-        abn_verification_response: lookup.raw as any,
-        abn_review_flag: 'abr_lookup_failed',
-      })
-      .eq('id', providerId)
+    if (providerId) {
+      await admin
+        .from('providers')
+        .update({
+          abn: rawAbn,
+          abn_verified: false,
+          abn_verified_at: null,
+          abn_verification_response: lookup.raw as any,
+          abn_review_flag: 'abr_lookup_failed',
+        })
+        .eq('id', providerId)
+    }
     await logLookup({
       mode: 'live',
       verified: false,
@@ -218,17 +227,19 @@ Deno.serve(async (req) => {
   }
 
   if (lookup.status === 'Cancelled') {
-    await admin
-      .from('providers')
-      .update({
-        abn: rawAbn,
-        abn_verified: false,
-        abn_verified_at: null,
-        abn_verification_response: lookup.raw as any,
-        abn_review_flag: 'abn_cancelled',
-        available_for_quote: false,
-      })
-      .eq('id', providerId)
+    if (providerId) {
+      await admin
+        .from('providers')
+        .update({
+          abn: rawAbn,
+          abn_verified: false,
+          abn_verified_at: null,
+          abn_verification_response: lookup.raw as any,
+          abn_review_flag: 'abn_cancelled',
+          available_for_quote: false,
+        })
+        .eq('id', providerId)
+    }
     await logLookup({
       mode: 'live',
       verified: false,
@@ -239,25 +250,33 @@ Deno.serve(async (req) => {
       review_flag: 'abn_cancelled',
       raw_response: lookup.raw as any,
     })
-    return json({ verified: false, reason: 'abn_cancelled' })
+    return json({
+      verified: false,
+      reason: 'abn_cancelled',
+      status: 'Cancelled',
+      entityName: lookup.entityName,
+      businessNames: lookup.businessNames,
+    })
   }
 
   // Status = Active. Compare names; flag mismatch for admin review instead of auto-approving.
-  const submitted = businessName || prov.name || ''
+  const submitted = businessName || prov?.name || ''
   const candidates = [lookup.entityName, ...lookup.businessNames].filter(Boolean) as string[]
   const matched = candidates.some((c) => namesMatch(submitted, c))
   const reviewFlag = matched ? null : 'name_mismatch'
 
-  await admin
-    .from('providers')
-    .update({
-      abn: rawAbn,
-      abn_verified: matched,
-      abn_verified_at: matched ? nowIso : null,
-      abn_verification_response: lookup.raw as any,
-      abn_review_flag: reviewFlag,
-    })
-    .eq('id', providerId)
+  if (providerId) {
+    await admin
+      .from('providers')
+      .update({
+        abn: rawAbn,
+        abn_verified: matched,
+        abn_verified_at: matched ? nowIso : null,
+        abn_verification_response: lookup.raw as any,
+        abn_review_flag: reviewFlag,
+      })
+      .eq('id', providerId)
+  }
 
   await logLookup({
     mode: 'live',
