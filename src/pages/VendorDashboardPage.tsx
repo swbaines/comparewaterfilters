@@ -743,6 +743,27 @@ export default function VendorDashboardPage() {
                 {/* Contact Information */}
                 <div>
                   <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Contact Information</h3>
+                  {(() => {
+                    const pref = (selectedLead as any).contact_preference as string | null | undefined;
+                    const map: Record<string, { Icon: typeof Phone; text: string }> = {
+                      phone: { Icon: PhoneCall, text: "Prefers phone calls — okay to call anytime" },
+                      sms: { Icon: MessageSquare, text: "Prefers SMS first — text before calling" },
+                      email: { Icon: Mail, text: "Prefers email first — email before calling" },
+                      no_preference: { Icon: Sparkles, text: "No preference — contact however suits you" },
+                    };
+                    const entry = pref && map[pref];
+                    if (!entry) return null;
+                    const { Icon, text } = entry;
+                    return (
+                      <div className="mb-3 flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 px-3 py-2">
+                        <Icon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Preferred contact method</p>
+                          <p className="text-sm font-semibold text-foreground">{text}</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
