@@ -11,6 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail, ShieldCheck, ShieldAlert } from "lucide-react";
 import { systemTypes } from "@/data/systemTypes";
@@ -142,6 +150,7 @@ export default function VendorRegisterPage() {
   };
   const [abrChecking, setAbrChecking] = useState(false);
   const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Reset preview whenever ABN or business name change.
   useEffect(() => {
@@ -324,6 +333,21 @@ export default function VendorRegisterPage() {
       toast.error("Please select at least one state or metro region");
       return;
     }
+
+    // Open confirmation dialog summarising the ABR verification result
+    // before performing the actual submission.
+    setConfirmOpen(true);
+  };
+
+  const performProfileSubmit = async () => {
+    const abnClean = profile.abn.replace(/\s/g, "");
+    const normalizeUrl = (val: string) => {
+      const t = val.trim();
+      if (!t) return "";
+      return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+    };
+    const websiteTrim = normalizeUrl(profile.website);
+    const gbpTrim = normalizeUrl(profile.googleBusinessUrl);
 
     setLoading(true);
     try {
@@ -511,6 +535,7 @@ export default function VendorRegisterPage() {
       toast.error(err.message || "Failed to submit profile");
     } finally {
       setLoading(false);
+      setConfirmOpen(false);
     }
   };
 
