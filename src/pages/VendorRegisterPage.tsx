@@ -11,6 +11,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Loader2, CheckCircle2, Building2, MapPin, Wrench, Shield, ChevronsUpDown, Upload, FileCheck, ImagePlus, Mail, ShieldCheck, ShieldAlert } from "lucide-react";
 import { systemTypes } from "@/data/systemTypes";
@@ -142,6 +150,7 @@ export default function VendorRegisterPage() {
   };
   const [abrChecking, setAbrChecking] = useState(false);
   const [abrPreview, setAbrPreview] = useState<AbrPreview | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Reset preview whenever ABN or business name change.
   useEffect(() => {
@@ -324,6 +333,21 @@ export default function VendorRegisterPage() {
       toast.error("Please select at least one state or metro region");
       return;
     }
+
+    // Open confirmation dialog summarising the ABR verification result
+    // before performing the actual submission.
+    setConfirmOpen(true);
+  };
+
+  const performProfileSubmit = async () => {
+    const abnClean = profile.abn.replace(/\s/g, "");
+    const normalizeUrl = (val: string) => {
+      const t = val.trim();
+      if (!t) return "";
+      return /^https?:\/\//i.test(t) ? t : `https://${t}`;
+    };
+    const websiteTrim = normalizeUrl(profile.website);
+    const gbpTrim = normalizeUrl(profile.googleBusinessUrl);
 
     setLoading(true);
     try {
@@ -511,6 +535,7 @@ export default function VendorRegisterPage() {
       toast.error(err.message || "Failed to submit profile");
     } finally {
       setLoading(false);
+      setConfirmOpen(false);
     }
   };
 
@@ -951,6 +976,109 @@ export default function VendorRegisterPage() {
               Your profile will be reviewed by our team. Once approved, you'll start receiving leads.
             </p>
           </form>
+
+          {/* Confirmation dialog summarising ABN verification result */}
+          <Dialog open={confirmOpen} onOpenChange={(o) => { if (!loading) setConfirmOpen(o); }}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Confirm your application</DialogTitle>
+                <DialogDescription>
+                  Please review your ABN verification result before submitting.
+                </DialogDescription>
+              </DialogHeader>
+
+              {(() => {
+                const abnClean = profile.abn.replace(/\s/g, "");
+                const abnFormatted = abnClean.replace(
+                  /^(\d{2})(\d{3})(\d{3})(\d{3})$/,
+                  "$1 $2 $3 $4",
+                );
+                let state: "verified" | "name_mismatch" | "cancelled" | "unchecked" | "failed" = "unchecked";
+                if (abrPreview) {
+                  if (abrPreview.reason === "abn_cancelled") state = "cancelled";
+                  else if (abrPreview.reason === "abr_lookup_failed") state = "failed";
+                  else if (abrPreview.review_flag === "name_mismatch") state = "name_mismatch";
+                  else if (abrPreview.verified) state = "verified";
+                }
+                const meta = {
+                  verified: {
+                    cls: "border-emerald-200 bg-emerald-50 text-emerald-900",
+                    icon: <ShieldCheck className="h-4 w-4" />,
+                    title: "Verified with the Australian Business Register",
+                    body: "Your business name matches the registered ABR entity.",
+                  },
+                  name_mismatch: {
+                    cls: "border-amber-200 bg-amber-50 text-amber-900",
+                    icon: <ShieldAlert className="h-4 w-4" />,
+                    title: "Name mismatch — admin review required",
+                    body: "The ABN is active but the business name doesn't match the ABR record. Your application will be reviewed manually before activation.",
+                  },
+                  cancelled: {
+                    cls: "border-destructive/30 bg-destructive/10 text-destructive",
+                    icon: <ShieldAlert className="h-4 w-4" />,
+                    title: "ABN listed as Cancelled",
+                    body: "The ABR shows this ABN as cancelled. We strongly recommend updating it before submitting — your application will be flagged.",
+                  },
+                  failed: {
+                    cls: "border-amber-200 bg-amber-50 text-amber-900",
+                    icon: <ShieldAlert className="h-4 w-4" />,
+                    title: "ABR lookup failed",
+                    body: "We couldn't reach the Australian Business Register. You can submit anyway — verification will be retried during admin review.",
+                  },
+                  unchecked: {
+                    cls: "border-amber-200 bg-amber-50 text-amber-900",
+                    icon: <ShieldAlert className="h-4 w-4" />,
+                    title: "ABN not yet verified",
+                    body: 'Click "Verify with ABR" on the form to check your ABN now, or submit and we\'ll verify on your behalf during review.',
+                  },
+                }[state];
+
+                return (
+                  <div className="space-y-3 text-sm">
+                    <div className="rounded-md border bg-muted/40 p-3">
+                      <div className="text-xs uppercase tracking-wide text-muted-foreground">Business name</div>
+                      <div className="font-medium">{profile.name || "—"}</div>
+                      <div className="mt-2 text-xs uppercase tracking-wide text-muted-foreground">ABN</div>
+                      <div className="font-medium">{abnFormatted || profile.abn}</div>
+                    </div>
+
+                    <div className={"rounded-md border p-3 " + meta.cls}>
+                      <div className="flex items-center gap-2 font-medium">
+                        {meta.icon}
+                        {meta.title}
+                      </div>
+                      <p className="mt-1 text-xs">{meta.body}</p>
+                      {abrPreview?.entityName && (
+                        <p className="mt-1 text-xs">
+                          ABR entity: <span className="font-medium">{abrPreview.entityName}</span>
+                          {abrPreview.status ? ` · Status: ${abrPreview.status}` : ""}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setConfirmOpen(false)}
+                  disabled={loading}
+                >
+                  Back to edit
+                </Button>
+                <Button
+                  type="button"
+                  onClick={performProfileSubmit}
+                  disabled={loading}
+                >
+                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Confirm & submit
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     );
