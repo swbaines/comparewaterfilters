@@ -674,7 +674,7 @@ export default function VendorRegisterPage() {
                 <div className="space-y-1.5">
                   <Label>Business Name *</Label>
                   <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="e.g. Sam's Water Filtration" />
-                  <p className="text-xs text-muted-foreground">Your registered legal business name (as shown on your ABN).</p>
+                  <p className="text-xs text-muted-foreground">Your registered legal business name. Tip: enter your ABN below and click <span className="font-medium">Verify with ABR</span> — we'll fill this in for you.</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label>Trading Name (if different)</Label>
@@ -744,7 +744,7 @@ export default function VendorRegisterPage() {
                       )}
                       {abrPreview.review_flag === "name_mismatch" && (
                         <p className="mt-1 text-xs">
-                          Update the Business Name above to match the ABR record (or your trading name) and check again. Mismatches are flagged for admin review on submission.
+                          We've kept your typed name. Click <span className="font-medium">Verify with ABR</span> again to replace it with the registered entity name above, or move it to the Trading Name field.
                         </p>
                       )}
                     </div>
