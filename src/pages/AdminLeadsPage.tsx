@@ -398,7 +398,7 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={12} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
