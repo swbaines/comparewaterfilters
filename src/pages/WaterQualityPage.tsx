@@ -28,13 +28,12 @@ import {
   type SuburbSuggestion,
 } from "@/data/waterUtilities";
 import { WarningCallout } from "@/components/WarningCallout";
+import { getHardnessGuidance } from "@/lib/hardness";
 
-function getHardnessLabel(h: number) {
-  if (h < 60) return { label: "Soft", color: "text-green-800", bg: "bg-green-100" };
-  if (h < 120) return { label: "Moderate", color: "text-yellow-800", bg: "bg-yellow-100" };
-  if (h < 180) return { label: "Hard", color: "text-orange-800", bg: "bg-orange-100" };
-  return { label: "Very hard", color: "text-red-800", bg: "bg-red-100" };
-}
+const getHardnessLabel = (h: number) => {
+  const g = getHardnessGuidance(h);
+  return { label: g.label, color: g.color, bg: g.bg };
+};
 
 function getChlorineLabel(c: number) {
   if (c < 0.6) return { label: "Low", color: "text-green-800", bg: "bg-green-100" };
