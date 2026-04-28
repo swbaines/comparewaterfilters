@@ -500,6 +500,7 @@ export type Database = {
           budget: string | null
           concerns: string[] | null
           consent: boolean | null
+          contact_preference: string | null
           coverage: string | null
           created_at: string
           email: string
@@ -527,6 +528,7 @@ export type Database = {
           budget?: string | null
           concerns?: string[] | null
           consent?: boolean | null
+          contact_preference?: string | null
           coverage?: string | null
           created_at?: string
           email: string
@@ -554,6 +556,7 @@ export type Database = {
           budget?: string | null
           concerns?: string[] | null
           consent?: boolean | null
+          contact_preference?: string | null
           coverage?: string | null
           created_at?: string
           email?: string
@@ -582,6 +585,7 @@ export type Database = {
         Row: {
           budget: string | null
           concerns: string[] | null
+          contact_preference: string
           created_at: string
           customer_email: string
           customer_mobile: string | null
@@ -616,6 +620,7 @@ export type Database = {
         Insert: {
           budget?: string | null
           concerns?: string[] | null
+          contact_preference: string
           created_at?: string
           customer_email: string
           customer_mobile?: string | null
@@ -650,6 +655,7 @@ export type Database = {
         Update: {
           budget?: string | null
           concerns?: string[] | null
+          contact_preference?: string
           created_at?: string
           customer_email?: string
           customer_mobile?: string | null
