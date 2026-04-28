@@ -28,13 +28,12 @@ import {
   type SuburbSuggestion,
 } from "@/data/waterUtilities";
 import { WarningCallout } from "@/components/WarningCallout";
+import { getHardnessGuidance } from "@/lib/hardness";
 
-function getHardnessLabel(h: number) {
-  if (h < 60) return { label: "Soft", color: "text-green-800", bg: "bg-green-100" };
-  if (h < 120) return { label: "Moderate", color: "text-yellow-800", bg: "bg-yellow-100" };
-  if (h < 180) return { label: "Hard", color: "text-orange-800", bg: "bg-orange-100" };
-  return { label: "Very hard", color: "text-red-800", bg: "bg-red-100" };
-}
+const getHardnessLabel = (h: number) => {
+  const g = getHardnessGuidance(h);
+  return { label: g.label, color: g.color, bg: g.bg };
+};
 
 function getChlorineLabel(c: number) {
   if (c < 0.6) return { label: "Low", color: "text-green-800", bg: "bg-green-100" };
@@ -502,26 +501,21 @@ export default function WaterQualityPage() {
             </Accordion>
 
             {/* Suburb-specific notices */}
-            {(result.hardness >= 60 || result.usesChloramine || result.pfasRisk === "elevated") && (
-              <div className="space-y-3">
-                {result.hardness >= 180 && (
-                  <WarningCallout
-                    variant="risk"
-                    message={`${result.matchedSuburb || result.region} has very hard water (${result.hardness} mg/L CaCO₃). Expect noticeable scale buildup on taps, kettles, shower screens, and inside your hot water system. A water softener or scale-reduction whole-house filter is the most effective fix.`}
-                  />
-                )}
-                {result.hardness >= 120 && result.hardness < 180 && (
-                  <WarningCallout
-                    variant="risk"
-                    message={`${result.matchedSuburb || result.region} has hard water (${result.hardness} mg/L CaCO₃). You'll likely see scale on taps and in the kettle, and over time it can shorten the life of your hot water system and dishwasher. A scale-reduction or whole-house filter helps protect appliances and keeps fixtures cleaner for longer.`}
-                  />
-                )}
-                {result.hardness >= 60 && result.hardness < 120 && (
-                  <WarningCallout
-                    variant="info"
-                    message={`${result.matchedSuburb || result.region} sits in the moderately hard range (${result.hardness} mg/L CaCO₃). Expect light scale spotting on taps, glassware, and shower screens, and gradual build-up inside kettles, dishwashers, and your hot water system that can reduce efficiency over time. Soap and detergent also lather less. A scale-reduction or whole-house filter is a sensible preventative upgrade.`}
-                  />
-                )}
+            {(() => {
+              const hg = getHardnessGuidance(result.hardness);
+              const hasHardnessNotice = hg.suburbCallout != null && hg.calloutVariant != null;
+              const show =
+                hasHardnessNotice || result.usesChloramine || result.pfasRisk === "elevated";
+              if (!show) return null;
+              const area = result.matchedSuburb || result.region;
+              return (
+                <div className="space-y-3">
+                  {hasHardnessNotice && (
+                    <WarningCallout
+                      variant={hg.calloutVariant!}
+                      message={hg.suburbCallout!(result.hardness, area)}
+                    />
+                  )}
                 {result.pfasRisk === "elevated" && (
                   <WarningCallout
                     variant="risk"
@@ -534,8 +528,9 @@ export default function WaterQualityPage() {
                     message={`${result.utilityName} uses chloramine as a secondary disinfectant in this area. Chloramine is harder to remove than chlorine — make sure any carbon filter you choose is rated for chloramine (catalytic carbon) rather than standard activated carbon.`}
                   />
                 )}
-              </div>
-            )}
+                </div>
+              );
+            })()}
 
             {/* Utility info card */}
             <Accordion
@@ -581,23 +576,24 @@ export default function WaterQualityPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex gap-3">
-                  {result.hardness >= 60 ? (
-                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
-                  ) : (
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  )}
-                  <div>
-                    <h4 className="font-semibold">Hard water &amp; scale</h4>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {result.hardness >= 180
-                        ? `At ${result.hardness} mg/L, your water is quite hard — you've probably noticed white scale building up in the kettle, on taps, and on shower screens. Over time, this can reduce the lifespan of your hot water system and dishwasher. A water softener or scale-reduction filter pays for itself in appliance savings.`
-                        : result.hardness >= 120
-                          ? `At ${result.hardness} mg/L, you may notice some scale on taps and in the kettle. A scale-reduction filter helps protect your appliances and keeps things looking cleaner for longer.`
-                          : result.hardness >= 60
-                            ? `At ${result.hardness} mg/L, your water sits in the moderately hard range. You may start to see light scale spotting on taps, glassware, and shower screens, and over time scale can build up inside kettles, dishwashers, and your hot water system — reducing efficiency and shortening their lifespan. Soap and detergent also lather less, so you tend to use more. A scale-reduction or whole-house filter is a sensible preventative upgrade.`
-                            : `At ${result.hardness} mg/L, your water is soft — great news for your appliances. No softener needed here.`}
-                    </p>
-                  </div>
+                  {(() => {
+                    const hg = getHardnessGuidance(result.hardness);
+                    return (
+                      <>
+                        {hg.isConcern ? (
+                          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                        ) : (
+                          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+                        )}
+                        <div>
+                          <h4 className="font-semibold">Hard water &amp; scale</h4>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {hg.message(result.hardness)}
+                          </p>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div className="flex gap-3">
