@@ -130,6 +130,22 @@ Deno.serve(async (req) => {
 
   const admin = createClient(supabaseUrl, serviceKey)
 
+  const startedAt = Date.now()
+  const logLookup = async (fields: Record<string, unknown>) => {
+    try {
+      await admin.from('abr_lookups').insert({
+        user_id: userData.user.id,
+        provider_id: providerId,
+        submitted_abn: rawAbn,
+        submitted_business_name: businessName || null,
+        duration_ms: Date.now() - startedAt,
+        ...fields,
+      })
+    } catch (e) {
+      console.error('Failed to log abr lookup', e)
+    }
+  }
+
   // Confirm caller owns this provider (or is the submitter, or is admin).
   const { data: prov } = await admin
     .from('providers')
@@ -167,6 +183,12 @@ Deno.serve(async (req) => {
         abn_review_flag: null,
       })
       .eq('id', providerId)
+    await logLookup({
+      mode: 'checksum-only',
+      verified: true,
+      status: 'Unknown',
+      raw_response: { mode: 'checksum-only', verified_at: nowIso },
+    })
     return json({ verified: true, mode: 'checksum-only' })
   }
 
@@ -184,6 +206,14 @@ Deno.serve(async (req) => {
         abn_review_flag: 'abr_lookup_failed',
       })
       .eq('id', providerId)
+    await logLookup({
+      mode: 'live',
+      verified: false,
+      status: 'Unknown',
+      review_flag: 'abr_lookup_failed',
+      error_message: lookup.error || null,
+      raw_response: lookup.raw as any,
+    })
     return json({ verified: false, reason: 'abr_lookup_failed', error: lookup.error })
   }
 
@@ -199,6 +229,16 @@ Deno.serve(async (req) => {
         available_for_quote: false,
       })
       .eq('id', providerId)
+    await logLookup({
+      mode: 'live',
+      verified: false,
+      status: 'Cancelled',
+      entity_name: lookup.entityName,
+      business_names: lookup.businessNames,
+      gst_registered: lookup.gstRegistered,
+      review_flag: 'abn_cancelled',
+      raw_response: lookup.raw as any,
+    })
     return json({ verified: false, reason: 'abn_cancelled' })
   }
 
@@ -218,6 +258,17 @@ Deno.serve(async (req) => {
       abn_review_flag: reviewFlag,
     })
     .eq('id', providerId)
+
+  await logLookup({
+    mode: 'live',
+    verified: matched,
+    status: 'Active',
+    entity_name: lookup.entityName,
+    business_names: lookup.businessNames,
+    gst_registered: lookup.gstRegistered,
+    review_flag: reviewFlag,
+    raw_response: lookup.raw as any,
+  })
 
   return json({
     verified: matched,

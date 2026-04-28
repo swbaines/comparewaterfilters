@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      abr_lookups: {
+        Row: {
+          business_names: string[]
+          created_at: string
+          duration_ms: number | null
+          entity_name: string | null
+          error_message: string | null
+          gst_registered: boolean | null
+          http_status: number | null
+          id: string
+          mode: string
+          provider_id: string | null
+          raw_response: Json | null
+          review_flag: string | null
+          status: string | null
+          submitted_abn: string
+          submitted_business_name: string | null
+          user_id: string | null
+          verified: boolean
+        }
+        Insert: {
+          business_names?: string[]
+          created_at?: string
+          duration_ms?: number | null
+          entity_name?: string | null
+          error_message?: string | null
+          gst_registered?: boolean | null
+          http_status?: number | null
+          id?: string
+          mode?: string
+          provider_id?: string | null
+          raw_response?: Json | null
+          review_flag?: string | null
+          status?: string | null
+          submitted_abn: string
+          submitted_business_name?: string | null
+          user_id?: string | null
+          verified?: boolean
+        }
+        Update: {
+          business_names?: string[]
+          created_at?: string
+          duration_ms?: number | null
+          entity_name?: string | null
+          error_message?: string | null
+          gst_registered?: boolean | null
+          http_status?: number | null
+          id?: string
+          mode?: string
+          provider_id?: string | null
+          raw_response?: Json | null
+          review_flag?: string | null
+          status?: string | null
+          submitted_abn?: string
+          submitted_business_name?: string | null
+          user_id?: string | null
+          verified?: boolean
+        }
+        Relationships: []
+      }
       billing_audit_log: {
         Row: {
           actor_ip: string | null
