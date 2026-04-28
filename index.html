@@ -11,6 +11,55 @@
     <meta name="theme-color" content="#0ea5e9" />
     <meta name="google-site-verification" content="atiEZOFoi9RxoeVhh3O4Trjzc8zGT9foilIG9_82uBA" />
 
+    <!-- Content Security Policy -->
+    <!--
+      Mitigates XSS / data injection (CWE-693). Allows the third parties this app
+      actually uses: Supabase (API + storage + functions), Google Analytics / Tag
+      Manager, Meta (Facebook) Pixel, Google Fonts, Stripe, and Lovable preview
+      tooling. 'unsafe-inline' is required for inline analytics snippets and for
+      Tailwind / shadcn runtime style injection. frame-ancestors must be set as a
+      real HTTP header (ignored in <meta>) — handled at the hosting layer.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        base-uri 'self';
+        object-src 'none';
+        form-action 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval'
+          https://*.supabase.co
+          https://www.googletagmanager.com
+          https://www.google-analytics.com
+          https://connect.facebook.net
+          https://js.stripe.com
+          https://cdn.gpteng.co
+          https://lovable.dev https://*.lovable.dev https://*.lovable.app https://*.lovableproject.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' data: https://fonts.gstatic.com;
+        img-src 'self' data: blob:
+          https://*.supabase.co
+          https://www.google-analytics.com
+          https://www.googletagmanager.com
+          https://www.facebook.com
+          https://*.facebook.com
+          https://*.fbcdn.net
+          https://*.lovable.app https://*.lovableproject.com;
+        connect-src 'self'
+          https://*.supabase.co wss://*.supabase.co
+          https://www.google-analytics.com
+          https://*.analytics.google.com
+          https://www.googletagmanager.com
+          https://connect.facebook.net
+          https://*.facebook.com
+          https://api.stripe.com
+          https://*.lovable.app https://*.lovableproject.com;
+        frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.facebook.com;
+        worker-src 'self' blob:;
+        upgrade-insecure-requests
+      "
+    />
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DMTS2QH82E"></script>
     <script>
