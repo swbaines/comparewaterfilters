@@ -576,23 +576,24 @@ export default function WaterQualityPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex gap-3">
-                  {result.hardness >= 60 ? (
-                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
-                  ) : (
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
-                  )}
-                  <div>
-                    <h4 className="font-semibold">Hard water &amp; scale</h4>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {result.hardness >= 180
-                        ? `At ${result.hardness} mg/L, your water is quite hard — you've probably noticed white scale building up in the kettle, on taps, and on shower screens. Over time, this can reduce the lifespan of your hot water system and dishwasher. A water softener or scale-reduction filter pays for itself in appliance savings.`
-                        : result.hardness >= 120
-                          ? `At ${result.hardness} mg/L, you may notice some scale on taps and in the kettle. A scale-reduction filter helps protect your appliances and keeps things looking cleaner for longer.`
-                          : result.hardness >= 60
-                            ? `At ${result.hardness} mg/L, your water sits in the moderately hard range. You may start to see light scale spotting on taps, glassware, and shower screens, and over time scale can build up inside kettles, dishwashers, and your hot water system — reducing efficiency and shortening their lifespan. Soap and detergent also lather less, so you tend to use more. A scale-reduction or whole-house filter is a sensible preventative upgrade.`
-                            : `At ${result.hardness} mg/L, your water is soft — great news for your appliances. No softener needed here.`}
-                    </p>
-                  </div>
+                  {(() => {
+                    const hg = getHardnessGuidance(result.hardness);
+                    return (
+                      <>
+                        {hg.isConcern ? (
+                          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                        ) : (
+                          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
+                        )}
+                        <div>
+                          <h4 className="font-semibold">Hard water &amp; scale</h4>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {hg.message(result.hardness)}
+                          </p>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div className="flex gap-3">
