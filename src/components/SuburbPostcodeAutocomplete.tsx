@@ -99,6 +99,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [touched, setTouched] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
   const { detectedState, autoDetectFailed, setManualState } = useDetectedState();
@@ -143,6 +144,10 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
 
   const handleChange = (value: string) => {
     setQuery(value);
+    // Editing invalidates any prior selection
+    if (postcode || suburb) {
+      onSelect("", "", "");
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => fetchSuggestions(value), 300);
   };
@@ -150,6 +155,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const handleSelect = (s: Suggestion) => {
     setQuery(`${s.name}, ${s.postcode}`);
     setOpen(false);
+    setTouched(true);
     onSelect(String(s.postcode), s.name, s.state);
   };
 
@@ -165,6 +171,21 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   }, []);
 
   const AU_STATES = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"] as const;
+
+  // Australian postcode = exactly 4 digits, 0200–9999
+  const AU_POSTCODE_RE = /^\d{4}$/;
+  const isValidAuPostcode = (pc: string) => AU_POSTCODE_RE.test(pc) && Number(pc) >= 200 && Number(pc) <= 9999;
+  const trimmed = query.trim();
+  const looksNumeric = /^\d+$/.test(trimmed);
+  const hasSelection = !!(postcode && suburb);
+  let formatError: string | null = null;
+  if (touched && trimmed.length > 0 && !hasSelection) {
+    if (looksNumeric && !isValidAuPostcode(trimmed)) {
+      formatError = "Enter a valid 4-digit Australian postcode (0200–9999).";
+    } else {
+      formatError = "Please pick a matching suburb or postcode from the list.";
+    }
+  }
 
   return (
     <div ref={containerRef} className="relative">
@@ -193,6 +214,9 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
         value={query}
         onChange={(e) => handleChange(e.target.value)}
         onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onBlur={() => setTouched(true)}
+        aria-invalid={!!formatError}
+        aria-describedby={formatError ? "suburb-postcode-error" : undefined}
         autoComplete="off"
       />
       {open && suggestions.length > 0 && (
@@ -210,6 +234,11 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
       )}
       {loading && (
         <div className="absolute right-3 top-[38px] text-xs text-muted-foreground">Loading...</div>
+      )}
+      {formatError && (
+        <p id="suburb-postcode-error" role="alert" className="mt-1.5 text-xs font-medium text-destructive">
+          {formatError}
+        </p>
       )}
     </div>
   );
