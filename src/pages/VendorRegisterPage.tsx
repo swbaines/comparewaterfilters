@@ -798,9 +798,36 @@ export default function VendorRegisterPage() {
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Business Name *</Label>
-                  <Input value={profile.name} onChange={e => updateProfile("name", e.target.value)} required placeholder="Auto-filled from your ABN — or type it in" />
-                  <p className="text-xs text-muted-foreground">Your registered legal business name. Filled automatically when you verify your ABN above.</p>
+                  <Label className="flex items-center gap-2">
+                    Business Name *
+                    {abrPreview?.verified && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
+                        <ShieldCheck className="h-3 w-3" /> Verified from ABR
+                      </span>
+                    )}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      value={profile.name}
+                      onChange={e => updateProfile("name", e.target.value)}
+                      required
+                      placeholder="Auto-filled from your ABN — or type it in"
+                      readOnly={!!abrPreview?.verified}
+                      aria-readonly={!!abrPreview?.verified}
+                      className={abrPreview?.verified ? "bg-muted/50 pr-9 cursor-not-allowed" : undefined}
+                    />
+                    {abrPreview?.verified && (
+                      <ShieldCheck className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-600" />
+                    )}
+                  </div>
+                  {abrPreview?.verified ? (
+                    <p className="flex items-center gap-1 text-xs text-emerald-700">
+                      <ShieldCheck className="h-3 w-3" />
+                      Verified from ABR — locked to match the registered entity name. Re-verify a different ABN to change it.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Your registered legal business name. Filled automatically when you verify your ABN above.</p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>Trading Name (if different)</Label>
