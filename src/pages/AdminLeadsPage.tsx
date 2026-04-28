@@ -419,6 +419,9 @@ export default function AdminLeadsPage() {
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </TableCell>
+                    <TableCell className="text-xs text-muted-foreground max-w-[180px]">
+                      {lead.installation_timeline || "—"}
+                    </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {(lead.recommended_systems || []).map((s: string) => (
