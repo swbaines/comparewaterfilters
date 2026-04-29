@@ -18,7 +18,7 @@ export interface PricingRange {
  */
 export const SYSTEM_PRICING: Record<string, PricingRange> = {
   "under-sink-carbon": { installMin: 300, installMax: 1000, annualMin: 80, annualMax: 200 },
-  "reverse-osmosis": { installMin: 800, installMax: 1500, annualMin: 150, annualMax: 250 },
+  "reverse-osmosis": { installMin: 800, installMax: 1500, annualMin: 150, annualMax: 200 },
   "whole-house-filtration": { installMin: 3000, installMax: 5000, annualMin: 300, annualMax: 500 },
   "uv-disinfection": { installMin: 1500, installMax: 4000, annualMin: 100, annualMax: 250 },
   "water-softener": { installMin: 2000, installMax: 6000, annualMin: 150, annualMax: 400 },
