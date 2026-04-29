@@ -135,7 +135,7 @@ function OptionButton({
   selected,
   onClick,
   children,
-  align = "left",
+  align = "center",
 }: {
   selected: boolean;
   onClick: () => void;
@@ -479,7 +479,6 @@ export default function QuizPage() {
                         key={p}
                         selected={answers.propertyType === p}
                         onClick={() => set("propertyType", p)}
-                        align="center"
                       >
                         {p}
                       </OptionButton>
@@ -617,6 +616,7 @@ export default function QuizPage() {
                       key={w.value}
                       selected={answers.waterSource === w.value}
                       onClick={() => handleWaterSourceChange(w.value)}
+                      align="left"
                     >
                       <span className="flex flex-col items-start gap-0.5 text-left">
                         <span className="font-medium">{w.label}</span>
