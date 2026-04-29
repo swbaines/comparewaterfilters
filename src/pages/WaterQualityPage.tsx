@@ -30,7 +30,7 @@ import {
 import { WarningCallout } from "@/components/WarningCallout";
 import { getHardnessGuidance } from "@/lib/hardness";
 
-const getHardnessLabel = (h: number) => {
+const getHardnessLabel = (h: number | null | undefined) => {
   const g = getHardnessGuidance(h);
   return { label: g.label, color: g.color, bg: g.bg };
 };
@@ -424,9 +424,16 @@ export default function WaterQualityPage() {
                     <Droplets className="h-4 w-4" />
                     Hardness
                   </div>
-                  <p className="mt-2 text-3xl font-bold">{result.hardness}</p>
+                  <p className="mt-2 text-3xl font-bold">
+                    {getHardnessGuidance(result.hardness).isUnknown ? "—" : result.hardness}
+                  </p>
                   <p className="text-sm text-muted-foreground">mg/L CaCO₃</p>
                   <Badge className={`mt-2 ${hardness?.bg} ${hardness?.color} border-0`}>{hardness?.label}</Badge>
+                  {getHardnessGuidance(result.hardness).isUnknown && (
+                    <p className="mt-1.5 text-xs text-muted-foreground/80 leading-snug">
+                      No verified reading for this area yet.
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             </div>
