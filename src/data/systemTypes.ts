@@ -45,7 +45,7 @@ export const systemTypes: SystemType[] = [
     whatItDoesNot: "Does not filter the whole house — only the tap it's connected to. Produces some wastewater during the filtration process. Does not soften water.",
     whoItSuits: "Health-conscious households, families concerned about fluoride or heavy metals, and anyone wanting the purest possible drinking water.",
     priceRange: "$800 – $1,600 installed",
-    maintenance: "Pre-filters every 6–12 months, RO membrane every 2–3 years. Annual cost typically $150–$250.",
+    maintenance: "Pre-filters every 6–12 months, RO membrane every 2–3 years. Annual cost typically $150–$200.",
     pros: [
       "Highest level of contaminant removal",
       "Removes fluoride and heavy metals",

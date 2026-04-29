@@ -11,7 +11,7 @@ import { PricingFootnote } from "@/components/PricingFootnote";
 
 const priceTable = [
   { system: "Under sink carbon filter", installed: "$300 – $1,200", maintenance: "$80 – $200/yr" },
-  { system: "Reverse osmosis", installed: "$800 – $1,600", maintenance: "$150 – $250/yr" },
+  { system: "Reverse osmosis", installed: "$800 – $1,600", maintenance: "$150 – $200/yr" },
   { system: "Whole house filtration", installed: "$2,000 – $5,000", maintenance: "$300 – $500/yr" },
   { system: "UV disinfection", installed: "$800 – $2,500", maintenance: "$100 – $250/yr" },
   { system: "Water softener", installed: "$2,000 – $6,000", maintenance: "$150 – $400/yr" },
@@ -60,7 +60,7 @@ const pricingFaqs = [
   },
   {
     q: "How much does it cost to maintain a water filter?",
-    a: "Annual maintenance costs range from $80–$200 for under-sink carbon filters, $150–$250 for reverse osmosis systems, and $300–$700 for whole house combo systems. Costs cover replacement filters, UV lamps, or salt for softeners.",
+    a: "Annual maintenance costs range from $80–$200 for under-sink carbon filters, $150–$200 for reverse osmosis systems, and $300–$700 for whole house combo systems. Costs cover replacement filters, UV lamps, or salt for softeners.",
   },
 ];
 

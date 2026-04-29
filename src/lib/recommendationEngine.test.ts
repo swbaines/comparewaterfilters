@@ -109,7 +109,7 @@ const TOLERANCE_LABELS = {
 } as const;
 
 const MAINTENANCE_SERVICE_PLAN_NOTE =
-  "This system has higher annual maintenance ($150–$250/year). Given your priority for low maintenance, consider a multi-year service plan from your installer.";
+  "This system has higher annual maintenance ($150–$200/year). Given your priority for low maintenance, consider a multi-year service plan from your installer.";
 
 describe("getMaintenanceTier", () => {
   it("maps each verbatim quiz label to the correct tier", () => {
