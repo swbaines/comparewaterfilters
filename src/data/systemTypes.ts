@@ -141,7 +141,7 @@ export const systemTypes: SystemType[] = [
     whatItDoesNot: "No single hybrid system does everything perfectly. Each component addresses specific concerns, and the overall system is only as good as its individual parts.",
     whoItSuits: "Families wanting the best overall water quality. Homeowners renovating and willing to invest in a complete solution. Properties with multiple bathrooms and a desire for both whole house and premium drinking water.",
     priceRange: "$4,000 – $6,000 installed",
-    maintenance: "Multiple filter sets to maintain. Annual cost typically $350–$700 depending on system components.",
+    maintenance: "Multiple filter sets to maintain. Annual cost typically $400–$600 depending on system components.",
     pros: [
       "Most comprehensive water quality solution",
       "Covers every tap plus dedicated drinking water",

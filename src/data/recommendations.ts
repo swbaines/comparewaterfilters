@@ -78,7 +78,7 @@ export const recommendations: Recommendation[] = [
     priceMin: 800,
     priceMax: 1600,
     annualMaintenanceMin: 150,
-    annualMaintenanceMax: 250,
+    annualMaintenanceMax: 200,
     benefits: [
       "Removes up to 99% of contaminants",
       "Effective fluoride and heavy metal removal",
@@ -154,8 +154,8 @@ export const recommendations: Recommendation[] = [
     ],
     priceMin: 4000,
     priceMax: 6000,
-    annualMaintenanceMin: 300,
-    annualMaintenanceMax: 700,
+    annualMaintenanceMin: 400,
+    annualMaintenanceMax: 600,
     benefits: [
       "Complete coverage from every tap to the kitchen reverse osmosis unit",
       "Whole house chlorine and sediment removal",
