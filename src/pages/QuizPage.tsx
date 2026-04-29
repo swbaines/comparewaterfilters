@@ -616,6 +616,7 @@ export default function QuizPage() {
                       key={w.value}
                       selected={answers.waterSource === w.value}
                       onClick={() => handleWaterSourceChange(w.value)}
+                      align="left"
                     >
                       <span className="flex flex-col items-start gap-0.5 text-left">
                         <span className="font-medium">{w.label}</span>
