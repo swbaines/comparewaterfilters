@@ -135,16 +135,18 @@ function OptionButton({
   selected,
   onClick,
   children,
+  align = "left",
 }: {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  align?: "left" | "center";
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg border-2 px-4 py-3 text-left text-sm font-medium transition-all ${
+      className={`rounded-lg border-2 px-4 py-3 ${align === "center" ? "text-center" : "text-left"} text-sm font-medium transition-all ${
         selected
           ? "border-primary bg-accent text-accent-foreground"
           : "border-border bg-card text-foreground hover:border-primary/30"
@@ -477,6 +479,7 @@ export default function QuizPage() {
                         key={p}
                         selected={answers.propertyType === p}
                         onClick={() => set("propertyType", p)}
+                        align="center"
                       >
                         {p}
                       </OptionButton>
