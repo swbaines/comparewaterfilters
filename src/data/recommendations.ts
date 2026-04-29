@@ -78,7 +78,7 @@ export const recommendations: Recommendation[] = [
     priceMin: 800,
     priceMax: 1600,
     annualMaintenanceMin: 150,
-    annualMaintenanceMax: 250,
+    annualMaintenanceMax: 200,
     benefits: [
       "Removes up to 99% of contaminants",
       "Effective fluoride and heavy metal removal",
