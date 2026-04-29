@@ -1021,8 +1021,8 @@ export default function QuizPage() {
               </div>
             )}
 
-            {/* Navigation — desktop inline */}
-            <div className="mt-8 hidden items-center justify-between gap-2 sm:flex">
+            {/* Navigation — inline at bottom of step */}
+            <div className="mt-8 flex items-center justify-between gap-2">
               <Button
                 variant="ghost"
                 onClick={() => setStep((s) => s - 1)}
@@ -1041,36 +1041,8 @@ export default function QuizPage() {
                 </Button>
               )}
             </div>
-            {/* Spacer to keep content above sticky bar on mobile */}
-            <div className="h-20 sm:hidden" aria-hidden="true" />
           </CardContent>
         </Card>
-      </div>
-      {/* Sticky mobile nav */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 py-3 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80 sm:hidden">
-        <div className="mx-auto flex max-w-2xl items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setStep((s) => s - 1)}
-            disabled={step === 1}
-            className="shrink-0 gap-1"
-            aria-label="Back"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          {step < TOTAL_STEPS ? (
-            <Button
-              onClick={handleNext}
-              className="flex-1 gap-1 whitespace-nowrap"
-            >
-              Continue <ArrowRight className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} disabled={!canNext()} className="flex-1 gap-1 whitespace-nowrap">
-              See My Recommendations <ArrowRight className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
       </div>
 
       <AlertDialog
