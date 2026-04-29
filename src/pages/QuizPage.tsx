@@ -146,7 +146,7 @@ function OptionButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg border-2 px-4 py-3 ${align === "center" ? "text-center" : "text-left"} text-sm font-medium transition-all ${
+      className={`w-full rounded-lg border-2 px-4 py-3 ${align === "center" ? "text-center" : "text-left"} text-sm font-medium transition-all ${
         selected
           ? "border-primary bg-accent text-accent-foreground"
           : "border-border bg-card text-foreground hover:border-primary/30"
