@@ -892,7 +892,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       [primaryId, secondaryId, premiumId].includes("whole-house-combo");
     if (recHasRo && f.roTrigger) {
       warnings.push(
-        "This system has higher annual maintenance ($150–$250/year). Given your priority for low maintenance, consider a multi-year service plan from your installer.",
+        "This system has higher annual maintenance ($150–$200/year). Given your priority for low maintenance, consider a multi-year service plan from your installer.",
       );
     }
   }
