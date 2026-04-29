@@ -91,4 +91,46 @@ describe("hardness guidance — single source of truth", () => {
     expect(getHardnessGuidance(179).label).toBe("Hard");
     expect(getHardnessGuidance(180).label).toBe("Very hard");
   });
+
+  describe("missing / invalid hardness readings", () => {
+    const BAD_INPUTS: Array<number | null | undefined> = [
+      null,
+      undefined,
+      Number.NaN,
+      Number.POSITIVE_INFINITY,
+      Number.NEGATIVE_INFINITY,
+      -1,
+      -50,
+    ];
+
+    it.each(BAD_INPUTS)("returns the Unknown fallback for %s", (input) => {
+      const g = getHardnessGuidance(input as number);
+      expect(g.isUnknown).toBe(true);
+      expect(g.label).toBe("Unknown");
+      expect(g.tone).toBe("unknown");
+      // Fallback must NOT claim the water is soft, hard, or moderate.
+      const msg = g.message(input).toLowerCase();
+      expect(msg).not.toMatch(/your water is soft/);
+      expect(msg).not.toMatch(/has hard water/);
+      expect(msg).not.toMatch(/moderately hard/);
+      // Fallback must NOT show the alert icon (no confirmed concern)…
+      expect(g.isConcern).toBe(false);
+      // …but it MUST still surface a suburb-level callout so the UI is never blank.
+      expect(g.suburbCallout).not.toBeNull();
+      expect(g.calloutVariant).not.toBeNull();
+    });
+
+    it("Unknown suburb callout names the area and avoids fake numbers", () => {
+      const g = getHardnessGuidance(null);
+      const callout = g.suburbCallout!(null, "Testville");
+      expect(callout).toContain("Testville");
+      expect(callout).not.toMatch(/\b\d+\s*mg\/L/);
+    });
+
+    it("Unknown badge uses neutral muted styling, not green/yellow/red", () => {
+      const g = getHardnessGuidance(null);
+      expect(g.color).not.toMatch(/green|yellow|orange|red/);
+      expect(g.bg).not.toMatch(/green|yellow|orange|red/);
+    });
+  });
 });
