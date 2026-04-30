@@ -18,6 +18,8 @@ export interface RouteMeta {
   canonical: string;
   ogImage: string;
   source: string;
+  /** False when PageMeta should use the exact title without appending SITE_NAME. */
+  appendSiteName?: boolean;
   /** True when title/description are computed at runtime (skip drift check). */
   dynamic?: boolean;
 }
@@ -31,6 +33,7 @@ export const ROUTES: RouteMeta[] = [
       "Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers.",
     canonical: `${BASE_URL}/`,
     ogImage: DEFAULT_OG,
+    appendSiteName: false,
   },
   {
     route: "/quiz",
@@ -127,7 +130,7 @@ export const ROUTES: RouteMeta[] = [
 export interface DriftIssue {
   route: string;
   source: string;
-  field: "title" | "description" | "ogImage" | "missing";
+  field: "title" | "description" | "ogImage" | "appendSiteName" | "missing";
   expected: string;
   actual: string;
 }
