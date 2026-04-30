@@ -18,8 +18,7 @@ export default function PageMeta({
   ogImage,
 }: PageMetaProps) {
   useEffect(() => {
-    const fullTitle =
-      title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+    const fullTitle = title;
     document.title = fullTitle;
 
     const setMeta = (attr: string, key: string, content: string) => {
