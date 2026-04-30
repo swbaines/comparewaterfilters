@@ -37,9 +37,10 @@ interface MetaIssue {
 function audit(meta: RouteMeta): MetaIssue[] {
   const issues: MetaIssue[] = [];
   if (meta.dynamic) return issues;
-  const fullTitle = meta.title.includes(SITE_NAME)
-    ? meta.title
-    : `${meta.title} | ${SITE_NAME}`;
+  const shouldAppendSiteName = meta.appendSiteName ?? true;
+  const fullTitle = shouldAppendSiteName && !meta.title.includes(SITE_NAME)
+    ? `${meta.title} | ${SITE_NAME}`
+    : meta.title;
 
   // Title length
   if (fullTitle.length > TITLE_HARD_MAX) {
@@ -118,7 +119,7 @@ function audit(meta: RouteMeta): MetaIssue[] {
 
   // Open Graph tag inputs (PageMeta derives og:title/description/url/image
   // from these; if the inputs are good, the OG tags are good).
-  if (!fullTitle.includes(SITE_NAME)) {
+  if (shouldAppendSiteName && !fullTitle.includes(SITE_NAME)) {
     issues.push({
       level: "warn",
       message: "og:title will not include the site name (PageMeta auto-appends it only when missing).",
@@ -418,9 +419,10 @@ export default function AdminSeoPreviewPage() {
           const errs = issues.filter((i) => i.level === "error");
           const warns = issues.filter((i) => i.level === "warn");
           const drift = driftByRoute.get(meta.route) ?? [];
-          const fullTitle = meta.title.includes(SITE_NAME)
-            ? meta.title
-            : `${meta.title} | ${SITE_NAME}`;
+          const shouldAppendSiteName = meta.appendSiteName ?? true;
+          const fullTitle = shouldAppendSiteName && !meta.title.includes(SITE_NAME)
+            ? `${meta.title} | ${SITE_NAME}`
+            : meta.title;
           return (
             <Card key={meta.route} className="overflow-hidden">
               <div className="flex items-start justify-between gap-4 border-b p-4">
