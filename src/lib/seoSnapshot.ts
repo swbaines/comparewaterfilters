@@ -141,17 +141,19 @@ export interface DriftIssue {
  */
 export function extractPageMeta(
   src: string,
-): { title: string; description: string; ogImage?: string } | null {
+): { title: string; description: string; ogImage?: string; appendSiteName?: boolean } | null {
   const block = src.match(/<PageMeta\b[\s\S]*?\/>/);
   if (!block) return null;
   const titleMatch = block[0].match(/title="([^"]+)"/);
   const descMatch = block[0].match(/description="([^"]+)"/);
   if (!titleMatch || !descMatch) return null;
   const ogMatch = block[0].match(/ogImage="([^"]+)"/);
+  const appendSiteNameMatch = block[0].match(/appendSiteName=\{(true|false)\}/);
   return {
     title: titleMatch[1],
     description: descMatch[1],
     ...(ogMatch ? { ogImage: ogMatch[1] } : {}),
+    ...(appendSiteNameMatch ? { appendSiteName: appendSiteNameMatch[1] === "true" } : {}),
   };
 }
 
@@ -219,6 +221,17 @@ export function diffRouteAgainstSource(
       field: "ogImage",
       expected: expectedOg,
       actual: actualOg,
+    });
+  }
+  const expectedAppendSiteName = meta.appendSiteName ?? true;
+  const actualAppendSiteName = extracted.appendSiteName ?? true;
+  if (expectedAppendSiteName !== actualAppendSiteName) {
+    issues.push({
+      route: meta.route,
+      source: meta.source,
+      field: "appendSiteName",
+      expected: String(expectedAppendSiteName),
+      actual: String(actualAppendSiteName),
     });
   }
   return issues;
