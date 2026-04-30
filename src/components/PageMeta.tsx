@@ -5,6 +5,7 @@ interface PageMetaProps {
   description: string;
   path?: string;
   ogImage?: string;
+  appendSiteName?: boolean;
 }
 
 const SITE_NAME = "Compare Water Filters";
@@ -16,10 +17,11 @@ export default function PageMeta({
   description,
   path = "",
   ogImage,
+  appendSiteName = true,
 }: PageMetaProps) {
   useEffect(() => {
     const fullTitle =
-      title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+      appendSiteName && !title.includes(SITE_NAME) ? `${title} | ${SITE_NAME}` : title;
     document.title = fullTitle;
 
     const setMeta = (attr: string, key: string, content: string) => {
@@ -53,7 +55,7 @@ export default function PageMeta({
       document.head.appendChild(link);
     }
     link.href = `${BASE_URL}${path}`;
-  }, [title, description, path, ogImage]);
+  }, [title, description, path, ogImage, appendSiteName]);
 
   return null;
 }

@@ -233,6 +233,7 @@ export default function HomePage() {
         title="Compare Whole House Water Filters Australia — Free Quotes"
         description="Compare whole house water filters, reverse osmosis and under-sink systems across Australia. Free quotes from trusted local installers."
         path="/"
+        appendSiteName={false}
       />
 
       {/* ── Hero ── */}
