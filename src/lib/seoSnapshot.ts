@@ -43,6 +43,7 @@ export const ROUTES: RouteMeta[] = [
       "Answer a few quick questions about your home and water concerns to get personalised whole house water filter recommendations and free quotes.",
     canonical: `${BASE_URL}/quiz`,
     ogImage: DEFAULT_OG,
+    appendSiteName: false,
   },
   {
     route: "/system-types",
