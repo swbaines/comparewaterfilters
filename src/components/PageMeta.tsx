@@ -21,7 +21,7 @@ export default function PageMeta({
 }: PageMetaProps) {
   useEffect(() => {
     const fullTitle =
-      appendSiteName || title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
+      appendSiteName && !title.includes(SITE_NAME) ? `${title} | ${SITE_NAME}` : title;
     document.title = fullTitle;
 
     const setMeta = (attr: string, key: string, content: string) => {
