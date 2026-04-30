@@ -383,6 +383,7 @@ export default function QuizPage() {
         title="Whole House Water Filter Quiz — Find Your Match"
         description="Answer a few quick questions about your home and water concerns to get personalised whole house water filter recommendations and free quotes."
         path="/quiz"
+        appendSiteName={false}
       />
       <div className="container max-w-2xl">
         {/* Progress */}
