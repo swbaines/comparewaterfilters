@@ -19,4 +19,16 @@ describe.skipIf(!ENABLED)("OG image live availability", () => {
     const ct = res.headers.get("content-type") ?? "";
     expect(ct.toLowerCase(), `Unexpected content-type: ${ct}`).toContain("image/png");
   });
+
+  it(`${OG_URL} resolves directly without redirects`, async () => {
+    // `redirect: "manual"` ensures we observe the first response, not a followed one.
+    const res = await fetch(OG_URL, { method: "HEAD", redirect: "manual" });
+    expect(
+      res.status,
+      `Expected direct 200 (no redirect), got ${res.status}${
+        res.headers.get("location") ? ` -> ${res.headers.get("location")}` : ""
+      }`,
+    ).toBe(200);
+    expect(res.redirected, "Response should not be the result of a redirect").toBe(false);
+  });
 });
