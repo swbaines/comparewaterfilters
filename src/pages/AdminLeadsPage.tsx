@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2 } from "lucide-react";
+import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2, RefreshCw } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL } from "@/lib/leadTemperature";
@@ -169,6 +169,44 @@ export default function AdminLeadsPage() {
       if (error) throw error;
       return data;
     },
+  });
+
+  const { data: syncLogs = [] } = useQuery({
+    queryKey: ["saleshandy-sync-logs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("saleshandy_sync_log")
+        .select("quote_request_id, status, error_message, attempted_at")
+        .order("attempted_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const latestSyncByLead: Record<string, { status: string; error_message: string | null; attempted_at: string }> = {};
+  for (const log of syncLogs) {
+    if (!latestSyncByLead[log.quote_request_id]) {
+      latestSyncByLead[log.quote_request_id] = {
+        status: log.status,
+        error_message: log.error_message,
+        attempted_at: log.attempted_at,
+      };
+    }
+  }
+
+  const resyncMutation = useMutation({
+    mutationFn: async (quoteRequestId: string) => {
+      const { data, error } = await supabase.functions.invoke("sync-to-saleshandy", {
+        body: { quote_request_id: quoteRequestId },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["saleshandy-sync-logs"] });
+      toast.success("Resync triggered");
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const { data: providers = [] } = useQuery({
@@ -395,11 +433,12 @@ export default function AdminLeadsPage() {
                   <TableHead>Status</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
+                  <TableHead>Saleshandy</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={14} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={15} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -496,6 +535,36 @@ export default function AdminLeadsPage() {
                     </TableCell>
                     <TableCell className="text-sm">{lead.lead_price ? `$${Number(lead.lead_price).toFixed(0)}` : "—"}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{lead.invoice_id ? "✓" : "—"}</TableCell>
+                    <TableCell>
+                      {(() => {
+                        const sync = latestSyncByLead[lead.id];
+                        let badge;
+                        if (!sync) {
+                          badge = <Badge variant="outline" className="bg-yellow-50 text-yellow-800 border-yellow-200 text-[10px]">⏳ Pending</Badge>;
+                        } else if (sync.status === "success") {
+                          badge = <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200 text-[10px]" title={format(new Date(sync.attempted_at), "dd MMM yyyy HH:mm")}>✅ Synced</Badge>;
+                        } else if (sync.status === "skipped_no_consent") {
+                          badge = <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]">— No consent</Badge>;
+                        } else {
+                          badge = <Badge variant="outline" className="bg-red-50 text-red-800 border-red-200 text-[10px]" title={sync.error_message || ""}>⚠ Failed</Badge>;
+                        }
+                        return (
+                          <div className="flex items-center gap-1">
+                            {badge}
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6"
+                              title="Resync to Saleshandy"
+                              onClick={() => resyncMutation.mutate(lead.id)}
+                              disabled={resyncMutation.isPending}
+                            >
+                              <RefreshCw className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        );
+                      })()}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
