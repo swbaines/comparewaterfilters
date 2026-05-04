@@ -771,6 +771,39 @@ export type Database = {
           },
         ]
       }
+      saleshandy_sync_log: {
+        Row: {
+          attempt_count: number
+          attempted_at: string
+          created_at: string
+          error_message: string | null
+          id: string
+          quote_request_id: string
+          response_body: Json | null
+          status: string
+        }
+        Insert: {
+          attempt_count?: number
+          attempted_at?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          quote_request_id: string
+          response_body?: Json | null
+          status: string
+        }
+        Update: {
+          attempt_count?: number
+          attempted_at?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          quote_request_id?: string
+          response_body?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
       stripe_webhook_events: {
         Row: {
           event_type: string
