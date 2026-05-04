@@ -25,3 +25,5 @@ project_id = "xbryypgsryjhuscyglbu"
     verify_jwt = false
   [functions.check-insurance-expiry]
     verify_jwt = false
+  [functions.sync-to-saleshandy]
+    verify_jwt = false
