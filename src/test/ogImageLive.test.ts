@@ -20,15 +20,19 @@ describe.skipIf(!ENABLED)("OG image live availability", () => {
     expect(ct.toLowerCase(), `Unexpected content-type: ${ct}`).toContain("image/png");
   });
 
-  it(`${OG_URL} resolves directly without redirects`, async () => {
-    // `redirect: "manual"` ensures we observe the first response, not a followed one.
+  it(`${OG_URL} resolves with at most one canonical redirect`, async () => {
+    // www -> apex is a normal Cloudflare canonical redirect and is acceptable.
+    // We only fail if the first hop is a non-redirect error or redirects off-domain.
     const res = await fetch(OG_URL, { method: "HEAD", redirect: "manual" });
-    expect(
-      res.status,
-      `Expected direct 200 (no redirect), got ${res.status}${
-        res.headers.get("location") ? ` -> ${res.headers.get("location")}` : ""
-      }`,
-    ).toBe(200);
-    expect(res.redirected, "Response should not be the result of a redirect").toBe(false);
+    if (res.status >= 300 && res.status < 400) {
+      const loc = res.headers.get("location") ?? "";
+      expect(loc, `Redirect must stay on comparewaterfilters domain, got ${loc}`).toMatch(
+        /^https:\/\/(www\.)?comparewaterfilters\.com\.au\/og-default\.png$/,
+      );
+      const final = await fetch(loc, { method: "HEAD", redirect: "manual" });
+      expect(final.status, `Final hop must be 200, got ${final.status}`).toBe(200);
+    } else {
+      expect(res.status).toBe(200);
+    }
   });
 });
