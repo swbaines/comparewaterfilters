@@ -33,8 +33,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SALESHANDY_URL = "https://open-api.saleshandy.com/v1/prospects";
-const RETRY_DELAYS_MS = [30_000, 300_000]; // 30s, then 5min
+const SALESHANDY_URL = "https://open-api.saleshandy.com/v1/prospects/import";
+// Edge functions have a ~150s idle timeout. Keep total retry window well under that.
+// Strategy: 2s, then 10s (≈12s of waits + a few HTTP calls = comfortably under 150s).
+const RETRY_DELAYS_MS = [2_000, 10_000];
 
 function buildAttribute(fieldId: string, value: unknown) {
   if (!fieldId || fieldId.startsWith("TODO_")) return null;
