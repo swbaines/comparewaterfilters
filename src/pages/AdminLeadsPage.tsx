@@ -176,21 +176,37 @@ export default function AdminLeadsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("saleshandy_sync_log")
-        .select("quote_request_id, status, error_message, attempted_at")
+        .select("quote_request_id, email, status, error_message, attempted_at, tags_applied, source")
         .order("attempted_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const latestSyncByLead: Record<string, { status: string; error_message: string | null; attempted_at: string }> = {};
+  type SyncRow = {
+    status: string;
+    error_message: string | null;
+    attempted_at: string;
+    tags_applied: string[] | null;
+    source: string | null;
+  };
+  const latestSyncByLead: Record<string, SyncRow> = {};
+  // Tags accumulated across all successful syncs by email (recommendation + quote stage)
+  const tagsByEmail: Record<string, Set<string>> = {};
   for (const log of syncLogs) {
-    if (!latestSyncByLead[log.quote_request_id]) {
+    if (log.quote_request_id && !latestSyncByLead[log.quote_request_id]) {
       latestSyncByLead[log.quote_request_id] = {
         status: log.status,
         error_message: log.error_message,
         attempted_at: log.attempted_at,
+        tags_applied: log.tags_applied,
+        source: log.source,
       };
+    }
+    if (log.status === "success" && log.email && Array.isArray(log.tags_applied)) {
+      const k = log.email.toLowerCase();
+      if (!tagsByEmail[k]) tagsByEmail[k] = new Set();
+      for (const t of log.tags_applied) tagsByEmail[k].add(t);
     }
   }
 
@@ -434,11 +450,12 @@ export default function AdminLeadsPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
                   <TableHead>Saleshandy</TableHead>
+                  <TableHead>CRM Tags</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={15} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={16} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -545,6 +562,8 @@ export default function AdminLeadsPage() {
                           badge = <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200 text-[10px]" title={format(new Date(sync.attempted_at), "dd MMM yyyy HH:mm")}>✅ Synced</Badge>;
                         } else if (sync.status === "skipped_no_consent") {
                           badge = <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]">— No consent</Badge>;
+                        } else if (sync.status === "prospect_not_found") {
+                          badge = <Badge variant="outline" className="bg-orange-50 text-orange-800 border-orange-200 text-[10px]" title={sync.error_message || ""}>⚠ Not in CRM</Badge>;
                         } else {
                           badge = <Badge variant="outline" className="bg-red-50 text-red-800 border-red-200 text-[10px]" title={sync.error_message || ""}>⚠ Failed</Badge>;
                         }
@@ -561,6 +580,20 @@ export default function AdminLeadsPage() {
                             >
                               <RefreshCw className="h-3 w-3" />
                             </Button>
+                          </div>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const email = (lead.customer_email || "").toLowerCase();
+                        const tags = email ? Array.from(tagsByEmail[email] ?? []) : [];
+                        if (tags.length === 0) return <span className="text-xs text-muted-foreground">—</span>;
+                        return (
+                          <div className="flex flex-wrap gap-1 max-w-[200px]">
+                            {tags.map((t) => (
+                              <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>
+                            ))}
                           </div>
                         );
                       })()}

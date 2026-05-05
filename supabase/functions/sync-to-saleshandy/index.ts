@@ -82,12 +82,15 @@ async function logAttempt(
       | "success"
       | "failed"
       | "skipped_no_consent"
-      | "skipped_no_email";
+      | "skipped_no_email"
+      | "prospect_not_found";
     attempt_count: number;
     request_body?: unknown;
     response_body?: unknown;
     tags_applied?: string[] | null;
     error_message?: string | null;
+    email?: string | null;
+    endpoint_used?: string | null;
   },
 ) {
   await supabase.from("saleshandy_sync_log").insert({
@@ -100,6 +103,8 @@ async function logAttempt(
     response_body: params.response_body as never,
     tags_applied: params.tags_applied ?? null,
     error_message: params.error_message ?? null,
+    email: params.email ?? null,
+    endpoint_used: params.endpoint_used ?? null,
   });
 }
 
@@ -148,8 +153,8 @@ function buildPayload(params: {
     "First Name": params.firstName,
     "Last Name": params.lastName,
     "Email": params.email,
+    "Phone Number": params.phone ?? "",
   };
-  if (params.phone) prospect["Phone Number"] = params.phone;
 
   return {
     prospectList: [prospect],
@@ -185,10 +190,8 @@ async function assignTagsByEmail(email: string, tags: string[]) {
   const apiKey = Deno.env.get("SALESHANDY_API_KEY");
   if (!apiKey) throw new Error("SALESHANDY_API_KEY not configured");
 
-  // Best-effort tag assignment. Saleshandy's exact payload schema for this
-  // endpoint is being confirmed; we send the most common shape and capture
-  // the full response for diagnostics.
-  const body = { emails: [email], tags };
+  // Saleshandy /v1/prospects/tags/assign — additive; uses prospectsEmails.
+  const body = { prospectsEmails: [email], tags };
   const res = await fetch(SALESHANDY_TAG_ASSIGN_URL, {
     method: "POST",
     headers: {
@@ -284,6 +287,7 @@ Deno.serve(async (req) => {
         source,
         status: "skipped_no_consent",
         attempt_count: 0,
+        email: typeof sub.email === "string" ? sub.email.trim().toLowerCase() : null,
       });
       return new Response(
         JSON.stringify({ ok: true, skipped: true, reason: "no_consent" }),
@@ -344,6 +348,7 @@ Deno.serve(async (req) => {
         source,
         status: "skipped_no_consent",
         attempt_count: 0,
+        email: typeof quote.customer_email === "string" ? quote.customer_email.trim().toLowerCase() : null,
       });
       return new Response(
         JSON.stringify({ ok: true, skipped: true, reason: "no_consent" }),
@@ -395,6 +400,7 @@ Deno.serve(async (req) => {
     let lastError = "";
     let lastBody: unknown = null;
     let lastReq: unknown = null;
+    let prospectNotFound = false;
     while (attempt <= RETRY_DELAYS_MS.length) {
       attempt += 1;
       try {
@@ -410,6 +416,8 @@ Deno.serve(async (req) => {
             request_body: res.request,
             response_body: res.body,
             tags_applied: tags,
+            email,
+            endpoint_used: SALESHANDY_TAG_ASSIGN_URL,
           });
           return new Response(
             JSON.stringify({ ok: true, attempt, response: res.body }),
@@ -425,6 +433,12 @@ Deno.serve(async (req) => {
         lastError = `HTTP ${res.status}: ${
           typeof res.body === "string" ? res.body : JSON.stringify(res.body)
         }`;
+        // 404 / not-found → don't retry; prospect doesn't exist (no recommendation-stage sync)
+        const bodyStr = typeof res.body === "string" ? res.body : JSON.stringify(res.body ?? "");
+        if (res.status === 404 || /not.?found|does.?not.?exist|no.?prospect/i.test(bodyStr)) {
+          prospectNotFound = true;
+          break;
+        }
       } catch (e) {
         lastError = (e as Error).message;
       }
@@ -435,18 +449,27 @@ Deno.serve(async (req) => {
     await logAttempt(supabase, {
       quote_request_id: quoteRequestId,
       source,
-      status: "failed",
+      status: prospectNotFound ? "prospect_not_found" : "failed",
       attempt_count: attempt,
       request_body: lastReq,
       response_body: lastBody,
       tags_applied: null,
       error_message: lastError,
+      email,
+      endpoint_used: SALESHANDY_TAG_ASSIGN_URL,
     });
-    await notifyAdminOfFailure(supabase, quoteRequestId!, source, lastError);
+    if (!prospectNotFound) {
+      await notifyAdminOfFailure(supabase, quoteRequestId!, source, lastError);
+    }
     return new Response(
-      JSON.stringify({ ok: false, error: lastError, attempts: attempt }),
+      JSON.stringify({
+        ok: false,
+        error: lastError,
+        attempts: attempt,
+        prospect_not_found: prospectNotFound,
+      }),
       {
-        status: 502,
+        status: prospectNotFound ? 200 : 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
@@ -473,6 +496,8 @@ Deno.serve(async (req) => {
           request_body: body,
           response_body: result.body,
           tags_applied: tags,
+          email,
+          endpoint_used: SALESHANDY_IMPORT_URL,
         });
         return new Response(
           JSON.stringify({ ok: true, attempt, response: result.body }),
@@ -505,6 +530,8 @@ Deno.serve(async (req) => {
     response_body: lastBody,
     tags_applied: null,
     error_message: lastError,
+    email,
+    endpoint_used: SALESHANDY_IMPORT_URL,
   });
   await notifyAdminOfFailure(
     supabase,
