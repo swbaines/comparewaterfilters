@@ -176,21 +176,37 @@ export default function AdminLeadsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("saleshandy_sync_log")
-        .select("quote_request_id, status, error_message, attempted_at")
+        .select("quote_request_id, email, status, error_message, attempted_at, tags_applied, source")
         .order("attempted_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const latestSyncByLead: Record<string, { status: string; error_message: string | null; attempted_at: string }> = {};
+  type SyncRow = {
+    status: string;
+    error_message: string | null;
+    attempted_at: string;
+    tags_applied: string[] | null;
+    source: string | null;
+  };
+  const latestSyncByLead: Record<string, SyncRow> = {};
+  // Tags accumulated across all successful syncs by email (recommendation + quote stage)
+  const tagsByEmail: Record<string, Set<string>> = {};
   for (const log of syncLogs) {
-    if (!latestSyncByLead[log.quote_request_id]) {
+    if (log.quote_request_id && !latestSyncByLead[log.quote_request_id]) {
       latestSyncByLead[log.quote_request_id] = {
         status: log.status,
         error_message: log.error_message,
         attempted_at: log.attempted_at,
+        tags_applied: log.tags_applied,
+        source: log.source,
       };
+    }
+    if (log.status === "success" && log.email && Array.isArray(log.tags_applied)) {
+      const k = log.email.toLowerCase();
+      if (!tagsByEmail[k]) tagsByEmail[k] = new Set();
+      for (const t of log.tags_applied) tagsByEmail[k].add(t);
     }
   }
 
