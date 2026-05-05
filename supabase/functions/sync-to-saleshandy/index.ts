@@ -91,6 +91,7 @@ async function logAttempt(
     error_message?: string | null;
     email?: string | null;
     endpoint_used?: string | null;
+    response_code?: number | null;
   },
 ) {
   await supabase.from("saleshandy_sync_log").insert({
@@ -105,6 +106,7 @@ async function logAttempt(
     error_message: params.error_message ?? null,
     email: params.email ?? null,
     endpoint_used: params.endpoint_used ?? null,
+    response_code: params.response_code ?? null,
   });
 }
 
@@ -208,6 +210,19 @@ async function assignTagsByEmail(email: string, tags: string[]) {
     /* keep raw */
   }
   return { ok: res.ok, status: res.status, body: parsed, request: body };
+}
+
+/**
+ * Classify HTTP status to decide whether to retry.
+ * - 4xx (except 408/429): client/data error — DO NOT retry
+ * - 401: auth issue — DO NOT retry, notify admin immediately
+ * - 408/429/5xx/network: transient — retry
+ */
+function shouldRetryStatus(status: number): boolean {
+  if (status === 408 || status === 429) return true;
+  if (status >= 500) return true;
+  if (status >= 400 && status < 500) return false;
+  return true; // network / unknown
 }
 
 // ---------- main handler ----------
