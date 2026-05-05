@@ -776,6 +776,8 @@ export type Database = {
           attempt_count: number
           attempted_at: string
           created_at: string
+          email: string | null
+          endpoint_used: string | null
           error_message: string | null
           id: string
           quiz_submission_id: string | null
@@ -790,6 +792,8 @@ export type Database = {
           attempt_count?: number
           attempted_at?: string
           created_at?: string
+          email?: string | null
+          endpoint_used?: string | null
           error_message?: string | null
           id?: string
           quiz_submission_id?: string | null
@@ -804,6 +808,8 @@ export type Database = {
           attempt_count?: number
           attempted_at?: string
           created_at?: string
+          email?: string | null
+          endpoint_used?: string | null
           error_message?: string | null
           id?: string
           quiz_submission_id?: string | null
