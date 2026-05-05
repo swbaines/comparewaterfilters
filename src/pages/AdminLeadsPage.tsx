@@ -606,6 +606,11 @@ export default function AdminLeadsPage() {
                           badge = <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]">— No consent</Badge>;
                         } else if (sync.status === "prospect_not_found") {
                           badge = <Badge variant="outline" className="bg-orange-50 text-orange-800 border-orange-200 text-[10px]" title={sync.error_message || ""}>⚠ Not in CRM</Badge>;
+                        } else if (sync.status === "retry_scheduled") {
+                          const when = sync.next_retry_at ? format(new Date(sync.next_retry_at), "HH:mm:ss") : "soon";
+                          badge = <Badge variant="outline" className="bg-blue-50 text-blue-800 border-blue-200 text-[10px]" title={`Retry ${(sync.retry_count ?? 0)}/2 at ${when}\n${sync.error_message || ""}`}>🔄 Retry {sync.retry_count ?? 0}/2</Badge>;
+                        } else if (sync.status === "permanently_failed") {
+                          badge = <Badge variant="outline" className="bg-red-100 text-red-900 border-red-300 text-[10px]" title={sync.error_message || ""}>⛔ Permanently failed</Badge>;
                         } else {
                           badge = <Badge variant="outline" className="bg-red-50 text-red-800 border-red-200 text-[10px]" title={sync.error_message || ""}>⚠ Failed</Badge>;
                         }
@@ -622,6 +627,18 @@ export default function AdminLeadsPage() {
                             >
                               <RefreshCw className="h-3 w-3" />
                             </Button>
+                            {sync?.status === "permanently_failed" && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6 text-red-600 hover:text-red-700"
+                                title="Manually retry permanently failed sync"
+                                onClick={() => manualRetryMutation.mutate(sync.id)}
+                                disabled={manualRetryMutation.isPending}
+                              >
+                                <RefreshCw className="h-3 w-3" />
+                              </Button>
+                            )}
                           </div>
                         );
                       })()}
