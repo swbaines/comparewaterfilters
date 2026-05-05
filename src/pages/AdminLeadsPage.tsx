@@ -456,6 +456,8 @@ export default function AdminLeadsPage() {
             <SelectContent>
               <SelectItem value="all">All CRM Sync</SelectItem>
               <SelectItem value="success">✅ Synced</SelectItem>
+              <SelectItem value="retry_scheduled">🔄 Retry scheduled</SelectItem>
+              <SelectItem value="permanently_failed">⛔ Permanently failed</SelectItem>
               <SelectItem value="failed">⚠ Failed</SelectItem>
               <SelectItem value="prospect_not_found">⚠ Not in CRM</SelectItem>
               <SelectItem value="skipped_no_consent">⊘ No consent</SelectItem>
