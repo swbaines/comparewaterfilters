@@ -82,12 +82,15 @@ async function logAttempt(
       | "success"
       | "failed"
       | "skipped_no_consent"
-      | "skipped_no_email";
+      | "skipped_no_email"
+      | "prospect_not_found";
     attempt_count: number;
     request_body?: unknown;
     response_body?: unknown;
     tags_applied?: string[] | null;
     error_message?: string | null;
+    email?: string | null;
+    endpoint_used?: string | null;
   },
 ) {
   await supabase.from("saleshandy_sync_log").insert({
@@ -100,6 +103,8 @@ async function logAttempt(
     response_body: params.response_body as never,
     tags_applied: params.tags_applied ?? null,
     error_message: params.error_message ?? null,
+    email: params.email ?? null,
+    endpoint_used: params.endpoint_used ?? null,
   });
 }
 
@@ -148,8 +153,8 @@ function buildPayload(params: {
     "First Name": params.firstName,
     "Last Name": params.lastName,
     "Email": params.email,
+    "Phone Number": params.phone ?? "",
   };
-  if (params.phone) prospect["Phone Number"] = params.phone;
 
   return {
     prospectList: [prospect],
@@ -185,10 +190,8 @@ async function assignTagsByEmail(email: string, tags: string[]) {
   const apiKey = Deno.env.get("SALESHANDY_API_KEY");
   if (!apiKey) throw new Error("SALESHANDY_API_KEY not configured");
 
-  // Best-effort tag assignment. Saleshandy's exact payload schema for this
-  // endpoint is being confirmed; we send the most common shape and capture
-  // the full response for diagnostics.
-  const body = { emails: [email], tags };
+  // Saleshandy /v1/prospects/tags/assign — additive; uses prospectsEmails.
+  const body = { prospectsEmails: [email], tags };
   const res = await fetch(SALESHANDY_TAG_ASSIGN_URL, {
     method: "POST",
     headers: {
