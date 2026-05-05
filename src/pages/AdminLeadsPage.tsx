@@ -562,6 +562,8 @@ export default function AdminLeadsPage() {
                           badge = <Badge variant="outline" className="bg-green-50 text-green-800 border-green-200 text-[10px]" title={format(new Date(sync.attempted_at), "dd MMM yyyy HH:mm")}>✅ Synced</Badge>;
                         } else if (sync.status === "skipped_no_consent") {
                           badge = <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200 text-[10px]">— No consent</Badge>;
+                        } else if (sync.status === "prospect_not_found") {
+                          badge = <Badge variant="outline" className="bg-orange-50 text-orange-800 border-orange-200 text-[10px]" title={sync.error_message || ""}>⚠ Not in CRM</Badge>;
                         } else {
                           badge = <Badge variant="outline" className="bg-red-50 text-red-800 border-red-200 text-[10px]" title={sync.error_message || ""}>⚠ Failed</Badge>;
                         }
