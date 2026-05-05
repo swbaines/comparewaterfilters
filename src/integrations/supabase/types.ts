@@ -778,9 +778,13 @@ export type Database = {
           created_at: string
           error_message: string | null
           id: string
-          quote_request_id: string
+          quiz_submission_id: string | null
+          quote_request_id: string | null
+          request_body: Json | null
           response_body: Json | null
+          source: string | null
           status: string
+          tags_applied: string[] | null
         }
         Insert: {
           attempt_count?: number
@@ -788,9 +792,13 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           id?: string
-          quote_request_id: string
+          quiz_submission_id?: string | null
+          quote_request_id?: string | null
+          request_body?: Json | null
           response_body?: Json | null
+          source?: string | null
           status: string
+          tags_applied?: string[] | null
         }
         Update: {
           attempt_count?: number
@@ -798,9 +806,13 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           id?: string
-          quote_request_id?: string
+          quiz_submission_id?: string | null
+          quote_request_id?: string | null
+          request_body?: Json | null
           response_body?: Json | null
+          source?: string | null
           status?: string
+          tags_applied?: string[] | null
         }
         Relationships: []
       }
