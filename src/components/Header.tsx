@@ -20,7 +20,8 @@ const resourceLinks = [
 { to: "/water-quality", label: "My Water Quality" },
 { to: "/system-types", label: "System Types" },
 { to: "/pricing-guide", label: "Pricing Guide" },
-{ to: "/learn", label: "Learn" }];
+{ to: "/learn", label: "Learn" },
+{ to: "/vendor/login", label: "Provider Portal" }];
 
 
 export default function Header() {
