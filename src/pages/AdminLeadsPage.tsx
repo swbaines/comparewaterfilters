@@ -177,7 +177,7 @@ export default function AdminLeadsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("saleshandy_sync_log")
-        .select("quote_request_id, email, status, error_message, attempted_at, tags_applied, source")
+        .select("id, quote_request_id, email, status, error_message, attempted_at, tags_applied, source, retry_count, next_retry_at")
         .order("attempted_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -185,11 +185,14 @@ export default function AdminLeadsPage() {
   });
 
   type SyncRow = {
+    id: string;
     status: string;
     error_message: string | null;
     attempted_at: string;
     tags_applied: string[] | null;
     source: string | null;
+    retry_count: number | null;
+    next_retry_at: string | null;
   };
   const latestSyncByLead: Record<string, SyncRow> = {};
   // Tags accumulated across all successful syncs by email (recommendation + quote stage)
@@ -197,11 +200,14 @@ export default function AdminLeadsPage() {
   for (const log of syncLogs) {
     if (log.quote_request_id && !latestSyncByLead[log.quote_request_id]) {
       latestSyncByLead[log.quote_request_id] = {
+        id: log.id,
         status: log.status,
         error_message: log.error_message,
         attempted_at: log.attempted_at,
         tags_applied: log.tags_applied,
         source: log.source,
+        retry_count: (log as { retry_count?: number | null }).retry_count ?? null,
+        next_retry_at: (log as { next_retry_at?: string | null }).next_retry_at ?? null,
       };
     }
     if (log.status === "success" && log.email && Array.isArray(log.tags_applied)) {
