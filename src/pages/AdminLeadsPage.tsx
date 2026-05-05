@@ -232,6 +232,22 @@ export default function AdminLeadsPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const manualRetryMutation = useMutation({
+    mutationFn: async (logId: string) => {
+      const { data, error } = await supabase.functions.invoke(
+        "process-saleshandy-retries",
+        { body: { log_id: logId } },
+      );
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["saleshandy-sync-logs"] });
+      toast.success("Manual retry queued");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const { data: providers = [] } = useQuery({
     queryKey: ["admin-providers-list"],
     queryFn: async () => {
