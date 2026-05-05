@@ -780,11 +780,13 @@ export type Database = {
           endpoint_used: string | null
           error_message: string | null
           id: string
+          next_retry_at: string | null
           quiz_submission_id: string | null
           quote_request_id: string | null
           request_body: Json | null
           response_body: Json | null
           response_code: number | null
+          retry_count: number
           source: string | null
           status: string
           tags_applied: string[] | null
@@ -797,11 +799,13 @@ export type Database = {
           endpoint_used?: string | null
           error_message?: string | null
           id?: string
+          next_retry_at?: string | null
           quiz_submission_id?: string | null
           quote_request_id?: string | null
           request_body?: Json | null
           response_body?: Json | null
           response_code?: number | null
+          retry_count?: number
           source?: string | null
           status: string
           tags_applied?: string[] | null
@@ -814,11 +818,13 @@ export type Database = {
           endpoint_used?: string | null
           error_message?: string | null
           id?: string
+          next_retry_at?: string | null
           quiz_submission_id?: string | null
           quote_request_id?: string | null
           request_body?: Json | null
           response_body?: Json | null
           response_code?: number | null
+          retry_count?: number
           source?: string | null
           status?: string
           tags_applied?: string[] | null
