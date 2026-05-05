@@ -415,6 +415,7 @@ Deno.serve(async (req) => {
     let lastError = "";
     let lastBody: unknown = null;
     let lastReq: unknown = null;
+    let lastStatus: number | null = null;
     let prospectNotFound = false;
     while (attempt <= RETRY_DELAYS_MS.length) {
       attempt += 1;
@@ -422,6 +423,7 @@ Deno.serve(async (req) => {
         const res = await assignTagsByEmail(email, tags);
         lastBody = res.body;
         lastReq = res.request;
+        lastStatus = res.status;
         if (res.ok) {
           await logAttempt(supabase, {
             quote_request_id: quoteRequestId,
@@ -433,6 +435,7 @@ Deno.serve(async (req) => {
             tags_applied: tags,
             email,
             endpoint_used: SALESHANDY_TAG_ASSIGN_URL,
+            response_code: res.status,
           });
           return new Response(
             JSON.stringify({ ok: true, attempt, response: res.body }),
@@ -454,6 +457,8 @@ Deno.serve(async (req) => {
           prospectNotFound = true;
           break;
         }
+        // Don't retry on 4xx (except 408/429) — bad data or auth issue
+        if (!shouldRetryStatus(res.status)) break;
       } catch (e) {
         lastError = (e as Error).message;
       }
@@ -472,6 +477,7 @@ Deno.serve(async (req) => {
       error_message: lastError,
       email,
       endpoint_used: SALESHANDY_TAG_ASSIGN_URL,
+      response_code: lastStatus,
     });
     if (!prospectNotFound) {
       await notifyAdminOfFailure(supabase, quoteRequestId!, source, lastError);
@@ -496,11 +502,13 @@ Deno.serve(async (req) => {
   let attempt = 0;
   let lastError = "";
   let lastBody: unknown = null;
+  let lastStatus: number | null = null;
   while (attempt <= RETRY_DELAYS_MS.length) {
     attempt += 1;
     try {
       const result = await importProspect(body);
       lastBody = result.body;
+      lastStatus = result.status;
       if (result.ok) {
         await logAttempt(supabase, {
           quote_request_id: quoteRequestId,
@@ -513,6 +521,7 @@ Deno.serve(async (req) => {
           tags_applied: tags,
           email,
           endpoint_used: SALESHANDY_IMPORT_URL,
+          response_code: result.status,
         });
         return new Response(
           JSON.stringify({ ok: true, attempt, response: result.body }),
@@ -527,6 +536,8 @@ Deno.serve(async (req) => {
           ? result.body
           : JSON.stringify(result.body)
       }`;
+      // Don't retry on 4xx (except 408/429) — bad data or auth issue
+      if (!shouldRetryStatus(result.status)) break;
     } catch (e) {
       lastError = (e as Error).message;
     }
@@ -547,6 +558,7 @@ Deno.serve(async (req) => {
     error_message: lastError,
     email,
     endpoint_used: SALESHANDY_IMPORT_URL,
+    response_code: lastStatus,
   });
   await notifyAdminOfFailure(
     supabase,
