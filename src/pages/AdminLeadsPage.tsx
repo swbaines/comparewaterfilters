@@ -41,6 +41,7 @@ export default function AdminLeadsPage() {
   const [filterProvider, setFilterProvider] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterTemperature, setFilterTemperature] = useState<string>("all");
+  const [filterSaleshandy, setFilterSaleshandy] = useState<string>("all");
   const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const [invoiceProvider, setInvoiceProvider] = useState<string>("");
   const [invoicePeriod, setInvoicePeriod] = useState({ start: "", end: "" });
@@ -322,6 +323,12 @@ export default function AdminLeadsPage() {
     if (filterProvider !== "all" && l.provider_id !== filterProvider) return false;
     if (filterStatus !== "all" && l.lead_status !== filterStatus) return false;
     if (filterTemperature !== "all" && (l.lead_temperature || "") !== filterTemperature) return false;
+    if (filterSaleshandy !== "all") {
+      const sync = latestSyncByLead[l.id];
+      const status = sync?.status ?? "pending";
+      if (filterSaleshandy === "pending" && sync) return false;
+      if (filterSaleshandy !== "pending" && status !== filterSaleshandy) return false;
+    }
     return true;
   });
 
@@ -420,6 +427,17 @@ export default function AdminLeadsPage() {
               <SelectItem value="hot">Hot</SelectItem>
               <SelectItem value="warm">Warm</SelectItem>
               <SelectItem value="cold">Cold</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterSaleshandy} onValueChange={setFilterSaleshandy}>
+            <SelectTrigger className="w-44"><SelectValue placeholder="All CRM Sync" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All CRM Sync</SelectItem>
+              <SelectItem value="success">✅ Synced</SelectItem>
+              <SelectItem value="failed">⚠ Failed</SelectItem>
+              <SelectItem value="prospect_not_found">⚠ Not in CRM</SelectItem>
+              <SelectItem value="skipped_no_consent">⊘ No consent</SelectItem>
+              <SelectItem value="pending">⏳ Pending</SelectItem>
             </SelectContent>
           </Select>
           <Button onClick={() => setInvoiceDialogOpen(true)} className="ml-auto gap-1">
