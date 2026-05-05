@@ -450,11 +450,12 @@ export default function AdminLeadsPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
                   <TableHead>Saleshandy</TableHead>
+                  <TableHead>CRM Tags</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={15} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={16} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => (
                   <TableRow key={lead.id}>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
@@ -577,6 +578,20 @@ export default function AdminLeadsPage() {
                             >
                               <RefreshCw className="h-3 w-3" />
                             </Button>
+                          </div>
+                        );
+                      })()}
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const email = (lead.customer_email || "").toLowerCase();
+                        const tags = email ? Array.from(tagsByEmail[email] ?? []) : [];
+                        if (tags.length === 0) return <span className="text-xs text-muted-foreground">—</span>;
+                        return (
+                          <div className="flex flex-wrap gap-1 max-w-[200px]">
+                            {tags.map((t) => (
+                              <Badge key={t} variant="outline" className="text-[10px]">{t}</Badge>
+                            ))}
                           </div>
                         );
                       })()}
