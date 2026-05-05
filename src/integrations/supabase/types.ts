@@ -784,6 +784,7 @@ export type Database = {
           quote_request_id: string | null
           request_body: Json | null
           response_body: Json | null
+          response_code: number | null
           source: string | null
           status: string
           tags_applied: string[] | null
@@ -800,6 +801,7 @@ export type Database = {
           quote_request_id?: string | null
           request_body?: Json | null
           response_body?: Json | null
+          response_code?: number | null
           source?: string | null
           status: string
           tags_applied?: string[] | null
@@ -816,6 +818,7 @@ export type Database = {
           quote_request_id?: string | null
           request_body?: Json | null
           response_body?: Json | null
+          response_code?: number | null
           source?: string | null
           status?: string
           tags_applied?: string[] | null
