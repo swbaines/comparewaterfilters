@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
-import logoSrc from "@/assets/logo.svg";
+import logoSrc from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
