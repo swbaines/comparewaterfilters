@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoSrc from "@/assets/logo.png";
+import logoSrc from "@/assets/logo.svg";
 
 export default function Footer() {
   return (
@@ -11,10 +11,9 @@ export default function Footer() {
               <img
                 src={logoSrc}
                 alt="Compare Water Filters"
-                className="h-14 w-auto md:h-16"
+                className="h-8 w-auto md:h-9"
                 loading="lazy"
                 decoding="async"
-                style={{ imageRendering: '-webkit-optimize-contrast' }}
               />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
