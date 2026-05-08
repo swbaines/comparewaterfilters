@@ -186,7 +186,7 @@ export default function ProviderLandingPage() {
                   Rental
                 </p>
                 <p className="mt-2 text-4xl font-bold text-foreground">
-                  $50<span className="text-base font-normal text-muted-foreground">/lead</span>
+                  $25<span className="text-base font-normal text-muted-foreground">/lead</span>
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">Tenant-friendly portable systems</p>
               </div>

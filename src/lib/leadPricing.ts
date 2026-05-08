@@ -4,7 +4,7 @@ export type LeadType = "owner_lead" | "rental_lead";
 
 const DEFAULTS: Record<LeadType, number> = {
   owner_lead: 85,
-  rental_lead: 50,
+  rental_lead: 25,
 };
 
 /**

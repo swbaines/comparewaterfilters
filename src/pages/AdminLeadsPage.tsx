@@ -76,7 +76,7 @@ export default function AdminLeadsPage() {
   });
 
   const ownerLeadPrice = Number(leadPrices.find((p) => p.system_type === "owner_lead")?.price_per_lead ?? 85);
-  const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 50);
+  const rentalLeadPrice = Number(leadPrices.find((p) => p.system_type === "rental_lead")?.price_per_lead ?? 25);
 
   const openPricesDialog = () => {
     setOwnerPrice(String(ownerLeadPrice));
