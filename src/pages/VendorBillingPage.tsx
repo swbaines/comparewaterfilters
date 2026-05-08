@@ -32,7 +32,7 @@ const stripePromise = loadStripe("pk_live_51TGc4iFAFFjkrVg3A5F9bsS2XXQkwKVWE8wnn
 
 // Lead price defaults; live values are fetched from the lead_prices table (admin-editable)
 const DEFAULT_OWNER_PRICE = 85;
-const DEFAULT_RENTAL_PRICE = 50;
+const DEFAULT_RENTAL_PRICE = 25;
 
 // ── Card brand SVG icons ──────────────────────────────────────────────────────
 function CardBrandIcon({ brand }: { brand: string }) {

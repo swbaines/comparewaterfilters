@@ -8,7 +8,7 @@ const corsHeaders = {
 
 // Fallback defaults; live values are read from the lead_prices table (admin-editable)
 const DEFAULT_OWNER_LEAD_PRICE = 85;
-const DEFAULT_RENTAL_LEAD_PRICE = 50;
+const DEFAULT_RENTAL_LEAD_PRICE = 25;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
