@@ -6,7 +6,7 @@ import PageMeta from "@/components/PageMeta";
 import { getEffectiveLeadPrices } from "@/lib/leadPricing";
 
 export default function TermsPage() {
-  const [prices, setPrices] = useState<{ owner_lead: number; rental_lead: number }>({ owner_lead: 85, rental_lead: 50 });
+  const [prices, setPrices] = useState<{ owner_lead: number; rental_lead: number }>({ owner_lead: 85, rental_lead: 25 });
 
   useEffect(() => {
     getEffectiveLeadPrices().then(setPrices).catch(() => {});
