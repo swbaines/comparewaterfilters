@@ -22,7 +22,7 @@ const benefits = [
   {
     icon: DollarSign,
     title: "Pay per lead, not per click",
-    body: "$85 for owner-occupier leads, $50 for rentals. No subscriptions, no monthly minimums, no wasted ad spend.",
+    body: "$85 for owner-occupier leads, $25 for rentals. No subscriptions, no monthly minimums, no wasted ad spend.",
   },
   {
     icon: MapPin,
