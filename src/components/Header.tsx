@@ -35,7 +35,7 @@ export default function Header() {
           <img
             src={logoSrc}
             alt="Compare Water Filters"
-            className="h-8 w-auto md:h-10"
+            className="h-10 w-auto md:h-12"
             loading="eager"
             decoding="async"
             style={{ imageRendering: '-webkit-optimize-contrast' }}

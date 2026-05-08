@@ -11,7 +11,7 @@ export default function Footer() {
               <img
                 src={logoSrc}
                 alt="Compare Water Filters"
-                className="h-7 w-auto md:h-9"
+                className="h-9 w-auto md:h-10"
                 loading="lazy"
                 decoding="async"
                 style={{ imageRendering: '-webkit-optimize-contrast' }}
