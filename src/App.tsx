@@ -41,6 +41,7 @@ import TermsPage from "@/pages/TermsPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import NotFound from "@/pages/NotFound";
 import BrandPreviewPage from "@/pages/BrandPreviewPage";
+import ProviderLandingPage from "@/pages/ProviderLandingPage";
 import ScrollToTop from "@/components/ScrollToTop";
 import CookieConsent from "@/components/CookieConsent";
 import CanonicalDomainGuard from "@/components/CanonicalDomainGuard";
@@ -96,6 +97,8 @@ const App = () => (
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/brand-preview" element={<BrandPreviewPage />} />
+            <Route path="/providers" element={<ProviderLandingPage />} />
+            <Route path="/for-providers" element={<ProviderLandingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
