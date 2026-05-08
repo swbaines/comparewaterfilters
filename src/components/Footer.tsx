@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoSrc from "@/assets/logo.svg";
+import logoSrc from "@/assets/logo.png";
 
 export default function Footer() {
   return (
@@ -7,8 +7,15 @@ export default function Footer() {
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-4">
           <div>
-            <Link to="/" className="flex items-center">
-              <img src={logoSrc} alt="Compare Water Filters" className="h-9" />
+            <Link to="/" className="flex items-center shrink-0">
+              <img
+                src={logoSrc}
+                alt="Compare Water Filters"
+                className="h-7 w-auto md:h-9"
+                loading="lazy"
+                decoding="async"
+                style={{ imageRendering: '-webkit-optimize-contrast' }}
+              />
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
             Helping Australian households choose the right water filtration system with clear, independent guidance.

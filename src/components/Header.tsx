@@ -31,8 +31,15 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <img src={logoSrc} alt="Compare Water Filters" className="h-10" />
+        <Link to="/" className="flex items-center shrink-0">
+          <img
+            src={logoSrc}
+            alt="Compare Water Filters"
+            className="h-8 w-auto md:h-10"
+            loading="eager"
+            decoding="async"
+            style={{ imageRendering: '-webkit-optimize-contrast' }}
+          />
         </Link>
 
         {/* Desktop nav */}
