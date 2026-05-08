@@ -30,12 +30,12 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center shrink-0">
+      <div className="container flex h-20 items-center justify-between md:h-24">
+        <Link to="/" className="flex items-center shrink-0 -my-2">
           <img
             src={logoSrc}
             alt="Compare Water Filters"
-            className="h-10 w-auto md:h-12"
+            className="h-16 w-auto md:h-20"
             loading="eager"
             decoding="async"
             style={{ imageRendering: '-webkit-optimize-contrast' }}
