@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
-import logoSrc from "@/assets/logo.png";
+import logoSrc from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,15 +30,14 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      <div className="container flex h-20 items-center justify-between md:h-24">
-        <Link to="/" className="flex items-center shrink-0 -my-2">
+      <div className="container flex h-16 items-center justify-between md:h-20">
+        <Link to="/" className="flex items-center shrink-0">
           <img
             src={logoSrc}
             alt="Compare Water Filters"
-            className="h-16 w-auto md:h-20"
+            className="h-8 w-auto md:h-10"
             loading="eager"
             decoding="async"
-            style={{ imageRendering: '-webkit-optimize-contrast' }}
           />
         </Link>
 
