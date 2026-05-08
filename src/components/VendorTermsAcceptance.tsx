@@ -20,7 +20,7 @@ export default function VendorTermsAcceptance({ providerId, onAccepted }: Vendor
   const [prices, setPrices] = useState<{ owner_lead: number; rental_lead: number } | null>(null);
 
   useEffect(() => {
-    getEffectiveLeadPrices().then(setPrices).catch(() => setPrices({ owner_lead: 85, rental_lead: 50 }));
+    getEffectiveLeadPrices().then(setPrices).catch(() => setPrices({ owner_lead: 85, rental_lead: 25 }));
   }, []);
 
   const allAccepted = agreeLeadPricing && agreeLicensedPlumber && agreeRemovalTerms;
