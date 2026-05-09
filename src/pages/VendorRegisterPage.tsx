@@ -689,9 +689,15 @@ export default function VendorRegisterPage() {
             {/* Business Info */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-primary" /> Business Details
-                </CardTitle>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-primary" /> Business Details
+                  </CardTitle>
+                  <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Registration is FREE
+                  </span>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
