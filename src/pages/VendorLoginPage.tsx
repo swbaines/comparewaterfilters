@@ -71,7 +71,7 @@ export default function VendorLoginPage() {
             </Button>
             <p className="text-sm text-center text-muted-foreground">
               New vendor?{" "}
-              <Link to="/vendor/register" className="text-primary hover:underline font-medium">Register here</Link>
+              <Link to="/vendor/register" className="text-primary hover:underline font-medium">Register here for FREE</Link>
             </p>
           </form>
         </CardContent>
