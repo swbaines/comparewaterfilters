@@ -1256,6 +1256,12 @@ export default function VendorRegisterPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Become a Provider</CardTitle>
           <CardDescription>Create your vendor account to start receiving qualified leads</CardDescription>
+          <div className="mt-3 flex justify-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Registration is FREE
+            </span>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignup} className="space-y-4">
