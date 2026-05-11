@@ -196,8 +196,8 @@ export default function VendorProfilePage() {
           return out;
         })(),
       });
-      const mode = detectCoverageMode(provider.service_base_lat, provider.service_base_lng);
       const savedStates: string[] = provider.states || [];
+      const mode = detectCoverageMode(savedStates, provider.service_radius_km);
       const metroValues: Set<string> = new Set(CAPITAL_METROS.map((m) => m.value));
       setServiceArea({
         mode,
