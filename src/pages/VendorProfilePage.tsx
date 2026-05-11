@@ -167,17 +167,18 @@ export default function VendorProfilePage() {
         // Legacy single-value warranty — surface it under Product as the default.
         warrantyProduct = rawWarranty;
       }
+      const asArray = (v: unknown): any[] => (Array.isArray(v) ? v : []);
       setForm({
         name: provider.name || "",
         trading_name: provider.trading_name || "",
         abn: provider.abn || "",
         description: provider.description || "",
-        system_types: provider.system_types || [],
-        brands: (provider.brands || []).join(", "),
+        system_types: asArray(provider.system_types),
+        brands: asArray(provider.brands).join(", "),
         price_range: provider.price_range || "mid",
         years_in_business: provider.years_in_business || 0,
-        certifications: provider.certifications || [],
-        highlights: (provider.highlights || []).join(", "),
+        certifications: asArray(provider.certifications),
+        highlights: asArray(provider.highlights).join(", "),
         response_time: provider.response_time || "Within 48 hours",
         warranty_product: warrantyProduct,
         warranty_workmanship: warrantyWorkmanship,
@@ -185,7 +186,10 @@ export default function VendorProfilePage() {
         phone: provider.phone || "",
         contact_email: provider.contact_email || "",
         system_pricing: (() => {
-          const raw = (provider.system_pricing || {}) as Record<string, { min?: number | string; max?: number | string }>;
+          const rawSrc = provider.system_pricing;
+          const raw = (rawSrc && typeof rawSrc === "object" && !Array.isArray(rawSrc)
+            ? rawSrc
+            : {}) as Record<string, { min?: number | string; max?: number | string }>;
           const out: Record<string, { min: string; max: string }> = {};
           for (const [key, val] of Object.entries(raw)) {
             out[key] = {
@@ -196,7 +200,7 @@ export default function VendorProfilePage() {
           return out;
         })(),
       });
-      const savedStates: string[] = provider.states || [];
+      const savedStates: string[] = asArray(provider.states);
       const mode = detectCoverageMode(savedStates, provider.service_radius_km);
       const metroValues: Set<string> = new Set(CAPITAL_METROS.map((m) => m.value));
       setServiceArea({
