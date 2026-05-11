@@ -34,6 +34,7 @@ import VendorProfilePage from "@/pages/VendorProfilePage";
 import VendorBillingPage from "@/pages/VendorBillingPage";
 import AdminRoute from "@/components/AdminRoute";
 import VendorRoute from "@/components/VendorRoute";
+import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import WaterQualityPage from "@/pages/WaterQualityPage";
 import UnsubscribePage from "@/pages/UnsubscribePage";
 import DisclaimerPage from "@/pages/DisclaimerPage";
@@ -90,7 +91,16 @@ const App = () => (
             <Route path="/vendor/register" element={<VendorRegisterPage />} />
             <Route path="/vendor/dashboard" element={<VendorRoute><VendorDashboardPage /></VendorRoute>} />
             <Route path="/vendor/settings" element={<VendorRoute><VendorSettingsPage /></VendorRoute>} />
-            <Route path="/vendor/profile" element={<VendorRoute><VendorProfilePage /></VendorRoute>} />
+            <Route
+              path="/vendor/profile"
+              element={
+                <VendorRoute>
+                  <RouteErrorBoundary fallbackPath="/vendor/dashboard">
+                    <VendorProfilePage />
+                  </RouteErrorBoundary>
+                </VendorRoute>
+              }
+            />
             <Route path="/vendor/billing" element={<VendorRoute><VendorBillingPage /></VendorRoute>} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="/disclaimer" element={<DisclaimerPage />} />
