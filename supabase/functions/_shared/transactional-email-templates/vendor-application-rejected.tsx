@@ -7,7 +7,7 @@ import type { TemplateEntry } from './registry.ts'
 import { EmailDisclaimerFooter } from './email-disclaimer-footer.tsx'
 
 const SITE_NAME = 'Compare Water Filters'
-const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-droplets.svg'
+const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-wordmark.svg'
 const CONTACT_EMAIL = 'hello@comparewaterfilters.com.au'
 
 interface VendorApplicationRejectedProps {
@@ -20,8 +20,7 @@ const VendorApplicationRejectedEmail = ({ businessName }: VendorApplicationRejec
     <Preview>Update on your {SITE_NAME} application</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Img src={LOGO_URL} width="40" height="40" alt={SITE_NAME} style={{ marginBottom: '8px' }} />
-        <Text style={brand}>{SITE_NAME}</Text>
+        <Img src={LOGO_URL} width="200" height="29" alt={SITE_NAME} style={{ marginBottom: '12px' }} />
         <Hr style={divider} />
 
         <Heading style={h1}>
