@@ -756,6 +756,24 @@ export default function AdminProvidersPage() {
                           <SelectItem value="rejected">Rejected</SelectItem>
                         </SelectContent>
                       </Select>
+                      {p.approval_status === "approved" && (p as any).approved_at && (() => {
+                        const approvedAt = new Date((p as any).approved_at as string);
+                        const days = Math.max(0, Math.floor((Date.now() - approvedAt.getTime()) / 86400000));
+                        const reminders = ((p as any).setup_reminder_count as number) ?? 0;
+                        const billingReady = isBillingReady(p.id);
+                        const termsOk = !!(p as any).terms_accepted_at;
+                        const setupComplete = billingReady && termsOk;
+                        if (setupComplete) return null;
+                        return (
+                          <div className="mt-1 text-[10px] text-muted-foreground leading-tight">
+                            Approved {days === 0 ? "today" : `${days}d ago`}
+                            {reminders > 0 && ` — ${reminders} reminder${reminders === 1 ? "" : "s"} sent`}
+                            {days >= 7 && reminders >= 3 && (
+                              <span className="ml-1 text-red-600 font-medium">⚠ review</span>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell>
                       {(() => {

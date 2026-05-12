@@ -397,6 +397,7 @@ export type Database = {
           abn_verified: boolean
           abn_verified_at: string | null
           approval_status: Database["public"]["Enums"]["approval_status"]
+          approved_at: string | null
           available_for_quote: boolean
           brands: string[]
           certification_files: Json | null
@@ -431,6 +432,9 @@ export type Database = {
           service_base_state: string | null
           service_base_suburb: string | null
           service_radius_km: number
+          setup_reminder_admin_notified_at: string | null
+          setup_reminder_count: number
+          setup_reminder_sent_at: string | null
           slug: string
           states: string[]
           sub_contractor_confirmation_at: string | null
@@ -451,6 +455,7 @@ export type Database = {
           abn_verified?: boolean
           abn_verified_at?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
+          approved_at?: string | null
           available_for_quote?: boolean
           brands?: string[]
           certification_files?: Json | null
@@ -485,6 +490,9 @@ export type Database = {
           service_base_state?: string | null
           service_base_suburb?: string | null
           service_radius_km?: number
+          setup_reminder_admin_notified_at?: string | null
+          setup_reminder_count?: number
+          setup_reminder_sent_at?: string | null
           slug: string
           states?: string[]
           sub_contractor_confirmation_at?: string | null
@@ -505,6 +513,7 @@ export type Database = {
           abn_verified?: boolean
           abn_verified_at?: string | null
           approval_status?: Database["public"]["Enums"]["approval_status"]
+          approved_at?: string | null
           available_for_quote?: boolean
           brands?: string[]
           certification_files?: Json | null
@@ -539,6 +548,9 @@ export type Database = {
           service_base_state?: string | null
           service_base_suburb?: string | null
           service_radius_km?: number
+          setup_reminder_admin_notified_at?: string | null
+          setup_reminder_count?: number
+          setup_reminder_sent_at?: string | null
           slug?: string
           states?: string[]
           sub_contractor_confirmation_at?: string | null
