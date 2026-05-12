@@ -20,6 +20,7 @@ import { template as vendorPriceChangeNotice } from './vendor-price-change-notic
 import { template as vendorApplicationApproved } from './vendor-application-approved.tsx'
 import { template as vendorApplicationRejected } from './vendor-application-rejected.tsx'
 import { template as quizResultsSummary } from './quiz-results-summary.tsx'
+import { template as vendorSetupReminder } from './vendor-setup-reminder.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'vendor-lead-notification': vendorLeadNotification,
@@ -33,4 +34,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'vendor-application-approved': vendorApplicationApproved,
   'vendor-application-rejected': vendorApplicationRejected,
   'quiz-results-summary': quizResultsSummary,
+  'vendor-setup-reminder': vendorSetupReminder,
 }
