@@ -22,6 +22,23 @@ const ADMIN_NOTIFY_HOURS = 168; // 7 days
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  // Only allow invocations that present the service role key (i.e. pg_cron / internal callers).
+  // Reject anonymous users, signed-in users, and the anon/publishable key.
+  const authHeader = req.headers.get("Authorization") ?? "";
+  const bearer = authHeader.toLowerCase().startsWith("bearer ")
+    ? authHeader.slice(7).trim()
+    : "";
+  const cronSecretHeader = req.headers.get("x-cron-secret") ?? "";
+  const isServiceRole = bearer === SUPABASE_SERVICE_ROLE_KEY;
+  const isCronSecret =
+    !!cronSecretHeader && cronSecretHeader === SUPABASE_SERVICE_ROLE_KEY;
+  if (!isServiceRole && !isCronSecret) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const now = new Date();
 
