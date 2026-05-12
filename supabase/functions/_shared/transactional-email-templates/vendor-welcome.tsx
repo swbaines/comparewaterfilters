@@ -7,7 +7,7 @@ import type { TemplateEntry } from './registry.ts'
 import { EmailDisclaimerFooter } from './email-disclaimer-footer.tsx'
 
 const SITE_NAME = 'Compare Water Filters'
-const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-wordmark.svg'
+const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/public/email-assets/logo-wordmark.png'
 
 interface VendorWelcomeProps {
   businessName?: string
