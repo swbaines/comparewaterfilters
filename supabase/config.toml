@@ -27,3 +27,5 @@ project_id = "xbryypgsryjhuscyglbu"
     verify_jwt = false
   [functions.sync-to-saleshandy]
     verify_jwt = false
+  [functions.send-vendor-setup-reminders]
+    verify_jwt = false
