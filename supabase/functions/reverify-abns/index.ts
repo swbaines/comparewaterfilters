@@ -38,6 +38,16 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
   if (!supabaseUrl || !serviceKey) return json({ error: 'Server misconfigured' }, 500)
+
+  // Restrict invocation to internal cron / service role.
+  {
+    const authHeader = req.headers.get('Authorization') ?? ''
+    const bearer = authHeader.toLowerCase().startsWith('bearer ')
+      ? authHeader.slice(7).trim()
+      : ''
+    if (bearer !== serviceKey) return json({ error: 'Forbidden' }, 403)
+  }
+
   const guid = Deno.env.get('ABR_API_GUID')
   if (!guid) return json({ skipped: true, reason: 'ABR_API_GUID not configured' })
 

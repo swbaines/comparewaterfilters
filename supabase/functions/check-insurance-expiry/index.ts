@@ -16,6 +16,20 @@ const REMINDER_DAYS = [30, 14, 7, 1];
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  // Restrict invocation to internal cron / service role.
+  {
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const bearer = authHeader.toLowerCase().startsWith("bearer ")
+      ? authHeader.slice(7).trim()
+      : "";
+    if (bearer !== SUPABASE_SERVICE_ROLE_KEY) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+  }
+
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const horizon = new Date(today); horizon.setDate(horizon.getDate() + 30);
