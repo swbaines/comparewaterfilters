@@ -1,0 +1,26 @@
+# Compare Water Filters
+
+> Australia's independent comparison and matching service for whole house water filters, reverse osmosis, and under-sink filtration systems. Free quotes from trusted local installers.
+
+Compare Water Filters helps Australian homeowners choose the right water filtration system for their property and water quality, then matches them with vetted local providers for free quotes. Coverage includes Sydney, Melbourne, Brisbane, Perth, Adelaide and regional areas.
+
+## Pages
+
+- [Home](/): Overview of the comparison service and quiz entry point.
+- [Find My System Quiz](/quiz): Guided quiz that recommends a water filtration system based on water source, household, concerns and budget.
+- [Results](/results): Personalised system recommendation with pricing, maintenance and matched providers.
+- [Provider Match](/provider-match): Matched local installers based on suburb, system type and service area.
+- [System Types](/system-types): Whole house, reverse osmosis, under-sink, softener and combo systems explained.
+- [Pricing Guide](/pricing-guide): Australian pricing baselines and ongoing maintenance costs by system type.
+- [How It Works](/how-it-works): Step-by-step guide to the matching and quote process.
+- [Water Quality](/water-quality): Look up local water quality, hardness and chloramine information by suburb.
+- [Learn](/learn): Articles and guides on water filtration, contaminants and system selection.
+- [About](/about): Company background, editorial stance and pro-filtration position.
+- [Contact](/contact): Contact form for general enquiries.
+- [Provider Landing](/provider): Information for installers about joining the matching network.
+
+## Optional
+
+- [Privacy](/privacy): Privacy policy.
+- [Terms](/terms): Terms of service.
+- [Disclaimer](/disclaimer): Editorial and pricing disclaimers.
