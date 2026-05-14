@@ -141,6 +141,31 @@ export default function VendorRegisterPage() {
   const [resending, setResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  // Per-checkbox acceptance timestamps captured at registration. Each
+  // timestamp captures the exact moment that checkbox was ticked.
+  const [acceptance, setAcceptance] = useState<{
+    pricing: string | null;
+    terms: string | null;
+    installation: string | null;
+    marketing: string | null;
+  }>({ pricing: null, terms: null, installation: null, marketing: null });
+
+  const toggleAcceptance = (
+    key: "pricing" | "terms" | "installation" | "marketing",
+    checked: boolean,
+  ) => {
+    setAcceptance((prev) => ({
+      ...prev,
+      [key]: checked ? new Date().toISOString() : null,
+    }));
+  };
+
+  const allTermsAccepted =
+    !!acceptance.pricing &&
+    !!acceptance.terms &&
+    !!acceptance.installation &&
+    !!acceptance.marketing;
+
   // Live ABR lookup state (pre-registration). The verify-abn edge function
   // accepts an authenticated call without a provider_id and returns the ABR
   // entity details + name-match outcome.
@@ -376,6 +401,11 @@ export default function VendorRegisterPage() {
       }
     } else if (serviceArea.regions.length === 0) {
       toast.error("Please select at least one state or metro region");
+      return;
+    }
+
+    if (!allTermsAccepted) {
+      toast.error("Please accept all four agreements before submitting.");
       return;
     }
 
