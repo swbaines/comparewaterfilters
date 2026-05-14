@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import VendorTermsAcceptance from "@/components/VendorTermsAcceptance";
+import LegacyTermsDialog from "@/components/vendor/LegacyTermsDialog";
 import LeadNotificationBell from "@/components/vendor/LeadNotificationBell";
 import InsuranceExpiryBanner from "@/components/vendor/InsuranceExpiryBanner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -333,15 +333,9 @@ export default function VendorDashboardPage() {
     );
   }
 
-  // Terms acceptance gate — approved but haven't accepted terms yet
-  if (!provider?.terms_accepted_at) {
-    return (
-      <VendorTermsAcceptance
-        providerId={providerId!}
-        onAccepted={() => queryClient.invalidateQueries({ queryKey: ["vendor-account"] })}
-      />
-    );
-  }
+  // Legacy vendors (registered before the new four-checkbox flow) get a
+  // non-blocking re-acceptance dialog rendered alongside the dashboard.
+  const showLegacyTerms = !!(vendorAccount as any)?.legacy_terms;
 
   const { start: periodStart, prevStart, prevEnd } = getPeriodRange(period);
   const periodLeads = filterByRange(leads as any[], periodStart);
