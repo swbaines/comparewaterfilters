@@ -54,7 +54,7 @@ const steps = [
   {
     num: "3",
     title: "Compare quotes from local providers",
-    desc: "Request free quotes from licensed installers in your area. No obligation, no pushy sales — just real information.",
+    desc: "Request free quotes from trusted installers in your area. No obligation, no pushy sales — just real information.",
   },
 ];
 
@@ -163,7 +163,7 @@ const jsonLdData = [
     name: "Compare Water Filters",
     url: "https://www.comparewaterfilters.com.au",
     description:
-      "Australia's independent water filter comparison platform. Compare the best water filtration systems — whole house water filters, reverse osmosis, under-sink — and get free quotes from licensed installers in Sydney, Melbourne, Brisbane, Perth and Adelaide.",
+      "Australia's independent water filter comparison platform. Compare the best water filtration systems — whole house water filters, reverse osmosis, under-sink — and get free quotes from trusted installers in Sydney, Melbourne, Brisbane, Perth and Adelaide.",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -180,7 +180,7 @@ const jsonLdData = [
     url: "https://www.comparewaterfilters.com.au",
     logo: "https://www.comparewaterfilters.com.au/logo-droplets.svg",
     description:
-      "Independent water filtration comparison and recommendation platform for Australian homeowners. Compare the best water filtration systems and get free quotes from licensed installers.",
+      "Independent water filtration comparison and recommendation platform for Australian homeowners. Compare the best water filtration systems and get free quotes from trusted installers.",
     areaServed: [
       { "@type": "Country", name: "Australia" },
       { "@type": "City", name: "Sydney" },
@@ -252,7 +252,7 @@ export default function HomePage() {
           <div className="mt-5 flex flex-col items-center gap-2">
             <Link to="/quiz">
               <Button size="lg" className="gap-2 px-10 py-5 text-lg font-bold shadow-lg">
-                Get Free Quotes in 2 Minutes <ArrowRight className="h-5 w-5" />
+                Find My System <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
             <Link to="/water-quality">
@@ -261,7 +261,7 @@ export default function HomePage() {
               </Button>
             </Link>
             <p className="max-w-md text-xs text-muted-foreground">
-              We'll match you with licensed water filtration providers servicing your area.
+              We'll match you with trusted water filtration providers servicing your area.
             </p>
           </div>
         </div>
@@ -486,7 +486,7 @@ export default function HomePage() {
           <SectionHeading
             badge="Provider network"
             title="Trusted providers across Australia"
-            subtitle="We only work with licensed, insured water filtration professionals."
+            subtitle="We only work with trusted, insured water filtration professionals."
           />
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
             {coverageAreas.map((v) => (
@@ -612,7 +612,7 @@ export default function HomePage() {
           <h2 className="text-2xl font-bold sm:text-3xl">Ready to find out what your water actually needs?</h2>
           <p className="mx-auto mt-3 max-w-xl text-primary-foreground/90">
             Answer a few questions about your home. We'll match you to the right system, explain what it does, show real
-            pricing, and connect you with licensed providers in your area.
+            pricing, and connect you with trusted providers in your area.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
