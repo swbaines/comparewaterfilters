@@ -11,20 +11,16 @@ const LOGO_URL = 'https://xbryypgsryjhuscyglbu.supabase.co/storage/v1/object/pub
 
 interface VendorSetupReminderProps {
   contactName?: string
-  needsTerms?: boolean
-  needsBilling?: boolean
   reminderNumber?: number
 }
 
 const VendorSetupReminderEmail = ({
   contactName,
-  needsTerms = true,
-  needsBilling = true,
   reminderNumber = 1,
 }: VendorSetupReminderProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Complete your {SITE_NAME} setup to start receiving leads</Preview>
+    <Preview>Add your payment method to start receiving leads</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img src={LOGO_URL} width="200" height="29" alt={SITE_NAME} style={{ marginBottom: '12px' }} />
@@ -33,30 +29,16 @@ const VendorSetupReminderEmail = ({
         <Heading style={h1}>Hi {contactName || 'there'},</Heading>
 
         <Text style={text}>
-          Welcome to {SITE_NAME} — your account has been approved.
+          Your {SITE_NAME} account has been approved. To start receiving leads,
+          please add your payment method via the link below.
         </Text>
 
-        <Text style={text}>
-          Before we can start sending you leads, you need to complete the following:
-        </Text>
-
-        {needsTerms && (
-          <Text style={checklistItem}>☐ Accept the platform Terms and Conditions</Text>
-        )}
-        {needsBilling && (
-          <Text style={checklistItem}>☐ Add a payment method for monthly billing</Text>
-        )}
-
-        <Text style={text}>
-          This takes less than 2 minutes. Click below to complete your setup:
-        </Text>
-
-        <Button style={ctaButton} href="https://comparewaterfilters.com.au/vendor/profile">
-          Complete My Setup
+        <Button style={ctaButton} href="https://comparewaterfilters.com.au/vendor/billing">
+          Add Payment Method
         </Button>
 
         <Text style={text}>
-          Once these steps are completed, your profile will go live and you'll start receiving qualified leads from homeowners in your area.
+          Once your payment method is on file, your profile will go live and you'll start receiving qualified leads from homeowners in your area.
         </Text>
 
         <Text style={text}>
@@ -78,9 +60,9 @@ const VendorSetupReminderEmail = ({
 
 export const template = {
   component: VendorSetupReminderEmail,
-  subject: 'Complete your Compare Water Filters setup to start receiving leads',
+  subject: 'Add your payment method to start receiving leads — Compare Water Filters',
   displayName: 'Vendor setup reminder',
-  previewData: { contactName: 'Jane', needsTerms: true, needsBilling: true, reminderNumber: 1 },
+  previewData: { contactName: 'Jane', reminderNumber: 1 },
 } satisfies TemplateEntry
 
 const main = { backgroundColor: '#ffffff', fontFamily: "'Plus Jakarta Sans', Arial, sans-serif" }
