@@ -541,6 +541,11 @@ export default function VendorRegisterPage() {
             ? installation.insurance_expiry_date || null
             : null,
           google_business_url: gbpTrim,
+          // Four required acceptance timestamps captured at registration.
+          terms_accepted_at: acceptance.terms,
+          pricing_acknowledged_at: acceptance.pricing,
+          installation_compliance_acknowledged_at: acceptance.installation,
+          marketing_consent_at: acceptance.marketing,
         } as any)
         .select("id")
         .single();
