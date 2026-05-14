@@ -49,16 +49,9 @@ export default function LegacyTermsDialog({
     if (!allChecked) return;
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from("vendor_accounts")
-        .update({
-          pricing_acknowledged_at: acc.pricing,
-          terms_accepted_at: acc.terms,
-          installation_compliance_acknowledged_at: acc.installation,
-          marketing_consent_at: acc.marketing,
-          legacy_terms: false,
-        } as any)
-        .eq("id", vendorAccountId);
+      const { error } = await supabase.functions.invoke("accept-vendor-terms", {
+        body: { vendor_account_id: vendorAccountId },
+      });
       if (error) throw error;
       toast.success("Thanks — your acceptance has been recorded.");
       setOpen(false);
