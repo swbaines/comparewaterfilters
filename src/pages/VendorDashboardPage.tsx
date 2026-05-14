@@ -404,6 +404,12 @@ export default function VendorDashboardPage() {
 
   return (
     <div className="min-h-screen bg-muted/30 py-8">
+      {showLegacyTerms && vendorAccount?.id && (
+        <LegacyTermsDialog
+          vendorAccountId={vendorAccount.id}
+          onAccepted={() => queryClient.invalidateQueries({ queryKey: ["vendor-account"] })}
+        />
+      )}
       <div className="container max-w-6xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
