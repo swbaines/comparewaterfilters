@@ -1,73 +1,70 @@
+## Vendor Onboarding Restructure — Move Terms to Registration
 
+### Database changes (migration)
 
-# Provider Management System: Admin Dashboard + Web Scraping Import
+Add to `vendor_accounts`:
+- `pricing_acknowledged_at timestamptz`
+- `terms_accepted_at timestamptz`
+- `installation_compliance_acknowledged_at timestamptz`
+- `marketing_consent_at timestamptz`
+- `legacy_terms boolean default false`
 
-## Overview
+Backfill: any existing `vendor_accounts` row → set `legacy_terms = true` (these vendors will see the one-time re-acceptance popup).
 
-Build a database-backed provider management system with two ways to add providers:
-1. A manual admin form to add/edit/delete providers
-2. A "Import from website" feature that scrapes a provider's URL and pre-fills the form for review
+Allow vendors to update these four timestamp columns + `legacy_terms` on their own account (existing "Vendors can update own account" policy already covers it; add a trigger to prevent vendors from un-setting timestamps once set).
 
-## Current State
+Note: `providers.terms_accepted_at` is kept as-is for backwards compatibility but no longer drives onboarding gating. Setting it at registration time becomes optional metadata.
 
-Providers are hardcoded in `src/data/providers.ts` (8 providers). No database, no admin UI.
+### 1. VendorRegisterPage.tsx
 
-## Architecture
+Add four required checkboxes (A–D) as the final step before Submit, each capturing its own tick timestamp in local state:
+- A: Lead pricing ($85 owner / $25 rental, monthly invoicing on the 1st, 14-day terms)
+- B: Terms & Conditions + Privacy Policy (links to `/terms` and `/privacy`, target=_blank)
+- C: Installation compliance (licensed plumbers / state regs)
+- D: Marketing & operational emails consent
 
-```text
-┌─────────────────────────────────────────────┐
-│  Admin Dashboard (/admin/providers)         │
-│  ┌─────────────┐  ┌──────────────────────┐  │
-│  │ Provider     │  │ Add/Edit Form        │  │
-│  │ List Table   │  │  - Manual fields     │  │
-│  │              │  │  - "Import from URL" │  │
-│  │              │  │    button that calls  │  │
-│  │              │  │    Firecrawl to       │  │
-│  │              │  │    pre-fill fields    │  │
-│  └─────────────┘  └──────────────────────┘  │
-└─────────────────────────────────────────────┘
-         │                    │
-         ▼                    ▼
-   Supabase DB          Firecrawl API
-   (providers table)    (via edge function)
-```
+Submit button disabled until all four are checked. On submit:
+1. Create the `providers` row as today (with `terms_accepted_at = now()` for legacy compatibility).
+2. After provider creation succeeds, write the four timestamps to the `vendor_accounts` row created by the auto-link trigger. Since the trigger only fires on approval, store the timestamps in a holding place: insert into a new `pending_vendor_terms` table keyed by `submitted_by user_id + provider_id`, then on approval the trigger copies them into `vendor_accounts`.
 
-## Steps
+   Simpler alternative chosen: extend `auto_link_vendor_on_approval` trigger to also accept the four timestamps from a per-user staging row, OR just store the four timestamps directly on `providers` (since we already have `terms_accepted_at` there).
 
-### 1. Enable Lovable Cloud + Create Database Table
+   **Decision**: Add the four timestamp columns to `providers` as well, populate at registration, and have `auto_link_vendor_on_approval` copy them to `vendor_accounts` on approval. This avoids a new table.
 
-Create a `providers` table in Supabase with columns matching the current `Provider` interface: name, slug, description, logo, states (text array), postcode_ranges (text array), system_types (text array), brands (text array), price_range (enum), rating, review_count, years_in_business, certifications, highlights, available_for_quote, response_time, warranty, website, phone.
+### 2. AdminProvidersPage.tsx
 
-Seed it with the 8 existing providers from `src/data/providers.ts`.
+Update the Terms column logic: if `providers.terms_accepted_at` is set → show "Accepted" (green). Since registration now requires it, all new providers will be Accepted immediately.
 
-### 2. Connect Firecrawl for Web Scraping
+### 3. Vendor dashboard (VendorDashboardPage.tsx + VendorTermsAcceptance.tsx)
 
-Use the Firecrawl connector to scrape provider websites. Build an edge function (`scrape-provider`) that:
-- Takes a URL
-- Scrapes the page using Firecrawl with structured JSON extraction
-- Returns extracted fields (name, description, services, location, phone, certifications) mapped to our provider schema
+Remove the `VendorTermsAcceptance` gate. The dashboard now only gates on payment method (Stripe).
+Delete the standalone `VendorTermsAcceptance.tsx` component.
 
-### 3. Build Admin Dashboard Page
+For legacy vendors (`vendor_accounts.legacy_terms = true`), show a non-blocking dialog on dashboard mount with the same four checkboxes. Dismissable. Submitting writes the four timestamps and sets `legacy_terms = false`.
 
-Create `/admin/providers` with:
-- **Provider list table** showing all providers with edit/delete actions
-- **Add Provider form** with all fields from the Provider interface
-- **"Import from URL" button** that calls the scrape edge function, pre-fills the form, and lets the admin review/edit before saving
-- Toast confirmations for all CRUD actions
+### 4. Reminder email logic (send-vendor-setup-reminders)
 
-### 4. Update App to Read from Database
+Drop the `termsAccepted` check. A vendor only needs `billingReady` (payment method + DD authorisation) to be considered "set up". The reminder fires only when billing is missing.
 
-Replace the hardcoded `providers` array import in `src/lib/providerMatchEngine.ts` and `src/pages/ResultsPage.tsx` with a Supabase query. Add a React Query hook (`useProviders`) to fetch providers from the database.
+### 5. Email template (vendor-setup-reminder.tsx)
 
-### 5. Quote Requests Table
+Rewrite subject and body to focus only on payment method:
+- Subject: `Add your payment method to start receiving leads — Compare Water Filters`
+- Body: greeting + "approved, please add payment method" + CTA button to `/vendor/billing`.
 
-Create a `quote_requests` table to store submissions from the Request Quote dialog, linking to the provider and storing the user's quiz answers + contact info. Update `RequestQuoteDialog.tsx` to insert into this table instead of simulating.
+Remove the `needsTerms` / `needsBilling` branching.
 
-## Technical Details
+### 6. Files touched
 
-- **Database**: Supabase (via Lovable Cloud) for providers + quote_requests tables
-- **Scraping**: Firecrawl connector with JSON extraction format for structured data
-- **Frontend**: New admin page with shadcn/ui Table, Form, Dialog components
-- **Data fetching**: React Query + Supabase client for real-time provider data
-- **No auth initially**: Admin page accessible by URL (can add auth later)
+- `supabase/migrations/<new>.sql` — add columns + backfill + extend trigger
+- `src/pages/VendorRegisterPage.tsx` — add 4 checkboxes, gate submit, write timestamps
+- `src/pages/AdminProvidersPage.tsx` — Terms column shows Accepted
+- `src/pages/VendorDashboardPage.tsx` — remove terms gate, add legacy popup
+- `src/components/VendorTermsAcceptance.tsx` — delete (or repurpose as `LegacyTermsDialog`)
+- `src/components/vendor/LegacyTermsDialog.tsx` — new
+- `supabase/functions/send-vendor-setup-reminders/index.ts` — drop terms check
+- `supabase/functions/_shared/transactional-email-templates/vendor-setup-reminder.tsx` — new copy
 
+### Out of scope
+
+No changes to Stripe/billing flow. No changes to admin approval flow other than the Terms column display.

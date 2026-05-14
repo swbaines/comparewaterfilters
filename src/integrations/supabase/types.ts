@@ -409,6 +409,7 @@ export type Database = {
           has_public_liability: boolean | null
           highlights: string[]
           id: string
+          installation_compliance_acknowledged_at: string | null
           installation_model:
             | Database["public"]["Enums"]["installation_model"]
             | null
@@ -417,11 +418,13 @@ export type Database = {
           insurance_paused_at: string | null
           insurer_name: string | null
           logo: string | null
+          marketing_consent_at: string | null
           name: string
           phone: string | null
           plumber_licence_number: string | null
           plumbing_licence_state: string | null
           price_range: Database["public"]["Enums"]["price_range"]
+          pricing_acknowledged_at: string | null
           public_liability_insurance_amount: number | null
           rating: number
           response_time: string
@@ -467,6 +470,7 @@ export type Database = {
           has_public_liability?: boolean | null
           highlights?: string[]
           id?: string
+          installation_compliance_acknowledged_at?: string | null
           installation_model?:
             | Database["public"]["Enums"]["installation_model"]
             | null
@@ -475,11 +479,13 @@ export type Database = {
           insurance_paused_at?: string | null
           insurer_name?: string | null
           logo?: string | null
+          marketing_consent_at?: string | null
           name: string
           phone?: string | null
           plumber_licence_number?: string | null
           plumbing_licence_state?: string | null
           price_range?: Database["public"]["Enums"]["price_range"]
+          pricing_acknowledged_at?: string | null
           public_liability_insurance_amount?: number | null
           rating?: number
           response_time?: string
@@ -525,6 +531,7 @@ export type Database = {
           has_public_liability?: boolean | null
           highlights?: string[]
           id?: string
+          installation_compliance_acknowledged_at?: string | null
           installation_model?:
             | Database["public"]["Enums"]["installation_model"]
             | null
@@ -533,11 +540,13 @@ export type Database = {
           insurance_paused_at?: string | null
           insurer_name?: string | null
           logo?: string | null
+          marketing_consent_at?: string | null
           name?: string
           phone?: string | null
           plumber_licence_number?: string | null
           plumbing_licence_state?: string | null
           price_range?: Database["public"]["Enums"]["price_range"]
+          pricing_acknowledged_at?: string | null
           public_liability_insurance_amount?: number | null
           rating?: number
           response_time?: string
@@ -985,22 +994,37 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          installation_compliance_acknowledged_at: string | null
           last_dashboard_visit: string | null
+          legacy_terms: boolean
+          marketing_consent_at: string | null
+          pricing_acknowledged_at: string | null
           provider_id: string
+          terms_accepted_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          installation_compliance_acknowledged_at?: string | null
           last_dashboard_visit?: string | null
+          legacy_terms?: boolean
+          marketing_consent_at?: string | null
+          pricing_acknowledged_at?: string | null
           provider_id: string
+          terms_accepted_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          installation_compliance_acknowledged_at?: string | null
           last_dashboard_visit?: string | null
+          legacy_terms?: boolean
+          marketing_consent_at?: string | null
+          pricing_acknowledged_at?: string | null
           provider_id?: string
+          terms_accepted_at?: string | null
           user_id?: string
         }
         Relationships: [

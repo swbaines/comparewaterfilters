@@ -761,8 +761,9 @@ export default function AdminProvidersPage() {
                         const days = Math.max(0, Math.floor((Date.now() - approvedAt.getTime()) / 86400000));
                         const reminders = ((p as any).setup_reminder_count as number) ?? 0;
                         const billingReady = isBillingReady(p.id);
-                        const termsOk = !!(p as any).terms_accepted_at;
-                        const setupComplete = billingReady && termsOk;
+                        // Terms are now captured at registration, so setup
+                        // completion only depends on billing readiness.
+                        const setupComplete = billingReady;
                         if (setupComplete) return null;
                         return (
                           <div className="mt-1 text-[10px] text-muted-foreground leading-tight">

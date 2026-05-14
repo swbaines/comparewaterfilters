@@ -141,6 +141,31 @@ export default function VendorRegisterPage() {
   const [resending, setResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
+  // Per-checkbox acceptance timestamps captured at registration. Each
+  // timestamp captures the exact moment that checkbox was ticked.
+  const [acceptance, setAcceptance] = useState<{
+    pricing: string | null;
+    terms: string | null;
+    installation: string | null;
+    marketing: string | null;
+  }>({ pricing: null, terms: null, installation: null, marketing: null });
+
+  const toggleAcceptance = (
+    key: "pricing" | "terms" | "installation" | "marketing",
+    checked: boolean,
+  ) => {
+    setAcceptance((prev) => ({
+      ...prev,
+      [key]: checked ? new Date().toISOString() : null,
+    }));
+  };
+
+  const allTermsAccepted =
+    !!acceptance.pricing &&
+    !!acceptance.terms &&
+    !!acceptance.installation &&
+    !!acceptance.marketing;
+
   // Live ABR lookup state (pre-registration). The verify-abn edge function
   // accepts an authenticated call without a provider_id and returns the ABR
   // entity details + name-match outcome.
@@ -379,6 +404,11 @@ export default function VendorRegisterPage() {
       return;
     }
 
+    if (!allTermsAccepted) {
+      toast.error("Please accept all four agreements before submitting.");
+      return;
+    }
+
     // Open confirmation dialog summarising the ABR verification result
     // before performing the actual submission.
     setConfirmOpen(true);
@@ -511,6 +541,11 @@ export default function VendorRegisterPage() {
             ? installation.insurance_expiry_date || null
             : null,
           google_business_url: gbpTrim,
+          // Four required acceptance timestamps captured at registration.
+          terms_accepted_at: acceptance.terms,
+          pricing_acknowledged_at: acceptance.pricing,
+          installation_compliance_acknowledged_at: acceptance.installation,
+          marketing_consent_at: acceptance.marketing,
         } as any)
         .select("id")
         .single();
@@ -1089,9 +1124,69 @@ export default function VendorRegisterPage() {
 
             {(() => {
               const isAbnVerified = !!abrPreview?.verified;
-              const canSubmit = isAbnVerified || abnOverride;
+              const canSubmit = (isAbnVerified || abnOverride) && allTermsAccepted;
               return (
                 <div className="space-y-3">
+                  {/* Required terms & acknowledgements — final step before submit */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <Shield className="h-5 w-5 text-primary" /> Terms & Agreements
+                      </CardTitle>
+                      <CardDescription>
+                        All four acknowledgements are required to submit your application.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <label className="flex items-start gap-3 cursor-pointer rounded-lg border bg-muted/30 p-3">
+                        <Checkbox
+                          checked={!!acceptance.pricing}
+                          onCheckedChange={(c) => toggleAcceptance("pricing", c === true)}
+                          className="mt-0.5"
+                        />
+                        <span className="text-sm leading-relaxed">
+                          I acknowledge the lead pricing of <strong>$85 per owner-occupier lead</strong> and <strong>$25 per rental lead</strong>. I understand that invoices are issued monthly on the 1st of each month for leads received in the previous month, with payment due within 14 days. <span className="text-destructive">*</span>
+                        </span>
+                      </label>
+
+                      <label className="flex items-start gap-3 cursor-pointer rounded-lg border bg-muted/30 p-3">
+                        <Checkbox
+                          checked={!!acceptance.terms}
+                          onCheckedChange={(c) => toggleAcceptance("terms", c === true)}
+                          className="mt-0.5"
+                        />
+                        <span className="text-sm leading-relaxed">
+                          I have read, understood, and agree to the Compare Water Filters{" "}
+                          <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline">Terms and Conditions</a>{" "}
+                          and{" "}
+                          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a>. I confirm I have legal authority to bind my business to these terms. <span className="text-destructive">*</span>
+                        </span>
+                      </label>
+
+                      <label className="flex items-start gap-3 cursor-pointer rounded-lg border bg-muted/30 p-3">
+                        <Checkbox
+                          checked={!!acceptance.installation}
+                          onCheckedChange={(c) => toggleAcceptance("installation", c === true)}
+                          className="mt-0.5"
+                        />
+                        <span className="text-sm leading-relaxed">
+                          I confirm that all water filtration installations performed via this platform will be carried out by appropriately licensed plumbers in compliance with relevant state plumbing regulations. I take full legal responsibility for ensuring my installation partners hold current licences and insurance. <span className="text-destructive">*</span>
+                        </span>
+                      </label>
+
+                      <label className="flex items-start gap-3 cursor-pointer rounded-lg border bg-muted/30 p-3">
+                        <Checkbox
+                          checked={!!acceptance.marketing}
+                          onCheckedChange={(c) => toggleAcceptance("marketing", c === true)}
+                          className="mt-0.5"
+                        />
+                        <span className="text-sm leading-relaxed">
+                          I agree to receive operational emails from Compare Water Filters including lead notifications, billing notices, and platform updates. <span className="text-destructive">*</span>
+                        </span>
+                      </label>
+                    </CardContent>
+                  </Card>
+
                   {!isAbnVerified && (
                     <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
                       <div className="flex items-start gap-2">
@@ -1121,7 +1216,13 @@ export default function VendorRegisterPage() {
                     className="w-full"
                     size="lg"
                     disabled={loading || !canSubmit}
-                    title={canSubmit ? undefined : "Verify your ABN above, or tick the override checkbox to continue."}
+                    title={
+                      canSubmit
+                        ? undefined
+                        : !allTermsAccepted
+                          ? "Please accept all four agreements above to continue."
+                          : "Verify your ABN above, or tick the override checkbox to continue."
+                    }
                   >
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Submit for Approval

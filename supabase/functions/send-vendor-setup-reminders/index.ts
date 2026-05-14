@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
   const { data: providers, error } = await supabase
     .from("providers")
     .select(`
-      id, name, contact_email, terms_accepted_at, approved_at,
+      id, name, contact_email, approved_at,
       setup_reminder_count, setup_reminder_sent_at, setup_reminder_admin_notified_at,
       provider_stripe_details ( stripe_payment_method_id, direct_debit_authorised_at )
     `)
@@ -70,10 +70,10 @@ Deno.serve(async (req) => {
       ? (p as any).provider_stripe_details[0]
       : (p as any).provider_stripe_details;
     const billingReady = !!(stripe?.stripe_payment_method_id && stripe?.direct_debit_authorised_at);
-    const termsAccepted = !!p.terms_accepted_at;
 
-    // Setup complete — skip
-    if (billingReady && termsAccepted) { summary.skipped++; continue; }
+    // Terms are now captured at registration, so setup completion only
+    // depends on billing readiness.
+    if (billingReady) { summary.skipped++; continue; }
 
     const approvedAt = new Date(p.approved_at as string);
     const hoursSince = (now.getTime() - approvedAt.getTime()) / 3600_000;
@@ -93,8 +93,6 @@ Deno.serve(async (req) => {
             idempotencyKey: `vendor-setup-reminder-${p.id}-${count + 1}`,
             templateData: {
               contactName: p.name,
-              needsTerms: !termsAccepted,
-              needsBilling: !billingReady,
               reminderNumber: count + 1,
             },
           },
