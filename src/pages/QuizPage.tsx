@@ -398,7 +398,7 @@ export default function QuizPage() {
           <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
 
           {/* Step checkpoints */}
-          <ol className="mt-4 flex items-center justify-between gap-1 sm:gap-2" aria-label="Quiz progress checkpoints">
+          <ol className="mt-4 flex flex-nowrap items-start justify-between gap-1 sm:gap-2" aria-label="Quiz progress checkpoints">
             {stepTitles.map((title, idx) => {
               const stepNum = idx + 1;
               const isComplete = stepNum < step;
@@ -412,7 +412,7 @@ export default function QuizPage() {
                     disabled={!canJump}
                     aria-label={`${title} — ${isComplete ? "complete" : isCurrent ? "current step" : "upcoming"}`}
                     aria-current={isCurrent ? "step" : undefined}
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-xs font-semibold transition ${
+                    className={`relative flex h-9 w-9 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border-2 text-sm sm:text-xs font-semibold tabular-nums transition touch-manipulation before:absolute before:-inset-1.5 before:content-[''] sm:before:hidden ${
                       isComplete
                         ? "border-primary bg-primary text-primary-foreground hover:opacity-80 cursor-pointer"
                         : isCurrent
@@ -420,7 +420,7 @@ export default function QuizPage() {
                           : "border-muted-foreground/30 bg-background text-muted-foreground cursor-not-allowed"
                     }`}
                   >
-                    {isComplete ? <Check className="h-3.5 w-3.5" /> : stepNum}
+                    {isComplete ? <Check className="h-4 w-4 sm:h-3.5 sm:w-3.5" /> : stepNum}
                   </button>
                   <span
                     className={`hidden sm:block text-[10px] leading-tight text-center truncate w-full ${
