@@ -24,31 +24,30 @@ export default function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-card p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] sm:p-4">
-      <div className="container max-w-4xl">
+    <div className="fixed inset-x-2 bottom-2 z-50 rounded-xl border bg-card p-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] sm:inset-x-0 sm:bottom-0 sm:rounded-none sm:border-t sm:border-x-0 sm:p-4">
+      <div className="container max-w-4xl px-0 sm:px-4">
         {/* Compact row — always visible */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          <div className="flex items-start gap-3 flex-1 min-w-0">
-            <Cookie className="mt-0.5 hidden h-5 w-5 shrink-0 text-primary sm:block" />
-            <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
-              <span className="font-semibold text-foreground">We use cookies</span> to improve your experience and measure platform performance.{" "}
+        <div className="flex flex-row items-center gap-2 sm:gap-4">
+          <Cookie className="hidden h-5 w-5 shrink-0 text-primary sm:block" />
+          <p className="flex-1 min-w-0 text-[11px] leading-snug text-muted-foreground sm:text-sm sm:leading-relaxed">
+              <span className="font-semibold text-foreground">Cookies:</span> we use them to improve your experience.{" "}
               <button
                 type="button"
                 onClick={() => setExpanded((v) => !v)}
                 className="inline-flex items-center gap-0.5 font-medium text-primary hover:underline"
                 aria-expanded={expanded}
               >
-                {expanded ? "Hide details" : "Learn more"}
+                {expanded ? "Hide" : "Details"}
                 {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronUp className="h-3 w-3" />}
               </button>
             </p>
-          </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Button size="sm" onClick={() => handleConsent("all")}>
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <Button size="sm" className="h-8 px-3 text-xs sm:h-9 sm:px-4 sm:text-sm" onClick={() => handleConsent("all")}>
               Accept all
             </Button>
-            <Button size="sm" variant="outline" onClick={() => handleConsent("essential")}>
-              Essential only
+            <Button size="sm" variant="outline" className="h-8 px-3 text-xs sm:h-9 sm:px-4 sm:text-sm" onClick={() => handleConsent("essential")}>
+              <span className="sm:hidden">Essential</span>
+              <span className="hidden sm:inline">Essential only</span>
             </Button>
           </div>
         </div>
