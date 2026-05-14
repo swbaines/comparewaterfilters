@@ -294,6 +294,24 @@ export default function MatchedVendorsSection({
     }
   }, [topVendors, selected.size, submitted.length]);
 
+  // Keep `selected` in sync with the currently visible top vendors. If the
+  // ranked list shrinks (e.g. recommendedSystems change, dedupe, or fewer
+  // matches on a refetch), prune stale IDs so the counter never shows
+  // "Selected: 2 of 1 provider".
+  useEffect(() => {
+    if (topVendors.length === 0) return;
+    const visibleIds = new Set(topVendors.map((v) => v.provider_id));
+    setSelected((prev) => {
+      let changed = false;
+      const next = new Set<string>();
+      prev.forEach((id) => {
+        if (visibleIds.has(id)) next.add(id);
+        else changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [topVendors]);
+
   const toggleVendor = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
