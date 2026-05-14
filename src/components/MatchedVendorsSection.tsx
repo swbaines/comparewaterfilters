@@ -312,6 +312,33 @@ export default function MatchedVendorsSection({
     });
   }, [topVendors]);
 
+  // Debug invariant: in dev, warn loudly if the quotes counter ever drifts
+  // out of sync with the visible provider rows. Catches regressions where
+  // `selected` contains IDs that aren't rendered (which previously produced
+  // "Selected: 2 of 1 provider" / "Request 2 quotes" with one row visible).
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const visibleIds = new Set(topVendors.map((v) => v.provider_id));
+    const stale = [...selected].filter((id) => !visibleIds.has(id));
+    if (stale.length > 0) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "[MatchedVendorsSection] selection/visible mismatch",
+        {
+          selectedCount: selected.size,
+          visibleCount: topVendors.length,
+          staleIds: stale,
+        },
+      );
+    }
+    if (selected.size > topVendors.length) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[MatchedVendorsSection] quote counter drift: selected=${selected.size} > visible=${topVendors.length}`,
+      );
+    }
+  }, [selected, topVendors]);
+
   const toggleVendor = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
