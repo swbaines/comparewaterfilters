@@ -821,6 +821,29 @@ export default function ResultsPage() {
           </CardContent>
         </Card>
 
+        {/* ── Matched providers (moved up so users see provider CTA immediately) ── */}
+        <div className="mb-12 scroll-mt-24" id="matched-providers">
+          <div className="mb-6 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <Users className="h-6 w-6 text-primary" />
+            </div>
+            <Badge className="mb-3" variant="secondary">
+              Next step
+            </Badge>
+            <h2 className="text-2xl font-bold sm:text-3xl">Choose Your Provider(s)</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+              Pick the providers you'd like to hear from. They'll contact you directly — no obligation.
+            </p>
+          </div>
+
+          <MatchedVendorsSection
+            customerLat={customerCoords?.lat ?? null}
+            customerLng={customerCoords?.lng ?? null}
+            answers={answers}
+            recommendedSystems={recommendedSystemIds}
+          />
+        </div>
+
         {answers.coverage === "showers-bathrooms" && (
           <Card className="mb-8 border-primary/20 bg-primary/5">
             <CardContent className="p-6 sm:p-8">
@@ -831,15 +854,6 @@ export default function ResultsPage() {
             </CardContent>
           </Card>
         )}
-
-        {/* Jump to providers box – mobile only */}
-        <a
-          href="#matched-providers"
-          className="mb-6 flex items-center justify-between rounded-lg border-2 border-primary/20 bg-primary/5 px-4 py-3 text-sm font-medium text-primary transition hover:bg-primary/10 sm:hidden"
-        >
-          <span>View matched providers in your area</span>
-          <ArrowRight className="h-4 w-4 shrink-0" />
-        </a>
 
         {/* 3 Recommendation cards (or 2 if budget = recommendation or premium = recommendation) */}
         <h2 className="mb-4 text-lg font-bold">Recommended system types & Matched providers</h2>
@@ -878,29 +892,9 @@ export default function ResultsPage() {
           <RuleDebugPanel result={result} answers={answers} />
         )}
 
-        {/* ── Matched providers (next step) ── */}
-        <div className="mt-16 scroll-mt-24" id="matched-providers">
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <Badge className="mb-3" variant="secondary">
-              Next step
-            </Badge>
-            <h2 className="text-2xl font-bold sm:text-3xl">Choose Your Provider(s)</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Pick the providers you'd like to hear from. They'll contact you directly — no obligation.
-            </p>
-          </div>
-
-          <MatchedVendorsSection
-            customerLat={customerCoords?.lat ?? null}
-            customerLng={customerCoords?.lng ?? null}
-            answers={answers}
-            recommendedSystems={recommendedSystemIds}
-          />
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        {/* Action buttons (provider section moved above) */}
+        <div className="mt-12">
+          <div className="mt-2 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
               size="lg"
               className="w-full gap-2 shadow-md sm:w-auto"
