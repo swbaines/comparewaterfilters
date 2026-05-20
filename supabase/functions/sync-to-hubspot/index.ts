@@ -155,7 +155,8 @@ Deno.serve(async (req) => {
         cwf_concerns: (qr.concerns || []).join(", "),
         cwf_matched_provider: qr.provider_name || undefined,
         lifecyclestage: "lead",
-        hs_lead_status: "quote",
+        // HubSpot lead status — quote requested = OPEN_DEAL
+        hs_lead_status: "OPEN_DEAL",
       };
     } else if (payload.quiz_submission_id) {
       const { data: qs, error } = await supabase
@@ -192,7 +193,7 @@ Deno.serve(async (req) => {
         cwf_installation_timeline: qs.installation_timeline || undefined,
         cwf_lead_temperature: qs.lead_temperature || undefined,
         lifecyclestage: "subscriber",
-        hs_lead_status: "quote",
+        hs_lead_status: "NEW",
       };
     } else {
       return new Response(
