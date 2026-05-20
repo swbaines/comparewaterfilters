@@ -739,6 +739,7 @@ export default function AdminLeadsPage() {
                         );
                       })()}
                     </TableCell>
+                    <TableCell>{renderVendorEmailBadge(lead)}</TableCell>
                     <TableCell>
                       {(() => {
                         const email = (lead.customer_email || "").toLowerCase();
