@@ -509,9 +509,8 @@ export default function AdminLeadsPage() {
                 ) : filteredLeads.map((lead) => {
                   const isExpanded = expandedLeads.has(lead.id);
                   return (
-                  <>
+                  <Fragment key={lead.id}>
                   <TableRow
-                    key={lead.id}
                     className="cursor-pointer hover:bg-muted/40"
                     onClick={() => toggleExpanded(lead.id)}
                   >
@@ -679,7 +678,7 @@ export default function AdminLeadsPage() {
                     </TableCell>
                   </TableRow>
                   {isExpanded && (
-                    <TableRow key={`${lead.id}-details`} className="bg-muted/20 hover:bg-muted/20">
+                    <TableRow className="bg-muted/20 hover:bg-muted/20">
                       <TableCell colSpan={17} className="p-0">
                         <div className="grid grid-cols-2 gap-x-8 gap-y-3 p-5 text-sm md:grid-cols-3 lg:grid-cols-4">
                           <div>
@@ -740,7 +739,7 @@ export default function AdminLeadsPage() {
                       </TableCell>
                     </TableRow>
                   )}
-                  </>
+                  </Fragment>
                   );
                 })}
               </TableBody>
