@@ -32,6 +32,7 @@ export interface MatchedVendor {
   system_pricing: Record<string, { min: number; max: number }>;
   abn_verified: boolean;
   installation_model: "in_house_licensed" | "sub_contracted" | null;
+  contact_email: string | null;
 }
 
 interface Args {

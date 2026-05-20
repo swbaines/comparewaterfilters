@@ -397,44 +397,39 @@ export default function MatchedVendorsSection({
       for (const v of selectedVendors) {
         const row = rows.find((r) => r.provider_id === v.provider_id)!;
         const leadTemperature = deriveLeadTemperature(answers.installationTimeline);
-        supabase
-          .from("providers")
-          .select("contact_email")
-          .eq("id", v.provider_id)
-          .maybeSingle()
-          .then(({ data: pd }) => {
-            if (pd?.contact_email) {
-              supabase.functions
-                .invoke("send-transactional-email", {
-                  body: {
-                    templateName: "vendor-lead-notification",
-                    recipientEmail: pd.contact_email,
-                    idempotencyKey: `vendor-lead-${row.id}`,
-                    templateData: {
-                      providerName: v.name,
-                      customerName: answers.firstName,
-                      customerEmail: answers.email,
-                      customerMobile: answers.mobile || "",
-                      customerSuburb: answers.suburb,
-                      customerState: answers.state,
-                      customerPostcode: answers.postcode,
-                      propertyType: answers.propertyType,
-                      householdSize: answers.householdSize,
-                      waterSource: answers.waterSource,
-                      budget: answers.budget,
-                      concerns: answers.concerns,
-                      recommendedSystems: dedupedSystems,
-                      message: message || "",
-                      createdAt: new Date().toISOString(),
-                      installationTimeline: answers.installationTimeline || "",
-                      leadTemperature: leadTemperature || "",
-                      contactPreference: answers.contactPreference || "no_preference",
-                    },
-                  },
-                })
-                .catch((err) => console.error("vendor email failed:", err));
-            }
-          });
+        if (v.contact_email) {
+          supabase.functions
+            .invoke("send-transactional-email", {
+              body: {
+                templateName: "vendor-lead-notification",
+                recipientEmail: v.contact_email,
+                idempotencyKey: `vendor-lead-${row.id}`,
+                templateData: {
+                  providerName: v.name,
+                  customerName: answers.firstName,
+                  customerEmail: answers.email,
+                  customerMobile: answers.mobile || "",
+                  customerSuburb: answers.suburb,
+                  customerState: answers.state,
+                  customerPostcode: answers.postcode,
+                  propertyType: answers.propertyType,
+                  householdSize: answers.householdSize,
+                  waterSource: answers.waterSource,
+                  budget: answers.budget,
+                  concerns: answers.concerns,
+                  recommendedSystems: dedupedSystems,
+                  message: message || "",
+                  createdAt: new Date().toISOString(),
+                  installationTimeline: answers.installationTimeline || "",
+                  leadTemperature: leadTemperature || "",
+                  contactPreference: answers.contactPreference || "no_preference",
+                },
+              },
+            })
+            .catch((err) => console.error("vendor email failed:", err));
+        } else {
+          console.error("vendor email skipped: no contact_email for", v.provider_id);
+        }
       }
 
       // One customer confirmation listing all selected vendors
