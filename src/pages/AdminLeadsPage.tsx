@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2, RefreshCw, ChevronRight, ChevronDown } from "lucide-react";
+import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2, RefreshCw, ChevronRight, ChevronDown, Upload } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL } from "@/lib/leadTemperature";
@@ -38,6 +38,35 @@ const statusColors: Record<string, string> = {
 
 export default function AdminLeadsPage() {
   const queryClient = useQueryClient();
+  const [hubspotBackfilling, setHubspotBackfilling] = useState(false);
+
+  const runHubspotBackfill = async () => {
+    if (
+      !confirm(
+        "Sync all historic quote requests and consented quiz submissions to HubSpot? This may take a few minutes.",
+      )
+    )
+      return;
+    setHubspotBackfilling(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("backfill-hubspot", {
+        body: {},
+      });
+      if (error) throw error;
+      const r = (data as { results?: { quote_requests: any; quiz_submissions: any } })?.results;
+      if (r) {
+        toast.success(
+          `HubSpot backfill complete — Quotes: ${r.quote_requests.success}/${r.quote_requests.total} (${r.quote_requests.failed} failed), Quiz: ${r.quiz_submissions.success}/${r.quiz_submissions.total} (${r.quiz_submissions.failed} failed)`,
+        );
+      } else {
+        toast.success("HubSpot backfill complete");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Backfill failed");
+    } finally {
+      setHubspotBackfilling(false);
+    }
+  };
   const [filterProvider, setFilterProvider] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterTemperature, setFilterTemperature] = useState<string>("all");
