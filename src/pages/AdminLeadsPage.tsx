@@ -759,7 +759,7 @@ export default function AdminLeadsPage() {
                   
                   {isExpanded && (
                     <TableRow className="bg-muted/20 hover:bg-muted/20">
-                      <TableCell colSpan={17} className="p-0">
+                      <TableCell colSpan={18} className="p-0">
                         <div className="grid grid-cols-2 gap-x-8 gap-y-3 p-5 text-sm md:grid-cols-3 lg:grid-cols-4">
                           <div>
                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Mobile</p>
