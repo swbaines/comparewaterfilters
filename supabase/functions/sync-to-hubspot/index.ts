@@ -155,6 +155,7 @@ Deno.serve(async (req) => {
         cwf_concerns: (qr.concerns || []).join(", "),
         cwf_matched_provider: qr.provider_name || undefined,
         lifecyclestage: "lead",
+        hs_lead_status: "quote",
       };
     } else if (payload.quiz_submission_id) {
       const { data: qs, error } = await supabase
