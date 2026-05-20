@@ -258,11 +258,87 @@ export default function AdminLeadsPage() {
   const { data: providers = [] } = useQuery({
     queryKey: ["admin-providers-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("providers").select("id, name").order("name");
+      const { data, error } = await supabase.from("providers").select("id, name, contact_email").order("name");
       if (error) throw error;
       return data;
     },
   });
+
+  const { data: vendorEmailLogs = [] } = useQuery({
+    queryKey: ["vendor-lead-notification-logs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("email_send_log")
+        .select("recipient_email, status, error_message, created_at, metadata")
+        .eq("template_name", "vendor-lead-notification")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+      if (error) throw error;
+      return data;
+    },
+    refetchInterval: 30000,
+  });
+
+  const providerById: Record<string, { name: string; contact_email: string | null }> = {};
+  for (const p of providers as Array<{ id: string; name: string; contact_email: string | null }>) {
+    providerById[p.id] = { name: p.name, contact_email: p.contact_email };
+  }
+
+  // Status precedence: sent > dlq > failed > rate_limited > suppressed > pending
+  const STATUS_RANK: Record<string, number> = {
+    sent: 6, dlq: 5, failed: 4, rate_limited: 3, suppressed: 2, pending: 1,
+  };
+  type EmailRow = { status: string; error_message: string | null; created_at: string };
+  const byIdempotency: Record<string, EmailRow> = {};
+  const byRecipient: Record<string, EmailRow[]> = {};
+  for (const log of vendorEmailLogs as Array<{
+    recipient_email: string; status: string; error_message: string | null; created_at: string;
+    metadata: { idempotency_key?: string } | null;
+  }>) {
+    const row = { status: log.status, error_message: log.error_message, created_at: log.created_at };
+    const key = log.metadata?.idempotency_key;
+    if (key) {
+      const cur = byIdempotency[key];
+      if (!cur || (STATUS_RANK[row.status] ?? 0) > (STATUS_RANK[cur.status] ?? 0)) {
+        byIdempotency[key] = row;
+      }
+    }
+    const r = (log.recipient_email || "").toLowerCase();
+    if (!byRecipient[r]) byRecipient[r] = [];
+    byRecipient[r].push(row);
+  }
+
+  const getVendorEmailStatus = (lead: { id: string; provider_id: string | null; created_at: string }) => {
+    const idempotent = byIdempotency[`vendor-lead-${lead.id}`];
+    if (idempotent) return { kind: idempotent.status, error: idempotent.error_message, at: idempotent.created_at };
+    const provider = lead.provider_id ? providerById[lead.provider_id] : null;
+    const contactEmail = provider?.contact_email?.toLowerCase().trim();
+    if (!contactEmail) return { kind: "skipped", error: "Provider missing contact_email", at: null };
+    // Fallback: latest log to contact_email within +/- 24h of lead creation
+    const candidates = byRecipient[contactEmail] || [];
+    const leadTime = new Date(lead.created_at).getTime();
+    const near = candidates.filter((c) => Math.abs(new Date(c.created_at).getTime() - leadTime) < 24 * 60 * 60 * 1000);
+    if (near.length === 0) return { kind: "unknown", error: null, at: null };
+    const best = near.reduce((a, b) => ((STATUS_RANK[b.status] ?? 0) > (STATUS_RANK[a.status] ?? 0) ? b : a));
+    return { kind: best.status, error: best.error_message, at: best.created_at };
+  };
+
+  const renderVendorEmailBadge = (lead: { id: string; provider_id: string | null; created_at: string }) => {
+    const s = getVendorEmailStatus(lead);
+    const title = `${s.at ? format(new Date(s.at), "dd MMM yyyy HH:mm") : ""}${s.error ? `\n${s.error}` : ""}`.trim();
+    const map: Record<string, { label: string; cls: string }> = {
+      sent:        { label: "✅ Sent",       cls: "bg-green-50 text-green-800 border-green-200" },
+      pending:     { label: "⏳ Pending",    cls: "bg-yellow-50 text-yellow-800 border-yellow-200" },
+      failed:      { label: "⚠ Failed",     cls: "bg-red-50 text-red-800 border-red-200" },
+      dlq:         { label: "⛔ Dead-lettered", cls: "bg-red-100 text-red-900 border-red-300" },
+      rate_limited:{ label: "🐢 Rate-limited", cls: "bg-orange-50 text-orange-800 border-orange-200" },
+      suppressed:  { label: "🚫 Suppressed", cls: "bg-slate-100 text-slate-700 border-slate-300" },
+      skipped:     { label: "— Skipped (no email)", cls: "bg-amber-50 text-amber-800 border-amber-200" },
+      unknown:     { label: "? No log", cls: "bg-slate-50 text-slate-600 border-slate-200" },
+    };
+    const m = map[s.kind] || map.unknown;
+    return <Badge variant="outline" className={`text-[10px] whitespace-nowrap ${m.cls}`} title={title}>{m.label}</Badge>;
+  };
 
 
   const { data: invoices = [] } = useQuery({
@@ -500,12 +576,13 @@ export default function AdminLeadsPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
                   <TableHead>Saleshandy</TableHead>
+                  <TableHead>Vendor Email</TableHead>
                   <TableHead>CRM Tags</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={17} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={18} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
                 ) : filteredLeads.map((lead) => {
                   const isExpanded = expandedLeads.has(lead.id);
                   return (
@@ -662,6 +739,7 @@ export default function AdminLeadsPage() {
                         );
                       })()}
                     </TableCell>
+                    <TableCell>{renderVendorEmailBadge(lead)}</TableCell>
                     <TableCell>
                       {(() => {
                         const email = (lead.customer_email || "").toLowerCase();
@@ -677,9 +755,11 @@ export default function AdminLeadsPage() {
                       })()}
                     </TableCell>
                   </TableRow>
+
+                  
                   {isExpanded && (
                     <TableRow className="bg-muted/20 hover:bg-muted/20">
-                      <TableCell colSpan={17} className="p-0">
+                      <TableCell colSpan={18} className="p-0">
                         <div className="grid grid-cols-2 gap-x-8 gap-y-3 p-5 text-sm md:grid-cols-3 lg:grid-cols-4">
                           <div>
                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Mobile</p>
@@ -734,6 +814,31 @@ export default function AdminLeadsPage() {
                           <div className="col-span-2 md:col-span-3 lg:col-span-4">
                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Lead ID</p>
                             <p className="font-mono text-xs">{lead.id}</p>
+                          </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-4">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Vendor Notification Email</p>
+                            {(() => {
+                              const s = getVendorEmailStatus(lead);
+                              const provider = lead.provider_id ? providerById[lead.provider_id] : null;
+                              return (
+                                <div className="mt-1 flex flex-col gap-1 text-sm">
+                                  <div className="flex items-center gap-2">
+                                    {renderVendorEmailBadge(lead)}
+                                    <span className="text-muted-foreground">
+                                      → {provider?.contact_email || <em>no contact_email on provider</em>}
+                                    </span>
+                                  </div>
+                                  {s.at && (
+                                    <span className="text-xs text-muted-foreground">
+                                      Last event: {format(new Date(s.at), "dd MMM yyyy HH:mm")}
+                                    </span>
+                                  )}
+                                  {s.error && (
+                                    <span className="text-xs text-red-700 whitespace-pre-wrap">{s.error}</span>
+                                  )}
+                                </div>
+                              );
+                            })()}
                           </div>
                         </div>
                       </TableCell>
