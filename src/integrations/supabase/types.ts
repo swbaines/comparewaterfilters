@@ -1244,6 +1244,7 @@ export type Database = {
           brands: string[]
           cap_exceeded: boolean
           certifications: string[]
+          contact_email: string
           description: string
           distance_km: number
           highlights: string[]
