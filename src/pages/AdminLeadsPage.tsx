@@ -815,6 +815,31 @@ export default function AdminLeadsPage() {
                             <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Lead ID</p>
                             <p className="font-mono text-xs">{lead.id}</p>
                           </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-4">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Vendor Notification Email</p>
+                            {(() => {
+                              const s = getVendorEmailStatus(lead);
+                              const provider = lead.provider_id ? providerById[lead.provider_id] : null;
+                              return (
+                                <div className="mt-1 flex flex-col gap-1 text-sm">
+                                  <div className="flex items-center gap-2">
+                                    {renderVendorEmailBadge(lead)}
+                                    <span className="text-muted-foreground">
+                                      → {provider?.contact_email || <em>no contact_email on provider</em>}
+                                    </span>
+                                  </div>
+                                  {s.at && (
+                                    <span className="text-xs text-muted-foreground">
+                                      Last event: {format(new Date(s.at), "dd MMM yyyy HH:mm")}
+                                    </span>
+                                  )}
+                                  {s.error && (
+                                    <span className="text-xs text-red-700 whitespace-pre-wrap">{s.error}</span>
+                                  )}
+                                </div>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </TableCell>
                     </TableRow>
