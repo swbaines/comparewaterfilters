@@ -192,6 +192,7 @@ Deno.serve(async (req) => {
         cwf_installation_timeline: qs.installation_timeline || undefined,
         cwf_lead_temperature: qs.lead_temperature || undefined,
         lifecyclestage: "subscriber",
+        hs_lead_status: "quote",
       };
     } else {
       return new Response(
