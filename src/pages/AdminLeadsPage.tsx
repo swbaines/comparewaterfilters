@@ -754,6 +754,8 @@ export default function AdminLeadsPage() {
                       })()}
                     </TableCell>
                   </TableRow>
+
+                  
                   {isExpanded && (
                     <TableRow className="bg-muted/20 hover:bg-muted/20">
                       <TableCell colSpan={17} className="p-0">
