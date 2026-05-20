@@ -154,6 +154,7 @@ Deno.serve(async (req) => {
       template_name: templateName,
       recipient_email: effectiveRecipient,
       status: 'suppressed',
+      metadata: { idempotency_key: idempotencyKey },
     })
 
     console.log('Email suppressed', { effectiveRecipient, templateName })
@@ -307,6 +308,7 @@ Deno.serve(async (req) => {
     template_name: templateName,
     recipient_email: effectiveRecipient,
     status: 'pending',
+    metadata: { idempotency_key: idempotencyKey },
   })
 
   const { error: enqueueError } = await supabase.rpc('enqueue_email', {
@@ -340,6 +342,7 @@ Deno.serve(async (req) => {
       recipient_email: effectiveRecipient,
       status: 'failed',
       error_message: 'Failed to enqueue email',
+      metadata: { idempotency_key: idempotencyKey },
     })
 
     return new Response(JSON.stringify({ error: 'Failed to enqueue email' }), {
