@@ -31,3 +31,5 @@ project_id = "xbryypgsryjhuscyglbu"
     verify_jwt = false
   [functions.sync-to-hubspot]
     verify_jwt = false
+  [functions.setup-hubspot-properties]
+    verify_jwt = false
