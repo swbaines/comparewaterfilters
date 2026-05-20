@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2, RefreshCw } from "lucide-react";
+import { Loader2, FileText, DollarSign, Users, TrendingUp, Settings, Trash2, RefreshCw, ChevronRight, ChevronDown } from "lucide-react";
 import AdminNav from "@/components/AdminNav";
 import { format } from "date-fns";
 import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL } from "@/lib/leadTemperature";
@@ -51,6 +51,13 @@ export default function AdminLeadsPage() {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const RESET_PHRASE = "RESET TEST DATA";
+  const [expandedLeads, setExpandedLeads] = useState<Set<string>>(new Set());
+  const toggleExpanded = (id: string) =>
+    setExpandedLeads((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
 
   const { data: leadPrices = [] } = useQuery({
     queryKey: ["lead-prices"],
@@ -477,6 +484,7 @@ export default function AdminLeadsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8"></TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Customer</TableHead>
                   <TableHead>Contact Pref</TableHead>
@@ -497,9 +505,21 @@ export default function AdminLeadsPage() {
               </TableHeader>
               <TableBody>
                 {filteredLeads.length === 0 ? (
-                  <TableRow><TableCell colSpan={16} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
-                ) : filteredLeads.map((lead) => (
-                  <TableRow key={lead.id}>
+                  <TableRow><TableCell colSpan={17} className="text-center text-muted-foreground py-8">No leads found</TableCell></TableRow>
+                ) : filteredLeads.map((lead) => {
+                  const isExpanded = expandedLeads.has(lead.id);
+                  return (
+                  <>
+                  <TableRow
+                    key={lead.id}
+                    className="cursor-pointer hover:bg-muted/40"
+                    onClick={() => toggleExpanded(lead.id)}
+                  >
+                    <TableCell className="w-8 p-2" onClick={(e) => { e.stopPropagation(); toggleExpanded(lead.id); }}>
+                      <Button size="icon" variant="ghost" className="h-6 w-6" aria-label={isExpanded ? "Collapse" : "Expand"}>
+                        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </Button>
+                    </TableCell>
                     <TableCell className="text-xs">{format(new Date(lead.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell>
                       <div className="text-sm font-medium">{lead.customer_name}</div>
@@ -658,7 +678,71 @@ export default function AdminLeadsPage() {
                       })()}
                     </TableCell>
                   </TableRow>
-                ))}
+                  {isExpanded && (
+                    <TableRow key={`${lead.id}-details`} className="bg-muted/20 hover:bg-muted/20">
+                      <TableCell colSpan={17} className="p-0">
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-3 p-5 text-sm md:grid-cols-3 lg:grid-cols-4">
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Mobile</p>
+                            <p className="font-medium">{lead.customer_mobile || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Location</p>
+                            <p className="font-medium">{[lead.customer_suburb, lead.customer_state, lead.customer_postcode].filter(Boolean).join(", ") || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Property Type</p>
+                            <p className="font-medium">{lead.property_type || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Household Size</p>
+                            <p className="font-medium">{lead.household_size ?? "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Budget</p>
+                            <p className="font-medium">{lead.budget || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Water Tested</p>
+                            <p className="font-medium">{lead.water_tested_recently || "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">First Response</p>
+                            <p className="font-medium">{lead.first_response_at ? format(new Date(lead.first_response_at), "dd MMM yyyy HH:mm") : "—"}</p>
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Status Updated</p>
+                            <p className="font-medium">{lead.status_updated_at ? format(new Date(lead.status_updated_at), "dd MMM yyyy HH:mm") : "—"}</p>
+                          </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Concerns</p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {(lead.concerns || []).length > 0
+                                ? (lead.concerns || []).map((c: string) => (
+                                    <Badge key={c} variant="outline" className="text-[10px]">{c}</Badge>
+                                  ))
+                                : <span className="text-muted-foreground">—</span>}
+                            </div>
+                          </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Customer Message</p>
+                            <p className="whitespace-pre-wrap text-sm">{lead.message?.trim() || <span className="text-muted-foreground">—</span>}</p>
+                          </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Vendor Notes</p>
+                            <p className="whitespace-pre-wrap text-sm">{lead.vendor_notes?.trim() || <span className="text-muted-foreground">—</span>}</p>
+                          </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-4">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Lead ID</p>
+                            <p className="font-mono text-xs">{lead.id}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  </>
+                  );
+                })}
               </TableBody>
             </Table>
           </Card>
