@@ -576,6 +576,7 @@ export default function AdminLeadsPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Invoice</TableHead>
                   <TableHead>Saleshandy</TableHead>
+                  <TableHead>Vendor Email</TableHead>
                   <TableHead>CRM Tags</TableHead>
                 </TableRow>
               </TableHeader>
