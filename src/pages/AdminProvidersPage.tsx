@@ -573,7 +573,7 @@ export default function AdminProvidersPage() {
                           }}
                           className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground"
                         >
-                          <span className="font-medium">{p.name}</span>
+                          <span className="font-medium">{p.trading_name?.trim() || p.name}</span>
                           <Badge
                             variant={p.approval_status === "approved" ? "default" : p.approval_status === "pending" ? "secondary" : "destructive"}
                             className="capitalize"
@@ -625,7 +625,7 @@ export default function AdminProvidersPage() {
                                 onClick={() => setReviewProvider(p)}
                                 className="font-medium text-primary hover:underline text-left"
                               >
-                                {p.name}
+                                {p.trading_name?.trim() || p.name}
                               </button>
                               <div className="text-xs text-muted-foreground truncate max-w-[200px]">{p.description}</div>
                             </div>
@@ -708,7 +708,7 @@ export default function AdminProvidersPage() {
                          onClick={() => setReviewProvider(p)}
                          className="text-primary hover:underline text-left"
                        >
-                         {p.name}
+                         {p.trading_name?.trim() || p.name}
                        </button>
                      </TableCell>
                     <TableCell>
