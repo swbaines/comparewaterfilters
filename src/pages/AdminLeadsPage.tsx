@@ -510,6 +510,20 @@ export default function AdminLeadsPage() {
             <Button
               variant="outline"
               size="sm"
+              onClick={runHubspotBackfill}
+              disabled={hubspotBackfilling}
+              className="gap-1"
+            >
+              {hubspotBackfilling ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              Backfill HubSpot
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setResetDialogOpen(true)}
               className="gap-1 text-destructive hover:text-destructive"
             >
