@@ -65,6 +65,42 @@ Deno.serve(async (req) => {
       const body = await res.json().catch(() => ({}));
       results.push({ name: p.name, status: res.status, ok: res.ok || res.status === 409, body });
     }
+    // Extend hs_lead_status with custom CWF options. Fetch existing options
+    // first so we preserve HubSpot's defaults and any other user-added values.
+    const cur = await fetch(
+      `${GATEWAY_URL}/crm/v3/properties/contacts/hs_lead_status`,
+      { method: "GET", headers: headers() },
+    );
+    const curBody = await cur.json().catch(() => ({}));
+    const existing: Array<{ label: string; value: string; displayOrder?: number; hidden?: boolean }> =
+      Array.isArray(curBody?.options) ? curBody.options : [];
+    const want = [
+      { label: "Quiz Submitted", value: "QUIZ_SUBMITTED" },
+      { label: "Quote Requested", value: "QUOTE_REQUESTED" },
+    ];
+    const merged = [...existing];
+    let maxOrder = existing.reduce((m, o) => Math.max(m, o.displayOrder ?? 0), 0);
+    for (const w of want) {
+      if (!merged.some((o) => o.value === w.value)) {
+        maxOrder += 1;
+        merged.push({ ...w, displayOrder: maxOrder, hidden: false });
+      }
+    }
+    const patchRes = await fetch(
+      `${GATEWAY_URL}/crm/v3/properties/contacts/hs_lead_status`,
+      {
+        method: "PATCH",
+        headers: headers(),
+        body: JSON.stringify({ options: merged }),
+      },
+    );
+    const patchBody = await patchRes.json().catch(() => ({}));
+    results.push({
+      name: "hs_lead_status (options)",
+      status: patchRes.status,
+      ok: patchRes.ok,
+      body: patchBody,
+    });
     return new Response(JSON.stringify({ success: true, results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
