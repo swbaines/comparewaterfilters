@@ -226,6 +226,22 @@ export default function VendorBillingPage() {
     },
   });
 
+  // Credits that were applied to the selected invoice (negative line items)
+  const { data: invoiceCredits = [] } = useQuery({
+    queryKey: ["invoice-credits", selectedInvoice?.id],
+    enabled: !!selectedInvoice && !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("provider_credits")
+        .select("id, amount, reason, applied_at")
+        .eq("provider_id", provider.id)
+        .eq("applied_invoice_id", selectedInvoice.id)
+        .order("applied_at", { ascending: true });
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
   const fetchProvider = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -1219,6 +1235,47 @@ export default function VendorBillingPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Refund credits applied to this invoice */}
+                  {invoiceCredits.length > 0 && (() => {
+                    const grossLeads = invoiceLeads.reduce(
+                      (s: number, l: any) => s + Number(l.lead_price || 0),
+                      0,
+                    );
+                    const creditTotal = invoiceCredits.reduce(
+                      (s: number, c: any) => s + Number(c.amount || 0),
+                      0,
+                    );
+                    return (
+                      <div className="rounded-lg border bg-muted/30 p-4 space-y-2">
+                        <h3 className="font-semibold text-sm">Refund credits applied</h3>
+                        <div className="space-y-1 text-sm">
+                          {invoiceCredits.map((c: any) => (
+                            <div key={c.id} className="flex justify-between gap-4">
+                              <span className="text-muted-foreground truncate">
+                                {c.reason || "Refund credit"}
+                              </span>
+                              <span className="font-medium whitespace-nowrap">
+                                −${Number(c.amount).toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="border-t pt-2 flex justify-between text-sm">
+                          <span className="text-muted-foreground">Leads subtotal</span>
+                          <span>${grossLeads.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Credits</span>
+                          <span>−${creditTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-semibold border-t pt-2">
+                          <span>Invoice total</span>
+                          <span>${Number(selectedInvoice.total_amount).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Leads table */}
                   <div>
