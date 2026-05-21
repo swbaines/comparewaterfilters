@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench, Flame, CalendarClock, Sparkles } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench, Flame, CalendarClock, Sparkles, Flag } from "lucide-react";
 import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL, leadTemperatureRank } from "@/lib/leadTemperature";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -111,6 +111,8 @@ export default function VendorDashboardPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
+  const [flagDialogOpen, setFlagDialogOpen] = useState(false);
+  const [flagReason, setFlagReason] = useState("");
   const [period, setPeriod] = useState<TimePeriod>(() => {
     if (typeof window === "undefined") return "month";
     const saved = window.localStorage.getItem(PERIOD_STORAGE_KEY) as TimePeriod | null;
@@ -162,6 +164,29 @@ export default function VendorDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
       setSelectedLead((prev: any) => prev ? { ...prev, vendor_notes: notes } : null);
       toast.success("Notes saved");
+    },
+  });
+
+  const flagLead = useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+      const updates = {
+        flagged_for_review: true,
+        flag_reason: reason,
+        flagged_at: new Date().toISOString(),
+      } as any;
+      const { error } = await supabase.from("quote_requests").update(updates).eq("id", id);
+      if (error) throw error;
+      return updates;
+    },
+    onSuccess: (updates, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
+      setSelectedLead((prev: any) => prev && prev.id === id ? { ...prev, ...updates } : prev);
+      toast.success("Lead flagged for admin review");
+      setFlagDialogOpen(false);
+      setFlagReason("");
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to flag lead");
     },
   });
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
