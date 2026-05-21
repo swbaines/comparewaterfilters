@@ -897,6 +897,82 @@ export default function VendorBillingPage() {
           </Card>
         </div>
 
+        {/* Refund credits */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5" />
+              Refund credits
+            </CardTitle>
+            <CardDescription>
+              Credits issued for flagged leads. Pending credits are automatically applied to your next monthly invoice.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-lg border p-3">
+                <p className="text-xs text-muted-foreground">Pending</p>
+                <p className="text-lg font-semibold">${creditTotals.pending.toFixed(2)}</p>
+              </div>
+              <div className="rounded-lg border p-3">
+                <p className="text-xs text-muted-foreground">Applied</p>
+                <p className="text-lg font-semibold">${creditTotals.applied.toFixed(2)}</p>
+              </div>
+              <div className="rounded-lg border p-3">
+                <p className="text-xs text-muted-foreground">Voided</p>
+                <p className="text-lg font-semibold">${creditTotals.voided.toFixed(2)}</p>
+              </div>
+            </div>
+
+            {creditsLoading ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : credits.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No refund credits on your account.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Issued</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Applied</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {credits.map((c: any) => (
+                    <TableRow key={c.id}>
+                      <TableCell className="whitespace-nowrap">
+                        {format(new Date(c.created_at), "d MMM yyyy")}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        ${Number(c.amount).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="max-w-[320px]">
+                        <span className="text-sm text-muted-foreground">
+                          {c.reason || "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={creditStatusClass[c.status] || ""}>
+                          {c.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                        {c.applied_at ? format(new Date(c.applied_at), "d MMM yyyy") : "—"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Invoice history */}
         <Card>
           <CardHeader>
