@@ -388,7 +388,7 @@ export default function QuizPage() {
       <div className="container max-w-2xl">
         {step === 1 && (
           <div className="mb-4 rounded-lg border bg-background px-4 py-3 shadow-sm">
-            <h1 className="text-xl font-bold tracking-tight text-primary sm:text-3xl">
+            <h1 className="whitespace-nowrap text-base font-bold tracking-tight text-primary sm:text-xl">
               Find the right water filtration system for your home
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
