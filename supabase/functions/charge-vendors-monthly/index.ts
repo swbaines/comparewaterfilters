@@ -143,14 +143,14 @@ Deno.serve(async (req) => {
           .order("created_at", { ascending: true });
 
         let creditAppliedCents = 0;
-        const creditsToApply: { id: string; amount_cents: number }[] = [];
+        const creditsToApply: { id: string; original_cents: number; applied_cents: number }[] = [];
         for (const c of pendingCredits || []) {
           const remaining = totalCents - creditAppliedCents;
           if (remaining <= 0) break;
           const credCents = Math.round(Number(c.amount) * 100);
           const applyCents = Math.min(credCents, remaining);
           creditAppliedCents += applyCents;
-          creditsToApply.push({ id: c.id, amount_cents: applyCents });
+          creditsToApply.push({ id: c.id, original_cents: credCents, applied_cents: applyCents });
         }
 
         const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
@@ -228,7 +228,9 @@ Deno.serve(async (req) => {
             .eq("id", item.lead_id);
         }
 
-        // Mark applied credits
+        // Mark applied credits. If a credit was only partially consumed (capped at invoice total),
+        // shrink the original to the applied amount and roll the remainder into a new pending credit
+        // so it carries over to the following month's invoice.
         for (const c of creditsToApply) {
           await supabaseAdmin
             .from("provider_credits")
@@ -236,9 +238,30 @@ Deno.serve(async (req) => {
               status: "applied",
               applied_invoice_id: savedInvoice.id,
               applied_at: new Date().toISOString(),
-              amount: c.amount_cents / 100,
+              amount: c.applied_cents / 100,
             })
             .eq("id", c.id);
+
+          const remainderCents = c.original_cents - c.applied_cents;
+          if (remainderCents > 0) {
+            // Look up the original credit so we preserve its reason/quote_request_id linkage.
+            const { data: original } = await supabaseAdmin
+              .from("provider_credits")
+              .select("reason, quote_request_id, created_by")
+              .eq("id", c.id)
+              .single();
+
+            await supabaseAdmin.from("provider_credits").insert({
+              provider_id: provider.id,
+              quote_request_id: original?.quote_request_id ?? null,
+              amount: remainderCents / 100,
+              reason: original?.reason
+                ? `${original.reason} (rollover from prior invoice)`
+                : "Rollover from prior invoice",
+              status: "pending",
+              created_by: original?.created_by ?? null,
+            });
+          }
         }
 
         results.push({
