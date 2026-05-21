@@ -338,6 +338,48 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_credits: {
+        Row: {
+          amount: number
+          applied_at: string | null
+          applied_invoice_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          provider_id: string
+          quote_request_id: string | null
+          reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          applied_at?: string | null
+          applied_invoice_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          provider_id: string
+          quote_request_id?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          applied_at?: string | null
+          applied_invoice_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          provider_id?: string
+          quote_request_id?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       provider_stripe_details: {
         Row: {
           created_at: string
