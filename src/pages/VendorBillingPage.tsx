@@ -226,6 +226,22 @@ export default function VendorBillingPage() {
     },
   });
 
+  // Credits that were applied to the selected invoice (negative line items)
+  const { data: invoiceCredits = [] } = useQuery({
+    queryKey: ["invoice-credits", selectedInvoice?.id],
+    enabled: !!selectedInvoice && !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("provider_credits")
+        .select("id, amount, reason, applied_at")
+        .eq("provider_id", provider.id)
+        .eq("applied_invoice_id", selectedInvoice.id)
+        .order("applied_at", { ascending: true });
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
   const fetchProvider = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
