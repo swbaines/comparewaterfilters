@@ -675,6 +675,10 @@ export type Database = {
           customer_state: string | null
           customer_suburb: string | null
           first_response_at: string | null
+          flag_admin_status: string | null
+          flag_reason: string | null
+          flagged_at: string | null
+          flagged_for_review: boolean
           household_size: string | null
           id: string
           installation_timeline: string | null
@@ -710,6 +714,10 @@ export type Database = {
           customer_state?: string | null
           customer_suburb?: string | null
           first_response_at?: string | null
+          flag_admin_status?: string | null
+          flag_reason?: string | null
+          flagged_at?: string | null
+          flagged_for_review?: boolean
           household_size?: string | null
           id?: string
           installation_timeline?: string | null
@@ -745,6 +753,10 @@ export type Database = {
           customer_state?: string | null
           customer_suburb?: string | null
           first_response_at?: string | null
+          flag_admin_status?: string | null
+          flag_reason?: string | null
+          flagged_at?: string | null
+          flagged_for_review?: boolean
           household_size?: string | null
           id?: string
           installation_timeline?: string | null
