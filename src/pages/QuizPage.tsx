@@ -386,6 +386,24 @@ export default function QuizPage() {
         appendSiteName={false}
       />
       <div className="container max-w-2xl">
+        {step === 1 && (
+          <div className="mb-6 rounded-xl border bg-background p-5 sm:p-6 shadow-sm">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Find your ideal water filtration system
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground">
+              Answer 8 quick questions about your home, water source and budget — it takes
+              about 2 minutes. We'll recommend the system types best suited to your
+              property and match you with trusted local providers for free, no-obligation
+              quotes.
+            </p>
+            <ul className="mt-3 grid gap-1 text-xs sm:text-sm text-muted-foreground sm:grid-cols-3">
+              <li>✓ Personalised recommendations</li>
+              <li>✓ Independent &amp; pro-filtration</li>
+              <li>✓ Free quotes, no obligation</li>
+            </ul>
+          </div>
+        )}
         {/* Progress */}
         <div className="mb-6">
           <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
