@@ -387,11 +387,11 @@ export default function QuizPage() {
       />
       <div className="container max-w-2xl">
         {step === 1 && (
-          <div className="mb-6 rounded-xl border bg-background p-5 sm:p-6 shadow-sm">
-            <h1 className="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
+          <div className="mb-4 rounded-lg border bg-background px-4 py-3 shadow-sm">
+            <h1 className="text-lg font-bold tracking-tight text-primary sm:text-xl">
               Find the right water filtration system for your home
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-muted-foreground">
+            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
               Answer 8 quick questions to get personalised recommendations and free quotes from trusted local providers.
             </p>
           </div>
