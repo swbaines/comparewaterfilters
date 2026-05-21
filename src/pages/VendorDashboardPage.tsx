@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench, Flame, CalendarClock, Sparkles } from "lucide-react";
+import { Loader2, Users, DollarSign, TrendingUp, FileText, Phone, Mail, MapPin, Home, Droplets, ShieldAlert, Wallet, MessageSquare, ClipboardList, CheckCircle2, PhoneCall, XCircle, StickyNote, Save, Settings, Building2, Clock, X, ArrowUp, ArrowDown, AlertTriangle, FlaskConical, Wrench, Flame, CalendarClock, Sparkles, Flag } from "lucide-react";
 import { LEAD_TEMPERATURE_BADGE_CLASS, LEAD_TEMPERATURE_LABEL, leadTemperatureRank } from "@/lib/leadTemperature";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -111,6 +111,8 @@ export default function VendorDashboardPage() {
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [vendorNotes, setVendorNotes] = useState("");
+  const [flagDialogOpen, setFlagDialogOpen] = useState(false);
+  const [flagReason, setFlagReason] = useState("");
   const [period, setPeriod] = useState<TimePeriod>(() => {
     if (typeof window === "undefined") return "month";
     const saved = window.localStorage.getItem(PERIOD_STORAGE_KEY) as TimePeriod | null;
@@ -162,6 +164,29 @@ export default function VendorDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
       setSelectedLead((prev: any) => prev ? { ...prev, vendor_notes: notes } : null);
       toast.success("Notes saved");
+    },
+  });
+
+  const flagLead = useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+      const updates = {
+        flagged_for_review: true,
+        flag_reason: reason,
+        flagged_at: new Date().toISOString(),
+      } as any;
+      const { error } = await supabase.from("quote_requests").update(updates).eq("id", id);
+      if (error) throw error;
+      return updates;
+    },
+    onSuccess: (updates, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-leads"] });
+      setSelectedLead((prev: any) => prev && prev.id === id ? { ...prev, ...updates } : prev);
+      toast.success("Lead flagged for admin review");
+      setFlagDialogOpen(false);
+      setFlagReason("");
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to flag lead");
     },
   });
   const { data: vendorAccount, isLoading: vaLoading } = useQuery({
@@ -1022,9 +1047,83 @@ export default function VendorDashboardPage() {
                     </a>
                   </Button>
                 </div>
+
+                {/* Flag for review */}
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Flag className="h-4 w-4" /> Flag for Investigation
+                  </h3>
+                  {selectedLead.flagged_for_review ? (
+                    <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm">
+                      <div className="flex items-center gap-1.5 font-medium text-amber-900">
+                        <Flag className="h-3.5 w-3.5" /> Flagged for admin review
+                        {selectedLead.flag_admin_status && (
+                          <Badge variant="outline" className="ml-1 text-[10px] capitalize">{selectedLead.flag_admin_status}</Badge>
+                        )}
+                      </div>
+                      {selectedLead.flagged_at && (
+                        <p className="mt-1 text-xs text-amber-800">
+                          Submitted {format(new Date(selectedLead.flagged_at), "dd MMM yyyy 'at' h:mm a")}
+                        </p>
+                      )}
+                      {selectedLead.flag_reason && (
+                        <p className="mt-2 whitespace-pre-wrap text-sm text-amber-900">{selectedLead.flag_reason}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        Think this lead is invalid (e.g. bad contact details, duplicate, out of area, not genuine)? Flag it for admin review and a potential refund.
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-amber-300 text-amber-800 hover:bg-amber-50"
+                        onClick={() => { setFlagReason(""); setFlagDialogOpen(true); }}
+                      >
+                        <Flag className="h-4 w-4 mr-1.5" /> Flag this lead
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Flag Lead Dialog */}
+      <Dialog open={flagDialogOpen} onOpenChange={(open) => { setFlagDialogOpen(open); if (!open) setFlagReason(""); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Flag className="h-5 w-5 text-amber-600" /> Flag lead for review
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Briefly describe why this lead should be investigated. Our team will review and may issue a refund if appropriate.
+            </p>
+            <Textarea
+              autoFocus
+              rows={4}
+              placeholder="e.g. Phone number is disconnected, customer says they didn't request a quote, duplicate of an earlier lead..."
+              value={flagReason}
+              onChange={(e) => setFlagReason(e.target.value)}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setFlagDialogOpen(false)}>Cancel</Button>
+              <Button
+                size="sm"
+                disabled={!flagReason.trim() || flagLead.isPending || !selectedLead}
+                onClick={() => selectedLead && flagLead.mutate({ id: selectedLead.id, reason: flagReason.trim() })}
+              >
+                {flagLead.isPending && <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />}
+                Submit flag
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
