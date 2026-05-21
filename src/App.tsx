@@ -24,6 +24,7 @@ import AdminLoginPage from "@/pages/AdminLoginPage";
 import AdminAccountPage from "@/pages/AdminAccountPage";
 import AdminSeoPreviewPage from "@/pages/AdminSeoPreviewPage";
 import AdminAbrLookupsPage from "@/pages/AdminAbrLookupsPage";
+import AdminFlaggedLeadsPage from "@/pages/AdminFlaggedLeadsPage";
 import VendorLoginPage from "@/pages/VendorLoginPage";
 import VendorRegisterPage from "@/pages/VendorRegisterPage";
 import VendorForgotPasswordPage from "@/pages/VendorForgotPasswordPage";
@@ -85,6 +86,7 @@ const App = () => (
             <Route path="/admin/account" element={<AdminRoute><AdminAccountPage /></AdminRoute>} />
             <Route path="/admin/seo-preview" element={<AdminRoute><AdminSeoPreviewPage /></AdminRoute>} />
             <Route path="/admin/abr-lookups" element={<AdminRoute><AdminAbrLookupsPage /></AdminRoute>} />
+            <Route path="/admin/flagged-leads" element={<AdminRoute><AdminFlaggedLeadsPage /></AdminRoute>} />
             <Route path="/vendor/login" element={<VendorLoginPage />} />
             <Route path="/vendor/forgot-password" element={<VendorForgotPasswordPage />} />
             <Route path="/vendor/reset-password" element={<VendorResetPasswordPage />} />
