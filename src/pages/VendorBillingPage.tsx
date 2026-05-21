@@ -1236,6 +1236,47 @@ export default function VendorBillingPage() {
                     )}
                   </div>
 
+                  {/* Refund credits applied to this invoice */}
+                  {invoiceCredits.length > 0 && (() => {
+                    const grossLeads = invoiceLeads.reduce(
+                      (s: number, l: any) => s + Number(l.lead_price || 0),
+                      0,
+                    );
+                    const creditTotal = invoiceCredits.reduce(
+                      (s: number, c: any) => s + Number(c.amount || 0),
+                      0,
+                    );
+                    return (
+                      <div className="rounded-lg border bg-muted/30 p-4 space-y-2">
+                        <h3 className="font-semibold text-sm">Refund credits applied</h3>
+                        <div className="space-y-1 text-sm">
+                          {invoiceCredits.map((c: any) => (
+                            <div key={c.id} className="flex justify-between gap-4">
+                              <span className="text-muted-foreground truncate">
+                                {c.reason || "Refund credit"}
+                              </span>
+                              <span className="font-medium whitespace-nowrap">
+                                −${Number(c.amount).toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="border-t pt-2 flex justify-between text-sm">
+                          <span className="text-muted-foreground">Leads subtotal</span>
+                          <span>${grossLeads.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Credits</span>
+                          <span>−${creditTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-semibold border-t pt-2">
+                          <span>Invoice total</span>
+                          <span>${Number(selectedInvoice.total_amount).toFixed(2)}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
                   {/* Leads table */}
                   <div>
                     <h3 className="font-semibold mb-2">Leads in this period</h3>
