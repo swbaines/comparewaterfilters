@@ -417,6 +417,38 @@ export default function VendorBillingPage() {
     .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
     .reduce((sum: number, inv: any) => sum + Number(inv.total_amount), 0);
 
+  // Refund credits issued by admins for flagged leads
+  const { data: credits = [], isLoading: creditsLoading } = useQuery({
+    queryKey: ["vendor-provider-credits", provider?.id],
+    enabled: !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("provider_credits")
+        .select("id, amount, reason, status, created_at, applied_at, applied_invoice_id, quote_request_id")
+        .eq("provider_id", provider.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const creditTotals = credits.reduce(
+    (acc, c: any) => {
+      const amt = Number(c.amount || 0);
+      if (c.status === "pending") acc.pending += amt;
+      else if (c.status === "applied") acc.applied += amt;
+      else if (c.status === "voided") acc.voided += amt;
+      return acc;
+    },
+    { pending: 0, applied: 0, voided: 0 },
+  );
+
+  const creditStatusClass: Record<string, string> = {
+    pending: "bg-amber-100 text-amber-800",
+    applied: "bg-green-100 text-green-800",
+    voided: "bg-gray-100 text-gray-700",
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="container max-w-5xl py-8 space-y-6">
@@ -864,6 +896,82 @@ export default function VendorBillingPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Refund credits */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5" />
+              Refund credits
+            </CardTitle>
+            <CardDescription>
+              Credits issued for flagged leads. Pending credits are automatically applied to your next monthly invoice.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-lg border p-3">
+                <p className="text-xs text-muted-foreground">Pending</p>
+                <p className="text-lg font-semibold">${creditTotals.pending.toFixed(2)}</p>
+              </div>
+              <div className="rounded-lg border p-3">
+                <p className="text-xs text-muted-foreground">Applied</p>
+                <p className="text-lg font-semibold">${creditTotals.applied.toFixed(2)}</p>
+              </div>
+              <div className="rounded-lg border p-3">
+                <p className="text-xs text-muted-foreground">Voided</p>
+                <p className="text-lg font-semibold">${creditTotals.voided.toFixed(2)}</p>
+              </div>
+            </div>
+
+            {creditsLoading ? (
+              <div className="flex justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : credits.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No refund credits on your account.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Issued</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Applied</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {credits.map((c: any) => (
+                    <TableRow key={c.id}>
+                      <TableCell className="whitespace-nowrap">
+                        {format(new Date(c.created_at), "d MMM yyyy")}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        ${Number(c.amount).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="max-w-[320px]">
+                        <span className="text-sm text-muted-foreground">
+                          {c.reason || "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className={creditStatusClass[c.status] || ""}>
+                          {c.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
+                        {c.applied_at ? format(new Date(c.applied_at), "d MMM yyyy") : "—"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Invoice history */}
         <Card>
