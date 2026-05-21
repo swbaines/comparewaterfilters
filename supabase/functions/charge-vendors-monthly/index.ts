@@ -134,6 +134,25 @@ Deno.serve(async (req) => {
           continue;
         }
 
+        // Apply any pending refund credits for this provider (capped at invoice total)
+        const { data: pendingCredits } = await supabaseAdmin
+          .from("provider_credits")
+          .select("id, amount")
+          .eq("provider_id", provider.id)
+          .eq("status", "pending")
+          .order("created_at", { ascending: true });
+
+        let creditAppliedCents = 0;
+        const creditsToApply: { id: string; amount_cents: number }[] = [];
+        for (const c of pendingCredits || []) {
+          const remaining = totalCents - creditAppliedCents;
+          if (remaining <= 0) break;
+          const credCents = Math.round(Number(c.amount) * 100);
+          const applyCents = Math.min(credCents, remaining);
+          creditAppliedCents += applyCents;
+          creditsToApply.push({ id: c.id, amount_cents: applyCents });
+        }
+
         const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
 
         const hasPaymentMethod = !!sd.stripe_payment_method_id;
@@ -163,6 +182,16 @@ Deno.serve(async (req) => {
           description: `${leads.length} lead${leads.length > 1 ? "s" : ""} — ${firstOfLastMonth.toLocaleString("en-AU", { month: "long", year: "numeric" })}`,
         });
 
+        if (creditAppliedCents > 0) {
+          await stripe.invoiceItems.create({
+            customer: sd.stripe_customer_id,
+            invoice: stripeInvoice.id,
+            amount: -creditAppliedCents,
+            currency: "aud",
+            description: `Refund credit for flagged lead${creditsToApply.length > 1 ? "s" : ""}`,
+          });
+        }
+
         await stripe.invoices.finalizeInvoice(stripeInvoice.id);
 
         let finalInvoice;
@@ -182,7 +211,7 @@ Deno.serve(async (req) => {
             stripe_invoice_id: stripeInvoice.id,
             period_start: periodStart,
             period_end: periodEnd,
-            total_amount: totalCents / 100,
+            total_amount: (totalCents - creditAppliedCents) / 100,
             lead_count: leads.length,
             status: finalInvoice.status === "paid" ? "paid" : "sent",
             paid_at: finalInvoice.status === "paid" ? new Date().toISOString() : null,
@@ -199,12 +228,26 @@ Deno.serve(async (req) => {
             .eq("id", item.lead_id);
         }
 
+        // Mark applied credits
+        for (const c of creditsToApply) {
+          await supabaseAdmin
+            .from("provider_credits")
+            .update({
+              status: "applied",
+              applied_invoice_id: savedInvoice.id,
+              applied_at: new Date().toISOString(),
+              amount: c.amount_cents / 100,
+            })
+            .eq("id", c.id);
+        }
+
         results.push({
           provider: provider.name,
           status: hasPaymentMethod ? "charged" : "invoiced",
           billing_mode: hasPaymentMethod ? "auto_charge" : "manual_invoice",
           leads: leads.length,
-          amount: `$${(totalCents / 100).toFixed(2)}`,
+          amount: `$${((totalCents - creditAppliedCents) / 100).toFixed(2)}`,
+          credits_applied: `$${(creditAppliedCents / 100).toFixed(2)}`,
           stripe_invoice: stripeInvoice.id,
         });
 

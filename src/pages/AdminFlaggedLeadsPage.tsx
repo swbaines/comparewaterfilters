@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Flag, ArrowUp, ArrowDown, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
+import { Loader2, Flag, ArrowUp, ArrowDown, CheckCircle2, XCircle, RotateCcw, DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -38,6 +38,9 @@ export default function AdminFlaggedLeadsPage() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [selected, setSelected] = useState<any>(null);
   const [adminNote, setAdminNote] = useState("");
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundAmount, setRefundAmount] = useState<string>("");
+  const [refundReason, setRefundReason] = useState<string>("");
 
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ["admin-flagged-leads"],
@@ -66,6 +69,70 @@ export default function AdminFlaggedLeadsPage() {
       toast.success("Flag updated");
     },
     onError: (e: any) => toast.error(e?.message || "Failed to update flag"),
+  });
+
+  const { data: creditsForSelected = [] } = useQuery({
+    queryKey: ["provider-credits-for-lead", selected?.id],
+    enabled: !!selected?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_credits" as any)
+        .select("*")
+        .eq("quote_request_id", selected.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const issueRefund = useMutation({
+    mutationFn: async ({ id, providerId, amount, reason }: { id: string; providerId: string; amount: number; reason: string }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      const { error: credErr } = await supabase
+        .from("provider_credits" as any)
+        .insert({
+          provider_id: providerId,
+          quote_request_id: id,
+          amount,
+          reason,
+          status: "pending",
+          created_by: userData.user?.id ?? null,
+        } as any);
+      if (credErr) throw credErr;
+
+      const { error: flagErr } = await supabase
+        .from("quote_requests")
+        .update({
+          flag_admin_status: "refunded",
+          vendor_notes: adminNote || null,
+        } as any)
+        .eq("id", id);
+      if (flagErr) throw flagErr;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-flagged-leads"] });
+      queryClient.invalidateQueries({ queryKey: ["provider-credits-for-lead", selected?.id] });
+      setSelected((prev: any) => prev ? { ...prev, flag_admin_status: "refunded" } : prev);
+      setRefundOpen(false);
+      setRefundReason("");
+      toast.success("Refund credit issued — will apply to next invoice");
+    },
+    onError: (e: any) => toast.error(e?.message || "Failed to issue refund"),
+  });
+
+  const voidCredit = useMutation({
+    mutationFn: async (creditId: string) => {
+      const { error } = await supabase
+        .from("provider_credits" as any)
+        .update({ status: "voided" } as any)
+        .eq("id", creditId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["provider-credits-for-lead", selected?.id] });
+      toast.success("Credit voided");
+    },
+    onError: (e: any) => toast.error(e?.message || "Failed to void credit"),
   });
 
   const clearFlag = useMutation({
@@ -272,8 +339,12 @@ export default function AdminFlaggedLeadsPage() {
                   <Textarea rows={3} value={adminNote} onChange={(e) => setAdminNote(e.target.value)} />
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700" disabled={updateFlag.isPending} onClick={() => updateFlag.mutate({ id: selected.id, status: "refunded", notes: adminNote })}>
-                    <CheckCircle2 className="h-4 w-4 mr-1.5" /> Mark refunded
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => {
+                    setRefundAmount(String(Number(selected.lead_price || 0).toFixed(2)));
+                    setRefundReason("");
+                    setRefundOpen(true);
+                  }}>
+                    <DollarSign className="h-4 w-4 mr-1.5" /> Issue refund credit
                   </Button>
                   <Button size="sm" variant="outline" disabled={updateFlag.isPending} onClick={() => updateFlag.mutate({ id: selected.id, status: "dismissed", notes: adminNote })}>
                     <XCircle className="h-4 w-4 mr-1.5" /> Dismiss
@@ -285,8 +356,97 @@ export default function AdminFlaggedLeadsPage() {
                     <RotateCcw className="h-4 w-4 mr-1.5" /> Clear flag
                   </Button>
                 </div>
+
+                {creditsForSelected.length > 0 && (
+                  <div className="rounded-md border bg-muted/30 p-3">
+                    <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      <DollarSign className="h-3.5 w-3.5" /> Refund credits
+                    </div>
+                    <div className="space-y-2">
+                      {creditsForSelected.map((c: any) => (
+                        <div key={c.id} className="flex items-center justify-between text-sm">
+                          <div>
+                            <div className="font-medium">${Number(c.amount).toFixed(2)} — <span className="capitalize">{c.status}</span></div>
+                            <div className="text-xs text-muted-foreground">
+                              {format(new Date(c.created_at), "dd MMM yyyy h:mm a")}
+                              {c.status === "applied" && c.applied_at && ` · applied ${format(new Date(c.applied_at), "dd MMM yyyy")}`}
+                            </div>
+                            {c.reason && <div className="text-xs text-muted-foreground mt-1">{c.reason}</div>}
+                          </div>
+                          {c.status === "pending" && (
+                            <Button size="sm" variant="ghost" className="text-destructive" onClick={() => voidCredit.mutate(c.id)} disabled={voidCredit.isPending}>
+                              Void
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5 text-green-600" /> Issue refund credit
+            </DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-4 text-sm">
+              <div className="rounded-md border bg-muted/40 p-3">
+                <div className="text-xs text-muted-foreground">Provider</div>
+                <div className="font-medium">{selected.provider_name}</div>
+                <div className="mt-2 text-xs text-muted-foreground">Lead price</div>
+                <div className="font-medium">${Number(selected.lead_price || 0).toFixed(2)}</div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Credit amount (AUD)</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={refundAmount}
+                  onChange={(e) => setRefundAmount(e.target.value)}
+                  className="mt-1"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Applied as a credit on the provider's next monthly invoice.
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Reason / admin note</label>
+                <Textarea
+                  rows={3}
+                  value={refundReason}
+                  onChange={(e) => setRefundReason(e.target.value)}
+                  placeholder="Why is this lead being refunded?"
+                  className="mt-1"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setRefundOpen(false)} disabled={issueRefund.isPending}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={issueRefund.isPending || !Number(refundAmount) || Number(refundAmount) <= 0}
+                  onClick={() => issueRefund.mutate({
+                    id: selected.id,
+                    providerId: selected.provider_id,
+                    amount: Number(refundAmount),
+                    reason: refundReason || selected.flag_reason || "Refund issued for flagged lead",
+                  })}
+                >
+                  {issueRefund.isPending ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-1.5" />}
+                  Issue credit
+                </Button>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>
