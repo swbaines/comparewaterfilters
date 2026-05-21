@@ -417,6 +417,38 @@ export default function VendorBillingPage() {
     .filter((inv: any) => inv.status === "sent" || inv.status === "overdue")
     .reduce((sum: number, inv: any) => sum + Number(inv.total_amount), 0);
 
+  // Refund credits issued by admins for flagged leads
+  const { data: credits = [], isLoading: creditsLoading } = useQuery({
+    queryKey: ["vendor-provider-credits", provider?.id],
+    enabled: !!provider?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("provider_credits")
+        .select("id, amount, reason, status, created_at, applied_at, applied_invoice_id, quote_request_id")
+        .eq("provider_id", provider.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const creditTotals = credits.reduce(
+    (acc, c: any) => {
+      const amt = Number(c.amount || 0);
+      if (c.status === "pending") acc.pending += amt;
+      else if (c.status === "applied") acc.applied += amt;
+      else if (c.status === "voided") acc.voided += amt;
+      return acc;
+    },
+    { pending: 0, applied: 0, voided: 0 },
+  );
+
+  const creditStatusClass: Record<string, string> = {
+    pending: "bg-amber-100 text-amber-800",
+    applied: "bg-green-100 text-green-800",
+    voided: "bg-gray-100 text-gray-700",
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="container max-w-5xl py-8 space-y-6">
