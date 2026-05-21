@@ -54,9 +54,9 @@ export default function AdminFlaggedLeadsPage() {
 
   const updateFlag = useMutation({
     mutationFn: async ({ id, status, notes }: { id: string; status: AdminStatus; notes?: string }) => {
-      const updates: Record<string, any> = { flag_admin_status: status };
+      const updates: any = { flag_admin_status: status };
       if (typeof notes === "string") updates.vendor_notes = notes;
-      const { error } = await supabase.from("quote_requests").update(updates).eq("id", id);
+      const { error } = await supabase.from("quote_requests").update(updates as any).eq("id", id);
       if (error) throw error;
       return { id, status };
     },
@@ -136,7 +136,7 @@ export default function AdminFlaggedLeadsPage() {
 
   return (
     <>
-      <PageMeta title="Flagged Leads — Admin" description="Review leads flagged by providers for investigation and potential refund." path="/admin/flagged-leads" noindex />
+      <PageMeta title="Flagged Leads — Admin" description="Review leads flagged by providers for investigation and potential refund." path="/admin/flagged-leads" />
       <AdminNav />
       <div className="container max-w-6xl py-8">
         <div className="mb-6 flex items-center justify-between">
