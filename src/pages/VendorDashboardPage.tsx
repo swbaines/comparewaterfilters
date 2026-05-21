@@ -1047,9 +1047,83 @@ export default function VendorDashboardPage() {
                     </a>
                   </Button>
                 </div>
+
+                {/* Flag for review */}
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Flag className="h-4 w-4" /> Flag for Investigation
+                  </h3>
+                  {selectedLead.flagged_for_review ? (
+                    <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm">
+                      <div className="flex items-center gap-1.5 font-medium text-amber-900">
+                        <Flag className="h-3.5 w-3.5" /> Flagged for admin review
+                        {selectedLead.flag_admin_status && (
+                          <Badge variant="outline" className="ml-1 text-[10px] capitalize">{selectedLead.flag_admin_status}</Badge>
+                        )}
+                      </div>
+                      {selectedLead.flagged_at && (
+                        <p className="mt-1 text-xs text-amber-800">
+                          Submitted {format(new Date(selectedLead.flagged_at), "dd MMM yyyy 'at' h:mm a")}
+                        </p>
+                      )}
+                      {selectedLead.flag_reason && (
+                        <p className="mt-2 whitespace-pre-wrap text-sm text-amber-900">{selectedLead.flag_reason}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        Think this lead is invalid (e.g. bad contact details, duplicate, out of area, not genuine)? Flag it for admin review and a potential refund.
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-amber-300 text-amber-800 hover:bg-amber-50"
+                        onClick={() => { setFlagReason(""); setFlagDialogOpen(true); }}
+                      >
+                        <Flag className="h-4 w-4 mr-1.5" /> Flag this lead
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Flag Lead Dialog */}
+      <Dialog open={flagDialogOpen} onOpenChange={(open) => { setFlagDialogOpen(open); if (!open) setFlagReason(""); }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Flag className="h-5 w-5 text-amber-600" /> Flag lead for review
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Briefly describe why this lead should be investigated. Our team will review and may issue a refund if appropriate.
+            </p>
+            <Textarea
+              autoFocus
+              rows={4}
+              placeholder="e.g. Phone number is disconnected, customer says they didn't request a quote, duplicate of an earlier lead..."
+              value={flagReason}
+              onChange={(e) => setFlagReason(e.target.value)}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setFlagDialogOpen(false)}>Cancel</Button>
+              <Button
+                size="sm"
+                disabled={!flagReason.trim() || flagLead.isPending || !selectedLead}
+                onClick={() => selectedLead && flagLead.mutate({ id: selectedLead.id, reason: flagReason.trim() })}
+              >
+                {flagLead.isPending && <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />}
+                Submit flag
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
