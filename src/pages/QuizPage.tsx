@@ -392,7 +392,7 @@ export default function QuizPage() {
               Find the right water filtration system for your home
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-              Receive personalised recommendations and free quotes from trusted local providers.
+              Get personalised recommendations and matched with trusted providers near you — take the quiz.
             </p>
           </div>
         )}
