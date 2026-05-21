@@ -1,5 +1,6 @@
 import Stripe from "npm:stripe@14.21.0";
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { buildRolloverCredit, computeCreditApplication } from "./credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -137,21 +138,23 @@ Deno.serve(async (req) => {
         // Apply any pending refund credits for this provider (capped at invoice total)
         const { data: pendingCredits } = await supabaseAdmin
           .from("provider_credits")
-          .select("id, amount")
+          .select("id, amount, reason, quote_request_id, created_by")
           .eq("provider_id", provider.id)
           .eq("status", "pending")
           .order("created_at", { ascending: true });
 
-        let creditAppliedCents = 0;
-        const creditsToApply: { id: string; original_cents: number; applied_cents: number }[] = [];
-        for (const c of pendingCredits || []) {
-          const remaining = totalCents - creditAppliedCents;
-          if (remaining <= 0) break;
-          const credCents = Math.round(Number(c.amount) * 100);
-          const applyCents = Math.min(credCents, remaining);
-          creditAppliedCents += applyCents;
-          creditsToApply.push({ id: c.id, original_cents: credCents, applied_cents: applyCents });
-        }
+        const creditPlan = computeCreditApplication(
+          (pendingCredits || []).map((c: any) => ({
+            id: c.id,
+            amount: Number(c.amount),
+            reason: c.reason ?? null,
+            quote_request_id: c.quote_request_id ?? null,
+            created_by: c.created_by ?? null,
+          })),
+          totalCents,
+        );
+        const creditAppliedCents = creditPlan.total_applied_cents;
+        const creditsToApply = creditPlan.applied;
 
         const invoiceNumber = `INV-${Date.now().toString(36).toUpperCase()}`;
 
@@ -242,25 +245,9 @@ Deno.serve(async (req) => {
             })
             .eq("id", c.id);
 
-          const remainderCents = c.original_cents - c.applied_cents;
-          if (remainderCents > 0) {
-            // Look up the original credit so we preserve its reason/quote_request_id linkage.
-            const { data: original } = await supabaseAdmin
-              .from("provider_credits")
-              .select("reason, quote_request_id, created_by")
-              .eq("id", c.id)
-              .single();
-
-            await supabaseAdmin.from("provider_credits").insert({
-              provider_id: provider.id,
-              quote_request_id: original?.quote_request_id ?? null,
-              amount: remainderCents / 100,
-              reason: original?.reason
-                ? `${original.reason} (rollover from prior invoice)`
-                : "Rollover from prior invoice",
-              status: "pending",
-              created_by: original?.created_by ?? null,
-            });
+          const rollover = buildRolloverCredit(provider.id, c);
+          if (rollover) {
+            await supabaseAdmin.from("provider_credits").insert(rollover);
           }
         }
 
