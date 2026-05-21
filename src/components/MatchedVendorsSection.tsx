@@ -120,14 +120,6 @@ function VendorRow({
                   </div>
                   <h3 className="mt-1 flex items-center gap-1.5 text-base font-semibold">
                     <span className="truncate">{vendor.name}</span>
-                    {vendor.abn_verified && (
-                      <span
-                        className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-800"
-                        title="ABN verified against the Australian Business Register format checksum"
-                      >
-                        <ShieldCheck className="h-3 w-3" /> ABN
-                      </span>
-                    )}
                   </h3>
                   {startingFromLabel && (
                     <p className="mt-0.5 text-xs text-muted-foreground">
