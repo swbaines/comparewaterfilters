@@ -136,9 +136,9 @@ async function signedRequest(handler: (req: Request) => Response | Promise<Respo
 
 // Capture the registered handler instead of binding a real port.
 let registeredHandler: ((req: Request) => Response | Promise<Response>) | null = null;
-const originalServe = Deno.serve;
-// @ts-ignore - override for testing
-Deno.serve = ((handler: (req: Request) => Response | Promise<Response>) => {
+// On Deno 2.x, `Deno.serve` is a getter-only property and cannot be reassigned
+// directly. Use defineProperty to stub it for tests.
+const stubServe = ((handler: (req: Request) => Response | Promise<Response>) => {
   registeredHandler = handler;
   return {
     finished: Promise.resolve(),
@@ -148,6 +148,11 @@ Deno.serve = ((handler: (req: Request) => Response | Promise<Response>) => {
     addr: { transport: "tcp", hostname: "127.0.0.1", port: 0 },
   } as unknown as ReturnType<typeof Deno.serve>;
 }) as typeof Deno.serve;
+Object.defineProperty(Deno, "serve", {
+  value: stubServe,
+  writable: true,
+  configurable: true,
+});
 
 // ---------- Boot ----------
 
