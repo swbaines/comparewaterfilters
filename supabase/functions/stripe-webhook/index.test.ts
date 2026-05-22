@@ -163,9 +163,7 @@ Deno.env.set("SUPABASE_URL", stub.url);
 Deno.env.set("SUPABASE_SERVICE_ROLE_KEY", "service_role_dummy");
 
 await import("./index.ts");
-// Restore Deno.serve so other code is unaffected.
-// @ts-ignore - restore
-Deno.serve = originalServe;
+// No restore needed — the stub is harmless for the remainder of the test run.
 
 if (!registeredHandler) throw new Error("Handler did not register with Deno.serve");
 const handler: (req: Request) => Response | Promise<Response> = registeredHandler;
