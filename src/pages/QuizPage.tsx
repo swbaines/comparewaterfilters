@@ -283,6 +283,14 @@ export default function QuizPage() {
   const canNext = (): boolean => {
     switch (step) {
       case 1:
+        return answers.concerns.length > 0;
+      case 2:
+        if (!answers.waterSource) return false;
+        if (NON_TOWN_SOURCES.includes(answers.waterSource)) {
+          return !!(answers.waterTestedRecently && answers.waterUsageType);
+        }
+        return true;
+      case 3:
         return !!(
           answers.postcode &&
           answers.state &&
@@ -292,14 +300,6 @@ export default function QuizPage() {
           answers.bathrooms &&
           answers.propertyAge
         );
-      case 2:
-        if (!answers.waterSource) return false;
-        if (NON_TOWN_SOURCES.includes(answers.waterSource)) {
-          return !!(answers.waterTestedRecently && answers.waterUsageType);
-        }
-        return true;
-      case 3:
-        return answers.concerns.length > 0;
       case 4:
         return !!answers.coverage;
       case 5:
@@ -367,9 +367,9 @@ export default function QuizPage() {
   };
 
   const stepTitles = [
-    "About your household",
-    "Your water source",
     "Your main concerns",
+    "Your water source",
+    "About your household",
     "Coverage needed",
     "Your budget",
     "Your priorities",
