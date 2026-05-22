@@ -388,10 +388,10 @@ export default function QuizPage() {
       <div className="container max-w-2xl">
         {step === 1 && (
           <div className="mb-4 rounded-lg border bg-background px-4 py-3 shadow-sm">
-            <h1 className="text-sm font-bold tracking-tight text-primary sm:text-xl">
+            <h1 className="text-lg font-bold tracking-tight text-primary sm:text-xl">
               Find the right water filtration system for your home
             </h1>
-            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Get personalised recommendations and matched with trusted providers near you — take the quiz.
             </p>
           </div>
@@ -447,7 +447,7 @@ export default function QuizPage() {
 
         <Card className="shadow-sm">
           <CardContent className="p-6 sm:p-8">
-            <h2 className="mb-6 text-xl font-bold">{stepTitles[step - 1]}</h2>
+            <h2 className="mb-6 text-lg font-bold sm:text-xl">{stepTitles[step - 1]}</h2>
 
             {/* Step 1 */}
             {step === 3 && (
