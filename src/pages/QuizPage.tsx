@@ -450,7 +450,7 @@ export default function QuizPage() {
             <h2 className="mb-6 text-xl font-bold">{stepTitles[step - 1]}</h2>
 
             {/* Step 1 */}
-            {step === 1 && (
+            {step === 3 && (
               <div className="space-y-4">
                 <div>
                   <div
@@ -705,7 +705,7 @@ export default function QuizPage() {
             )}
 
             {/* Step 3 */}
-            {step === 3 && (
+            {step === 1 && (
               <div className="space-y-1">
                 <p className="mb-3 text-sm text-muted-foreground">
                   Select all that apply. <span className="text-destructive">*</span>
