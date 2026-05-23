@@ -29,6 +29,9 @@ export default function ProviderMatchPage() {
       return;
     }
     setSubmitted(true);
+    if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+      (window as any).gtag("event", "quote_request", { currency: "AUD" });
+    }
     toast.success("Request submitted! We'll be in touch with matched providers.");
   };
 
