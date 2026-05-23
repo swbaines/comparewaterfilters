@@ -451,6 +451,13 @@ export default function MatchedVendorsSection({
         });
       }
 
+      if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+        (window as any).gtag("event", "quote_request", {
+          currency: "AUD",
+          value: leadPrice * selectedVendors.length,
+        });
+      }
+
       setSubmitted(selectedVendors.map((v) => v.name));
       toast.success(
         `Quote request${selectedVendors.length > 1 ? "s" : ""} sent to ${selectedVendors.length} provider${selectedVendors.length > 1 ? "s" : ""}!`
