@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageMeta from "@/components/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +21,23 @@ export default function ProviderMatchPage() {
     phone: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [ownershipStatus, setOwnershipStatus] = useState<string>("");
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("quizAnswers");
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const raw_os = String(parsed?.ownershipStatus || "").toLowerCase();
+      if (raw_os === "own" || raw_os === "homeowner") {
+        setOwnershipStatus("homeowner");
+      } else if (raw_os === "rent" || raw_os === "renter") {
+        setOwnershipStatus("renter");
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +47,10 @@ export default function ProviderMatchPage() {
     }
     setSubmitted(true);
     if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
-      (window as any).gtag("event", "quote_request", { currency: "AUD" });
+      (window as any).gtag("event", "quote_request", {
+        currency: "AUD",
+        value: ownershipStatus === "homeowner" ? 85 : 25,
+      });
     }
     toast.success("Request submitted! We'll be in touch with matched providers.");
   };
