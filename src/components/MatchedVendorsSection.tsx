@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   AlertCircle,
@@ -12,6 +13,7 @@ import {
   CheckCircle2,
   Clock,
   ImageIcon,
+  Lock,
   MapPin,
   Send,
   Shield,
@@ -279,6 +281,17 @@ export default function MatchedVendorsSection({
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState<string[]>([]);
 
+  // Contact details captured at the quote-request step (no longer in the
+  // quiz itself). Pre-filled from `answers` so shared-link flows that
+  // already carry contact info just pass through.
+  const [contactFirstName, setContactFirstName] = useState(answers.firstName || "");
+  const [contactEmail, setContactEmail] = useState(answers.email || "");
+  const [contactMobile, setContactMobile] = useState(answers.mobile || "");
+  const [contactPreference, setContactPreference] = useState(
+    answers.contactPreference || "",
+  );
+  const [showContactErrors, setShowContactErrors] = useState(false);
+
   // Pre-select all top vendors when they load
   useEffect(() => {
     if (topVendors.length > 0 && selected.size === 0 && submitted.length === 0) {
@@ -345,6 +358,15 @@ export default function MatchedVendorsSection({
       toast.error("Select at least one provider to request quotes from.");
       return;
     }
+    const firstName = contactFirstName.trim();
+    const email = contactEmail.trim();
+    const mobile = contactMobile.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!firstName || !email || !mobile || !emailRegex.test(email)) {
+      setShowContactErrors(true);
+      toast.error("Please enter your first name, mobile and a valid email.");
+      return;
+    }
     setSending(true);
     try {
       const { getEffectiveLeadPrices } = await import("@/lib/leadPricing");
@@ -359,9 +381,9 @@ export default function MatchedVendorsSection({
         id: crypto.randomUUID(),
         provider_id: v.provider_id,
         provider_name: v.name,
-        customer_name: answers.firstName,
-        customer_email: answers.email,
-        customer_mobile: answers.mobile || null,
+        customer_name: firstName,
+        customer_email: email,
+        customer_mobile: mobile || null,
         customer_suburb: answers.suburb,
         customer_state: answers.state,
         customer_postcode: answers.postcode,
@@ -379,7 +401,7 @@ export default function MatchedVendorsSection({
         message: message || null,
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
-        contact_preference: answers.contactPreference || "no_preference",
+        contact_preference: contactPreference || "no_preference",
       }));
 
       const { error } = await supabase.from("quote_requests").insert(rows);
@@ -398,9 +420,9 @@ export default function MatchedVendorsSection({
                 idempotencyKey: `vendor-lead-${row.id}`,
                 templateData: {
                   providerName: v.name,
-                  customerName: answers.firstName,
-                  customerEmail: answers.email,
-                  customerMobile: answers.mobile || "",
+                  customerName: firstName,
+                  customerEmail: email,
+                  customerMobile: mobile || "",
                   customerSuburb: answers.suburb,
                   customerState: answers.state,
                   customerPostcode: answers.postcode,
@@ -414,7 +436,7 @@ export default function MatchedVendorsSection({
                   createdAt: new Date().toISOString(),
                   installationTimeline: answers.installationTimeline || "",
                   leadTemperature: leadTemperature || "",
-                  contactPreference: answers.contactPreference || "no_preference",
+                  contactPreference: contactPreference || "no_preference",
                 },
               },
             })
@@ -429,13 +451,13 @@ export default function MatchedVendorsSection({
         .invoke("send-transactional-email", {
           body: {
             templateName: "customer-quote-confirmation",
-            recipientEmail: answers.email,
+            recipientEmail: email,
             idempotencyKey: `customer-confirm-${rows.map((r) => r.id).join("-")}`,
             templateData: {
-              customerName: answers.firstName,
+              customerName: firstName,
               providerName: selectedVendors.map((v) => v.name).join(", "),
-              customerEmail: answers.email,
-              customerMobile: answers.mobile || "",
+              customerEmail: email,
+              customerMobile: mobile || "",
               recommendedSystems: dedupedSystems,
             },
           },
@@ -566,6 +588,72 @@ export default function MatchedVendorsSection({
               Each selected provider will receive your quote request and contact you
               directly. You're not committing to anything by requesting a quote.
             </p>
+          </div>
+
+          <div className="rounded-lg border border-primary/15 bg-primary/[0.04] p-4 space-y-3">
+            <p className="flex items-start gap-2 text-xs text-foreground/80">
+              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+              <span>
+                We never sell your details. You'll only be contacted by installers
+                you approve.
+              </span>
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="space-y-1">
+                <Label htmlFor="contact-first-name" className="text-xs">
+                  First name *
+                </Label>
+                <Input
+                  id="contact-first-name"
+                  value={contactFirstName}
+                  onChange={(e) => setContactFirstName(e.target.value)}
+                  placeholder="Your first name"
+                  aria-invalid={showContactErrors && !contactFirstName.trim()}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="contact-mobile" className="text-xs">
+                  Phone number *
+                </Label>
+                <Input
+                  id="contact-mobile"
+                  inputMode="tel"
+                  value={contactMobile}
+                  onChange={(e) => setContactMobile(e.target.value)}
+                  placeholder="04XX XXX XXX"
+                  aria-invalid={showContactErrors && !contactMobile.trim()}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="contact-email" className="text-xs">
+                  Email *
+                </Label>
+                <Input
+                  id="contact-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="you@email.com"
+                  aria-invalid={showContactErrors && !contactEmail.trim()}
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="contact-pref" className="text-xs">
+                How would you prefer installers contact you? (optional)
+              </Label>
+              <select
+                id="contact-pref"
+                value={contactPreference}
+                onChange={(e) => setContactPreference(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="">No preference</option>
+                <option value="phone">Phone call</option>
+                <option value="sms">SMS first</option>
+                <option value="email">Email first</option>
+              </select>
+            </div>
           </div>
 
           <div className="space-y-1.5">

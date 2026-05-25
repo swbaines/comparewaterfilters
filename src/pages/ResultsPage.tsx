@@ -781,6 +781,65 @@ export default function ResultsPage() {
     )];
   }, [result]);
 
+  // Persist a quiz_submissions row the moment the recommendation is
+  // displayed (before any contact is captured) and fire a Clarity
+  // "recommendation_viewed" event so we can measure the drop-off between
+  // viewing the recommendation and converting to a quote request.
+  useEffect(() => {
+    if (!result || !answers) return;
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("quizSubmissionSaved") === "1") return;
+    sessionStorage.setItem("quizSubmissionSaved", "1");
+
+    if (typeof (window as any).clarity === "function") {
+      (window as any).clarity("event", "recommendation_viewed");
+    }
+
+    const primaryId = toCanonicalSystemType(result.primary.id) ?? result.primary.id;
+    const pricing = getSystemPricing(primaryId);
+    const priceMin = pricing?.installMin ?? result.primary.priceMin ?? null;
+    const priceMax = pricing?.installMax ?? result.primary.priceMax ?? null;
+
+    supabase
+      .from("quiz_submissions")
+      .insert({
+        first_name: answers.firstName || null,
+        email: answers.email || null,
+        mobile: answers.mobile || null,
+        postcode: answers.postcode || null,
+        suburb: answers.suburb || null,
+        state: answers.state || null,
+        property_type: answers.propertyType || null,
+        ownership_status: answers.ownershipStatus || null,
+        household_size: answers.householdSize || null,
+        bathrooms: answers.bathrooms || null,
+        property_age: answers.propertyAge || null,
+        water_source: answers.waterSource || null,
+        water_tested_recently: answers.waterTestedRecently || null,
+        water_usage_type: answers.waterUsageType || null,
+        concerns: answers.concerns,
+        coverage: answers.coverage || null,
+        budget: answers.budget || null,
+        maintenance_tolerance: answers.maintenanceTolerance || null,
+        installation_timeline: answers.installationTimeline || null,
+        priorities: answers.priorities || [],
+        notes: answers.notes || null,
+        consent: answers.consent ?? false,
+        contact_preference: answers.contactPreference || null,
+        recommended_systems: recommendedSystemIds,
+        recommendation_price_min: priceMin,
+        recommendation_price_max: priceMax,
+        recommendation_reason: result.primaryReason || null,
+      })
+      .then(({ error }) => {
+        if (error) {
+          console.error("Failed to save recommendation view:", error);
+          // Allow a retry on next mount if the insert failed.
+          sessionStorage.removeItem("quizSubmissionSaved");
+        }
+      });
+  }, [result, answers, recommendedSystemIds]);
+
   if (!result || !answers) return null;
 
   const confidence = computeConfidence(answers);
@@ -806,7 +865,7 @@ export default function ResultsPage() {
         <div className="mb-10 text-center">
           <Badge className="mb-3">Your personalised results</Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            Hi {answers.firstName}, here's our recommendation
+            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} our recommendation
           </h1>
         </div>
 
@@ -830,9 +889,12 @@ export default function ResultsPage() {
             <Badge className="mb-3" variant="secondary">
               Next step
             </Badge>
-            <h2 className="text-2xl font-bold sm:text-3xl">Choose Your Provider(s)</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">
+              Get free quotes from up to 3 local installers
+            </h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Pick the providers you'd like to hear from. They'll contact you directly — no obligation.
+              Enter your details and we'll match you with trusted installers in your area.
+              No obligation — you choose who to talk to.
             </p>
           </div>
 

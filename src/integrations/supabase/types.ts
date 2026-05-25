@@ -626,8 +626,8 @@ export type Database = {
           contact_preference: string | null
           coverage: string | null
           created_at: string
-          email: string
-          first_name: string
+          email: string | null
+          first_name: string | null
           household_size: string | null
           id: string
           installation_timeline: string | null
@@ -640,6 +640,10 @@ export type Database = {
           priorities: string[] | null
           property_age: string | null
           property_type: string | null
+          recommendation_price_max: number | null
+          recommendation_price_min: number | null
+          recommendation_reason: string | null
+          recommended_systems: string[] | null
           state: string | null
           suburb: string | null
           water_source: string | null
@@ -654,8 +658,8 @@ export type Database = {
           contact_preference?: string | null
           coverage?: string | null
           created_at?: string
-          email: string
-          first_name: string
+          email?: string | null
+          first_name?: string | null
           household_size?: string | null
           id?: string
           installation_timeline?: string | null
@@ -668,6 +672,10 @@ export type Database = {
           priorities?: string[] | null
           property_age?: string | null
           property_type?: string | null
+          recommendation_price_max?: number | null
+          recommendation_price_min?: number | null
+          recommendation_reason?: string | null
+          recommended_systems?: string[] | null
           state?: string | null
           suburb?: string | null
           water_source?: string | null
@@ -682,8 +690,8 @@ export type Database = {
           contact_preference?: string | null
           coverage?: string | null
           created_at?: string
-          email?: string
-          first_name?: string
+          email?: string | null
+          first_name?: string | null
           household_size?: string | null
           id?: string
           installation_timeline?: string | null
@@ -696,6 +704,10 @@ export type Database = {
           priorities?: string[] | null
           property_age?: string | null
           property_type?: string | null
+          recommendation_price_max?: number | null
+          recommendation_price_min?: number | null
+          recommendation_reason?: string | null
+          recommended_systems?: string[] | null
           state?: string | null
           suburb?: string | null
           water_source?: string | null

@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import SuburbPostcodeAutocomplete from "@/components/SuburbPostcodeAutocomplete";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check, RefreshCw } from "lucide-react";
@@ -22,7 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 
 // State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
@@ -314,54 +311,20 @@ export default function QuizPage() {
         return true; // optional
       case 7:
         return !!answers.installationTimeline;
-      case 8:
-        return !!(
-          answers.firstName &&
-          answers.email &&
-          answers.mobile &&
-          answers.contactPreference &&
-          answers.consent &&
-          answers.disclaimerAck
-        );
       default:
         return true;
     }
   };
 
   const handleSubmit = async () => {
-    // Save to database so the lead is never lost
-    try {
-      await supabase.from("quiz_submissions").insert({
-        first_name: answers.firstName,
-        email: answers.email,
-        mobile: answers.mobile || null,
-        postcode: answers.postcode || null,
-        suburb: answers.suburb || null,
-        state: answers.state || null,
-        property_type: answers.propertyType || null,
-        ownership_status: answers.ownershipStatus || null,
-        household_size: answers.householdSize || null,
-        bathrooms: answers.bathrooms || null,
-        property_age: answers.propertyAge || null,
-        water_source: answers.waterSource || null,
-        water_tested_recently: answers.waterTestedRecently || null,
-        water_usage_type: answers.waterUsageType || null,
-        concerns: answers.concerns,
-        coverage: answers.coverage || null,
-        budget: answers.budget || null,
-        maintenance_tolerance: answers.maintenanceTolerance || null,
-        installation_timeline: answers.installationTimeline || null,
-        priorities: answers.priorities || [],
-        notes: answers.notes || null,
-        consent: answers.consent,
-        contact_preference: answers.contactPreference || null,
-      });
-    } catch (err) {
-      console.error("Failed to save quiz submission:", err);
-    }
-
-    // Store answers in sessionStorage for results page
+    // Contact details are now captured on the results page (when the user
+    // requests vendor quotes). Saving of the quiz_submissions row happens
+    // on ResultsPage once the recommendation is shown so we can also track
+    // visitors who view recommendations without converting.
     sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
+    // Clear any prior "saved recommendation" flag so ResultsPage records
+    // a fresh recommendation_viewed row for this run.
+    sessionStorage.removeItem("quizSubmissionSaved");
     // Meta Pixel: track quiz completion as CompleteRegistration event
     if (typeof window !== "undefined" && (window as any).fbq) {
       (window as any).fbq("track", "CompleteRegistration", {
@@ -382,8 +345,7 @@ export default function QuizPage() {
     "Coverage needed",
     "Your budget",
     "Your priorities",
-    "Any other details",
-    "Get your results",
+    "Installation timing",
   ];
 
   return (
@@ -923,120 +885,6 @@ export default function QuizPage() {
                     value={answers.notes}
                     onChange={(e) => set("notes", e.target.value)}
                   />
-                </div>
-              </div>
-            )}
-
-            {/* Step 8 */}
-            {step === 8 && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Enter your details to see your personalised recommendations.
-                </p>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">First name *</label>
-                  <Input
-                    placeholder="Your first name"
-                    value={answers.firstName}
-                    onChange={(e) => set("firstName", e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Email *</label>
-                  <Input
-                    type="email"
-                    placeholder="you@email.com"
-                    value={answers.email}
-                    onChange={(e) => set("email", e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Mobile *</label>
-                  <Input
-                    placeholder="04XX XXX XXX"
-                    value={answers.mobile}
-                    onChange={(e) => set("mobile", e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    How would you prefer providers to contact you? <span className="text-destructive">*</span>
-                  </label>
-                  <p className="mb-2 text-xs text-muted-foreground">
-                    We'll let providers know your preference so they can reach out the way that suits you best.
-                  </p>
-                  <div
-                    className={`grid gap-2 ${
-                      showErrors && !answers.contactPreference
-                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
-                        : ""
-                    }`}
-                  >
-                    {contactPreferenceOptions.map((opt) => (
-                      <OptionButton
-                        key={opt.value}
-                        selected={answers.contactPreference === opt.value}
-                        onClick={() => set("contactPreference", opt.value)}
-                      >
-                        {opt.label}
-                      </OptionButton>
-                    ))}
-                  </div>
-                  {showErrors && !answers.contactPreference && (
-                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
-                      Please choose how you'd like providers to contact you.
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-start gap-2">
-                  <Checkbox
-                    id="consent"
-                    checked={answers.consent}
-                    onCheckedChange={(checked) => set("consent", !!checked)}
-                  />
-                  <label htmlFor="consent" className="text-sm text-muted-foreground">
-                    I agree to receive my recommendations via email and understand my information is used to provide
-                    personalised guidance in accordance with our{" "}
-                    <a
-                      href="/privacy"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary underline hover:text-primary/80"
-                    >
-                      Privacy Policy
-                    </a>{" "}
-                    and{" "}
-                    <a
-                      href="/terms"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary underline hover:text-primary/80"
-                    >
-                      Terms and Conditions
-                    </a>
-                    . I can unsubscribe at any time.
-                  </label>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Checkbox
-                    id="disclaimerAck"
-                    checked={answers.disclaimerAck}
-                    onCheckedChange={(checked) => set("disclaimerAck", !!checked)}
-                  />
-                  <label htmlFor="disclaimerAck" className="text-sm text-muted-foreground">
-                    I acknowledge that recommendations are for general guidance only and do not constitute professional
-                    advice. I have read and accept the{" "}
-                    <a
-                      href="/disclaimer"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-primary hover:underline"
-                    >
-                      platform disclaimer
-                    </a>
-                    .
-                  </label>
                 </div>
               </div>
             )}
