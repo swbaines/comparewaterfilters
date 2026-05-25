@@ -738,7 +738,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       // Rule 4 path (taste/chlorine/drinking only)
       pushRule("rule-4-drinking-only");
       primaryId = "under-sink-carbon";
-      primaryReason = `An under-sink carbon and sediment filter is the ideal solution for renters and apartments — effectively removing chlorine, sediment, and improving taste at your kitchen tap. $300–$1,200 installed.`;
+      primaryReason = `An under-sink carbon and sediment filter is the ideal solution for renters and apartments — effectively removing chlorine, sediment, and improving taste at your kitchen tap. $300–$1,000 installed.`;
       secondaryId = "tap-filter";
       secondaryReason = `A tap-mounted filter is a cheaper alternative that screws onto your existing tap — easier to install (no plumbing changes) but with lower flow rate and shorter cartridge life than an under-sink system.`;
       premiumId = "reverse-osmosis";
@@ -821,7 +821,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
       // RULE 6: Budget under $1k — move under-sink to Best, whole-house to Premium
       pushRule("rule-6-budget-under-1k");
       primaryId = "under-sink-carbon";
-      primaryReason = `Within your budget, an under-sink carbon and sediment filter is the best option — it effectively removes chlorine, sediment, and improves drinking water taste at your kitchen tap. Honest note: this only addresses drinking water, not your full whole-home concern (skin/hair, shower, appliances). $300–$1,200 installed.`;
+      primaryReason = `Within your budget, an under-sink carbon and sediment filter is the best option — it effectively removes chlorine, sediment, and improves drinking water taste at your kitchen tap. Honest note: this only addresses drinking water, not your full whole-home concern (skin/hair, shower, appliances). $300–$1,000 installed.`;
       secondaryId = "tap-filter";
       secondaryReason = `A tap-mounted filter is the cheapest entry point — quick to install with no plumbing work, but with limited flow and shorter cartridge life. A reasonable starting point only.`;
       premiumId = "whole-house-filtration";
@@ -860,7 +860,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   else if (f.onlyTasteChlorine) {
     pushRule("rule-4-drinking-only");
     primaryId = "under-sink-carbon";
-    primaryReason = `An under-sink carbon and sediment filter is the ideal solution for your needs — effectively removing chlorine, sediment, and dramatically improving the taste of your drinking water. $300–$1,200 installed.`;
+    primaryReason = `An under-sink carbon and sediment filter is the ideal solution for your needs — effectively removing chlorine, sediment, and dramatically improving the taste of your drinking water. $300–$1,000 installed.`;
     secondaryId = "tap-filter";
     secondaryReason = `A tap-mounted filter is the cheaper alternative — it screws directly onto your existing tap with no plumbing work. Lower flow rate and shorter cartridge life than under-sink, but a reasonable budget option.`;
     premiumId = "reverse-osmosis";
@@ -871,7 +871,7 @@ export function generateRecommendations(answers: QuizAnswers): RecommendationRes
   else {
     pushRule("default");
     primaryId = "under-sink-carbon";
-    primaryReason = `Based on your answers, an under-sink carbon and sediment filter is a solid all-round choice — it removes chlorine, sediment, and significantly improves drinking water taste at your kitchen tap. $300–$1,200 installed.`;
+    primaryReason = `Based on your answers, an under-sink carbon and sediment filter is a solid all-round choice — it removes chlorine, sediment, and significantly improves drinking water taste at your kitchen tap. $300–$1,000 installed.`;
     secondaryId = "tap-filter";
     secondaryReason = `A tap-mounted filter is a cheaper alternative — quick to install with no plumbing work. Lower flow and shorter cartridge life than an under-sink system, but a reasonable starting point.`;
     premiumId = "reverse-osmosis";
