@@ -281,6 +281,17 @@ export default function MatchedVendorsSection({
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState<string[]>([]);
 
+  // Contact details captured at the quote-request step (no longer in the
+  // quiz itself). Pre-filled from `answers` so shared-link flows that
+  // already carry contact info just pass through.
+  const [contactFirstName, setContactFirstName] = useState(answers.firstName || "");
+  const [contactEmail, setContactEmail] = useState(answers.email || "");
+  const [contactMobile, setContactMobile] = useState(answers.mobile || "");
+  const [contactPreference, setContactPreference] = useState(
+    answers.contactPreference || "",
+  );
+  const [showContactErrors, setShowContactErrors] = useState(false);
+
   // Pre-select all top vendors when they load
   useEffect(() => {
     if (topVendors.length > 0 && selected.size === 0 && submitted.length === 0) {
@@ -347,6 +358,15 @@ export default function MatchedVendorsSection({
       toast.error("Select at least one provider to request quotes from.");
       return;
     }
+    const firstName = contactFirstName.trim();
+    const email = contactEmail.trim();
+    const mobile = contactMobile.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!firstName || !email || !mobile || !emailRegex.test(email)) {
+      setShowContactErrors(true);
+      toast.error("Please enter your first name, mobile and a valid email.");
+      return;
+    }
     setSending(true);
     try {
       const { getEffectiveLeadPrices } = await import("@/lib/leadPricing");
@@ -361,9 +381,9 @@ export default function MatchedVendorsSection({
         id: crypto.randomUUID(),
         provider_id: v.provider_id,
         provider_name: v.name,
-        customer_name: answers.firstName,
-        customer_email: answers.email,
-        customer_mobile: answers.mobile || null,
+        customer_name: firstName,
+        customer_email: email,
+        customer_mobile: mobile || null,
         customer_suburb: answers.suburb,
         customer_state: answers.state,
         customer_postcode: answers.postcode,
@@ -381,7 +401,7 @@ export default function MatchedVendorsSection({
         message: message || null,
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
-        contact_preference: answers.contactPreference || "no_preference",
+        contact_preference: contactPreference || "no_preference",
       }));
 
       const { error } = await supabase.from("quote_requests").insert(rows);
@@ -400,9 +420,9 @@ export default function MatchedVendorsSection({
                 idempotencyKey: `vendor-lead-${row.id}`,
                 templateData: {
                   providerName: v.name,
-                  customerName: answers.firstName,
-                  customerEmail: answers.email,
-                  customerMobile: answers.mobile || "",
+                  customerName: firstName,
+                  customerEmail: email,
+                  customerMobile: mobile || "",
                   customerSuburb: answers.suburb,
                   customerState: answers.state,
                   customerPostcode: answers.postcode,
@@ -416,7 +436,7 @@ export default function MatchedVendorsSection({
                   createdAt: new Date().toISOString(),
                   installationTimeline: answers.installationTimeline || "",
                   leadTemperature: leadTemperature || "",
-                  contactPreference: answers.contactPreference || "no_preference",
+                  contactPreference: contactPreference || "no_preference",
                 },
               },
             })
@@ -431,13 +451,13 @@ export default function MatchedVendorsSection({
         .invoke("send-transactional-email", {
           body: {
             templateName: "customer-quote-confirmation",
-            recipientEmail: answers.email,
+            recipientEmail: email,
             idempotencyKey: `customer-confirm-${rows.map((r) => r.id).join("-")}`,
             templateData: {
-              customerName: answers.firstName,
+              customerName: firstName,
               providerName: selectedVendors.map((v) => v.name).join(", "),
-              customerEmail: answers.email,
-              customerMobile: answers.mobile || "",
+              customerEmail: email,
+              customerMobile: mobile || "",
               recommendedSystems: dedupedSystems,
             },
           },
