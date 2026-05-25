@@ -138,10 +138,9 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove, n
                 <ShieldCheck className="h-3 w-3" /> {needsBadge}
               </Badge>
             )}
-            <ConfidenceBadge level={confidence} />
           </div>
         )}
-        {labelAbove && (badge || confidence) && (
+        {labelAbove && (badge || needsBadge) && (
           <div className="flex flex-wrap items-center gap-2">
             {badge && <Badge variant="outline" className="w-fit text-xs font-normal">{badge}</Badge>}
             {needsBadge && (
@@ -149,7 +148,6 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove, n
                 <ShieldCheck className="h-3 w-3" /> {needsBadge}
               </Badge>
             )}
-            <ConfidenceBadge level={confidence} />
           </div>
         )}
         <p className="text-xs leading-relaxed text-muted-foreground">{TIER_EXPLANATIONS[variant]}</p>
