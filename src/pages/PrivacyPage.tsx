@@ -157,6 +157,7 @@ export default function PrivacyPage() {
             <li><strong>Stripe</strong> — payment processing for Vendor billing</li>
             <li><strong>Google</strong> — analytics (Google Analytics) and advertising measurement</li>
             <li><strong>Meta (Facebook)</strong> — advertising measurement via Meta Pixel</li>
+            <li><strong>Microsoft Clarity</strong> — anonymised session recordings, heatmaps, and behaviour analytics. Clarity may collect mouse movements, clicks, scrolls, and page interactions to help improve user experience. Data is processed by Microsoft and may be stored in the United States. You can opt out via your browser's cookie preferences.</li>
             <li><strong>Email service providers</strong> — for sending transactional and notification emails</li>
           </ul>
           <p>These service providers are required to handle your information securely and only for the purposes we specify. They are not permitted to use your information for their own purposes.</p>
