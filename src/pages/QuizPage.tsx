@@ -196,6 +196,12 @@ export default function QuizPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setShowErrors(false);
   }, [step]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
+      (window as any).clarity("event", "quiz_started");
+    }
+  }, []);
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "",
     suburb: "",
@@ -362,6 +368,9 @@ export default function QuizPage() {
         content_name: "Water Filter Quiz",
         status: "complete",
       });
+    }
+    if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
+      (window as any).clarity("event", "quiz_completed");
     }
     navigate("/results");
   };

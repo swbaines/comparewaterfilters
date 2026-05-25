@@ -339,6 +339,9 @@ export default function VendorRegisterPage() {
       return;
     }
     setStep("verify-email");
+    if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
+      (window as any).clarity("event", "vendor_registered");
+    }
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {

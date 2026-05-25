@@ -458,6 +458,10 @@ export default function MatchedVendorsSection({
         });
       }
 
+      if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
+        (window as any).clarity("event", "quote_requested");
+      }
+
       setSubmitted(selectedVendors.map((v) => v.name));
       toast.success(
         `Quote request${selectedVendors.length > 1 ? "s" : ""} sent to ${selectedVendors.length} provider${selectedVendors.length > 1 ? "s" : ""}!`
