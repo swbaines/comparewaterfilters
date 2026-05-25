@@ -590,6 +590,72 @@ export default function MatchedVendorsSection({
             </p>
           </div>
 
+          <div className="rounded-lg border border-primary/15 bg-primary/[0.04] p-4 space-y-3">
+            <p className="flex items-start gap-2 text-xs text-foreground/80">
+              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+              <span>
+                We never sell your details. You'll only be contacted by installers
+                you approve.
+              </span>
+            </p>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="space-y-1">
+                <Label htmlFor="contact-first-name" className="text-xs">
+                  First name *
+                </Label>
+                <Input
+                  id="contact-first-name"
+                  value={contactFirstName}
+                  onChange={(e) => setContactFirstName(e.target.value)}
+                  placeholder="Your first name"
+                  aria-invalid={showContactErrors && !contactFirstName.trim()}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="contact-mobile" className="text-xs">
+                  Phone number *
+                </Label>
+                <Input
+                  id="contact-mobile"
+                  inputMode="tel"
+                  value={contactMobile}
+                  onChange={(e) => setContactMobile(e.target.value)}
+                  placeholder="04XX XXX XXX"
+                  aria-invalid={showContactErrors && !contactMobile.trim()}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="contact-email" className="text-xs">
+                  Email *
+                </Label>
+                <Input
+                  id="contact-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="you@email.com"
+                  aria-invalid={showContactErrors && !contactEmail.trim()}
+                />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="contact-pref" className="text-xs">
+                How would you prefer installers contact you? (optional)
+              </Label>
+              <select
+                id="contact-pref"
+                value={contactPreference}
+                onChange={(e) => setContactPreference(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <option value="">No preference</option>
+                <option value="phone">Phone call</option>
+                <option value="sms">SMS first</option>
+                <option value="email">Email first</option>
+              </select>
+            </div>
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="bulk-message" className="text-sm">
               Add a note for the providers (optional)
