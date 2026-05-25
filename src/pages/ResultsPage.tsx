@@ -865,7 +865,7 @@ export default function ResultsPage() {
         <div className="mb-10 text-center">
           <Badge className="mb-3">Your personalised results</Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            Hi {answers.firstName}, here's our recommendation
+            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} our recommendation
           </h1>
         </div>
 
@@ -889,9 +889,12 @@ export default function ResultsPage() {
             <Badge className="mb-3" variant="secondary">
               Next step
             </Badge>
-            <h2 className="text-2xl font-bold sm:text-3xl">Choose Your Provider(s)</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">
+              Get free quotes from up to 3 local installers
+            </h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Pick the providers you'd like to hear from. They'll contact you directly — no obligation.
+              Enter your details and we'll match you with trusted installers in your area.
+              No obligation — you choose who to talk to.
             </p>
           </div>
 
