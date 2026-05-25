@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 
 // State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
@@ -314,54 +314,20 @@ export default function QuizPage() {
         return true; // optional
       case 7:
         return !!answers.installationTimeline;
-      case 8:
-        return !!(
-          answers.firstName &&
-          answers.email &&
-          answers.mobile &&
-          answers.contactPreference &&
-          answers.consent &&
-          answers.disclaimerAck
-        );
       default:
         return true;
     }
   };
 
   const handleSubmit = async () => {
-    // Save to database so the lead is never lost
-    try {
-      await supabase.from("quiz_submissions").insert({
-        first_name: answers.firstName,
-        email: answers.email,
-        mobile: answers.mobile || null,
-        postcode: answers.postcode || null,
-        suburb: answers.suburb || null,
-        state: answers.state || null,
-        property_type: answers.propertyType || null,
-        ownership_status: answers.ownershipStatus || null,
-        household_size: answers.householdSize || null,
-        bathrooms: answers.bathrooms || null,
-        property_age: answers.propertyAge || null,
-        water_source: answers.waterSource || null,
-        water_tested_recently: answers.waterTestedRecently || null,
-        water_usage_type: answers.waterUsageType || null,
-        concerns: answers.concerns,
-        coverage: answers.coverage || null,
-        budget: answers.budget || null,
-        maintenance_tolerance: answers.maintenanceTolerance || null,
-        installation_timeline: answers.installationTimeline || null,
-        priorities: answers.priorities || [],
-        notes: answers.notes || null,
-        consent: answers.consent,
-        contact_preference: answers.contactPreference || null,
-      });
-    } catch (err) {
-      console.error("Failed to save quiz submission:", err);
-    }
-
-    // Store answers in sessionStorage for results page
+    // Contact details are now captured on the results page (when the user
+    // requests vendor quotes). Saving of the quiz_submissions row happens
+    // on ResultsPage once the recommendation is shown so we can also track
+    // visitors who view recommendations without converting.
     sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
+    // Clear any prior "saved recommendation" flag so ResultsPage records
+    // a fresh recommendation_viewed row for this run.
+    sessionStorage.removeItem("quizSubmissionSaved");
     // Meta Pixel: track quiz completion as CompleteRegistration event
     if (typeof window !== "undefined" && (window as any).fbq) {
       (window as any).fbq("track", "CompleteRegistration", {
@@ -382,8 +348,7 @@ export default function QuizPage() {
     "Coverage needed",
     "Your budget",
     "Your priorities",
-    "Any other details",
-    "Get your results",
+    "Installation timing",
   ];
 
   return (
