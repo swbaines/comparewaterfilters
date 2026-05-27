@@ -27,6 +27,15 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
+// Escape untrusted strings before injecting into print-window HTML.
+const escapeHtml = (s: unknown): string =>
+  String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
 // ── Stripe publishable key ────────────────────────────────────────────────────
 const stripePromise = loadStripe("pk_live_51TGc4iFAFFjkrVg3A5F9bsS2XXQkwKVWE8wnnPcT8onOI4jeUt8Sjq0H71AAd15jCDm57kDwH0dOzVuojTq3DJqj006YmVTHZi");
 
