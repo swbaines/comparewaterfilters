@@ -1077,7 +1077,7 @@ export default function VendorBillingPage() {
                       const win = window.open("", "_blank");
                       if (!win) return;
                       win.document.write(`
-                        <html><head><title>${selectedInvoice.invoice_number}</title>
+                        <html><head><title>${escapeHtml(selectedInvoice.invoice_number)}</title>
                         <style>
                           body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #111; }
                           h1 { font-size: 22px; margin-bottom: 4px; }
@@ -1097,24 +1097,24 @@ export default function VendorBillingPage() {
                           .footer { margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 16px; }
                           @media print { body { padding: 20px; } }
                         </style></head><body>
-                        <h1>Invoice ${selectedInvoice.invoice_number}</h1>
+                        <h1>Invoice ${escapeHtml(selectedInvoice.invoice_number)}</h1>
                         <p style="color:#666;margin-top:0">Compare Water Filters</p>
                         <div class="meta">
-                          <div><div class="label">Billing period</div><div class="value">${format(new Date(selectedInvoice.period_start), "d MMM yyyy")} — ${format(new Date(selectedInvoice.period_end), "d MMM yyyy")}</div></div>
-                          <div><div class="label">Status</div><div class="value"><span class="badge badge-${selectedInvoice.status}">${selectedInvoice.status}</span></div></div>
-                          <div><div class="label">Total leads</div><div class="value">${selectedInvoice.lead_count}</div></div>
+                          <div><div class="label">Billing period</div><div class="value">${escapeHtml(format(new Date(selectedInvoice.period_start), "d MMM yyyy"))} — ${escapeHtml(format(new Date(selectedInvoice.period_end), "d MMM yyyy"))}</div></div>
+                          <div><div class="label">Status</div><div class="value"><span class="badge badge-${escapeHtml(selectedInvoice.status)}">${escapeHtml(selectedInvoice.status)}</span></div></div>
+                          <div><div class="label">Total leads</div><div class="value">${escapeHtml(selectedInvoice.lead_count)}</div></div>
                           <div><div class="label">Total amount</div><div class="value">$${Number(selectedInvoice.total_amount).toFixed(2)}</div></div>
-                          ${selectedInvoice.paid_at ? `<div><div class="label">Paid</div><div class="value">${format(new Date(selectedInvoice.paid_at), "d MMM yyyy")}</div></div>` : ""}
+                          ${selectedInvoice.paid_at ? `<div><div class="label">Paid</div><div class="value">${escapeHtml(format(new Date(selectedInvoice.paid_at), "d MMM yyyy"))}</div></div>` : ""}
                         </div>
                         <h3>Leads in this period</h3>
                         <table>
                           <thead><tr><th>Date</th><th>Customer</th><th>Type</th><th>Location</th><th class="text-right">Price</th></tr></thead>
                           <tbody>
                             ${invoiceLeads.map((l: any) => `<tr>
-                              <td>${format(new Date(l.created_at), "d MMM")}</td>
-                              <td>${l.customer_name}<br/><span style="font-size:11px;color:#888">${l.customer_email}${l.customer_mobile ? '<br/>' + l.customer_mobile : ''}</span></td>
-                              <td>${l.ownership_status || "—"}</td>
-                              <td>${[l.customer_suburb, l.customer_state, l.customer_postcode].filter(Boolean).join(", ") || "—"}</td>
+                              <td>${escapeHtml(format(new Date(l.created_at), "d MMM"))}</td>
+                              <td>${escapeHtml(l.customer_name)}<br/><span style="font-size:11px;color:#888">${escapeHtml(l.customer_email)}${l.customer_mobile ? '<br/>' + escapeHtml(l.customer_mobile) : ''}</span></td>
+                              <td>${escapeHtml(l.ownership_status || "—")}</td>
+                              <td>${escapeHtml([l.customer_suburb, l.customer_state, l.customer_postcode].filter(Boolean).join(", ") || "—")}</td>
                               <td class="text-right">$${Number(l.lead_price || 0).toFixed(2)}</td>
                             </tr>`).join("")}
                             <tr class="total-row"><td colspan="4" class="text-right">Total</td><td class="text-right">$${invoiceLeads.reduce((s: number, l: any) => s + Number(l.lead_price || 0), 0).toFixed(2)}</td></tr>
@@ -1139,7 +1139,7 @@ export default function VendorBillingPage() {
                         const win = window.open("", "_blank");
                         if (!win) return;
                         win.document.write(`
-                          <html><head><title>Receipt — ${selectedInvoice.invoice_number}</title>
+                          <html><head><title>Receipt — ${escapeHtml(selectedInvoice.invoice_number)}</title>
                           <style>
                             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #111; max-width: 600px; margin: 0 auto; }
                             h1 { font-size: 24px; margin-bottom: 4px; }
@@ -1161,17 +1161,17 @@ export default function VendorBillingPage() {
                             @media print { body { padding: 20px; } }
                           </style></head><body>
                           <h1>Payment Receipt</h1>
-                          <p class="subtitle">Compare Water Filters — ${selectedInvoice.invoice_number}</p>
+                          <p class="subtitle">Compare Water Filters — ${escapeHtml(selectedInvoice.invoice_number)}</p>
                           <div class="success">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
                             Payment successful
                           </div>
                           <div class="details">
-                            <div class="details-row"><span class="label">Invoice</span><span class="value">${selectedInvoice.invoice_number}</span></div>
-                            <div class="details-row"><span class="label">Billing period</span><span class="value">${format(new Date(selectedInvoice.period_start), "d MMM yyyy")} — ${format(new Date(selectedInvoice.period_end), "d MMM yyyy")}</span></div>
-                            <div class="details-row"><span class="label">Leads</span><span class="value">${selectedInvoice.lead_count}</span></div>
-                            <div class="details-row"><span class="label">Date paid</span><span class="value">${selectedInvoice.paid_at ? format(new Date(selectedInvoice.paid_at), "d MMM yyyy 'at' h:mm a") : "—"}</span></div>
-                            ${selectedInvoice.stripe_invoice_id ? `<div class="details-row"><span class="label">Reference</span><span class="value" style="font-family:monospace;font-size:12px">${selectedInvoice.stripe_invoice_id}</span></div>` : ""}
+                            <div class="details-row"><span class="label">Invoice</span><span class="value">${escapeHtml(selectedInvoice.invoice_number)}</span></div>
+                            <div class="details-row"><span class="label">Billing period</span><span class="value">${escapeHtml(format(new Date(selectedInvoice.period_start), "d MMM yyyy"))} — ${escapeHtml(format(new Date(selectedInvoice.period_end), "d MMM yyyy"))}</span></div>
+                            <div class="details-row"><span class="label">Leads</span><span class="value">${escapeHtml(selectedInvoice.lead_count)}</span></div>
+                            <div class="details-row"><span class="label">Date paid</span><span class="value">${selectedInvoice.paid_at ? escapeHtml(format(new Date(selectedInvoice.paid_at), "d MMM yyyy 'at' h:mm a")) : "—"}</span></div>
+                            ${selectedInvoice.stripe_invoice_id ? `<div class="details-row"><span class="label">Reference</span><span class="value" style="font-family:monospace;font-size:12px">${escapeHtml(selectedInvoice.stripe_invoice_id)}</span></div>` : ""}
                             <div class="details-row total-row"><span class="label">Amount paid</span><span class="value">$${Number(selectedInvoice.total_amount).toFixed(2)} AUD</span></div>
                           </div>
                           <h3 style="font-size:14px;color:#374151;margin-bottom:4px">Lead breakdown</h3>
@@ -1179,9 +1179,9 @@ export default function VendorBillingPage() {
                             <thead><tr><th>Date</th><th>Customer</th><th>Location</th><th class="text-right">Price</th></tr></thead>
                             <tbody>
                               ${invoiceLeads.map((l: any) => `<tr>
-                                <td>${format(new Date(l.created_at), "d MMM")}</td>
-                                <td>${l.customer_name}</td>
-                                <td>${[l.customer_suburb, l.customer_state].filter(Boolean).join(", ") || "—"}</td>
+                                <td>${escapeHtml(format(new Date(l.created_at), "d MMM"))}</td>
+                                <td>${escapeHtml(l.customer_name)}</td>
+                                <td>${escapeHtml([l.customer_suburb, l.customer_state].filter(Boolean).join(", ") || "—")}</td>
                                 <td class="text-right">$${Number(l.lead_price || 0).toFixed(2)}</td>
                               </tr>`).join("")}
                             </tbody>
