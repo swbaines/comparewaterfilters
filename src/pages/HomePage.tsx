@@ -249,7 +249,7 @@ export default function HomePage() {
             Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
             the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
-          <div className="mt-12 flex flex-col items-center gap-10">
+          <div className="mt-20 flex flex-col items-center gap-10">
             <Link to="/quiz">
               <Button size="lg" className="gap-3 px-10 py-8 text-3xl font-bold shadow-2xl rounded-full">
                 Find My Water Filter <ArrowRight className="h-10 w-10" />
