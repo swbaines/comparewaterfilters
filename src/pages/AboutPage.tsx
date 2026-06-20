@@ -198,7 +198,7 @@ export default function AboutPage() {
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg">
-              <Link to="/quiz">Find My System</Link>
+              <Link to="/quiz">Find My Water Filter</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
               <Link to="/contact">Contact Us</Link>

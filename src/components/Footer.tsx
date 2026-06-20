@@ -37,7 +37,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-3 text-sm font-semibold">Explore</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/quiz" className="hover:text-foreground">Find My System</Link></li>
+              <li><Link to="/quiz" className="hover:text-foreground">Find My Water Filter</Link></li>
               <li><Link to="/system-types" className="hover:text-foreground">System Types</Link></li>
               <li><Link to="/pricing-guide" className="hover:text-foreground">Pricing Guide</Link></li>
               <li><Link to="/water-quality" className="hover:text-foreground">Water Quality Lookup</Link></li>
@@ -60,7 +60,7 @@ export default function Footer() {
               Answer a few simple questions and we'll match you with the right water filtration system for your home.
             </p>
             <Link to="/quiz" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
-              Find My System →
+              Find My Water Filter →
             </Link>
           </div>
         </div>

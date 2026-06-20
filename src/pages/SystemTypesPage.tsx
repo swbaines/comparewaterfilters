@@ -284,7 +284,7 @@ export default function SystemTypesPage() {
           <div className="mt-6 text-center">
             <Link to="/quiz">
               <Button size="lg" className="gap-2">
-                Find My System <ArrowRight className="h-4 w-4" />
+                Find My Water Filter <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
