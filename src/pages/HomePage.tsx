@@ -251,8 +251,8 @@ export default function HomePage() {
           </p>
           <div className="mt-5 flex flex-col items-center gap-2">
             <Link to="/quiz">
-              <Button size="lg" className="gap-2 px-10 py-5 text-lg font-bold shadow-lg">
-                Find My System <ArrowRight className="h-5 w-5" />
+              <Button size="lg" className="gap-3 px-16 py-8 text-3xl font-bold shadow-2xl">
+                Find My Water Filter <ArrowRight className="h-10 w-10" />
               </Button>
             </Link>
             <Link to="/water-quality">
@@ -617,7 +617,7 @@ export default function HomePage() {
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link to="/quiz">
               <Button size="lg" variant="secondary" className="gap-2">
-                Find My System <ArrowRight className="h-4 w-4" />
+                Find My Water Filter <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/water-quality">

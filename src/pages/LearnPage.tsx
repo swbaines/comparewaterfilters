@@ -102,7 +102,7 @@ export default function LearnPage() {
             <Link to="/quiz">
               <Card className="h-full transition-all hover:shadow-md">
                 <CardContent className="p-5">
-                  <h3 className="text-sm font-semibold">Find My System</h3>
+                  <h3 className="text-sm font-semibold">Find My Water Filter</h3>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Answer a few questions and get a personalised recommendation.
                   </p>

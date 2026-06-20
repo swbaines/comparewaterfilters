@@ -69,7 +69,7 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           <Link to="/quiz">
-            <Button size="sm" className="ml-2">Find My System</Button>
+            <Button size="sm" className="ml-2">Find My Water Filter</Button>
           </Link>
         </nav>
 
@@ -109,7 +109,7 @@ export default function Header() {
               </Link>
           )}
             <Link to="/quiz" onClick={() => setOpen(false)}>
-              <Button className="mt-2 w-full">Find My System</Button>
+              <Button className="mt-2 w-full">Find My Water Filter</Button>
             </Link>
           </nav>
         </div>

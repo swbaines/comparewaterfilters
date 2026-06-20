@@ -128,7 +128,7 @@ export default function BrandPreviewPage() {
                   <Badge variant="secondary">Secondary</Badge>
                   <Badge variant="outline">Outline</Badge>
                 </div>
-                <Button size="sm">Find My System</Button>
+                <Button size="sm">Find My Water Filter</Button>
               </CardContent>
             </Card>
             <Card className="border-primary">
