@@ -245,7 +245,7 @@ export default function HomePage() {
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
             Compare Water Filters — Find the Right System for Your Home
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base lg:text-base xl:text-lg text-muted-foreground">
+          <p className="mx-auto mt-12 max-w-2xl text-base lg:text-base xl:text-lg text-muted-foreground">
             Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
             the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
