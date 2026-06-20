@@ -260,7 +260,7 @@ export default function HomePage() {
                 <Search className="h-3 w-3" /> Check my water quality
               </Button>
             </Link>
-            <p className="max-w-md text-xs text-muted-foreground">
+            <p className="mt-6 max-w-md text-xs text-muted-foreground">
               We'll match you with trusted water filtration providers servicing your area.
             </p>
           </div>
