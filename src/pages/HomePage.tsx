@@ -251,7 +251,7 @@ export default function HomePage() {
           </p>
           <div className="mt-5 flex flex-col items-center gap-6">
             <Link to="/quiz">
-              <Button size="lg" className="gap-3 px-16 py-8 text-3xl font-bold shadow-2xl">
+              <Button size="lg" className="gap-3 px-8 py-5 text-xl font-bold shadow-2xl sm:px-12 sm:py-7 sm:text-2xl lg:px-16 lg:py-8 lg:text-3xl w-auto">
                 Find My Water Filter <ArrowRight className="h-10 w-10" />
               </Button>
             </Link>
