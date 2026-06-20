@@ -244,7 +244,7 @@ export default function HomePage() {
               Australia's independent water filter comparison
             </span>
             <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
-              Find the Right System for Your Home
+              Find the Right Filter for Your Home
             </h1>
             <p className="mx-auto max-w-2xl text-base lg:mt-8 lg:text-base xl:text-lg text-muted-foreground">
               Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
