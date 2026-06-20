@@ -239,14 +239,16 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-card py-8 sm:py-12 lg:min-h-0 lg:py-14 xl:py-20">
         <div className="container relative z-10 flex flex-1 flex-col text-center">
-          <div>
-            <span className="mb-3 inline-block rounded-full px-4 py-1 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
-              Australia's independent water filter comparison
-            </span>
-            <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
-              Find the Right System for Your Home
-            </h1>
-            <p className="mx-auto mt-6 sm:mt-8 max-w-2xl text-base lg:text-base xl:text-lg text-muted-foreground">
+          <div className="flex flex-1 flex-col justify-evenly lg:flex-none lg:justify-start lg:gap-0">
+            <div>
+              <span className="mb-3 inline-block rounded-full px-4 py-1 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground">
+                Australia's independent water filter comparison
+              </span>
+              <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
+                Find the Right System for Your Home
+              </h1>
+            </div>
+            <p className="mx-auto max-w-2xl text-base lg:mt-8 lg:text-base xl:text-lg text-muted-foreground">
               Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
               the right system for your water source and budget — then receive free quotes from trusted local installers.
             </p>
