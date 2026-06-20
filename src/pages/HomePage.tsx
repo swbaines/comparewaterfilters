@@ -255,14 +255,16 @@ export default function HomePage() {
                 Find My Water Filter <ArrowRight className="h-10 w-10" />
               </Button>
             </Link>
-            <Link to="/water-quality">
-              <Button variant="outline" size="sm" className="gap-2 text-sm">
-                <Search className="h-3 w-3" /> Check my water quality
-              </Button>
-            </Link>
-            <p className="mt-2 max-w-md text-xs text-muted-foreground">
-              We'll match you with trusted water filtration providers servicing your area.
-            </p>
+            <div className="flex flex-col items-center gap-2">
+              <Link to="/water-quality">
+                <Button variant="outline" size="sm" className="gap-2 text-sm">
+                  <Search className="h-3 w-3" /> Check my water quality
+                </Button>
+              </Link>
+              <p className="max-w-md text-xs text-muted-foreground">
+                We'll match you with trusted water filtration providers servicing your area.
+              </p>
+            </div>
           </div>
         </div>
       </section>
