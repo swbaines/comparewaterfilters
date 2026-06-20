@@ -272,7 +272,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Trust strip ── */}
-      <section className="border-b bg-card pt-32 pb-8 sm:pt-12">
+      <section className="border-b bg-card py-8 sm:py-12">
         <div className="container">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {trustPoints.map((t) => (
