@@ -70,7 +70,6 @@ const concernOptions = [
   { value: "taste", label: "Taste or smell from tap water" },
   { value: "chlorine", label: "Chlorine smell or taste" },
   { value: "skin-hair", label: "Skin irritation, eczema, hair loss or dandruff" },
-  { value: "drinking-quality", label: "Drinking water quality" },
   { value: "fluoride", label: "Fluoride removal" },
   { value: "heavy-metals", label: "Heavy metals (lead, arsenic etc.)" },
   { value: "pfas", label: "PFAS / forever chemicals" },

@@ -241,7 +241,6 @@ const CONCERN_LABELS: Record<string, string> = {
   chlorine: "Chlorine smell or taste",
   "skin-hair": "Skin irritation, eczema, hair issues",
   "skin-shower": "Skin / shower water concerns",
-  "drinking-quality": "Drinking water quality",
   fluoride: "Fluoride removal",
   "heavy-metals": "Heavy metals (lead, arsenic etc.)",
   pfas: "PFAS / forever chemicals",
