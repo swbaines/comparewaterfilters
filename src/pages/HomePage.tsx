@@ -250,7 +250,7 @@ export default function HomePage() {
             </Link>
           </div>
           <p className="mx-auto max-w-2xl text-base text-muted-foreground lg:mt-8 lg:text-base xl:text-lg whitespace-pre-line font-bold">
-            <span className="text-2xl font-extrabold">Compare</span>{"\n"}whole house water filters{"\n"}reverse osmosis,&nbsp;{"\n"}under-sink.{"\n\n\n"}&nbsp;Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
+            {"\n"}&nbsp;Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
         </div>
       </section>
