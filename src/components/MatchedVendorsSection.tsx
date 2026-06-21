@@ -292,6 +292,16 @@ export default function MatchedVendorsSection({
   );
   const [showContactErrors, setShowContactErrors] = useState(false);
 
+  // Sync prefilled contact details whenever the underlying answers change
+  // (e.g. quiz state hydrated asynchronously or via shared link).
+  useEffect(() => {
+    if (answers.firstName) setContactFirstName((prev) => prev || answers.firstName);
+    if (answers.email) setContactEmail((prev) => prev || answers.email);
+    if (answers.mobile) setContactMobile((prev) => prev || answers.mobile);
+    if (answers.contactPreference)
+      setContactPreference((prev) => prev || answers.contactPreference);
+  }, [answers.firstName, answers.email, answers.mobile, answers.contactPreference]);
+
   // Pre-select all top vendors when they load
   useEffect(() => {
     if (topVendors.length > 0 && selected.size === 0 && submitted.length === 0) {
