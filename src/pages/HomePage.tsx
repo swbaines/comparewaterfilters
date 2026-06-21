@@ -249,27 +249,21 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-primary lg:mt-8">
-            <span className="text-base font-bold xl:text-lg">
-              Complete the
-              <br />
-              quiz
+          <div className="mx-auto flex max-w-3xl items-center justify-center gap-x-1.5 text-center text-primary sm:gap-x-3 lg:mt-8">
+            <span className="text-[11px] font-bold leading-tight sm:text-sm lg:text-base xl:text-lg">
+              Complete the quiz
             </span>
-            <svg className="h-6 w-8 shrink-0" viewBox="0 0 32 24" fill="currentColor">
+            <svg className="h-4 w-5 shrink-0 sm:h-6 sm:w-8" viewBox="0 0 32 24" fill="currentColor">
               <path d="M6 2 C14 2, 24 8, 30 12 C24 16, 14 22, 6 22 C10 14, 10 10, 6 2 Z" />
             </svg>
-            <span className="text-base font-bold xl:text-lg">
-              Get your
-              <br />
-              recommendations
+            <span className="text-[11px] font-bold leading-tight sm:text-sm lg:text-base xl:text-lg">
+              Get your recommendations
             </span>
-            <svg className="h-6 w-8 shrink-0" viewBox="0 0 32 24" fill="currentColor">
+            <svg className="h-4 w-5 shrink-0 sm:h-6 sm:w-8" viewBox="0 0 32 24" fill="currentColor">
               <path d="M6 2 C14 2, 24 8, 30 12 C24 16, 14 22, 6 22 C10 14, 10 10, 6 2 Z" />
             </svg>
-            <span className="text-base font-bold xl:text-lg">
-              Receive your
-              <br />
-              quotes
+            <span className="text-[11px] font-bold leading-tight sm:text-sm lg:text-base xl:text-lg">
+              Receive your quotes
             </span>
           </div>
         </div>
