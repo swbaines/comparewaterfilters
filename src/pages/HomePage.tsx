@@ -240,7 +240,7 @@ export default function HomePage() {
       <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-card pt-2 pb-8 sm:py-12 lg:min-h-0 lg:py-14 xl:py-20">
         <div className="container relative z-10 flex flex-1 flex-col justify-evenly text-center lg:block lg:flex-none">
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
-            Find the Right Filter for Your Home
+            Do you want clean water for your home?
           </h1>
           <div className="flex flex-col items-center gap-6 pb-4 sm:gap-10 lg:mt-8">
             <Link to="/quiz">
