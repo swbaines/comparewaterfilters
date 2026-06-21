@@ -238,7 +238,6 @@ function RecCard({ rec, label, reason, variant, badge, confidence, labelAbove, n
 // Kept in sync with concernOptions in src/pages/QuizPage.tsx.
 const CONCERN_LABELS: Record<string, string> = {
   taste: "Taste or smell",
-  chlorine: "Chlorine smell or taste",
   "skin-hair": "Skin irritation, eczema, hair issues",
   "skin-shower": "Skin / shower water concerns",
   fluoride: "Fluoride removal",
