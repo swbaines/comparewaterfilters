@@ -237,8 +237,8 @@ export default function HomePage() {
       />
 
       {/* ── Hero ── */}
-      <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-card pt-0 pb-8 sm:pt-6 sm:pb-12 lg:min-h-0 lg:py-10 xl:py-14">
-        <div className="container relative z-10 flex flex-1 flex-col justify-start gap-8 pt-2 text-center sm:gap-10 lg:block lg:flex-none lg:pt-0">
+      <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-card pt-2 pb-8 sm:py-12 lg:min-h-0 lg:py-14 xl:py-20">
+        <div className="container relative z-10 flex flex-1 flex-col justify-evenly text-center lg:block lg:flex-none">
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
             Do you want clean water for your home?
           </h1>
