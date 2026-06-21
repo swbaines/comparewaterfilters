@@ -75,7 +75,6 @@ const concernOptions = [
   { value: "pfas", label: "PFAS / forever chemicals" },
   { value: "microplastics", label: "Microplastics" },
   { value: "appliance", label: "Appliance & hot water system protection" },
-  { value: "bacteria", label: "Bacteria / microbiological safety" },
   { value: "not-sure", label: "Not sure, just want better water" },
   { value: "replacement", label: "Existing system needs replacement" },
 ];

@@ -246,7 +246,6 @@ const CONCERN_LABELS: Record<string, string> = {
   microplastics: "Microplastics",
   "whole-home": "Chlorine etc.",
   appliance: "Appliance & hot water system protection",
-  bacteria: "Bacteria / microbiological safety",
   "not-sure": "Not sure — just want better water",
   replacement: "Existing system needs replacement",
 };
