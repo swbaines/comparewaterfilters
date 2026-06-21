@@ -244,8 +244,8 @@ export default function HomePage() {
           </h1>
           <div className="flex flex-col items-center gap-6 pb-4 sm:gap-10 lg:mt-8">
             <Link to="/quiz">
-              <Button size="lg" className="gap-3 px-10 py-8 text-3xl font-bold shadow-2xl rounded-full">
-                Find Your Water Filter <ArrowRight className="h-10 w-10" />
+              <Button size="lg" className="gap-3 px-9 py-7 text-[1.7rem] font-bold shadow-2xl rounded-full">
+                Find Your Water Filter <ArrowRight className="h-9 w-9" />
               </Button>
             </Link>
           </div>
