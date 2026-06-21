@@ -242,10 +242,6 @@ export default function HomePage() {
           <h1 className="mx-auto max-w-3xl text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-5xl">
             Find the Right Filter for Your Home
           </h1>
-          <p className="mx-auto max-w-2xl text-base text-muted-foreground lg:mt-8 lg:text-base xl:text-lg">
-            Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
-            the right system for your water source and budget — then receive free quotes from trusted local installers.
-          </p>
           <div className="flex flex-col items-center gap-6 pb-4 sm:gap-10 lg:mt-8">
             <Link to="/quiz">
               <Button size="lg" className="gap-3 px-10 py-8 text-3xl font-bold shadow-2xl rounded-full">
@@ -253,6 +249,10 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
+          <p className="mx-auto max-w-2xl text-base text-muted-foreground lg:mt-8 lg:text-base xl:text-lg">
+            Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
+            the right system for your water source and budget — then receive free quotes from trusted local installers.
+          </p>
         </div>
       </section>
 
