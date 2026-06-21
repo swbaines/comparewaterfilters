@@ -266,6 +266,9 @@ export default function HomePage() {
               Receive your quotes
             </span>
           </div>
+          <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base lg:mt-5">
+            Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
+          </p>
         </div>
       </section>
 
