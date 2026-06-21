@@ -237,7 +237,7 @@ export default function HomePage() {
       />
 
       {/* ── Hero ── */}
-      <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-card py-8 sm:py-12 lg:min-h-0 lg:py-14 xl:py-20">
+      <section className="relative flex min-h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-card pt-2 pb-8 sm:py-12 lg:min-h-0 lg:py-14 xl:py-20">
         <div className="container relative z-10 flex flex-1 flex-col justify-evenly text-center lg:block lg:flex-none">
           <span className="inline-block rounded-full px-4 py-1 text-xs font-semibold border text-secondary-foreground bg-transparent border-secondary-foreground lg:mb-3">
             Australia's independent water filter comparison
