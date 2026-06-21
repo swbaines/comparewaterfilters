@@ -1,16 +1,14 @@
-## Problem
-On mobile (iPhone viewport), the hero heading and paragraph text are bunched together near the top, leaving a large empty gap above the "Find My Water Filter" button.
+## Goal
+Move the "Do you want clean water for your home?" heading slightly higher within the hero section on the homepage.
 
-## Solution
-Distribute the two text blocks vertically so they span evenly between the header and the CTA button.
+## Approach
+Tighten vertical spacing in the hero section by reducing top padding on the `<section>` and/or adjusting the flex container distribution so the heading sits closer to the top of the hero area.
 
-### Steps
-1. In `src/pages/HomePage.tsx`, update the hero inner layout:
-   - Make the text-content wrapper a flex column that grows to fill available space.
-   - Use `justify-evenly` (or `justify-between` + padding) to spread the badge/heading and paragraph vertically across the gap.
-2. Keep the buttons anchored at the bottom with their existing `pb-4`.
-3. Verify with a mobile screenshot that the heading sits higher, the paragraph sits lower, and the gap between them looks balanced.
+## Details
+- **File:** `src/pages/HomePage.tsx`
+- **Target:** Hero section (`<section>` at line 240) and its flex wrapper (`<div>` at line 241)
+- **Change:** Reduce `pt-2` (or `sm:py-12` / `lg:py-14` breakpoints) and/or change `justify-evenly` to `justify-start` with a small top margin on the heading to nudge it upward.
+- **Result:** The heading will appear slightly higher on the page without affecting other sections.
 
-## Technical details
-- File: `src/pages/HomePage.tsx` (hero section, lines ~240–270)
-- Approach: Tailwind flex utilities only — no custom CSS.
+## Note
+Manual drag-and-drop to reposition elements is not available in the editor. Layout adjustments like this require a small code change to padding, margin, or flex alignment.
