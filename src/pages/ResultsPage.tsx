@@ -245,7 +245,7 @@ const CONCERN_LABELS: Record<string, string> = {
   "heavy-metals": "Heavy metals (lead, arsenic etc.)",
   pfas: "PFAS / forever chemicals",
   microplastics: "Microplastics",
-  "whole-home": "Whole house protection",
+  "whole-home": "Chlorine etc.",
   appliance: "Appliance & hot water system protection",
   bacteria: "Bacteria / microbiological safety",
   "not-sure": "Not sure — just want better water",

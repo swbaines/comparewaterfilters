@@ -66,7 +66,7 @@ const waterSources = [
 ];
 
 const concernOptions = [
-  { value: "whole-home", label: "Whole house protection (every tap & shower)" },
+  { value: "whole-home", label: "Chlorine etc.\n" },
   { value: "taste", label: "Taste or smell from tap water" },
   { value: "chlorine", label: "Chlorine smell or taste" },
   { value: "skin-hair", label: "Skin irritation, eczema, hair loss or dandruff" },
