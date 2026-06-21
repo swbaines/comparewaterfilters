@@ -249,9 +249,29 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <p className="mx-auto max-w-2xl text-base text-muted-foreground lg:mt-8 lg:text-base xl:text-lg font-bold">
-            Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
-          </p>
+          <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center text-primary lg:mt-8">
+            <span className="text-base font-bold xl:text-lg">
+              Complete the
+              <br />
+              quiz
+            </span>
+            <svg className="h-6 w-8 shrink-0" viewBox="0 0 32 24" fill="currentColor">
+              <path d="M6 2 C14 2, 24 8, 30 12 C24 16, 14 22, 6 22 C10 14, 10 10, 6 2 Z" />
+            </svg>
+            <span className="text-base font-bold xl:text-lg">
+              Get your
+              <br />
+              recommendations
+            </span>
+            <svg className="h-6 w-8 shrink-0" viewBox="0 0 32 24" fill="currentColor">
+              <path d="M6 2 C14 2, 24 8, 30 12 C24 16, 14 22, 6 22 C10 14, 10 10, 6 2 Z" />
+            </svg>
+            <span className="text-base font-bold xl:text-lg">
+              Receive your
+              <br />
+              quotes
+            </span>
+          </div>
         </div>
       </section>
 
