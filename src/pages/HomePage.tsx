@@ -249,9 +249,8 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
-          <p className="mx-auto max-w-2xl text-base text-muted-foreground lg:mt-8 lg:text-base xl:text-lg">
-            Compare whole house water filters, reverse osmosis, under-sink, and more across Australia. Get matched to
-            the right system for your water source and budget — then receive free quotes from trusted local installers.
+          <p className="mx-auto max-w-2xl text-base text-muted-foreground lg:mt-8 lg:text-base xl:text-lg whitespace-pre-line">
+            Compare{"\n"}whole house water filters{"\n"}reverse osmosis,&nbsp;{"\n"}under-sink.{"\n\n\n"}&nbsp;Get matched to the right system for your water source and budget — then receive free quotes from trusted local installers.
           </p>
         </div>
       </section>
