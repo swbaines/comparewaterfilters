@@ -78,7 +78,6 @@ const concernOptions = [
   { value: "appliance", label: "Appliance & hot water system protection" },
   { value: "bacteria", label: "Bacteria / microbiological safety" },
   { value: "not-sure", label: "Not sure, just want better water" },
-  { value: "hard-water", label: "Hard water / scale buildup" },
   { value: "replacement", label: "Existing system needs replacement" },
 ];
 
