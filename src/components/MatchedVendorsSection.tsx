@@ -194,13 +194,6 @@ function VendorRow({
               </div>
             )}
 
-            {vendor.installation_model && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                {vendor.installation_model === "in_house_licensed"
-                  ? "Licensed plumbing team"
-                  : "Licensed plumbing partners"}
-              </p>
-            )}
           </div>
         </div>
       </CardContent>
