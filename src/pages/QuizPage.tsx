@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 6;
 
 // State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
@@ -110,15 +110,6 @@ export const contactPreferenceOptions = [
   { value: "no_preference", label: "No preference — any method is fine" },
 ];
 
-const priorityOptions = [
-  { value: "lowest-cost", label: "Lowest upfront cost" },
-  { value: "lowest-maintenance", label: "Lowest maintenance" },
-  { value: "strongest-filtration", label: "Strongest filtration" },
-  { value: "premium-appearance", label: "Premium appearance" },
-  { value: "best-warranty", label: "Best warranty / servicing" },
-  { value: "local-support", label: "Local / Australian support" },
-];
-
 function OptionButton({
   selected,
   onClick,
@@ -206,7 +197,6 @@ export default function QuizPage() {
     coverage: "",
     budget: "",
     installationTimeline: "",
-    priorities: [],
     notes: "",
     firstName: "",
     email: "",
@@ -266,7 +256,7 @@ export default function QuizPage() {
     setStep((s) => s + 1);
   };
 
-  const toggleMulti = (field: "concerns" | "priorities", value: string) => {
+  const toggleMulti = (field: "concerns", value: string) => {
     setAnswers((prev) => {
       const arr = prev[field];
       return { ...prev, [field]: arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value] };
@@ -297,8 +287,6 @@ export default function QuizPage() {
       case 5:
         return !!answers.budget;
       case 6:
-        return true; // optional
-      case 7:
         return !!answers.installationTimeline;
       default:
         return true;
@@ -333,7 +321,6 @@ export default function QuizPage() {
     "About your household",
     "Coverage needed",
     "Your budget",
-    "Your priorities",
     "Installation timing",
   ];
 
@@ -765,24 +752,6 @@ export default function QuizPage() {
 
             {/* Step 6 */}
             {step === 6 && (
-              <div className="space-y-1">
-                <p className="mb-3 text-sm text-muted-foreground">Select any priorities that matter most to you.</p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {priorityOptions.map((p) => (
-                    <MultiSelectButton
-                      key={p.value}
-                      selected={answers.priorities.includes(p.value)}
-                      onClick={() => toggleMulti("priorities", p.value)}
-                    >
-                      {p.label}
-                    </MultiSelectButton>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 7 */}
-            {step === 7 && (
               <div className="space-y-5">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">

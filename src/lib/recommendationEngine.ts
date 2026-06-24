@@ -87,7 +87,7 @@ export interface QuizAnswers {
   budget: string;
   maintenanceTolerance?: string;
   installationTimeline?: string;
-  priorities: string[];
+  priorities?: string[];
   notes: string;
   firstName: string;
   email: string;
