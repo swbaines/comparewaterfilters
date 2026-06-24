@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 6;
 
 // State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
@@ -108,15 +108,6 @@ export const contactPreferenceOptions = [
   { value: "sms", label: "SMS first — text me before calling" },
   { value: "email", label: "Email first — email me before calling" },
   { value: "no_preference", label: "No preference — any method is fine" },
-];
-
-const priorityOptions = [
-  { value: "lowest-cost", label: "Lowest upfront cost" },
-  { value: "lowest-maintenance", label: "Lowest maintenance" },
-  { value: "strongest-filtration", label: "Strongest filtration" },
-  { value: "premium-appearance", label: "Premium appearance" },
-  { value: "best-warranty", label: "Best warranty / servicing" },
-  { value: "local-support", label: "Local / Australian support" },
 ];
 
 function OptionButton({
