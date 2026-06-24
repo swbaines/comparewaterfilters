@@ -295,7 +295,7 @@ export default function QuizPage() {
       case 4:
         return !!answers.coverage;
       case 5:
-        return !!answers.budget && !!answers.maintenanceTolerance;
+        return !!answers.budget;
       case 6:
         return true; // optional
       case 7:
