@@ -205,7 +205,7 @@ export default function QuizPage() {
     householdSize: "",
     bathrooms: "",
     propertyAge: "",
-    waterSource: "",
+    waterSource: "town-water",
     waterTestedRecently: "",
     waterUsageType: "",
     concerns: [],
