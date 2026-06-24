@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -241,7 +242,7 @@ export default function MatchedVendorsSection({
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
-  const [vendorAck, setVendorAck] = useState(false);
+  
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState<string[]>([]);
 
@@ -643,26 +644,10 @@ export default function MatchedVendorsSection({
             />
           </div>
 
-          <div className="flex items-start gap-2">
-            <Checkbox
-              id="vendor-ack-bulk"
-              checked={vendorAck}
-              onCheckedChange={(c) => setVendorAck(!!c)}
-            />
-            <label
-              htmlFor="vendor-ack-bulk"
-              className="text-xs leading-relaxed text-muted-foreground"
-            >
-              I understand that Compare Water Filters is a comparison platform only.
-              Vendors I am connected with are independent businesses. Compare Water Filters
-              does not guarantee vendor workmanship, pricing, or availability.
-            </label>
-          </div>
-
           <Button
             className="w-full gap-2"
             size="lg"
-            disabled={sending || !vendorAck || selected.size === 0}
+            disabled={sending || selected.size === 0}
             onClick={handleSendAll}
           >
             {sending ? (
@@ -675,6 +660,18 @@ export default function MatchedVendorsSection({
               </>
             )}
           </Button>
+
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            By requesting quotes, you agree we'll share your details with the installers you selected so they can contact you with a quote. Compare Water Filters is an independent comparison service — the installers are separate businesses, and we don't carry out or guarantee their work. See our{" "}
+            <Link to="/terms" className="underline hover:text-foreground">
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" className="underline hover:text-foreground">
+              Privacy Policy
+            </Link>
+            .
+          </p>
         </CardContent>
       </Card>
     </div>
