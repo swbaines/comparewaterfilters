@@ -761,34 +761,6 @@ export default function QuizPage() {
                   )}
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    How important is low ongoing maintenance cost? <span className="text-destructive">*</span>
-                  </label>
-                  <p className="mb-3 text-xs text-muted-foreground">
-                    Different systems have different annual maintenance needs — knowing your tolerance helps us match the right one.
-                  </p>
-                  <div
-                    className={`grid gap-2 sm:grid-cols-2 ${
-                      showErrors && !answers.maintenanceTolerance
-                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
-                        : ""
-                    }`}
-                  >
-                    {maintenanceToleranceOptions.map((m) => (
-                      <OptionButton
-                        key={m.value}
-                        selected={answers.maintenanceTolerance === m.value}
-                        onClick={() => set("maintenanceTolerance", m.value)}
-                      >
-                        {m.label}
-                      </OptionButton>
-                    ))}
-                  </div>
-                  {showErrors && !answers.maintenanceTolerance && (
-                    <p className="mt-2 text-sm text-destructive">Please select a maintenance preference to continue.</p>
-                  )}
-                </div>
               </div>
             )}
 
