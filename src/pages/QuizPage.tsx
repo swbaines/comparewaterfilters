@@ -95,12 +95,6 @@ const budgetOptions = [
   { value: "not-sure", label: "Not sure" },
 ];
 
-const maintenanceToleranceOptions = [
-  { value: "Critical — under $200 per year preferred", label: "Critical — under $200 per year preferred" },
-  { value: "Important — under $400 per year preferred", label: "Important — under $400 per year preferred" },
-  { value: "Manageable — up to $600 per year is fine", label: "Manageable — up to $600 per year is fine" },
-  { value: "Not a concern — I want the best filtration regardless", label: "Not a concern — I want the best filtration regardless" },
-];
 
 const installationTimelineOptions = [
   { value: "As soon as possible — within 2 weeks", label: "As soon as possible — within 2 weeks" },
