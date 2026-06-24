@@ -197,7 +197,6 @@ export default function QuizPage() {
     coverage: "",
     budget: "",
     installationTimeline: "",
-    priorities: [],
     notes: "",
     firstName: "",
     email: "",
@@ -257,7 +256,7 @@ export default function QuizPage() {
     setStep((s) => s + 1);
   };
 
-  const toggleMulti = (field: "concerns" | "priorities", value: string) => {
+  const toggleMulti = (field: "concerns", value: string) => {
     setAnswers((prev) => {
       const arr = prev[field];
       return { ...prev, [field]: arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value] };
@@ -288,8 +287,6 @@ export default function QuizPage() {
       case 5:
         return !!answers.budget;
       case 6:
-        return true; // optional
-      case 7:
         return !!answers.installationTimeline;
       default:
         return true;
@@ -324,7 +321,6 @@ export default function QuizPage() {
     "About your household",
     "Coverage needed",
     "Your budget",
-    "Your priorities",
     "Installation timing",
   ];
 
