@@ -751,24 +751,6 @@ export default function QuizPage() {
             )}
 
             {/* Step 6 */}
-            {step === 6 && (
-              <div className="space-y-1">
-                <p className="mb-3 text-sm text-muted-foreground">Select any priorities that matter most to you.</p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {priorityOptions.map((p) => (
-                    <MultiSelectButton
-                      key={p.value}
-                      selected={answers.priorities.includes(p.value)}
-                      onClick={() => toggleMulti("priorities", p.value)}
-                    >
-                      {p.label}
-                    </MultiSelectButton>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Step 7 */}
             {step === 7 && (
               <div className="space-y-5">
                 <div>
