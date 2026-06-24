@@ -14,7 +14,7 @@ import {
   Clock,
   ImageIcon,
   Lock,
-  MapPin,
+  
   Send,
   Shield,
   ShieldCheck,
@@ -40,7 +40,7 @@ interface Props {
 }
 
 function formatResponseMinutes(mins: number | null): string {
-  if (mins == null) return "New on platform";
+  if (mins == null) return "";
   if (mins < 60) return `~${Math.round(mins)} min avg`;
   const hrs = mins / 60;
   if (hrs < 24) return `~${hrs.toFixed(1)} hr avg`;
@@ -136,32 +136,28 @@ function VendorRow({
               {vendor.description}
             </p>
 
-            <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm sm:grid-cols-4">
-              <div className="flex items-center gap-1.5">
-                <Star className="h-3.5 w-3.5 shrink-0 text-primary" />
-                <span className="font-medium">{Number(vendor.rating).toFixed(1)}</span>
-                <span className="text-xs text-muted-foreground">
-                  ({vendor.review_count})
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 shrink-0 text-primary" />
-                <span className="text-xs text-muted-foreground">
-                  {formatResponseMinutes(vendor.avg_response_minutes)}
-                </span>
-              </div>
+            <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm sm:grid-cols-3">
+              {vendor.rating > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 shrink-0 text-primary" />
+                  <span className="font-medium">{Number(vendor.rating).toFixed(1)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({vendor.review_count})
+                  </span>
+                </div>
+              )}
+              {vendor.avg_response_minutes != null && (
+                <div className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 shrink-0 text-primary" />
+                  <span className="text-xs text-muted-foreground">
+                    {formatResponseMinutes(vendor.avg_response_minutes)}
+                  </span>
+                </div>
+              )}
               <div className="flex items-center gap-1.5">
                 <Shield className="h-3.5 w-3.5 shrink-0 text-primary" />
                 <span className="text-xs text-muted-foreground">
                   {vendor.years_in_business}y experience
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
-                <span className="text-xs text-muted-foreground">
-                  {vendor.distance_km != null
-                    ? `${Math.round(vendor.distance_km)}km away`
-                    : vendor.service_base_suburb || "Local"}
                 </span>
               </div>
             </div>
