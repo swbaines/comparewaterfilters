@@ -37,13 +37,6 @@ interface Props {
   recommendedSystems: string[];
 }
 
-function formatResponseMinutes(mins: number | null): string {
-  if (mins == null) return "";
-  if (mins < 60) return `~${Math.round(mins)} min avg`;
-  const hrs = mins / 60;
-  if (hrs < 24) return `~${hrs.toFixed(1)} hr avg`;
-  return `~${(hrs / 24).toFixed(1)} day avg`;
-}
 
 function VendorRow({
   vendor,
