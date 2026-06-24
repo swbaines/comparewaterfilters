@@ -11,10 +11,8 @@ import {
   AlertCircle,
   Award,
   CheckCircle2,
-  Clock,
   ImageIcon,
   Lock,
-  
   Send,
   Shield,
   ShieldCheck,
@@ -143,14 +141,6 @@ function VendorRow({
                   <span className="font-medium">{Number(vendor.rating).toFixed(1)}</span>
                   <span className="text-xs text-muted-foreground">
                     ({vendor.review_count})
-                  </span>
-                </div>
-              )}
-              {vendor.avg_response_minutes != null && (
-                <div className="flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 shrink-0 text-primary" />
-                  <span className="text-xs text-muted-foreground">
-                    {formatResponseMinutes(vendor.avg_response_minutes)}
                   </span>
                 </div>
               )}
