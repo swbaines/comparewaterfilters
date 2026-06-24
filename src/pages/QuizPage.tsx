@@ -297,7 +297,6 @@ export default function QuizPage() {
           answers.propertyType &&
           answers.ownershipStatus &&
           answers.householdSize &&
-          answers.bathrooms &&
           answers.propertyAge
         );
       case 4:
