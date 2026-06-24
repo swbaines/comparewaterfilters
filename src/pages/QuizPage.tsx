@@ -751,7 +751,7 @@ export default function QuizPage() {
             )}
 
             {/* Step 6 */}
-            {step === 7 && (
+            {step === 6 && (
               <div className="space-y-5">
                 <div>
                   <label className="mb-1.5 block text-sm font-medium">
