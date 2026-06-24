@@ -183,8 +183,8 @@ function getFlags(answers: QuizAnswers) {
 
   // Property age flags — older homes typically have aging galvanised/copper
   // pipework that can leach lead, copper or sediment into household water.
-  const isVeryOldProperty = propertyAge === "Over 50 years";
-  const isOldProperty = isVeryOldProperty || propertyAge === "20 to 50 years";
+  const isVeryOldProperty = propertyAge === "Over 50 years old";
+  const isOldProperty = isVeryOldProperty;
   const oldPipesHeavyMetals = isVeryOldProperty && has("heavy-metals");
 
   // RULE 1 trigger: whole-home intent
