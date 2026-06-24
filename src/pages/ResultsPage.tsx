@@ -911,7 +911,70 @@ export default function ResultsPage() {
           </Card>
         )}
 
+        {/* Action buttons */}
+        <div className="mt-8">
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button
+              size="lg"
+              className="w-full gap-2 shadow-md sm:w-auto"
+              onClick={() => {
+                const el = document.getElementById("matched-providers");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                  window.location.hash = "#matched-providers";
+                }
+              }}
+            >
+              Request a free quote <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={handleShareResults}
+            >
+              {copied ? <Check className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+              {copied ? "Link copied!" : "Save or share results"}
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={() => {
+                if (answers?.email) setEmailInput(answers.email);
+                setEmailDialogOpen(true);
+              }}
+            >
+              <Mail className="h-4 w-4" />
+              Email me my results
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full gap-2 sm:w-auto"
+              onClick={() => {
+                if (answers) {
+                  try {
+                    sessionStorage.setItem("quizAnswers", JSON.stringify(answers));
+                  } catch {
+                    // ignore storage failures
+                  }
+                }
+                navigate("/quiz?edit=1");
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit my answers
+            </Button>
+          </div>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            Free, no obligation • Your details are saved with your results link
+          </p>
+        </div>
+
         {/* 3 Recommendation cards (or 2 if budget = recommendation or premium = recommendation) */}
+
         <h2 className="mb-4 text-lg font-bold">Recommended system types & Matched providers</h2>
         {result.primary.id === result.premium.id ? (
           /* Primary IS the premium (e.g. WH+RO combo) — show 2 cards: recommendation + budget */
