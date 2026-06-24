@@ -297,7 +297,6 @@ export default function QuizPage() {
           answers.propertyType &&
           answers.ownershipStatus &&
           answers.householdSize &&
-          answers.bathrooms &&
           answers.propertyAge
         );
       case 4:
@@ -496,57 +495,32 @@ export default function QuizPage() {
                     </p>
                   )}
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm font-medium">
-                      People in home <span className="text-destructive">*</span>
-                    </label>
-                    <div
-                      className={`flex gap-2 ${
-                        showErrors && !answers.householdSize
-                          ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
-                          : ""
-                      }`}
-                    >
-                      {householdSizes.map((s) => (
-                        <OptionButton
-                          key={s}
-                          selected={answers.householdSize === s}
-                          onClick={() => set("householdSize", s)}
-                        >
-                          {s}
-                        </OptionButton>
-                      ))}
-                    </div>
-                    {showErrors && !answers.householdSize && (
-                      <p className="mt-2 text-xs font-medium text-destructive" role="alert">
-                        Please select an option.
-                      </p>
-                    )}
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    People in home <span className="text-destructive">*</span>
+                  </label>
+                  <div
+                    className={`flex gap-2 ${
+                      showErrors && !answers.householdSize
+                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
+                        : ""
+                    }`}
+                  >
+                    {householdSizes.map((s) => (
+                      <OptionButton
+                        key={s}
+                        selected={answers.householdSize === s}
+                        onClick={() => set("householdSize", s)}
+                      >
+                        {s}
+                      </OptionButton>
+                    ))}
                   </div>
-                  <div>
-                    <label className="mb-2 block text-sm font-medium">
-                      Bathrooms <span className="text-destructive">*</span>
-                    </label>
-                    <div
-                      className={`flex gap-2 ${
-                        showErrors && !answers.bathrooms
-                          ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
-                          : ""
-                      }`}
-                    >
-                      {bathroomCounts.map((b) => (
-                        <OptionButton key={b} selected={answers.bathrooms === b} onClick={() => set("bathrooms", b)}>
-                          {b}
-                        </OptionButton>
-                      ))}
-                    </div>
-                    {showErrors && !answers.bathrooms && (
-                      <p className="mt-2 text-xs font-medium text-destructive" role="alert">
-                        Please select an option.
-                      </p>
-                    )}
-                  </div>
+                  {showErrors && !answers.householdSize && (
+                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
+                      Please select an option.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium">
