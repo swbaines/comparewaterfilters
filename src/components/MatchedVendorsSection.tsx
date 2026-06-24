@@ -302,10 +302,10 @@ export default function MatchedVendorsSection({
       setContactPreference((prev) => prev || answers.contactPreference);
   }, [answers.firstName, answers.email, answers.mobile, answers.contactPreference]);
 
-  // Pre-select all top vendors when they load
+  // Pre-select only the top match when vendors load
   useEffect(() => {
     if (topVendors.length > 0 && selected.size === 0 && submitted.length === 0) {
-      setSelected(new Set(topVendors.map((v) => v.provider_id)));
+      setSelected(new Set([topVendors[0].provider_id]));
     }
   }, [topVendors, selected.size, submitted.length]);
 
