@@ -175,14 +175,6 @@ function VendorRow({
                     <Award className="mr-1 h-3 w-3" /> {c}
                   </Badge>
                 ))}
-                {vendor.installation_model === "in_house_licensed" && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs font-normal border-emerald-300 text-emerald-700"
-                  >
-                    <ShieldCheck className="mr-1 h-3 w-3" /> Licensed Plumber
-                  </Badge>
-                )}
                 {vendor.installation_model === "sub_contracted" && (
                   <>
                     <Badge
