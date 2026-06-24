@@ -884,7 +884,7 @@ export default function ResultsPage() {
               Next step
             </Badge>
             <h2 className="text-2xl font-bold sm:text-3xl">
-              Get free quotes from up to 3 local installers
+              Get 3 quotes & pick the best - no obligation.
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
               Enter your details and we'll match you with trusted installers in your area.
