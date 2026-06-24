@@ -242,7 +242,7 @@ export default function MatchedVendorsSection({
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
-  const [vendorAck, setVendorAck] = useState(false);
+  
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState<string[]>([]);
 
