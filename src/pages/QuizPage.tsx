@@ -3,7 +3,7 @@ import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import SuburbPostcodeAutocomplete from "@/components/SuburbPostcodeAutocomplete";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
@@ -194,7 +194,7 @@ export default function QuizPage() {
     coverage: "",
     budget: "",
     installationTimeline: "",
-    notes: "",
+    
     firstName: "",
     email: "",
     mobile: "",
