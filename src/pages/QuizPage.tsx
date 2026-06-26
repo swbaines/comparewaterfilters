@@ -85,7 +85,7 @@ const coverageOptions = [
   { value: "showers-bathrooms", label: "Filtered showers and bathrooms" },
 ];
 
-const budgetOptions = [
+export const budgetOptions = [
   { value: "under-1000", label: "Under $1,000" },
   { value: "1000-3500", label: "Up to\u00a0 $3,500" },
   { value: "3500-plus", label: "$3,500 +" },
