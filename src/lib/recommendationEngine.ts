@@ -106,7 +106,6 @@ export type FiredRule =
   | "rule-6-budget-under-1k"
   | "rule-7-untreated-water-uv"
   | "rule-1b-whole-home-plus-ro"
-  | "rule-8-old-pipes-heavy-metals"
   | "default";
 
 export interface RuleExplanation {
