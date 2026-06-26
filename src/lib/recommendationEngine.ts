@@ -171,7 +171,7 @@ const STATE_WATER_PROFILES: Record<string, StateWaterProfile> = {
 
 // ─── Helper flags ───────────────────────────────────────────────────────────
 function getFlags(answers: QuizAnswers) {
-  const { concerns, coverage, budget, ownershipStatus, propertyType, state, propertyAge } = answers;
+  const { concerns, coverage, budget, ownershipStatus, propertyType, state } = answers;
   const has = (c: string) => concerns.includes(c);
 
   const isRenter = ownershipStatus === "Rent";
