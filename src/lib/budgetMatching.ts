@@ -10,15 +10,14 @@
 
 export type BudgetBand =
   | "under-1000"
-  | "1000-3000"
-  | "3000-5000"
-  | "5000-plus"
+  | "1000-3500"
+  | "3500-plus"
   | "not-sure"
   | "";
 
 export interface BudgetRange {
   min: number;
-  /** `Infinity` for open-ended bands (e.g. $5,000+). */
+  /** `Infinity` for open-ended bands (e.g. $3,500+). */
   max: number;
   label: string;
 }
@@ -27,12 +26,10 @@ export function budgetBandToRange(band: BudgetBand): BudgetRange | null {
   switch (band) {
     case "under-1000":
       return { min: 0, max: 1000, label: "Under $1,000" };
-    case "1000-3000":
-      return { min: 1000, max: 3000, label: "$1,000 – $3,000" };
-    case "3000-5000":
-      return { min: 3000, max: 5000, label: "$3,000 – $5,000" };
-    case "5000-plus":
-      return { min: 5000, max: Infinity, label: "$5,000+" };
+    case "1000-3500":
+      return { min: 1000, max: 3500, label: "Up to $3,500" };
+    case "3500-plus":
+      return { min: 3500, max: Infinity, label: "$3,500 +" };
     default:
       return null;
   }
