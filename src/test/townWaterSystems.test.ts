@@ -40,7 +40,7 @@ const base: QuizAnswers = {
   waterSource: "town-water",
   concerns: [],
   coverage: "whole-house",
-  budget: "1000-3000",
+  budget: "1000-3500",
   priorities: [],
   notes: "",
   firstName: "Test",
@@ -70,7 +70,7 @@ const CONCERN_SETS: string[][] = [
   ["hard-water", "appliance", "skin-hair"],
 ];
 const COVERAGES = ["whole-house", "whole-house-plus", "drinking-water", "kitchen", "one-tap"];
-const BUDGETS = ["under-1000", "1000-3000", "3000-6000", "6000-plus"];
+const BUDGETS = ["under-1000", "1000-3500", "3500-plus"];
 
 describe("Town-water customers — only the four core systems", () => {
   it("default homeowner town-water case returns only allowed systems", () => {
