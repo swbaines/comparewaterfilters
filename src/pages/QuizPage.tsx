@@ -372,6 +372,9 @@ export default function QuizPage() {
     if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
       (window as any).clarity("event", "quiz_completed");
     }
+    trackQuizEvent("quiz_completed", { total_steps: TOTAL_STEPS });
+    // Mark completed so the abandonment listener does not fire on navigation.
+    setStep(TOTAL_STEPS + 1);
     navigate("/results");
   };
 
