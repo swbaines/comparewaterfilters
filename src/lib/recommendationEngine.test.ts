@@ -20,7 +20,7 @@ const baseAnswers = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   waterUsageType: "",
   concerns: ["whole-home"],
   coverage: "whole-house",
-  budget: "3000-5000",
+  budget: "3500-plus",
   priorities: [],
   notes: "",
   firstName: "Test",
