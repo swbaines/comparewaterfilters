@@ -35,7 +35,7 @@ describe("Water Softener filtering (Rule 2: WA/SA only)", () => {
       state: "WA",
       concerns: ["hard-water", "appliance"],
       coverage: "whole-house",
-      budget: "3000-5000",
+      budget: "3500-plus",
     };
     const result = generateRecommendations(answers);
     expect(result.primary.id).toBe("water-softener");
@@ -47,7 +47,7 @@ describe("Water Softener filtering (Rule 2: WA/SA only)", () => {
       state: "SA",
       concerns: ["hard-water"],
       coverage: "whole-house",
-      budget: "3000-5000",
+      budget: "3500-plus",
     };
     const result = generateRecommendations(answers);
     expect(result.primary.id).toBe("water-softener");
@@ -59,7 +59,7 @@ describe("Water Softener filtering (Rule 2: WA/SA only)", () => {
       state: "VIC",
       concerns: ["hard-water", "appliance"],
       coverage: "whole-house",
-      budget: "3000-5000",
+      budget: "3500-plus",
     };
     const result = generateRecommendations(answers);
     const allIds = [result.primary.id, result.secondary.id, result.premium.id];
@@ -73,7 +73,7 @@ describe("Skin-hair concern scoring (Rule 1: whole-home)", () => {
       ...baseAnswers,
       concerns: ["skin-hair"],
       coverage: "whole-house",
-      budget: "3000-5000",
+      budget: "3500-plus",
       priorities: [],
     };
     const result = generateRecommendations(answers);
@@ -177,7 +177,7 @@ describe("Renter & apartment edge cases (Rule 5)", () => {
       ownershipStatus: "Rent",
       concerns: ["appliance"],
       coverage: "whole-house",
-      budget: "3000-5000",
+      budget: "3500-plus",
       priorities: [],
     };
     const result = generateRecommendations(answers);
@@ -197,7 +197,7 @@ describe("Renter & apartment edge cases (Rule 5)", () => {
       ownershipStatus: "Rent",
       concerns: ["hard-water"],
       coverage: "whole-house",
-      budget: "3000-5000",
+      budget: "3500-plus",
       priorities: [],
     };
     const result = generateRecommendations(answers);
@@ -238,15 +238,15 @@ describe("Allowed system universe", () => {
   ]);
 
   const scenarios: Array<{ name: string; answers: Partial<QuizAnswers> }> = [
-    { name: "VIC owner, taste only", answers: { state: "VIC", concerns: ["taste"], coverage: "drinking-water", budget: "1000-3000" } },
-    { name: "NSW owner, PFAS", answers: { state: "NSW", concerns: ["pfas"], coverage: "drinking-water", budget: "1000-3000" } },
-    { name: "WA owner, hard-water", answers: { state: "WA", concerns: ["hard-water"], coverage: "whole-house", budget: "3000-5000" } },
-    { name: "SA owner, appliance", answers: { state: "SA", concerns: ["appliance"], coverage: "whole-house", budget: "5000-plus" } },
-    { name: "QLD owner, skin-hair", answers: { state: "QLD", concerns: ["skin-hair"], coverage: "whole-house", budget: "3000-5000" } },
+    { name: "VIC owner, taste only", answers: { state: "VIC", concerns: ["taste"], coverage: "drinking-water", budget: "1000-3500" } },
+    { name: "NSW owner, PFAS", answers: { state: "NSW", concerns: ["pfas"], coverage: "drinking-water", budget: "1000-3500" } },
+    { name: "WA owner, hard-water", answers: { state: "WA", concerns: ["hard-water"], coverage: "whole-house", budget: "3500-plus" } },
+    { name: "SA owner, appliance", answers: { state: "SA", concerns: ["appliance"], coverage: "whole-house", budget: "3500-plus" } },
+    { name: "QLD owner, skin-hair", answers: { state: "QLD", concerns: ["skin-hair"], coverage: "whole-house", budget: "3500-plus" } },
     { name: "NSW renter, taste", answers: { state: "NSW", ownershipStatus: "Rent", concerns: ["taste"], coverage: "drinking-water", budget: "under-1000" } },
     { name: "VIC apartment, chlorine", answers: { state: "VIC", propertyType: "Apartment", concerns: ["chlorine"], coverage: "drinking-water", budget: "under-1000" } },
-    { name: "Bore water + bacteria (no longer a special path)", answers: { waterSource: "bore-water", concerns: ["bacteria"], coverage: "whole-house", budget: "3000-5000" } },
-    { name: "Rainwater tank", answers: { waterSource: "rainwater", concerns: ["taste"], coverage: "whole-house", budget: "3000-5000" } },
+    { name: "Bore water + bacteria (no longer a special path)", answers: { waterSource: "bore-water", concerns: ["bacteria"], coverage: "whole-house", budget: "3500-plus" } },
+    { name: "Rainwater tank", answers: { waterSource: "rainwater", concerns: ["taste"], coverage: "whole-house", budget: "3500-plus" } },
   ];
 
   for (const { name, answers } of scenarios) {
