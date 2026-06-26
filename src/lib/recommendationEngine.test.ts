@@ -14,8 +14,8 @@ const baseAnswers = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   ownershipStatus: "Own",
   householdSize: "3",
   bathrooms: "2",
-  propertyAge: "Under 50 years old",
   waterSource: "town-water",
+
   waterTestedRecently: "",
   waterUsageType: "",
   concerns: ["whole-home"],

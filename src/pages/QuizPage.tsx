@@ -26,7 +26,7 @@ const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
 const householdSizes = ["1", "2", "3", "4", "5+"];
 const bathroomCounts = ["1", "2", "3", "4+"];
-const propertyAges = ["Under 50 years old", "Over 50 years old"];
+
 
 const waterTestedOptions = ["Yes, recently tested", "No, not tested", "Not sure"];
 const waterUsageOptions = [
@@ -189,7 +189,7 @@ export default function QuizPage() {
     ownershipStatus: "",
     householdSize: "",
     bathrooms: "",
-    propertyAge: "",
+    
     waterSource: "town-water",
     waterTestedRecently: "",
     waterUsageType: "",
@@ -279,8 +279,7 @@ export default function QuizPage() {
           answers.state &&
           answers.propertyType &&
           answers.ownershipStatus &&
-          answers.householdSize &&
-          answers.propertyAge
+          answers.householdSize
         );
       case 4:
         return !!answers.coverage;
@@ -499,37 +498,6 @@ export default function QuizPage() {
                   {showErrors && !answers.householdSize && (
                     <p className="mt-2 text-xs font-medium text-destructive" role="alert">
                       Please select an option.
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium">
-                    Approximate age of property <span className="text-destructive">*</span>
-                  </label>
-                  <div
-                    className={`flex flex-wrap gap-2 ${
-                      showErrors && !answers.propertyAge
-                        ? "rounded-lg ring-2 ring-destructive/40 ring-offset-2 ring-offset-background p-2 -m-2"
-                        : ""
-                    }`}
-                  >
-                    {propertyAges.map((a) => (
-                      <OptionButton
-                        key={a}
-                        selected={answers.propertyAge === a}
-                        onClick={() => set("propertyAge", a)}
-                      >
-                        {a}
-                      </OptionButton>
-                    ))}
-                  </div>
-                  {showErrors && !answers.propertyAge ? (
-                    <p className="mt-2 text-xs font-medium text-destructive" role="alert">
-                      Please select an option to continue. Choose “Not sure” if you’re unsure.
-                    </p>
-                  ) : (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      This helps installers understand your plumbing setup and provide accurate quotes.
                     </p>
                   )}
                 </div>

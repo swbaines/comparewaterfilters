@@ -807,7 +807,7 @@ export default function ResultsPage() {
         ownership_status: answers.ownershipStatus || null,
         household_size: answers.householdSize || null,
         bathrooms: answers.bathrooms || null,
-        property_age: answers.propertyAge || null,
+        
         water_source: answers.waterSource || null,
         water_tested_recently: answers.waterTestedRecently || null,
         water_usage_type: answers.waterUsageType || null,
@@ -840,12 +840,7 @@ export default function ResultsPage() {
 
   // Surface a "Recommended because of your needs" badge on the primary card
   // when Rule 8 fired (older property + heavy-metals → RO forced into result).
-  const oldPipesRoForced = result.explanation.appliedRules.some(
-    (r) => r.rule === "rule-8-old-pipes-heavy-metals",
-  );
-  const primaryNeedsBadge = oldPipesRoForced
-    ? "Recommended because of your needs"
-    : undefined;
+  const primaryNeedsBadge = undefined;
 
   return (
     <div className="min-h-screen bg-muted/30 py-8 sm:py-12">
