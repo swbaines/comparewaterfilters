@@ -247,10 +247,8 @@ function getFlags(answers: QuizAnswers) {
     roTrigger,
     onlyTasteChlorine,
     budgetUnder1k,
-    isOldProperty,
-    isVeryOldProperty,
-    oldPipesHeavyMetals,
     isReplacement,
+
     showersBathroomsCoverage,
     showersBathroomsSkinChlorine,
     maintenanceTier,
