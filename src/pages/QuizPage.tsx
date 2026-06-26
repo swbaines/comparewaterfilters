@@ -26,7 +26,7 @@ const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
 const householdSizes = ["1", "2", "3", "4", "5+"];
 const bathroomCounts = ["1", "2", "3", "4+"];
-const propertyAges = ["Under 50 years old", "Over 50 years old"];
+
 
 const waterTestedOptions = ["Yes, recently tested", "No, not tested", "Not sure"];
 const waterUsageOptions = [
