@@ -12,7 +12,7 @@ const budgetLabels: Record<string, string> = {
   'under-1000': 'Under $1,000',
   '1000-3500': 'Up to $3,500',
   '3500-plus': '$3,500 +',
-  'not-sure': 'Not sure yet',
+  'not-sure': "Doesn't matter — best regardless of cost",
 }
 ...
     budget: '1000-3500',
