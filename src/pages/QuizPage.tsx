@@ -66,11 +66,11 @@ const waterSources = [
 ];
 
 const concernOptions = [
-  { value: "whole-home", label: "Chlorine etc.\n" },
+  { value: "whole-home", label: "Chlorine" },
   { value: "taste", label: "Taste or smell from tap water" },
   
   { value: "skin-hair", label: "Skin irritation, eczema, hair loss or dandruff" },
-  { value: "fluoride", label: "Fluoride removal" },
+  { value: "fluoride", label: "Fluoride" },
   { value: "heavy-metals", label: "Heavy metals (lead, arsenic etc.)" },
   { value: "pfas", label: "PFAS / forever chemicals" },
   { value: "microplastics", label: "Microplastics" },
