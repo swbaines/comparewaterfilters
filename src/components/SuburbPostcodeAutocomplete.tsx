@@ -51,14 +51,14 @@ function timezoneToState(): string {
   return "";
 }
 
-function useDetectedState() {
+function useDetectedState({ skipGeolocation = false }: { skipGeolocation?: boolean } = {}) {
   const [detectedState, setDetectedState] = useState<string>(() => {
     return sessionStorage.getItem("detected_au_state") || "";
   });
   const [autoDetectFailed, setAutoDetectFailed] = useState(false);
 
   useEffect(() => {
-    if (detectedState) return;
+    if (detectedState || skipGeolocation) return;
 
     const applyFallback = () => {
       const fallback = timezoneToState();
@@ -83,7 +83,7 @@ function useDetectedState() {
     } else {
       applyFallback();
     }
-  }, [detectedState]);
+  }, [detectedState, skipGeolocation]);
 
   const setManualState = (state: string) => {
     setDetectedState(state);
