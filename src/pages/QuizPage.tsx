@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Check, RefreshCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
 import {
   AlertDialog,
@@ -75,8 +75,6 @@ const concernOptions = [
   { value: "pfas", label: "PFAS\u00a0 (forever chemicals)" },
   { value: "microplastics", label: "Microplastics" },
   { value: "appliance", label: "Appliance & hot water system protection" },
-  { value: "not-sure", label: "Not sure, just want better water" },
-  { value: "replacement", label: "Existing system needs replacement" },
 ];
 
 const coverageOptions = [
@@ -614,11 +612,6 @@ export default function QuizPage() {
                       onClick={() => toggleMulti("concerns", c.value)}
                     >
                       <span className="flex items-center gap-2">
-                        {c.value === "replacement" && (
-                          <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
-                            <RefreshCw className="h-3.5 w-3.5 text-primary" />
-                          </span>
-                        )}
                         <span className="leading-snug">{c.label}</span>
                       </span>
                     </MultiSelectButton>
@@ -628,19 +621,6 @@ export default function QuizPage() {
                   <p className="mt-3 text-xs font-medium text-destructive" role="alert">
                     Please select at least one concern to continue.
                   </p>
-                )}
-                {answers.concerns.includes("replacement") && (
-                  <div className="mt-4 flex items-start gap-3 rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/[0.02] px-4 py-3 shadow-sm animate-fade-in">
-                    <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
-                      <RefreshCw className="h-3.5 w-3.5 text-primary" />
-                    </span>
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-foreground">Replacement & upgrade matching</p>
-                      <p className="text-xs leading-relaxed text-muted-foreground">
-                        We'll prioritise providers who can quote on replacing or upgrading your existing system — including modern warranties and best-practice installs.
-                      </p>
-                    </div>
-                  </div>
                 )}
               </div>
             )}

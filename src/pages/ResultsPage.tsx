@@ -246,8 +246,6 @@ const CONCERN_LABELS: Record<string, string> = {
   microplastics: "Microplastics",
   "whole-home": "Chlorine",
   appliance: "Appliance & hot water system protection",
-  "not-sure": "Not sure — just want better water",
-  replacement: "Existing system needs replacement",
 };
 
 function PricingExplainer({ result, answers }: { result: RecommendationResult; answers: QuizAnswers }) {
