@@ -201,7 +201,39 @@ export default function QuizPage() {
     if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
       (window as any).clarity("event", "quiz_started");
     }
+    trackQuizEvent("quiz_started", { step: 1, total_steps: TOTAL_STEPS });
   }, []);
+
+  // Track which step the user is currently on (for funnel analysis).
+  useEffect(() => {
+    trackQuizEvent("quiz_step_viewed", { step, total_steps: TOTAL_STEPS });
+  }, [step]);
+
+  // Track abandonment: fire when the user leaves the page before submitting.
+  // We use a ref-like state via closure on `step` so the latest step is sent.
+  useEffect(() => {
+    const sendAbandon = (reason: "unload" | "hidden") => {
+      if (step > TOTAL_STEPS) return; // already completed
+      trackQuizEvent("quiz_abandoned", {
+        step,
+        step_title: stepTitles[step - 1] ?? "",
+        total_steps: TOTAL_STEPS,
+        reason,
+      });
+    };
+    const onBeforeUnload = () => sendAbandon("unload");
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") sendAbandon("hidden");
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "",
     suburb: "",
@@ -271,9 +303,17 @@ export default function QuizPage() {
   const handleNext = () => {
     if (!canNext()) {
       setShowErrors(true);
+      trackQuizEvent("quiz_step_validation_failed", {
+        step,
+        step_title: stepTitles[step - 1] ?? "",
+      });
       return;
     }
     setShowErrors(false);
+    trackQuizEvent("quiz_step_completed", {
+      step,
+      step_title: stepTitles[step - 1] ?? "",
+    });
     setStep((s) => s + 1);
   };
 
