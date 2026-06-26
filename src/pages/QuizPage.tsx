@@ -80,7 +80,7 @@ function trackQuizEvent(
         step_number: stepNum,
         step_title: stepTitle,
         session_id: getQuizSessionId(),
-        metadata: params as Record<string, unknown>,
+        metadata: JSON.parse(JSON.stringify(params)),
       }])
       .then(() => undefined, () => undefined);
   } catch {
