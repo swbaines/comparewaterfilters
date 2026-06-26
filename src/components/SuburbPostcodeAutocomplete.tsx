@@ -94,7 +94,6 @@ function useDetectedState({ skipGeolocation = false }: { skipGeolocation?: boole
 }
 
 export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect }: Props) {
-  const isMobile = useIsMobile();
   const [query, setQuery] = useState(postcode || suburb ? `${suburb}${suburb && postcode ? ", " : ""}${postcode}` : "");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -102,7 +101,7 @@ export default function SuburbPostcodeAutocomplete({ postcode, suburb, onSelect 
   const [touched, setTouched] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { detectedState, autoDetectFailed, setManualState } = useDetectedState({ skipGeolocation: isMobile });
+  const { detectedState, autoDetectFailed, setManualState } = useDetectedState();
 
   // Sync display when parent resets
   useEffect(() => {
