@@ -30,6 +30,11 @@ export function budgetBandToRange(band: BudgetBand): BudgetRange | null {
       return { min: 1000, max: 3500, label: "Up to $3,500" };
     case "3500-plus":
       return { min: 3500, max: Infinity, label: "$3,500 +" };
+    case "not-sure":
+      // "Doesn't matter" — user wants the best recommendation regardless of
+      // cost. Treat as an unconstrained range so every vendor is considered
+      // within budget and matching focuses on the recommended systems only.
+      return { min: 0, max: Infinity, label: "Best regardless of cost" };
     default:
       return null;
   }
