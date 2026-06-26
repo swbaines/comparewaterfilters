@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Suggestion {
   name: string;
