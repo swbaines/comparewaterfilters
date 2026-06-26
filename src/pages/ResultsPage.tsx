@@ -807,7 +807,7 @@ export default function ResultsPage() {
         ownership_status: answers.ownershipStatus || null,
         household_size: answers.householdSize || null,
         bathrooms: answers.bathrooms || null,
-        property_age: answers.propertyAge || null,
+        
         water_source: answers.waterSource || null,
         water_tested_recently: answers.waterTestedRecently || null,
         water_usage_type: answers.waterUsageType || null,
