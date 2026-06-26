@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 
-
 interface Suggestion {
   name: string;
   postcode: number;
@@ -59,6 +58,8 @@ function useDetectedState() {
 
   useEffect(() => {
     if (detectedState) return;
+    // Skip geolocation on mobile to avoid intrusive browser permission prompts
+    const isMobileViewport = typeof window !== "undefined" && window.innerWidth < 768;
 
     const applyFallback = () => {
       const fallback = timezoneToState();
@@ -69,6 +70,11 @@ function useDetectedState() {
         setAutoDetectFailed(true);
       }
     };
+
+    if (isMobileViewport) {
+      applyFallback();
+      return;
+    }
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
