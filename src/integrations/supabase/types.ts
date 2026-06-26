@@ -617,6 +617,36 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_funnel_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          id: string
+          metadata: Json | null
+          session_id: string | null
+          step_number: number | null
+          step_title: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          step_number?: number | null
+          step_title?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          id?: string
+          metadata?: Json | null
+          session_id?: string | null
+          step_number?: number | null
+          step_title?: string | null
+        }
+        Relationships: []
+      }
       quiz_submissions: {
         Row: {
           bathrooms: string | null
