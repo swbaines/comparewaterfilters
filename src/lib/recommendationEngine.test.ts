@@ -20,7 +20,7 @@ const baseAnswers = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   waterUsageType: "",
   concerns: ["whole-home"],
   coverage: "whole-house",
-  budget: "3000-5000",
+  budget: "3500-plus",
   priorities: [],
   notes: "",
   firstName: "Test",
@@ -147,7 +147,7 @@ describe("recommendation engine — maintenance tolerance integration", () => {
       baseAnswers({
         concerns: ["fluoride"],
         coverage: "drinking-water",
-        budget: "1000-3000",
+        budget: "1000-3500",
         maintenanceTolerance: TOLERANCE_LABELS.critical,
       }),
     );
@@ -164,7 +164,7 @@ describe("recommendation engine — maintenance tolerance integration", () => {
         baseAnswers({
           concerns: ["fluoride"],
           coverage: "drinking-water",
-          budget: "1000-3000",
+          budget: "1000-3500",
           maintenanceTolerance: label,
         }),
       );
@@ -177,7 +177,7 @@ describe("recommendation engine — maintenance tolerance integration", () => {
       baseAnswers({
         concerns: ["taste", "chlorine"],
         coverage: "drinking-water",
-        budget: "1000-3000",
+        budget: "1000-3500",
         maintenanceTolerance: TOLERANCE_LABELS.critical,
       }),
     );
@@ -189,7 +189,7 @@ describe("recommendation engine — maintenance tolerance integration", () => {
       baseAnswers({
         concerns: ["fluoride"],
         coverage: "drinking-water",
-        budget: "1000-3000",
+        budget: "1000-3500",
       }),
     );
     expect(result.warnings).not.toContain(MAINTENANCE_SERVICE_PLAN_NOTE);
