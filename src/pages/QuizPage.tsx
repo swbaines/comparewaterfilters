@@ -75,13 +75,13 @@ function trackQuizEvent(
       typeof params.step_title === "string" ? params.step_title : null;
     void supabase
       .from("quiz_funnel_events")
-      .insert({
+      .insert([{
         event_name: event,
         step_number: stepNum,
         step_title: stepTitle,
         session_id: getQuizSessionId(),
         metadata: params as Record<string, unknown>,
-      })
+      }])
       .then(() => undefined, () => undefined);
   } catch {
     // ignore
