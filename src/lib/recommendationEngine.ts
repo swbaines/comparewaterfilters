@@ -181,11 +181,6 @@ function getFlags(answers: QuizAnswers) {
   const stateProfile = STATE_WATER_PROFILES[state] || null;
   const isWAorSA = state === "WA" || state === "SA";
 
-  // Property age flags — older homes typically have aging galvanised/copper
-  // pipework that can leach lead, copper or sediment into household water.
-  const isVeryOldProperty = propertyAge === "Over 50 years old";
-  const isOldProperty = isVeryOldProperty;
-  const oldPipesHeavyMetals = isVeryOldProperty && has("heavy-metals");
 
   // RULE 1 trigger: whole-home intent
   const wholeHomeTrigger =
