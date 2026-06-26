@@ -14,7 +14,7 @@ const baseAnswers: QuizAnswers = {
   coverage: "drinking-water",
   budget: "under-1000",
   priorities: ["lowest-cost"],
-  notes: "",
+  
   firstName: "Test",
   email: "test@example.com",
   mobile: "",

@@ -36,7 +36,7 @@ const baseAnswers = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   coverage: "whole-house",
   budget: "3500-plus",
   priorities: [],
-  notes: "",
+  
   firstName: "Test",
   email: "test@example.com",
   mobile: "0400000000",
