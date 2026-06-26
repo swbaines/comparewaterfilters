@@ -3,6 +3,7 @@ import PageMeta from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import SuburbPostcodeAutocomplete from "@/components/SuburbPostcodeAutocomplete";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -21,8 +22,27 @@ import {
 
 const TOTAL_STEPS = 6;
 
+// Per-tab session id so we can group a single user's events together.
+function getQuizSessionId(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const KEY = "quiz_funnel_session_id";
+    let id = sessionStorage.getItem(KEY);
+    if (!id) {
+      id =
+        (typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : Math.random().toString(36).slice(2) + Date.now().toString(36));
+      sessionStorage.setItem(KEY, id);
+    }
+    return id;
+  } catch {
+    return "";
+  }
+}
+
 // Lightweight analytics helper — fires to GA4 (gtag) and Clarity when present.
-// Used to understand where users drop off in the quiz funnel.
+// Also persists to the `quiz_funnel_events` table for the admin funnel dashboard.
 function trackQuizEvent(
   event: string,
   params: Record<string, string | number | boolean | undefined> = {},
@@ -40,6 +60,29 @@ function trackQuizEvent(
   }
   try {
     w.clarity?.("event", event);
+  } catch {
+    // ignore
+  }
+  // Persist to DB (fire-and-forget). Never block the UI.
+  try {
+    const stepNum =
+      typeof params.step === "number"
+        ? params.step
+        : typeof params.step === "string"
+        ? Number(params.step) || null
+        : null;
+    const stepTitle =
+      typeof params.step_title === "string" ? params.step_title : null;
+    void supabase
+      .from("quiz_funnel_events")
+      .insert([{
+        event_name: event,
+        step_number: stepNum,
+        step_title: stepTitle,
+        session_id: getQuizSessionId(),
+        metadata: JSON.parse(JSON.stringify(params)),
+      }])
+      .then(() => undefined, () => undefined);
   } catch {
     // ignore
   }

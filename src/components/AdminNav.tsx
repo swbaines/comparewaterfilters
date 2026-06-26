@@ -1,13 +1,14 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { Building2, ClipboardList, BarChart3, FileText, LogOut, UserCog, Search, ShieldCheck, Flag } from "lucide-react";
+import { Building2, ClipboardList, BarChart3, FileText, LogOut, UserCog, Search, ShieldCheck, Flag, Filter } from "lucide-react";
 
 const navItems = [
   { to: "/admin/providers", label: "Providers", icon: Building2 },
   { to: "/admin/leads", label: "Lead Tracking", icon: ClipboardList },
   { to: "/admin/flagged-leads", label: "Flagged Leads", icon: Flag },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/admin/quiz-funnel", label: "Quiz Funnel", icon: Filter },
   { to: "/admin/invoices", label: "Invoices", icon: FileText },
   { to: "/admin/account", label: "Account", icon: UserCog },
   { to: "/admin/seo-preview", label: "SEO Preview", icon: Search },
