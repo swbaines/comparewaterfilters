@@ -730,14 +730,6 @@ export default function QuizPage() {
                     </p>
                   )}
                 </div>
-                <div>
-                  <label className="mb-1.5 block text-sm font-medium">Anything else we should know?</label>
-                  <Textarea
-                    placeholder="Any specific concerns, existing systems, or questions..."
-                    value={answers.notes}
-                    onChange={(e) => set("notes", e.target.value)}
-                  />
-                </div>
               </div>
             )}
 
