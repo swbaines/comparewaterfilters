@@ -364,7 +364,7 @@ export default function MatchedVendorsSection({
         customer_postcode: answers.postcode,
         property_type: answers.propertyType,
         household_size: answers.householdSize,
-        property_age: answers.propertyAge || null,
+        
         water_source: answers.waterSource,
         water_tested_recently: answers.waterTestedRecently || null,
         water_usage_type: answers.waterUsageType || null,
