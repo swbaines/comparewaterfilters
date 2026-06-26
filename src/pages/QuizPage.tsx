@@ -69,10 +69,10 @@ const concernOptions = [
   { value: "whole-home", label: "Chlorine" },
   { value: "taste", label: "Taste or smell from tap water" },
   
-  { value: "skin-hair", label: "Skin irritation, eczema, hair loss or dandruff" },
+  { value: "skin-hair", label: "Skin irritation (eczema, hair loss, dandruff)" },
   { value: "fluoride", label: "Fluoride" },
-  { value: "heavy-metals", label: "Heavy metals (lead, arsenic etc.)" },
-  { value: "pfas", label: "PFAS / forever chemicals" },
+  { value: "heavy-metals", label: "Heavy metals" },
+  { value: "pfas", label: "PFAS\u00a0 (forever chemicals)" },
   { value: "microplastics", label: "Microplastics" },
   { value: "appliance", label: "Appliance & hot water system protection" },
   { value: "not-sure", label: "Not sure, just want better water" },
