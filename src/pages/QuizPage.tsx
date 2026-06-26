@@ -189,7 +189,7 @@ export default function QuizPage() {
     ownershipStatus: "",
     householdSize: "",
     bathrooms: "",
-    propertyAge: "",
+    
     waterSource: "town-water",
     waterTestedRecently: "",
     waterUsageType: "",
