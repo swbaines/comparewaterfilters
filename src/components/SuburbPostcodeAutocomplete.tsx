@@ -50,14 +50,16 @@ function timezoneToState(): string {
   return "";
 }
 
-function useDetectedState({ skipGeolocation = false }: { skipGeolocation?: boolean } = {}) {
+function useDetectedState() {
   const [detectedState, setDetectedState] = useState<string>(() => {
     return sessionStorage.getItem("detected_au_state") || "";
   });
   const [autoDetectFailed, setAutoDetectFailed] = useState(false);
 
   useEffect(() => {
-    if (detectedState || skipGeolocation) return;
+    if (detectedState) return;
+    // Skip geolocation on mobile to avoid intrusive browser permission prompts
+    const isMobileViewport = typeof window !== "undefined" && window.innerWidth < 768;
 
     const applyFallback = () => {
       const fallback = timezoneToState();
@@ -68,6 +70,11 @@ function useDetectedState({ skipGeolocation = false }: { skipGeolocation?: boole
         setAutoDetectFailed(true);
       }
     };
+
+    if (isMobileViewport) {
+      applyFallback();
+      return;
+    }
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -82,7 +89,7 @@ function useDetectedState({ skipGeolocation = false }: { skipGeolocation?: boole
     } else {
       applyFallback();
     }
-  }, [detectedState, skipGeolocation]);
+  }, [detectedState]);
 
   const setManualState = (state: string) => {
     setDetectedState(state);
