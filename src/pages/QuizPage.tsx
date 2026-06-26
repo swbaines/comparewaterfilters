@@ -21,6 +21,30 @@ import {
 
 const TOTAL_STEPS = 6;
 
+// Lightweight analytics helper — fires to GA4 (gtag) and Clarity when present.
+// Used to understand where users drop off in the quiz funnel.
+function trackQuizEvent(
+  event: string,
+  params: Record<string, string | number | boolean | undefined> = {},
+) {
+  if (typeof window === "undefined") return;
+  const w = window as unknown as {
+    gtag?: (...args: unknown[]) => void;
+    clarity?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
+  };
+  try {
+    w.gtag?.("event", event, params);
+  } catch {
+    // ignore
+  }
+  try {
+    w.clarity?.("event", event);
+  } catch {
+    // ignore
+  }
+}
+
 // State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
@@ -177,7 +201,39 @@ export default function QuizPage() {
     if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
       (window as any).clarity("event", "quiz_started");
     }
+    trackQuizEvent("quiz_started", { step: 1, total_steps: TOTAL_STEPS });
   }, []);
+
+  // Track which step the user is currently on (for funnel analysis).
+  useEffect(() => {
+    trackQuizEvent("quiz_step_viewed", { step, total_steps: TOTAL_STEPS });
+  }, [step]);
+
+  // Track abandonment: fire when the user leaves the page before submitting.
+  // We use a ref-like state via closure on `step` so the latest step is sent.
+  useEffect(() => {
+    const sendAbandon = (reason: "unload" | "hidden") => {
+      if (step > TOTAL_STEPS) return; // already completed
+      trackQuizEvent("quiz_abandoned", {
+        step,
+        step_title: stepTitles[step - 1] ?? "",
+        total_steps: TOTAL_STEPS,
+        reason,
+      });
+    };
+    const onBeforeUnload = () => sendAbandon("unload");
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") sendAbandon("hidden");
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   const [answers, setAnswers] = useState<QuizAnswers>({
     postcode: "",
     suburb: "",
@@ -247,9 +303,17 @@ export default function QuizPage() {
   const handleNext = () => {
     if (!canNext()) {
       setShowErrors(true);
+      trackQuizEvent("quiz_step_validation_failed", {
+        step,
+        step_title: stepTitles[step - 1] ?? "",
+      });
       return;
     }
     setShowErrors(false);
+    trackQuizEvent("quiz_step_completed", {
+      step,
+      step_title: stepTitles[step - 1] ?? "",
+    });
     setStep((s) => s + 1);
   };
 
@@ -308,6 +372,9 @@ export default function QuizPage() {
     if (typeof window !== "undefined" && typeof (window as any).clarity === "function") {
       (window as any).clarity("event", "quiz_completed");
     }
+    trackQuizEvent("quiz_completed", { total_steps: TOTAL_STEPS });
+    // Mark completed so the abandonment listener does not fire on navigation.
+    setStep(TOTAL_STEPS + 1);
     navigate("/results");
   };
 
