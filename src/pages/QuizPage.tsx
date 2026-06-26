@@ -21,6 +21,30 @@ import {
 
 const TOTAL_STEPS = 6;
 
+// Lightweight analytics helper — fires to GA4 (gtag) and Clarity when present.
+// Used to understand where users drop off in the quiz funnel.
+function trackQuizEvent(
+  event: string,
+  params: Record<string, string | number | boolean | undefined> = {},
+) {
+  if (typeof window === "undefined") return;
+  const w = window as unknown as {
+    gtag?: (...args: unknown[]) => void;
+    clarity?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
+  };
+  try {
+    w.gtag?.("event", event, params);
+  } catch {
+    // ignore
+  }
+  try {
+    w.clarity?.("event", event);
+  } catch {
+    // ignore
+  }
+}
+
 // State is auto-filled by suburb/postcode autocomplete
 const propertyOptions = ["House", "Apartment", "Townhouse"];
 const ownershipOptions = ["Own", "Rent"];
