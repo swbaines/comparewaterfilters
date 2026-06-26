@@ -279,8 +279,7 @@ export default function QuizPage() {
           answers.state &&
           answers.propertyType &&
           answers.ownershipStatus &&
-          answers.householdSize &&
-          answers.propertyAge
+          answers.householdSize
         );
       case 4:
         return !!answers.coverage;
