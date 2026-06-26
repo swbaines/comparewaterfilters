@@ -815,7 +815,7 @@ export default function ResultsPage() {
         maintenance_tolerance: answers.maintenanceTolerance || null,
         installation_timeline: answers.installationTimeline || null,
         priorities: answers.priorities || [],
-        notes: answers.notes || null,
+        
         consent: answers.consent ?? false,
         contact_preference: answers.contactPreference || null,
         recommended_systems: recommendedSystemIds,

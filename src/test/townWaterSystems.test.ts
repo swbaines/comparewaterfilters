@@ -42,7 +42,7 @@ const base: QuizAnswers = {
   coverage: "whole-house",
   budget: "1000-3500",
   priorities: [],
-  notes: "",
+  
   firstName: "Test",
   email: "test@example.com",
   mobile: "",

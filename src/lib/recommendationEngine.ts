@@ -88,7 +88,7 @@ export interface QuizAnswers {
   maintenanceTolerance?: string;
   installationTimeline?: string;
   priorities?: string[];
-  notes: string;
+  
   firstName: string;
   email: string;
   mobile: string;
