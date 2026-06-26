@@ -61,7 +61,7 @@ const steps = [
 const concerns = [
   { icon: Droplets, label: "Chlorine taste & smell", href: "/water-quality", desc: "Common in VIC, SA & WA" },
   { icon: Waves, label: "Hard water & scale", href: "/water-quality", desc: "Serious issue in Perth & Adelaide" },
-  { icon: FlaskConical, label: "Fluoride removal", href: "/quiz", desc: "Only RO effectively removes it" },
+  { icon: FlaskConical, label: "Fluoride", href: "/quiz", desc: "Only RO effectively removes it" },
   { icon: ShieldCheck, label: "PFAS / forever chemicals", href: "/quiz", desc: "Growing concern across Australia" },
   { icon: Zap, label: "Heavy metals", href: "/quiz", desc: "Lead, arsenic, and more" },
   { icon: Home, label: "Whole house filtration", href: "/system-types", desc: "Every tap, shower & appliance" },

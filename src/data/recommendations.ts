@@ -64,7 +64,7 @@ export const recommendations: Recommendation[] = [
     category: "Reverse Osmosis",
     description: "A multi-stage filtration system that removes up to 99% of contaminants including fluoride, heavy metals, and dissolved solids. Ideal for households wanting the highest drinking water purity.",
     bestFor: [
-      "Fluoride removal",
+      "Fluoride",
       "Heavy metals removal",
       "Highest drinking water purity",
       "Health-conscious households",
@@ -109,7 +109,7 @@ export const recommendations: Recommendation[] = [
       "Reducing sediment throughout the home",
     ],
     notFor: [
-      "Fluoride removal",
+      "Fluoride",
       "Heavy metals removal",
       "Renters (requires plumbing modification)",
       "Producing ultra-pure drinking water",
