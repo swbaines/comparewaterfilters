@@ -839,6 +839,15 @@ export default function ResultsPage() {
       });
   }, [result, answers, recommendedSystemIds]);
 
+  // Fire recommendation_viewed once per result load.
+  useEffect(() => {
+    if (!result) return;
+    trackResultsEvent("recommendation_viewed", {
+      primary_system: result.primary.id,
+      recommended_systems: recommendedSystemIds,
+    });
+  }, [result, recommendedSystemIds]);
+
   if (!result || !answers) return null;
 
   const confidence = computeConfidence(answers);
