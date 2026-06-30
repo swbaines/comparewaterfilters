@@ -584,7 +584,7 @@ export default function MatchedVendorsSection({
                   value={contactFirstName}
                   onChange={(e) => setContactFirstName(e.target.value)}
                   onFocus={() => trackResultsEvent("contact_form_focused", { field: "first_name" })}
-                  placeholder="Your first name"
+                  placeholder="Your name"
                   aria-invalid={showContactErrors && !contactFirstName.trim()}
                 />
               </div>
