@@ -576,9 +576,6 @@ export default function MatchedVendorsSection({
             <h2 className="text-lg font-bold sm:text-xl">
               Last Step: Cleaner water starts here
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Last step — where should these installers send your quotes?
-            </p>
           </div>
 
           <div className="space-y-3">
