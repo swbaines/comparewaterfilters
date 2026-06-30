@@ -75,6 +75,7 @@ export default function AdminAnalyticsPage() {
         .from("quiz_submissions")
         .select("id, created_at, state, ownership_status")
         .gte("created_at", since)
+        .eq("is_test", false)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -88,6 +89,7 @@ export default function AdminAnalyticsPage() {
         .from("quote_requests")
         .select("id, created_at, lead_status, lead_price, provider_name, ownership_status")
         .gte("created_at", since)
+        .eq("is_test", false)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -116,7 +118,8 @@ export default function AdminAnalyticsPage() {
         .from("quiz_submissions")
         .select("id, created_at")
         .gte("created_at", prevSince!)
-        .lt("created_at", since);
+        .lt("created_at", since)
+        .eq("is_test", false);
       if (error) throw error;
       return data;
     },
@@ -130,7 +133,8 @@ export default function AdminAnalyticsPage() {
         .from("quote_requests")
         .select("id, lead_status, created_at")
         .gte("created_at", prevSince!)
-        .lt("created_at", since);
+        .lt("created_at", since)
+        .eq("is_test", false);
       if (error) throw error;
       return data;
     },
