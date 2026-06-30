@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { Component, type ReactNode } from "react";
 import App from "./App.tsx";
 import "./index.css";
 
@@ -34,4 +35,65 @@ if (typeof Node !== "undefined") {
   } as typeof Node.prototype.insertBefore;
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Detect the specific DOM-mutation conflict that browser extensions
+// (Google Translate, Grammarly, LanguageTool, etc.) cause and recover
+// by silently remounting the React tree instead of showing a blank page.
+const isExtensionDomError = (err: unknown): boolean => {
+  const msg =
+    err instanceof Error
+      ? `${err.name}: ${err.message}`
+      : typeof err === "string"
+        ? err
+        : "";
+  return (
+    msg.includes("removeChild") ||
+    msg.includes("insertBefore") ||
+    msg.includes("The node to be removed") ||
+    msg.includes("The node before which the new node is to be inserted")
+  );
+};
+
+class ExtensionSafeBoundary extends Component<{ children: ReactNode }, { key: number }> {
+  state = { key: 0 };
+
+  static getDerivedStateFromError() {
+    return null;
+  }
+
+  componentDidCatch(error: unknown) {
+    if (isExtensionDomError(error)) {
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.warn("Recovered from extension-induced React DOM error by remounting.");
+      }
+      // Force a fresh mount so React's fiber tree matches the live DOM again.
+      this.setState((s) => ({ key: s.key + 1 }));
+      return;
+    }
+    // Re-throw non-extension errors so real bugs aren't hidden.
+    throw error;
+  }
+
+  render() {
+    return <div key={this.state.key}>{this.props.children}</div>;
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("error", (e) => {
+    if (isExtensionDomError(e.error ?? e.message)) {
+      e.preventDefault();
+    }
+  });
+  window.addEventListener("unhandledrejection", (e) => {
+    if (isExtensionDomError(e.reason)) {
+      e.preventDefault();
+    }
+  });
+}
+
+createRoot(document.getElementById("root")!).render(
+  <ExtensionSafeBoundary>
+    <App />
+  </ExtensionSafeBoundary>,
+);
