@@ -100,7 +100,9 @@ export function buildMatchReasons(
       budgetBand,
     );
     if (fit.withinBudget && fit.pricedSystems > 0) {
-      reasons.push("Supplies systems within your price range");
+      const range = budgetBandToRange(budgetBand);
+      const bandLabel = range?.label || "your price range";
+      reasons.push(`Supplies systems within ${bandLabel}`);
     }
   }
 
