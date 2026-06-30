@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,6 +18,7 @@ import {
   ShieldCheck,
   Star,
   Users,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,12 +30,24 @@ import {
   type BudgetBand,
 } from "@/lib/budgetMatching";
 import { deriveLeadTemperature } from "@/lib/leadTemperature";
+import {
+  scoreVendorMatches,
+  MATCH_RANK_LABEL,
+  type MatchRank,
+} from "@/lib/vendorMatchScore";
+import { buildMatchReasons } from "@/lib/vendorMatchReasons";
+import { trackResultsEvent } from "@/lib/resultsAnalytics";
 
 interface Props {
   customerLat: number | null;
   customerLng: number | null;
   answers: QuizAnswers;
   recommendedSystems: string[];
+  /**
+   * Lets the parent page mirror live state (e.g. for a sticky mobile bar
+   * that shows "{N} installers selected" outside this section's tree).
+   */
+  onSelectionChange?: (count: number) => void;
 }
 
 
