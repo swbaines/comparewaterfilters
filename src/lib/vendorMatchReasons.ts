@@ -98,7 +98,17 @@ export function buildMatchReasons(
       def.keys.some((k) => s.toLowerCase().includes(k)),
     );
     if (hit) {
-      reasons.push(`Targets ${def.label} with ${humaniseSystem(hit)}`);
+      const isWholeHouseUser =
+        answers.coverage === "whole-house" ||
+        answers.coverage === "whole-house-plus";
+      const isUnderSink = hit.toLowerCase().includes("under-sink");
+      if (isWholeHouseUser && isUnderSink) {
+        reasons.push(
+          `Targets ${def.label} with ${humaniseSystem(hit)} for a budget-friendly alternative`,
+        );
+      } else {
+        reasons.push(`Targets ${def.label} with ${humaniseSystem(hit)}`);
+      }
       break;
     }
   }
