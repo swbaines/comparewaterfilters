@@ -13,6 +13,92 @@ export interface PricingRange {
 }
 
 /**
+ * Extended metadata used by the results-page "Cost in your area" and
+ * "What it removes" sections. Keyed by the same canonical IDs used by
+ * `SYSTEM_PRICING`.
+ */
+export interface SystemPricingMeta {
+  /** Whether to display the public price-range section on results. */
+  showPriceRange: boolean;
+  /** Customer-facing list of contaminants this system addresses. */
+  removes: string[];
+  /** Customer-facing lifespan range (e.g. "8–15 years"). */
+  lifespan: string;
+  /** Customer-facing filter-change cadence (e.g. "1–2× per year"). */
+  filterChangesPerYear: string;
+}
+
+export const SYSTEM_PRICING_META: Record<string, SystemPricingMeta> = {
+  "under-sink-carbon": {
+    showPriceRange: true,
+    removes: ["Chlorine & taste", "Sediment", "Some VOCs", "Odours"],
+    lifespan: "5–10 years",
+    filterChangesPerYear: "1–2× per year",
+  },
+  "reverse-osmosis": {
+    showPriceRange: true,
+    removes: [
+      "Fluoride",
+      "PFAS",
+      "Heavy metals",
+      "Chlorine & taste",
+      "Microplastics",
+      "Sediment",
+    ],
+    lifespan: "8–12 years",
+    filterChangesPerYear: "1–2× per year",
+  },
+  "whole-house-filtration": {
+    showPriceRange: true,
+    removes: [
+      "Chlorine (every tap)",
+      "Chloramine",
+      "Sediment",
+      "Odours",
+      "Skin & shower irritation",
+    ],
+    lifespan: "10–15 years",
+    filterChangesPerYear: "1× every 12–24 months",
+  },
+  "whole-house-plus-drinking-water-combo": {
+    showPriceRange: true,
+    removes: [
+      "Chlorine (every tap)",
+      "Fluoride (kitchen)",
+      "PFAS (kitchen)",
+      "Heavy metals",
+      "Sediment",
+      "Chloramine",
+      "Microplastics",
+    ],
+    lifespan: "10–15 years",
+    filterChangesPerYear: "1–2× per year",
+  },
+  "uv-disinfection": {
+    showPriceRange: true,
+    removes: ["Bacteria", "Viruses", "Protozoa"],
+    lifespan: "10+ years (lamp 12 months)",
+    filterChangesPerYear: "Lamp 1× per year",
+  },
+  "water-softener": {
+    showPriceRange: true,
+    removes: ["Hardness minerals", "Scale build-up"],
+    lifespan: "10–15 years",
+    filterChangesPerYear: "Salt top-ups; media 8–10y",
+  },
+};
+
+/**
+ * Look up extended meta for a system, honouring the same alias map used
+ * by `getSystemPricing`. Returns null when the system has no meta entry
+ * (caller should hide the price-range / removes sections).
+ */
+export function getSystemPricingMeta(id: string): SystemPricingMeta | null {
+  const key = (ID_ALIASES[id.trim().toLowerCase()] ?? id.trim().toLowerCase());
+  return SYSTEM_PRICING_META[key] ?? null;
+}
+
+/**
  * Canonical pricing table. Keys are the canonical system IDs used by the
  * recommendation engine and the rest of the codebase.
  */
