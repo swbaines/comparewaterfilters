@@ -45,7 +45,7 @@ export default function CostInYourAreaSection({
       <p className="mt-5 text-2xl font-bold sm:text-3xl">
         ${installMin.toLocaleString()}–${installMax.toLocaleString()}{" "}
         <span className="text-base font-normal text-muted-foreground">
-          installed · most homes land near ${mid.toLocaleString()}
+          installed · most homes land near $3,500 - $4,000
         </span>
       </p>
 
@@ -66,10 +66,10 @@ export default function CostInYourAreaSection({
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         <div className="rounded-lg border border-warm/40 bg-warm-light/30 p-4 text-sm">
           <p className="flex items-center gap-2 font-semibold">
-            <TrendingUp className="h-4 w-4" /> Pushes it up
+            <TrendingUp className="h-4 w-4" /> Pushes prices it up
           </p>
           <p className="mt-1 text-muted-foreground">
-            Hard-to-reach mains, extra outlets, older plumbing.
+            Hard-to-reach mains, custom install location, premium system, older plumbing.
           </p>
         </div>
         <div className="rounded-lg border border-sage/40 bg-sage-light/40 p-4 text-sm">
@@ -77,7 +77,7 @@ export default function CostInYourAreaSection({
             <TrendingDown className="h-4 w-4" /> Brings it down
           </p>
           <p className="mt-1 text-muted-foreground">
-            Easy under-sink access, single wet area, recent plumbing.
+            Standard installation location next to water meter, standard system.
           </p>
         </div>
       </div>
