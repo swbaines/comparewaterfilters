@@ -629,6 +629,7 @@ export default function ResultsPage() {
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [copied, setCopied] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [selectedVendorCount, setSelectedVendorCount] = useState(0);
   const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailInput, setEmailInput] = useState("");
