@@ -520,6 +520,18 @@ export default function MatchedVendorsSection({
 
   const showFewerThanThreeNotice = topVendors.length < 3;
 
+  const scoredVendors = useMemo(() => scoreVendorMatches(topVendors), [topVendors]);
+  const rankById = useMemo(() => {
+    const map = new Map<string, MatchRank>();
+    scoredVendors.forEach((s) => map.set(s.vendor.provider_id, s.rank));
+    return map;
+  }, [scoredVendors]);
+
+  // Notify parent (sticky mobile bar) whenever the selection changes.
+  useEffect(() => {
+    onSelectionChange?.(selected.size);
+  }, [selected.size, onSelectionChange]);
+
   return (
     <div className="space-y-4">
       {showFewerThanThreeNotice && (
@@ -531,49 +543,45 @@ export default function MatchedVendorsSection({
       )}
 
       <div className="space-y-3">
-        {topVendors.map((v, i) => {
-          const fit = rankedVendors.find((r) => r.vendor.provider_id === v.provider_id)?.fit;
-          const isBest = bestBudgetProviderId === v.provider_id;
-          const budgetBadge = isBest
-            ? "best-budget"
-            : fit && fit.withinBudget && fit.pricedSystems > 0
-              ? "within-budget"
-              : null;
+        {topVendors.map((v) => {
+          const rank: MatchRank = rankById.get(v.provider_id) || "good";
+          const reasons = buildMatchReasons(v, answers, recommendedSystems);
           return (
             <VendorRow
               key={v.provider_id}
               vendor={v}
               selected={selected.has(v.provider_id)}
-              onToggle={() => toggleVendor(v.provider_id)}
-              rank={i}
-              budgetBadge={budgetBadge}
-              startingFromLabel={formatStartingFrom(fit?.startingFrom ?? null)}
+              onToggle={() => {
+                toggleVendor(v.provider_id);
+                trackResultsEvent("vendor_selection_changed", {
+                  provider_id: v.provider_id,
+                });
+              }}
+              rank={rank}
+              reasons={reasons}
             />
           );
         })}
       </div>
 
-      <Card className="border-2 border-primary/20 bg-background">
+      <Card id="contact-form" className="border-2 border-primary/20 bg-background">
         <CardContent className="space-y-4 p-5">
+          <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-foreground/80">
+            <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            <span>
+              We never sell your details. Only the installers you selected will contact you.
+            </span>
+          </div>
           <div>
-            <p className="text-sm font-semibold">
-              Selected: {selected.size} of {topVendors.length} provider
-              {topVendors.length > 1 ? "s" : ""}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Each selected provider will receive your quote request and contact you
-              directly. You're not committing to anything by requesting a quote.
+            <h2 className="text-lg font-bold sm:text-xl">
+              Send my request to {selected.size} installer{selected.size === 1 ? "" : "s"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Last step — where should these installers send your quotes?
             </p>
           </div>
 
-          <div className="rounded-lg border border-primary/15 bg-primary/[0.04] p-4 space-y-3">
-            <p className="flex items-start gap-2 text-xs text-foreground/80">
-              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-              <span>
-                We never sell your details. You'll only be contacted by installers
-                you approve.
-              </span>
-            </p>
+          <div className="space-y-3">
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="contact-first-name" className="text-xs">
@@ -583,22 +591,27 @@ export default function MatchedVendorsSection({
                   id="contact-first-name"
                   value={contactFirstName}
                   onChange={(e) => setContactFirstName(e.target.value)}
+                  onFocus={() => trackResultsEvent("contact_form_focused", { field: "first_name" })}
                   placeholder="Your first name"
                   aria-invalid={showContactErrors && !contactFirstName.trim()}
                 />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="contact-mobile" className="text-xs">
-                  Phone number *
+                  Mobile *
                 </Label>
                 <Input
                   id="contact-mobile"
                   inputMode="tel"
                   value={contactMobile}
                   onChange={(e) => setContactMobile(e.target.value)}
+                  onFocus={() => trackResultsEvent("contact_form_focused", { field: "mobile" })}
                   placeholder="04XX XXX XXX"
                   aria-invalid={showContactErrors && !contactMobile.trim()}
                 />
+                <p className="text-[11px] text-muted-foreground">
+                  So installers can call to confirm & quote
+                </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="contact-email" className="text-xs">
@@ -609,55 +622,47 @@ export default function MatchedVendorsSection({
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
+                  onFocus={() => trackResultsEvent("contact_form_focused", { field: "email" })}
                   placeholder="you@email.com"
                   aria-invalid={showContactErrors && !contactEmail.trim()}
                 />
               </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="contact-pref" className="text-xs">
-                How would you prefer installers contact you? (optional)
-              </Label>
+            <details className="text-xs text-muted-foreground">
+              <summary className="cursor-pointer select-none">
+                Preferred contact method (optional)
+              </summary>
               <select
                 id="contact-pref"
                 value={contactPreference}
                 onChange={(e) => setContactPreference(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <option value="">No preference</option>
                 <option value="phone">Phone call</option>
                 <option value="sms">SMS first</option>
                 <option value="email">Email first</option>
               </select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="bulk-message" className="text-sm">
-              Add a note for the providers (optional)
-            </Label>
-            <Textarea
-              id="bulk-message"
-              placeholder="Any extra details about your water situation, access, or timing…"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-            />
+            </details>
           </div>
 
           <Button
             className="w-full gap-2"
             size="lg"
             disabled={sending || selected.size === 0}
-            onClick={handleSendAll}
+            onClick={() => {
+              trackResultsEvent("quote_requested", {
+                selected_count: selected.size,
+              });
+              handleSendAll();
+            }}
           >
             {sending ? (
               "Sending…"
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                Request {selected.size > 0 ? selected.size : ""} quote
-                {selected.size === 1 ? "" : "s"}
+                Get my free quotes
               </>
             )}
           </Button>
