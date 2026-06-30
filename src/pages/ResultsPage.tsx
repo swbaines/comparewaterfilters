@@ -26,6 +26,7 @@ import CostInYourAreaSection from "@/components/results/CostInYourAreaSection";
 import WhatHappensNextSection from "@/components/results/WhatHappensNextSection";
 import TrustStrip from "@/components/results/TrustStrip";
 import { trackResultsEvent } from "@/lib/resultsAnalytics";
+import { isTestMode } from "@/lib/testMode";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins from an under-sink carbon filter or reverse osmosis system at the kitchen tap without a big upfront spend.",
@@ -829,7 +830,7 @@ export default function ResultsPage() {
         recommendation_price_min: priceMin,
         recommendation_price_max: priceMax,
         recommendation_reason: result.primaryReason || null,
-        is_test: (await import("@/lib/testMode")).isTestMode(),
+        is_test: isTestMode(),
       })
       .then(({ error }) => {
         if (error) {
