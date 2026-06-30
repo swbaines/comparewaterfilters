@@ -1,6 +1,6 @@
 import type { MatchedVendor } from "@/hooks/useMatchedVendors";
 import type { QuizAnswers } from "@/lib/recommendationEngine";
-import { scoreVendorBudgetFit, type BudgetBand } from "@/lib/budgetMatching";
+import { scoreVendorBudgetFit, budgetBandToRange, type BudgetBand } from "@/lib/budgetMatching";
 
 // Coverage choice → keywords we want to see in a vendor's system_types,
 // ordered by preference. We use these to pick the most coverage-aligned
@@ -100,7 +100,9 @@ export function buildMatchReasons(
       budgetBand,
     );
     if (fit.withinBudget && fit.pricedSystems > 0) {
-      reasons.push("Supplies systems within your price range");
+      const range = budgetBandToRange(budgetBand);
+      const bandLabel = range?.label || "your price range";
+      reasons.push(`Supplies systems within ${bandLabel}`);
     }
   }
 
