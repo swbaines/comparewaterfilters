@@ -12,6 +12,7 @@ import LeadsByStatusChart from "@/components/analytics/LeadsByStatusChart";
 import StateBreakdownChart from "@/components/analytics/StateBreakdownChart";
 
 const RANGES = [
+  { label: "Today", days: -1 },
   { label: "7 days", days: 7 },
   { label: "30 days", days: 30 },
   { label: "90 days", days: 90 },
@@ -53,14 +54,18 @@ function MetricCard({ title, value, icon: Icon, change }: { title: string; value
 export default function AdminAnalyticsPage() {
   const [rangeDays, setRangeDays] = useState(30);
 
-  const since = rangeDays > 0
-    ? startOfDay(subDays(new Date(), rangeDays)).toISOString()
-    : "2000-01-01T00:00:00Z";
+  const since = rangeDays === -1
+    ? startOfDay(new Date()).toISOString()
+    : rangeDays > 0
+      ? startOfDay(subDays(new Date(), rangeDays)).toISOString()
+      : "2000-01-01T00:00:00Z";
 
   // Previous period: same length window ending where current starts
-  const prevSince = rangeDays > 0
-    ? startOfDay(subDays(new Date(), rangeDays * 2)).toISOString()
-    : null;
+  const prevSince = rangeDays === -1
+    ? startOfDay(subDays(new Date(), 1)).toISOString()
+    : rangeDays > 0
+      ? startOfDay(subDays(new Date(), rangeDays * 2)).toISOString()
+      : null;
 
   // --- Current period queries ---
   const { data: quizSubmissions = [], isLoading: quizLoading } = useQuery({
