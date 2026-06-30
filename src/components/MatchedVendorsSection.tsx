@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,6 +18,7 @@ import {
   ShieldCheck,
   Star,
   Users,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,35 +30,62 @@ import {
   type BudgetBand,
 } from "@/lib/budgetMatching";
 import { deriveLeadTemperature } from "@/lib/leadTemperature";
+import {
+  scoreVendorMatches,
+  MATCH_RANK_LABEL,
+  type MatchRank,
+} from "@/lib/vendorMatchScore";
+import { buildMatchReasons } from "@/lib/vendorMatchReasons";
+import { trackResultsEvent } from "@/lib/resultsAnalytics";
 
 interface Props {
   customerLat: number | null;
   customerLng: number | null;
   answers: QuizAnswers;
   recommendedSystems: string[];
+  /**
+   * Lets the parent page mirror live state (e.g. for a sticky mobile bar
+   * that shows "{N} installers selected" outside this section's tree).
+   */
+  onSelectionChange?: (count: number) => void;
 }
 
+
+const MATCH_BADGE_STYLE: Record<MatchRank, string> = {
+  top: "bg-primary text-primary-foreground",
+  strong: "bg-sage-light text-sage-dark border border-primary/30",
+  good: "bg-muted text-muted-foreground border border-border",
+};
+
+function formatResponseHint(minutes: number | null | undefined): string | null {
+  if (typeof minutes !== "number" || !isFinite(minutes) || minutes <= 0) return null;
+  if (minutes < 90) return `Usually replies in ~${Math.round(minutes / 15) * 15} min`;
+  const hours = minutes / 60;
+  if (hours < 24) return `Usually replies in ~${Math.round(hours)} hrs`;
+  return `Usually replies within 1 business day`;
+}
 
 function VendorRow({
   vendor,
   selected,
   onToggle,
   rank,
-  budgetBadge,
-  startingFromLabel,
+  reasons,
 }: {
   vendor: MatchedVendor;
   selected: boolean;
   onToggle: () => void;
-  rank: number;
-  budgetBadge: "best-budget" | "within-budget" | null;
-  startingFromLabel: string | null;
+  rank: MatchRank;
+  reasons: string[];
 }) {
-  const rankLabels: Record<number, string> = {
-    0: "Top match",
-    1: "Strong match",
-    2: "Good match",
-  };
+  const initials = vendor.name
+    .split(" ")
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+  const replyHint = formatResponseHint(vendor.avg_response_minutes);
 
   return (
     <Card
@@ -66,7 +93,7 @@ function VendorRow({
         selected ? "border-primary shadow-md" : "border-border"
       }`}
     >
-      <CardContent className="p-5">
+      <CardContent className="p-5 sm:p-6">
         <div className="flex gap-4">
           <Checkbox
             checked={selected}
@@ -75,109 +102,84 @@ function VendorRow({
             aria-label={`Select ${vendor.name}`}
           />
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="flex min-w-0 items-center gap-3">
-                <Avatar className="h-10 w-10 border">
-                  {vendor.logo ? <AvatarImage src={vendor.logo} alt={vendor.name} /> : null}
-                  <AvatarFallback>
-                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {rankLabels[rank] && (
-                      <Badge
-                        className={
-                          rank === 0
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-accent text-accent-foreground"
-                        }
-                      >
-                        {rankLabels[rank]}
-                      </Badge>
-                    )}
-                    {budgetBadge === "best-budget" && (
-                      <Badge className="bg-primary/10 text-primary border border-primary/30">
-                        Best for your budget
-                      </Badge>
-                    )}
-                    {budgetBadge === "within-budget" && (
-                      <Badge variant="outline" className="text-xs">
-                        Within your budget
-                      </Badge>
-                    )}
-                    {vendor.cap_exceeded && (
-                      <Badge variant="outline" className="gap-1 text-xs">
-                        <AlertCircle className="h-3 w-3" /> High volume this month
-                      </Badge>
-                    )}
-                  </div>
-                  <h3 className="mt-1 flex items-center gap-1.5 text-base font-semibold">
-                    <span className="truncate">{vendor.name}</span>
-                  </h3>
-                  {startingFromLabel && (
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      Indicative pricing {startingFromLabel}
-                    </p>
+            <div className="flex items-start gap-3">
+              <Avatar className="h-11 w-11 border bg-accent text-accent-foreground">
+                {vendor.logo ? <AvatarImage src={vendor.logo} alt={vendor.name} /> : null}
+                <AvatarFallback className="text-xs font-semibold">
+                  {initials || <ImageIcon className="h-4 w-4 text-muted-foreground" />}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <Badge className={MATCH_BADGE_STYLE[rank]}>
+                    {MATCH_RANK_LABEL[rank]}
+                  </Badge>
+                  {vendor.cap_exceeded && (
+                    <Badge variant="outline" className="gap-1 text-xs">
+                      <AlertCircle className="h-3 w-3" /> High volume this month
+                    </Badge>
+                  )}
+                </div>
+                <h3 className="mt-1.5 text-base font-semibold sm:text-lg">{vendor.name}</h3>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  {Number(vendor.rating) > 0 && (
+                    <span className="inline-flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 text-primary" />
+                      <span className="font-medium text-foreground">
+                        {Number(vendor.rating).toFixed(1)}
+                      </span>
+                      ({vendor.review_count})
+                    </span>
+                  )}
+                  {vendor.years_in_business > 0 && (
+                    <span>{vendor.years_in_business}y experience</span>
+                  )}
+                  {replyHint && (
+                    <span className="inline-flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      {replyHint}
+                    </span>
                   )}
                 </div>
               </div>
             </div>
 
-            <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-              {vendor.description}
-            </p>
-
-            <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm sm:grid-cols-3">
-              {vendor.rating > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <Star className="h-3.5 w-3.5 shrink-0 text-primary" />
-                  <span className="font-medium">{Number(vendor.rating).toFixed(1)}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({vendor.review_count})
-                  </span>
-                </div>
-              )}
-              <div className="flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5 shrink-0 text-primary" />
-                <span className="text-xs text-muted-foreground">
-                  {vendor.years_in_business}y experience
-                </span>
-              </div>
-            </div>
-
-            {vendor.matching_systems.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {vendor.matching_systems.slice(0, 3).map((s) => (
-                  <Badge key={s} variant="secondary" className="text-xs font-normal">
-                    <CheckCircle2 className="mr-1 h-3 w-3" />
-                    {s.replace(/-/g, " ")}
-                  </Badge>
-                ))}
-                {vendor.certifications.slice(0, 2).map((c) => (
-                  <Badge key={c} variant="outline" className="text-xs font-normal">
-                    <Award className="mr-1 h-3 w-3" /> {c}
-                  </Badge>
-                ))}
-                {vendor.installation_model === "sub_contracted" && (
-                  <>
-                    <Badge
-                      variant="outline"
-                      className="text-xs font-normal border-sky-300 text-sky-700"
-                    >
-                      <Shield className="mr-1 h-3 w-3" /> Trusted Retailer
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="text-xs font-normal border-sky-300 text-sky-700"
-                    >
-                      <ShieldCheck className="mr-1 h-3 w-3" /> Licensed Installation Network
-                    </Badge>
-                  </>
-                )}
+            {reasons.length > 0 && (
+              <div className="mt-4 rounded-lg border border-warm/30 bg-warm-light/40 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-warm-foreground/80">
+                  Why we matched them to you
+                </p>
+                <ul className="mt-2 space-y-1.5 text-sm text-foreground/90">
+                  {reasons.map((r) => (
+                    <li key={r} className="flex items-start gap-2">
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {vendor.certifications.slice(0, 3).map((c) => (
+                <Badge key={c} variant="outline" className="text-xs font-normal">
+                  <Award className="mr-1 h-3 w-3" /> {c}
+                </Badge>
+              ))}
+              {vendor.matching_systems.slice(0, 2).map((s) => (
+                <Badge key={s} variant="secondary" className="text-xs font-normal">
+                  {s.replace(/-/g, " ")}
+                </Badge>
+              ))}
+              {vendor.installation_model === "sub_contracted" && (
+                <Badge
+                  variant="outline"
+                  className="text-xs font-normal border-sky-300 text-sky-700"
+                >
+                  <Shield className="mr-1 h-3 w-3" /> Trusted Retailer
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
@@ -190,6 +192,7 @@ export default function MatchedVendorsSection({
   customerLng,
   answers,
   recommendedSystems,
+  onSelectionChange,
 }: Props) {
   const { data: vendors = [], isLoading } = useMatchedVendors({
     customerLat,
@@ -241,8 +244,6 @@ export default function MatchedVendorsSection({
   }, [rankedVendors]);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [message, setMessage] = useState("");
-  
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState<string[]>([]);
 
@@ -373,7 +374,7 @@ export default function MatchedVendorsSection({
         maintenance_tolerance: answers.maintenanceTolerance || null,
         installation_timeline: answers.installationTimeline || null,
         recommended_systems: dedupedSystems,
-        message: message || null,
+        message: null,
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
         contact_preference: contactPreference || "no_preference",
@@ -407,7 +408,7 @@ export default function MatchedVendorsSection({
                   budget: answers.budget,
                   concerns: answers.concerns,
                   recommendedSystems: dedupedSystems,
-                  message: message || "",
+                  message: "",
                   createdAt: new Date().toISOString(),
                   installationTimeline: answers.installationTimeline || "",
                   leadTemperature: leadTemperature || "",
@@ -470,6 +471,18 @@ export default function MatchedVendorsSection({
     }
   };
 
+  const scoredVendors = useMemo(() => scoreVendorMatches(topVendors), [topVendors]);
+  const rankById = useMemo(() => {
+    const map = new Map<string, MatchRank>();
+    scoredVendors.forEach((s) => map.set(s.vendor.provider_id, s.rank));
+    return map;
+  }, [scoredVendors]);
+
+  // Notify parent (sticky mobile bar) whenever the selection changes.
+  useEffect(() => {
+    onSelectionChange?.(selected.size);
+  }, [selected.size, onSelectionChange]);
+
   if (isLoading) {
     return (
       <Card className="border border-dashed">
@@ -530,49 +543,45 @@ export default function MatchedVendorsSection({
       )}
 
       <div className="space-y-3">
-        {topVendors.map((v, i) => {
-          const fit = rankedVendors.find((r) => r.vendor.provider_id === v.provider_id)?.fit;
-          const isBest = bestBudgetProviderId === v.provider_id;
-          const budgetBadge = isBest
-            ? "best-budget"
-            : fit && fit.withinBudget && fit.pricedSystems > 0
-              ? "within-budget"
-              : null;
+        {topVendors.map((v) => {
+          const rank: MatchRank = rankById.get(v.provider_id) || "good";
+          const reasons = buildMatchReasons(v, answers, recommendedSystems);
           return (
             <VendorRow
               key={v.provider_id}
               vendor={v}
               selected={selected.has(v.provider_id)}
-              onToggle={() => toggleVendor(v.provider_id)}
-              rank={i}
-              budgetBadge={budgetBadge}
-              startingFromLabel={formatStartingFrom(fit?.startingFrom ?? null)}
+              onToggle={() => {
+                toggleVendor(v.provider_id);
+                trackResultsEvent("vendor_selection_changed", {
+                  provider_id: v.provider_id,
+                });
+              }}
+              rank={rank}
+              reasons={reasons}
             />
           );
         })}
       </div>
 
-      <Card className="border-2 border-primary/20 bg-background">
+      <Card id="contact-form" className="border-2 border-primary/20 bg-background">
         <CardContent className="space-y-4 p-5">
+          <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-foreground/80">
+            <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            <span>
+              We never sell your details. Only the installers you selected will contact you.
+            </span>
+          </div>
           <div>
-            <p className="text-sm font-semibold">
-              Selected: {selected.size} of {topVendors.length} provider
-              {topVendors.length > 1 ? "s" : ""}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Each selected provider will receive your quote request and contact you
-              directly. You're not committing to anything by requesting a quote.
+            <h2 className="text-lg font-bold sm:text-xl">
+              Send my request to {selected.size} installer{selected.size === 1 ? "" : "s"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Last step — where should these installers send your quotes?
             </p>
           </div>
 
-          <div className="rounded-lg border border-primary/15 bg-primary/[0.04] p-4 space-y-3">
-            <p className="flex items-start gap-2 text-xs text-foreground/80">
-              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-              <span>
-                We never sell your details. You'll only be contacted by installers
-                you approve.
-              </span>
-            </p>
+          <div className="space-y-3">
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="contact-first-name" className="text-xs">
@@ -582,22 +591,27 @@ export default function MatchedVendorsSection({
                   id="contact-first-name"
                   value={contactFirstName}
                   onChange={(e) => setContactFirstName(e.target.value)}
+                  onFocus={() => trackResultsEvent("contact_form_focused", { field: "first_name" })}
                   placeholder="Your first name"
                   aria-invalid={showContactErrors && !contactFirstName.trim()}
                 />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="contact-mobile" className="text-xs">
-                  Phone number *
+                  Mobile *
                 </Label>
                 <Input
                   id="contact-mobile"
                   inputMode="tel"
                   value={contactMobile}
                   onChange={(e) => setContactMobile(e.target.value)}
+                  onFocus={() => trackResultsEvent("contact_form_focused", { field: "mobile" })}
                   placeholder="04XX XXX XXX"
                   aria-invalid={showContactErrors && !contactMobile.trim()}
                 />
+                <p className="text-[11px] text-muted-foreground">
+                  So installers can call to confirm & quote
+                </p>
               </div>
               <div className="space-y-1">
                 <Label htmlFor="contact-email" className="text-xs">
@@ -608,55 +622,47 @@ export default function MatchedVendorsSection({
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value)}
+                  onFocus={() => trackResultsEvent("contact_form_focused", { field: "email" })}
                   placeholder="you@email.com"
                   aria-invalid={showContactErrors && !contactEmail.trim()}
                 />
               </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="contact-pref" className="text-xs">
-                How would you prefer installers contact you? (optional)
-              </Label>
+            <details className="text-xs text-muted-foreground">
+              <summary className="cursor-pointer select-none">
+                Preferred contact method (optional)
+              </summary>
               <select
                 id="contact-pref"
                 value={contactPreference}
                 onChange={(e) => setContactPreference(e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <option value="">No preference</option>
                 <option value="phone">Phone call</option>
                 <option value="sms">SMS first</option>
                 <option value="email">Email first</option>
               </select>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="bulk-message" className="text-sm">
-              Add a note for the providers (optional)
-            </Label>
-            <Textarea
-              id="bulk-message"
-              placeholder="Any extra details about your water situation, access, or timing…"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-            />
+            </details>
           </div>
 
           <Button
             className="w-full gap-2"
             size="lg"
             disabled={sending || selected.size === 0}
-            onClick={handleSendAll}
+            onClick={() => {
+              trackResultsEvent("quote_requested", {
+                selected_count: selected.size,
+              });
+              handleSendAll();
+            }}
           >
             {sending ? (
               "Sending…"
             ) : (
               <>
                 <Send className="h-4 w-4" />
-                Request {selected.size > 0 ? selected.size : ""} quote
-                {selected.size === 1 ? "" : "s"}
+                Get my free quotes
               </>
             )}
           </Button>

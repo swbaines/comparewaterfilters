@@ -20,6 +20,12 @@ import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 import { getSystemPricing, formatPriceRange } from "@/lib/systemPricing";
 import { PricingFootnote } from "@/components/PricingFootnote";
+import QuizRecapChips from "@/components/results/QuizRecapChips";
+import RecommendedSystemCard from "@/components/results/RecommendedSystemCard";
+import CostInYourAreaSection from "@/components/results/CostInYourAreaSection";
+import WhatHappensNextSection from "@/components/results/WhatHappensNextSection";
+import TrustStrip from "@/components/results/TrustStrip";
+import { trackResultsEvent } from "@/lib/resultsAnalytics";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins from an under-sink carbon filter or reverse osmosis system at the kitchen tap without a big upfront spend.",
@@ -623,6 +629,7 @@ export default function ResultsPage() {
   const [answers, setAnswers] = useState<QuizAnswers | null>(null);
   const [copied, setCopied] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
+  const [selectedVendorCount, setSelectedVendorCount] = useState(0);
   const [customerCoords, setCustomerCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -832,6 +839,15 @@ export default function ResultsPage() {
       });
   }, [result, answers, recommendedSystemIds]);
 
+  // Fire recommendation_viewed once per result load.
+  useEffect(() => {
+    if (!result) return;
+    trackResultsEvent("recommendation_viewed", {
+      primary_system: result.primary.id,
+      recommended_systems: recommendedSystemIds,
+    });
+  }, [result, recommendedSystemIds]);
+
   if (!result || !answers) return null;
 
   const confidence = computeConfidence(answers);
@@ -847,41 +863,43 @@ export default function ResultsPage() {
         description="Your personalised water filter recommendations based on your home profile and water concerns."
         path="/results"
       />
-      <div className="container max-w-5xl">
-        {/* Summary */}
-        <div className="mb-10 text-center">
+      <div className="container max-w-5xl pb-24 sm:pb-12">
+        {/* Section 1 — Results header */}
+        <div className="mb-6 text-center">
           <Badge className="mb-3">Your personalised results</Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} our recommendation
+            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} your
+            filtration plan, and 3 installers to quote it
           </h1>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Based on the answers you gave us. Pick who you'd like quotes from —
+            it's free, and you choose who to talk to.
+          </p>
         </div>
 
-        {/* Warnings hidden — duplicates info already in the "Top recommendation" box */}
+        {/* Section 2 — Quiz recap chips */}
+        <div className="mb-8">
+          <QuizRecapChips answers={answers} />
+        </div>
 
-        {/* Top recommendation */}
-        <Card className="mb-8 border-primary/20 bg-accent/50">
-          <CardContent className="p-6 sm:p-8">
-            <Badge className="mb-3">Top recommendation</Badge>
-            <h2 className="text-xl font-bold">{result.primary.title}</h2>
-            <p className="mt-2 text-muted-foreground">{result.primaryReason}</p>
-          </CardContent>
-        </Card>
+        {/* Section 3 — Recommended system card */}
+        <div className="mb-8">
+          <RecommendedSystemCard result={result} answers={answers} />
+        </div>
 
-        {/* ── Matched providers (moved up so users see provider CTA immediately) ── */}
-        <div className="mb-12 scroll-mt-24" id="matched-providers">
+        {/* Section 4 — Cost in their area (conditional) */}
+        <div className="mb-10">
+          <CostInYourAreaSection result={result} answers={answers} />
+        </div>
+
+        {/* Section 5 — Matched installers */}
+        <div className="mb-10 scroll-mt-24" id="matched-providers">
           <div className="mb-6 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <Badge className="mb-3" variant="secondary">
-              Next step
-            </Badge>
-            <h2 className="text-2xl font-bold sm:text-3xl">
-              Get 3 quotes & pick the best - no obligation.
+            <h2 className="text-xl font-bold sm:text-2xl">
+              3 installers matched to your job
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Enter your details and we'll match you with trusted installers in your area.
-              No obligation — you choose who to talk to.
+            <p className="mt-1 text-sm text-muted-foreground">
+              Tick the ones you'd like quotes from
             </p>
           </div>
 
@@ -890,7 +908,18 @@ export default function ResultsPage() {
             customerLng={customerCoords?.lng ?? null}
             answers={answers}
             recommendedSystems={recommendedSystemIds}
+            onSelectionChange={setSelectedVendorCount}
           />
+        </div>
+
+        {/* Section 6 — What happens next */}
+        <div className="mb-10">
+          <WhatHappensNextSection />
+        </div>
+
+        {/* Section 7 — Trust strip */}
+        <div className="mb-10">
+          <TrustStrip />
         </div>
 
         {answers.coverage === "showers-bathrooms" && (
@@ -1185,15 +1214,26 @@ export default function ResultsPage() {
         <WhyThisRecommendation result={result} answers={answers} />
       </div>
 
-      {/* Sticky mobile bar */}
-      {showStickyBar && (
+      {/* Sticky mobile bar — Section 9 */}
+      <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-3 border-t border-border bg-background/95 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur sm:hidden">
+        <span className="text-sm">
+          <span className="font-bold">{selectedVendorCount}</span> installer
+          {selectedVendorCount === 1 ? "" : "s"} selected
+        </span>
         <a
-          href="#matched-providers"
-          className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-center gap-2 bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_-4px_20px_rgba(0,0,0,0.15)] sm:hidden"
+          href="#contact-form"
+          onClick={(e) => {
+            const el = document.getElementById("contact-form");
+            if (el) {
+              e.preventDefault();
+              el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          className="inline-flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
         >
-          View matched providers ↓
+          Get my free quotes →
         </a>
-      )}
+      </div>
 
       {/* Email results dialog */}
       <Dialog open={emailDialogOpen} onOpenChange={(open) => {
