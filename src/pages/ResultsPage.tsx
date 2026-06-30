@@ -1214,15 +1214,26 @@ export default function ResultsPage() {
         <WhyThisRecommendation result={result} answers={answers} />
       </div>
 
-      {/* Sticky mobile bar */}
-      {showStickyBar && (
+      {/* Sticky mobile bar — Section 9 */}
+      <div className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-between gap-3 border-t border-border bg-background/95 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.12)] backdrop-blur sm:hidden">
+        <span className="text-sm">
+          <span className="font-bold">{selectedVendorCount}</span> installer
+          {selectedVendorCount === 1 ? "" : "s"} selected
+        </span>
         <a
-          href="#matched-providers"
-          className="fixed bottom-0 inset-x-0 z-50 flex items-center justify-center gap-2 bg-primary px-4 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_-4px_20px_rgba(0,0,0,0.15)] sm:hidden"
+          href="#contact-form"
+          onClick={(e) => {
+            const el = document.getElementById("contact-form");
+            if (el) {
+              e.preventDefault();
+              el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          className="inline-flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
         >
-          View matched providers ↓
+          Get my free quotes →
         </a>
-      )}
+      </div>
 
       {/* Email results dialog */}
       <Dialog open={emailDialogOpen} onOpenChange={(open) => {
