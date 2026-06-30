@@ -244,8 +244,6 @@ export default function MatchedVendorsSection({
   }, [rankedVendors]);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [message, setMessage] = useState("");
-  
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState<string[]>([]);
 
