@@ -574,7 +574,7 @@ export default function MatchedVendorsSection({
           </div>
           <div>
             <h2 className="text-lg font-bold sm:text-xl">
-              Send my request to {selected.size} installer{selected.size === 1 ? "" : "s"}
+              Last Step: Cleaner water starts here
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Last step — where should these installers send your quotes?
