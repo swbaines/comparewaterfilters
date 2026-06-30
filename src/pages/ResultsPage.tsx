@@ -868,8 +868,7 @@ export default function ResultsPage() {
         <div className="mb-6 text-center">
           <Badge className="mb-3">Your personalised results</Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} your
-            filtration plan, and 3 installers to quote it
+            {answers.firstName ? `Hi ${answers.firstName}, your` : "Your"} filtration plan is ready. Now let's get you quotes.
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
             Based on the answers you gave us. Pick who you'd like quotes from —
