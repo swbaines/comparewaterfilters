@@ -661,6 +661,7 @@ export type Database = {
           household_size: string | null
           id: string
           installation_timeline: string | null
+          is_test: boolean
           lead_temperature: string | null
           maintenance_tolerance: string | null
           mobile: string | null
@@ -693,6 +694,7 @@ export type Database = {
           household_size?: string | null
           id?: string
           installation_timeline?: string | null
+          is_test?: boolean
           lead_temperature?: string | null
           maintenance_tolerance?: string | null
           mobile?: string | null
@@ -725,6 +727,7 @@ export type Database = {
           household_size?: string | null
           id?: string
           installation_timeline?: string | null
+          is_test?: boolean
           lead_temperature?: string | null
           maintenance_tolerance?: string | null
           mobile?: string | null

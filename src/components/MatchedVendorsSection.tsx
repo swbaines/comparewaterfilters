@@ -37,6 +37,7 @@ import {
 } from "@/lib/vendorMatchScore";
 import { buildMatchReasons } from "@/lib/vendorMatchReasons";
 import { trackResultsEvent } from "@/lib/resultsAnalytics";
+import { isTestMode } from "@/lib/testMode";
 
 interface Props {
   customerLat: number | null;
@@ -373,6 +374,7 @@ export default function MatchedVendorsSection({
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
         contact_preference: "no_preference",
+        is_test: isTestMode(),
       }));
 
       const { error } = await supabase.from("quote_requests").insert(rows);
