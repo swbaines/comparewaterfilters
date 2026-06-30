@@ -90,6 +90,20 @@ export function buildMatchReasons(
     if (wh) reasons.push(`Installs ${humaniseSystem(wh)} for whole-home coverage`);
   }
 
+  // Budget alignment — reassure the user this provider can solve their
+  // concerns within the price range they selected.
+  const budgetBand = (answers.budget || "") as BudgetBand;
+  if (budgetBand && budgetBand !== "not-sure") {
+    const fit = scoreVendorBudgetFit(
+      vendor.system_pricing || {},
+      recommendedSystems,
+      budgetBand,
+    );
+    if (fit.withinBudget && fit.pricedSystems > 0) {
+      reasons.push("Supplies systems within your price range");
+    }
+  }
+
   // Concerns alignment — surface one bullet tied to the user's top concern
   // when the vendor offers a system that addresses it.
   for (const concern of answers.concerns || []) {
