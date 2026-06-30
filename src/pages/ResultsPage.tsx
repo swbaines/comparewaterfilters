@@ -895,10 +895,10 @@ export default function ResultsPage() {
         <div className="mb-10 scroll-mt-24" id="matched-providers">
           <div className="mb-6 text-center">
             <h2 className="text-xl font-bold sm:text-2xl">
-              3 installers matched to your job
+              We've matched you with installers
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Tick the ones you'd like quotes from
+              Now pick who you'd like quotes from
             </p>
           </div>
 
