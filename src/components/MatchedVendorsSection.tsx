@@ -192,6 +192,7 @@ export default function MatchedVendorsSection({
   customerLng,
   answers,
   recommendedSystems,
+  onSelectionChange,
 }: Props) {
   const { data: vendors = [], isLoading } = useMatchedVendors({
     customerLat,
