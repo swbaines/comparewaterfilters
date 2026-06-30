@@ -253,9 +253,6 @@ export default function MatchedVendorsSection({
   const [contactFirstName, setContactFirstName] = useState(answers.firstName || "");
   const [contactEmail, setContactEmail] = useState(answers.email || "");
   const [contactMobile, setContactMobile] = useState(answers.mobile || "");
-  const [contactPreference, setContactPreference] = useState(
-    answers.contactPreference || "",
-  );
   const [showContactErrors, setShowContactErrors] = useState(false);
 
   // Sync prefilled contact details whenever the underlying answers change
@@ -264,9 +261,7 @@ export default function MatchedVendorsSection({
     if (answers.firstName) setContactFirstName((prev) => prev || answers.firstName);
     if (answers.email) setContactEmail((prev) => prev || answers.email);
     if (answers.mobile) setContactMobile((prev) => prev || answers.mobile);
-    if (answers.contactPreference)
-      setContactPreference((prev) => prev || answers.contactPreference);
-  }, [answers.firstName, answers.email, answers.mobile, answers.contactPreference]);
+  }, [answers.firstName, answers.email, answers.mobile]);
 
   // Pre-select only the top match when vendors load
   useEffect(() => {
@@ -377,7 +372,7 @@ export default function MatchedVendorsSection({
         message: null,
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
-        contact_preference: contactPreference || "no_preference",
+        contact_preference: "no_preference",
       }));
 
       const { error } = await supabase.from("quote_requests").insert(rows);
@@ -412,7 +407,7 @@ export default function MatchedVendorsSection({
                   createdAt: new Date().toISOString(),
                   installationTimeline: answers.installationTimeline || "",
                   leadTemperature: leadTemperature || "",
-                  contactPreference: contactPreference || "no_preference",
+                  contactPreference: "no_preference",
                 },
               },
             })
@@ -625,22 +620,6 @@ export default function MatchedVendorsSection({
                 />
               </div>
             </div>
-            <details className="text-xs text-muted-foreground">
-              <summary className="cursor-pointer select-none">
-                Preferred contact method (optional)
-              </summary>
-              <select
-                id="contact-pref"
-                value={contactPreference}
-                onChange={(e) => setContactPreference(e.target.value)}
-                className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <option value="">No preference</option>
-                <option value="phone">Phone call</option>
-                <option value="sms">SMS first</option>
-                <option value="email">Email first</option>
-              </select>
-            </details>
           </div>
 
           <Button
