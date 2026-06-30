@@ -853,41 +853,43 @@ export default function ResultsPage() {
         description="Your personalised water filter recommendations based on your home profile and water concerns."
         path="/results"
       />
-      <div className="container max-w-5xl">
-        {/* Summary */}
-        <div className="mb-10 text-center">
+      <div className="container max-w-5xl pb-24 sm:pb-12">
+        {/* Section 1 — Results header */}
+        <div className="mb-6 text-center">
           <Badge className="mb-3">Your personalised results</Badge>
           <h1 className="text-2xl font-bold sm:text-3xl">
-            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} our recommendation
+            {answers.firstName ? `Hi ${answers.firstName}, here's` : "Here's"} your
+            filtration plan, and 3 installers to quote it
           </h1>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Based on the answers you gave us. Pick who you'd like quotes from —
+            it's free, and you choose who to talk to.
+          </p>
         </div>
 
-        {/* Warnings hidden — duplicates info already in the "Top recommendation" box */}
+        {/* Section 2 — Quiz recap chips */}
+        <div className="mb-8">
+          <QuizRecapChips answers={answers} />
+        </div>
 
-        {/* Top recommendation */}
-        <Card className="mb-8 border-primary/20 bg-accent/50">
-          <CardContent className="p-6 sm:p-8">
-            <Badge className="mb-3">Top recommendation</Badge>
-            <h2 className="text-xl font-bold">{result.primary.title}</h2>
-            <p className="mt-2 text-muted-foreground">{result.primaryReason}</p>
-          </CardContent>
-        </Card>
+        {/* Section 3 — Recommended system card */}
+        <div className="mb-8">
+          <RecommendedSystemCard result={result} answers={answers} />
+        </div>
 
-        {/* ── Matched providers (moved up so users see provider CTA immediately) ── */}
-        <div className="mb-12 scroll-mt-24" id="matched-providers">
+        {/* Section 4 — Cost in their area (conditional) */}
+        <div className="mb-10">
+          <CostInYourAreaSection result={result} answers={answers} />
+        </div>
+
+        {/* Section 5 — Matched installers */}
+        <div className="mb-10 scroll-mt-24" id="matched-providers">
           <div className="mb-6 text-center">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <Badge className="mb-3" variant="secondary">
-              Next step
-            </Badge>
-            <h2 className="text-2xl font-bold sm:text-3xl">
-              Get 3 quotes & pick the best - no obligation.
+            <h2 className="text-xl font-bold sm:text-2xl">
+              3 installers matched to your job
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-              Enter your details and we'll match you with trusted installers in your area.
-              No obligation — you choose who to talk to.
+            <p className="mt-1 text-sm text-muted-foreground">
+              Tick the ones you'd like quotes from
             </p>
           </div>
 
@@ -896,7 +898,18 @@ export default function ResultsPage() {
             customerLng={customerCoords?.lng ?? null}
             answers={answers}
             recommendedSystems={recommendedSystemIds}
+            onSelectionChange={setSelectedVendorCount}
           />
+        </div>
+
+        {/* Section 6 — What happens next */}
+        <div className="mb-10">
+          <WhatHappensNextSection />
+        </div>
+
+        {/* Section 7 — Trust strip */}
+        <div className="mb-10">
+          <TrustStrip />
         </div>
 
         {answers.coverage === "showers-bathrooms" && (
