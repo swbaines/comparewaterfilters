@@ -829,6 +829,7 @@ export default function ResultsPage() {
         recommendation_price_min: priceMin,
         recommendation_price_max: priceMax,
         recommendation_reason: result.primaryReason || null,
+        is_test: (await import("@/lib/testMode")).isTestMode(),
       })
       .then(({ error }) => {
         if (error) {
