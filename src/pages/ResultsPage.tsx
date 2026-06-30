@@ -20,6 +20,12 @@ import { WarningCallout, inferWarningVariant } from "@/components/WarningCallout
 import { toCanonicalSystemType } from "@/lib/canonicalSystemTypes";
 import { getSystemPricing, formatPriceRange } from "@/lib/systemPricing";
 import { PricingFootnote } from "@/components/PricingFootnote";
+import QuizRecapChips from "@/components/results/QuizRecapChips";
+import RecommendedSystemCard from "@/components/results/RecommendedSystemCard";
+import CostInYourAreaSection from "@/components/results/CostInYourAreaSection";
+import WhatHappensNextSection from "@/components/results/WhatHappensNextSection";
+import TrustStrip from "@/components/results/TrustStrip";
+import { trackResultsEvent } from "@/lib/resultsAnalytics";
 
 const TIER_EXPLANATIONS: Record<"value" | "allrounder" | "premium", string> = {
   value: "The lowest-cost option that still tackles your top concerns. Best if you want quick wins from an under-sink carbon filter or reverse osmosis system at the kitchen tap without a big upfront spend.",
