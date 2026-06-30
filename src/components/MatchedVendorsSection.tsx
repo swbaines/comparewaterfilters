@@ -471,6 +471,18 @@ export default function MatchedVendorsSection({
     }
   };
 
+  const scoredVendors = useMemo(() => scoreVendorMatches(topVendors), [topVendors]);
+  const rankById = useMemo(() => {
+    const map = new Map<string, MatchRank>();
+    scoredVendors.forEach((s) => map.set(s.vendor.provider_id, s.rank));
+    return map;
+  }, [scoredVendors]);
+
+  // Notify parent (sticky mobile bar) whenever the selection changes.
+  useEffect(() => {
+    onSelectionChange?.(selected.size);
+  }, [selected.size, onSelectionChange]);
+
   if (isLoading) {
     return (
       <Card className="border border-dashed">
@@ -519,18 +531,6 @@ export default function MatchedVendorsSection({
   }
 
   const showFewerThanThreeNotice = topVendors.length < 3;
-
-  const scoredVendors = useMemo(() => scoreVendorMatches(topVendors), [topVendors]);
-  const rankById = useMemo(() => {
-    const map = new Map<string, MatchRank>();
-    scoredVendors.forEach((s) => map.set(s.vendor.provider_id, s.rank));
-    return map;
-  }, [scoredVendors]);
-
-  // Notify parent (sticky mobile bar) whenever the selection changes.
-  useEffect(() => {
-    onSelectionChange?.(selected.size);
-  }, [selected.size, onSelectionChange]);
 
   return (
     <div className="space-y-4">
