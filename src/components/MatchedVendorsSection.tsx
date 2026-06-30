@@ -577,14 +577,14 @@ export default function MatchedVendorsSection({
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="contact-first-name" className="text-xs">
-                  First name *
+                  Name*
                 </Label>
                 <Input
                   id="contact-first-name"
                   value={contactFirstName}
                   onChange={(e) => setContactFirstName(e.target.value)}
                   onFocus={() => trackResultsEvent("contact_form_focused", { field: "first_name" })}
-                  placeholder="Your first name"
+                  placeholder="Your name"
                   aria-invalid={showContactErrors && !contactFirstName.trim()}
                 />
               </div>
