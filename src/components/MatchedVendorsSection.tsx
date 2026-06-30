@@ -577,7 +577,7 @@ export default function MatchedVendorsSection({
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor="contact-first-name" className="text-xs">
-                  First name *
+                  Name*
                 </Label>
                 <Input
                   id="contact-first-name"
