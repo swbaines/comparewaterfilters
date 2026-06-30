@@ -77,7 +77,7 @@ export default function CostInYourAreaSection({
             <TrendingDown className="h-4 w-4" /> Brings it down
           </p>
           <p className="mt-1 text-muted-foreground">
-            Standard installation location next to water meter, standard system.
+            Standard installation location next to water meter, basic system.
           </p>
         </div>
       </div>
