@@ -373,6 +373,7 @@ export default function MatchedVendorsSection({
         ownership_status: answers.ownershipStatus || null,
         lead_price: leadPrice,
         contact_preference: "no_preference",
+        is_test: (await import("@/lib/testMode")).isTestMode(),
       }));
 
       const { error } = await supabase.from("quote_requests").insert(rows);
