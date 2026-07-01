@@ -200,6 +200,7 @@ export default function MatchedVendorsSection({
     customerLng,
     customerState: answers.state,
     recommendedSystems,
+    isRental: answers.ownershipStatus === "Rent",
   });
 
   // Re-rank using the SQL ordering as a base, then bias toward vendors whose
