@@ -265,7 +265,7 @@ export default function VendorBillingPage() {
 
     const { data: prov } = await supabase
       .from("providers")
-      .select("id, name, contact_email, approval_status")
+      .select("id, name, contact_email, approval_status, accepts_rental_leads")
       .eq("id", va.provider_id)
       .single();
 
