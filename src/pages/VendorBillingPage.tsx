@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -265,7 +266,7 @@ export default function VendorBillingPage() {
 
     const { data: prov } = await supabase
       .from("providers")
-      .select("id, name, contact_email, approval_status")
+      .select("id, name, contact_email, approval_status, accepts_rental_leads")
       .eq("id", va.provider_id)
       .single();
 
@@ -841,6 +842,34 @@ export default function VendorBillingPage() {
               <div className="text-xs text-muted-foreground space-y-1">
                 <p>Invoices issued on the 1st of each month</p>
                 <p>Dispute invalid leads within 14 days at hello@comparewaterfilters.com.au</p>
+              </div>
+
+              <div className="rounded-lg border bg-muted/30 p-4 flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Receive rental leads</div>
+                  <p className="text-xs text-muted-foreground">
+                    Rental leads convert less often and typically involve smaller jobs. Turn this off to only receive owner-occupier leads.
+                  </p>
+                </div>
+                <Switch
+                  checked={provider?.accepts_rental_leads !== false}
+                  disabled={!provider?.id}
+                  onCheckedChange={async (checked) => {
+                    if (!provider?.id) return;
+                    const prev = provider.accepts_rental_leads !== false;
+                    setProvider((p: any) => ({ ...p, accepts_rental_leads: checked }));
+                    const { error } = await supabase
+                      .from("providers")
+                      .update({ accepts_rental_leads: checked })
+                      .eq("id", provider.id);
+                    if (error) {
+                      setProvider((p: any) => ({ ...p, accepts_rental_leads: prev }));
+                      toast.error("Couldn't update rental lead preference");
+                    } else {
+                      toast.success(checked ? "Rental leads turned on" : "Rental leads turned off");
+                    }
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
