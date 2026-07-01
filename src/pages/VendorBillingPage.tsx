@@ -843,6 +843,34 @@ export default function VendorBillingPage() {
                 <p>Invoices issued on the 1st of each month</p>
                 <p>Dispute invalid leads within 14 days at hello@comparewaterfilters.com.au</p>
               </div>
+
+              <div className="rounded-lg border bg-muted/30 p-4 flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Receive rental leads</div>
+                  <p className="text-xs text-muted-foreground">
+                    Rental leads convert less often and typically involve smaller jobs. Turn this off to only receive owner-occupier leads.
+                  </p>
+                </div>
+                <Switch
+                  checked={provider?.accepts_rental_leads !== false}
+                  disabled={!provider?.id}
+                  onCheckedChange={async (checked) => {
+                    if (!provider?.id) return;
+                    const prev = provider.accepts_rental_leads !== false;
+                    setProvider((p: any) => ({ ...p, accepts_rental_leads: checked }));
+                    const { error } = await supabase
+                      .from("providers")
+                      .update({ accepts_rental_leads: checked })
+                      .eq("id", provider.id);
+                    if (error) {
+                      setProvider((p: any) => ({ ...p, accepts_rental_leads: prev }));
+                      toast.error("Couldn't update rental lead preference");
+                    } else {
+                      toast.success(checked ? "Rental leads turned on" : "Rental leads turned off");
+                    }
+                  }}
+                />
+              </div>
             </CardContent>
           </Card>
 
