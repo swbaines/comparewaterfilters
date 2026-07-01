@@ -200,6 +200,7 @@ export default function VendorProfilePage() {
           }
           return out;
         })(),
+        accepts_rental_leads: (provider as any).accepts_rental_leads ?? true,
       });
       const savedStates: string[] = asArray(provider.states);
       const mode = detectCoverageMode(savedStates, provider.service_radius_km);
