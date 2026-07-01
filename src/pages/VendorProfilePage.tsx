@@ -324,8 +324,6 @@ export default function VendorProfilePage() {
           name: form.name,
           trading_name: form.trading_name.trim() || null,
           abn: form.abn.replace(/\s/g, "") || null,
-          abn_verified: abnVerified,
-          abn_verified_at: abnVerified ? new Date().toISOString() : null,
           description: form.description,
           states: statesToSave,
           ...baseFields,
