@@ -683,6 +683,23 @@ export default function VendorProfilePage() {
                 </Select>
               </div>
             </div>
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <Checkbox
+                  checked={form.accepts_rental_leads}
+                  onCheckedChange={(v) =>
+                    setForm((p) => ({ ...p, accepts_rental_leads: v === true }))
+                  }
+                  className="mt-0.5"
+                />
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Receive rental leads</div>
+                  <p className="text-xs text-muted-foreground">
+                    Rental leads convert less often and typically involve smaller jobs. Turn this off to only receive owner-occupier leads.
+                  </p>
+                </div>
+              </label>
+            </div>
             {/* Per-system pricing — appears once vendor has selected at least one system type */}
             {form.system_types.length > 0 && (
               <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
