@@ -393,6 +393,7 @@ export default function VendorProfilePage() {
               }
               return out as any;
             })(),
+          accepts_rental_leads: form.accepts_rental_leads,
         })
         .eq("id", vendorAccount!.provider_id);
       if (error) throw error;
