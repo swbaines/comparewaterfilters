@@ -259,9 +259,6 @@ export default function VendorProfilePage() {
       if (abnClean && !/^\d{11}$/.test(abnClean)) {
         throw new Error("ABN must be exactly 11 digits");
       }
-      // Recompute verification each save so a corrected ABN flips status correctly.
-      const abnVerified = abnClean ? isValidAbn(abnClean) : false;
-
       const installationError = validateInstallationModel(installation);
       if (installationError) throw new Error(installationError);
 
@@ -324,8 +321,6 @@ export default function VendorProfilePage() {
           name: form.name,
           trading_name: form.trading_name.trim() || null,
           abn: form.abn.replace(/\s/g, "") || null,
-          abn_verified: abnVerified,
-          abn_verified_at: abnVerified ? new Date().toISOString() : null,
           description: form.description,
           states: statesToSave,
           ...baseFields,
