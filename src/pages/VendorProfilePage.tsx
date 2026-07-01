@@ -132,6 +132,7 @@ export default function VendorProfilePage() {
     phone: "",
     contact_email: "",
     system_pricing: {} as Record<string, { min: string; max: string }>,
+    accepts_rental_leads: true,
   });
 
   const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
@@ -199,6 +200,7 @@ export default function VendorProfilePage() {
           }
           return out;
         })(),
+        accepts_rental_leads: (provider as any).accepts_rental_leads ?? true,
       });
       const savedStates: string[] = asArray(provider.states);
       const mode = detectCoverageMode(savedStates, provider.service_radius_km);
@@ -391,6 +393,7 @@ export default function VendorProfilePage() {
               }
               return out as any;
             })(),
+          accepts_rental_leads: form.accepts_rental_leads,
         })
         .eq("id", vendorAccount!.provider_id);
       if (error) throw error;
@@ -679,6 +682,23 @@ export default function VendorProfilePage() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <Checkbox
+                  checked={form.accepts_rental_leads}
+                  onCheckedChange={(v) =>
+                    setForm((p) => ({ ...p, accepts_rental_leads: v === true }))
+                  }
+                  className="mt-0.5"
+                />
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Receive rental leads</div>
+                  <p className="text-xs text-muted-foreground">
+                    Rental leads convert less often and typically involve smaller jobs. Turn this off to only receive owner-occupier leads.
+                  </p>
+                </div>
+              </label>
             </div>
             {/* Per-system pricing — appears once vendor has selected at least one system type */}
             {form.system_types.length > 0 && (

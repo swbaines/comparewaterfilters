@@ -40,6 +40,7 @@ interface Args {
   customerLng: number | null;
   customerState: string;
   recommendedSystems: string[];
+  isRental?: boolean;
   enabled?: boolean;
 }
 
@@ -48,6 +49,7 @@ export function useMatchedVendors({
   customerLng,
   customerState,
   recommendedSystems,
+  isRental = false,
   enabled = true,
 }: Args) {
   // Expand combo IDs (e.g. "hybrid") into their component systems so that
@@ -63,6 +65,7 @@ export function useMatchedVendors({
       customerLng,
       customerState,
       [...normalizedRecommended].sort().join(","),
+      isRental,
     ],
     enabled:
       enabled &&
@@ -75,6 +78,7 @@ export function useMatchedVendors({
         _customer_state: customerState,
         _recommended_systems: normalizedRecommended,
         _limit: 10,
+        _is_rental: isRental,
       });
       if (error) throw error;
       const rows = (data || []) as MatchedVendor[];

@@ -438,6 +438,7 @@ export type Database = {
           abn_verification_response: Json | null
           abn_verified: boolean
           abn_verified_at: string | null
+          accepts_rental_leads: boolean
           approval_status: Database["public"]["Enums"]["approval_status"]
           approved_at: string | null
           available_for_quote: boolean
@@ -499,6 +500,7 @@ export type Database = {
           abn_verification_response?: Json | null
           abn_verified?: boolean
           abn_verified_at?: string | null
+          accepts_rental_leads?: boolean
           approval_status?: Database["public"]["Enums"]["approval_status"]
           approved_at?: string | null
           available_for_quote?: boolean
@@ -560,6 +562,7 @@ export type Database = {
           abn_verification_response?: Json | null
           abn_verified?: boolean
           abn_verified_at?: string | null
+          accepts_rental_leads?: boolean
           approval_status?: Database["public"]["Enums"]["approval_status"]
           approved_at?: string | null
           available_for_quote?: boolean
@@ -1335,6 +1338,7 @@ export type Database = {
           _customer_lat: number
           _customer_lng: number
           _customer_state: string
+          _is_rental?: boolean
           _limit?: number
           _recommended_systems: string[]
         }
