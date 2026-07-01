@@ -132,6 +132,7 @@ export default function VendorProfilePage() {
     phone: "",
     contact_email: "",
     system_pricing: {} as Record<string, { min: string; max: string }>,
+    accepts_rental_leads: true,
   });
 
   const [serviceArea, setServiceArea] = useState<ServiceAreaValue>({
