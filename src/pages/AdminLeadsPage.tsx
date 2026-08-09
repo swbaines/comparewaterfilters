@@ -401,6 +401,7 @@ export default function AdminLeadsPage() {
   });
 
   const generateInvoiceMutation = useMutation({
+    // placeholder anchor
     mutationFn: async () => {
       if (!invoiceProvider || !invoicePeriod.start || !invoicePeriod.end) {
         throw new Error("Select a provider and date range");
