@@ -81,6 +81,9 @@ export default function AdminLeadsPage() {
   const [resetConfirmText, setResetConfirmText] = useState("");
   const RESET_PHRASE = "RESET TEST DATA";
   const [expandedLeads, setExpandedLeads] = useState<Set<string>>(new Set());
+  const [creditLead, setCreditLead] = useState<any | null>(null);
+  const [creditAmount, setCreditAmount] = useState<string>("");
+  const [creditReason, setCreditReason] = useState<string>("");
   const toggleExpanded = (id: string) =>
     setExpandedLeads((prev) => {
       const next = new Set(prev);
@@ -395,6 +398,32 @@ export default function AdminLeadsPage() {
       toast.success("Lead status updated");
     },
     onError: (e) => toast.error(e.message),
+  });
+
+  const creditLeadMutation = useMutation({
+    mutationFn: async () => {
+      if (!creditLead?.provider_id) throw new Error("This lead has no provider attached");
+      const amount = Number(creditAmount);
+      if (!Number.isFinite(amount) || amount <= 0) throw new Error("Enter a credit amount greater than 0");
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase.from("provider_credits" as any).insert({
+        provider_id: creditLead.provider_id,
+        quote_request_id: creditLead.id,
+        amount,
+        reason: creditReason.trim() || "Admin credit — misrouted lead",
+        status: "pending",
+        created_by: userData.user?.id ?? null,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-leads"] });
+      setCreditLead(null);
+      setCreditAmount("");
+      setCreditReason("");
+      toast.success("Credit issued — it will apply to the provider's next invoice");
+    },
+    onError: (e: any) => toast.error(e?.message || "Failed to issue credit"),
   });
 
   const generateInvoiceMutation = useMutation({
@@ -883,6 +912,28 @@ export default function AdminLeadsPage() {
                               );
                             })()}
                           </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-4 border-t pt-3">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5"
+                              disabled={!lead.provider_id}
+                              title={lead.provider_id ? "Credit this lead back to the provider" : "No provider attached to this lead"}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCreditLead(lead);
+                                setCreditAmount(
+                                  String(
+                                    Number(lead.lead_price) ||
+                                      (lead.ownership_status === "Rent" ? rentalLeadPrice : ownerLeadPrice)
+                                  )
+                                );
+                                setCreditReason("");
+                              }}
+                            >
+                              <DollarSign className="h-4 w-4" /> Credit lead back to provider
+                            </Button>
+                          </div>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -928,6 +979,45 @@ export default function AdminLeadsPage() {
           </div>
         )}
       </div>
+
+      {/* Credit Lead Dialog */}
+      <Dialog open={!!creditLead} onOpenChange={(o) => { if (!o) setCreditLead(null); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Credit lead back to provider</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Issues a pending credit to <strong>{creditLead?.provider_name}</strong> for the lead from{" "}
+              <strong>{creditLead?.customer_name}</strong>. It will be deducted from their next invoice.
+            </p>
+            <div>
+              <Label>Credit amount (AUD)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={creditAmount}
+                onChange={(e) => setCreditAmount(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Reason</Label>
+              <Textarea
+                placeholder="e.g. Lead was outside the provider's service area (WA lead sent to a VIC-only provider)"
+                value={creditReason}
+                onChange={(e) => setCreditReason(e.target.value)}
+              />
+            </div>
+            <Button
+              className="w-full"
+              onClick={() => creditLeadMutation.mutate()}
+              disabled={creditLeadMutation.isPending}
+            >
+              {creditLeadMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Issue credit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Generate Invoice Dialog */}
       <Dialog open={invoiceDialogOpen} onOpenChange={setInvoiceDialogOpen}>
