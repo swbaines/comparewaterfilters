@@ -980,6 +980,45 @@ export default function AdminLeadsPage() {
         )}
       </div>
 
+      {/* Credit Lead Dialog */}
+      <Dialog open={!!creditLead} onOpenChange={(o) => { if (!o) setCreditLead(null); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Credit lead back to provider</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Issues a pending credit to <strong>{creditLead?.provider_name}</strong> for the lead from{" "}
+              <strong>{creditLead?.customer_name}</strong>. It will be deducted from their next invoice.
+            </p>
+            <div>
+              <Label>Credit amount (AUD)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                value={creditAmount}
+                onChange={(e) => setCreditAmount(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Reason</Label>
+              <Textarea
+                placeholder="e.g. Lead was outside the provider's service area (WA lead sent to a VIC-only provider)"
+                value={creditReason}
+                onChange={(e) => setCreditReason(e.target.value)}
+              />
+            </div>
+            <Button
+              className="w-full"
+              onClick={() => creditLeadMutation.mutate()}
+              disabled={creditLeadMutation.isPending}
+            >
+              {creditLeadMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Issue credit
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Generate Invoice Dialog */}
       <Dialog open={invoiceDialogOpen} onOpenChange={setInvoiceDialogOpen}>
         <DialogContent>
