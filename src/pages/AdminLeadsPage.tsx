@@ -81,6 +81,9 @@ export default function AdminLeadsPage() {
   const [resetConfirmText, setResetConfirmText] = useState("");
   const RESET_PHRASE = "RESET TEST DATA";
   const [expandedLeads, setExpandedLeads] = useState<Set<string>>(new Set());
+  const [creditLead, setCreditLead] = useState<any | null>(null);
+  const [creditAmount, setCreditAmount] = useState<string>("");
+  const [creditReason, setCreditReason] = useState<string>("");
   const toggleExpanded = (id: string) =>
     setExpandedLeads((prev) => {
       const next = new Set(prev);
