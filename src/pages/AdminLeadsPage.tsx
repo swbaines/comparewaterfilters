@@ -912,6 +912,28 @@ export default function AdminLeadsPage() {
                               );
                             })()}
                           </div>
+                          <div className="col-span-2 md:col-span-3 lg:col-span-4 border-t pt-3">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5"
+                              disabled={!lead.provider_id}
+                              title={lead.provider_id ? "Credit this lead back to the provider" : "No provider attached to this lead"}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCreditLead(lead);
+                                setCreditAmount(
+                                  String(
+                                    Number(lead.lead_price) ||
+                                      (lead.ownership_status === "Rent" ? rentalLeadPrice : ownerLeadPrice)
+                                  )
+                                );
+                                setCreditReason("");
+                              }}
+                            >
+                              <DollarSign className="h-4 w-4" /> Credit lead back to provider
+                            </Button>
+                          </div>
                         </div>
                       </TableCell>
                     </TableRow>
