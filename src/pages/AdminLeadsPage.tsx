@@ -400,8 +400,33 @@ export default function AdminLeadsPage() {
     onError: (e) => toast.error(e.message),
   });
 
+  const creditLeadMutation = useMutation({
+    mutationFn: async () => {
+      if (!creditLead?.provider_id) throw new Error("This lead has no provider attached");
+      const amount = Number(creditAmount);
+      if (!Number.isFinite(amount) || amount <= 0) throw new Error("Enter a credit amount greater than 0");
+      const { data: userData } = await supabase.auth.getUser();
+      const { error } = await supabase.from("provider_credits" as any).insert({
+        provider_id: creditLead.provider_id,
+        quote_request_id: creditLead.id,
+        amount,
+        reason: creditReason.trim() || "Admin credit — misrouted lead",
+        status: "pending",
+        created_by: userData.user?.id ?? null,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-leads"] });
+      setCreditLead(null);
+      setCreditAmount("");
+      setCreditReason("");
+      toast.success("Credit issued — it will apply to the provider's next invoice");
+    },
+    onError: (e: any) => toast.error(e?.message || "Failed to issue credit"),
+  });
+
   const generateInvoiceMutation = useMutation({
-    // placeholder anchor
     mutationFn: async () => {
       if (!invoiceProvider || !invoicePeriod.start || !invoicePeriod.end) {
         throw new Error("Select a provider and date range");
